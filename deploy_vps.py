@@ -6,6 +6,17 @@ import subprocess
 
 USER = 'root'
 HOST = '31.97.232.229'
+
+# Load .env manually to avoid dependencies
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+if os.path.exists(env_path):
+    with open(env_path) as f:
+        for line in f:
+            if line.strip() and not line.startswith('#'):
+                key, _, value = line.partition('=')
+                if key.strip() == 'VPS_PASSWORD':
+                    os.environ['VPS_PASSWORD'] = value.strip().strip("'").strip('"')
+
 # Get password from environment or prompt
 PASSWORD = os.getenv('VPS_PASSWORD')
 if not PASSWORD:
