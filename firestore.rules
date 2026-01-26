@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false; // Lock down by default
+    }
+    
+    // Allow public read access to players and matches
+    match /players/{playerId} {
+      allow read: if true;
+      allow write: if false; // Only Admin SDK (functions) can write
+      
+      match /history/{matchId} {
+        allow read: if true;
+        allow write: if false;
+      }
+    }
+
+    // Allow public read access to static data (teams, events, types)
+    match /static/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Allow public read access to master_players (Unified schema research)
+    match /master_players/{code} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

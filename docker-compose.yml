@@ -1,0 +1,16 @@
+services:
+  fplgeek:
+    build: .
+    restart: always
+    environment:
+      - VIRTUAL_HOST=fplgeek.xyz,www.fplgeek.xyz,31.97.232.229
+      - LETSENCRYPT_HOST=fplgeek.xyz,www.fplgeek.xyz
+      - LETSENCRYPT_EMAIL=vishnuprakash1999@gmail.com
+    networks:
+      - nginx-proxy
+    expose:
+      - "80"
+
+networks:
+  nginx-proxy:
+    external: true

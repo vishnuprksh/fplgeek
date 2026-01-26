@@ -1,0 +1,160 @@
+.fixture-analysis {
+    padding: 1rem;
+    max-width: 1000px;
+    /* Wider for table */
+    margin: 0 auto;
+}
+
+.analysis-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.analysis-header h2 {
+    color: var(--color-text-primary);
+    margin: 0;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-text-secondary);
+}
+
+.controls select {
+    background: var(--color-bg-card);
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+.ticker-container {
+    overflow-x: auto;
+    background: var(--color-bg-card);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--color-border);
+}
+
+.ticker-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;
+}
+
+.ticker-table th {
+    text-align: left;
+    padding: 0.75rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.th-score {
+    text-align: center;
+}
+
+.th-gw {
+    text-align: center;
+}
+
+.ticker-table td {
+    padding: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.td-team {
+    width: 150px;
+}
+
+.team-name {
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.team-stats-mini {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+}
+
+.td-score {
+    text-align: center;
+    font-weight: 800;
+    color: var(--color-accent-primary);
+    font-size: 1.1rem;
+}
+
+.td-match {
+    text-align: center;
+}
+
+.match-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    min-width: 50px;
+    color: #fff;
+    cursor: default;
+    transition: transform 0.1s;
+}
+
+.match-cell:hover {
+    transform: scale(1.05);
+}
+
+.cell-score {
+    font-size: 0.65rem;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1px 4px;
+    border-radius: 4px;
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+/* Difficulty Colors */
+.easy .match-cell {
+    background: #10b981;
+    /* Green */
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.medium .match-cell {
+    background: #64748b;
+    /* Grey/Blue */
+}
+
+.hard .match-cell {
+    background: #ef4444;
+    /* Red */
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.blank-gw {
+    color: var(--color-text-muted);
+}
+
+.opponent {
+    text-transform: uppercase;
+}
+
+.venue {
+    font-size: 0.7rem;
+    opacity: 0.8;
+}

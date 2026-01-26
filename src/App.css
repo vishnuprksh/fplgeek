@@ -1,0 +1,490 @@
+/* CSS variables are imported from src/styles/variables.css */
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  padding-bottom: 90px;
+  /* Space for bottom nav */
+}
+
+/* Header Styles */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(26, 26, 26, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  font-family: var(--font-header);
+  font-size: 1.5rem;
+  /* Reduced from 2.5rem */
+  font-weight: 800;
+  background: linear-gradient(135deg, #00ff87 0%, #60a5fa 100%);
+  /* FPL Colors */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* User Avatar Placeholder in Header */
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #37003c 0%, #5a0060 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+/* Team Card Text Sizes */
+.team-card h2 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  /* Reduced from 1.5rem */
+  font-family: var(--font-header);
+}
+
+.stat-value {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-size: 1.1rem;
+  /* Explicitly set smaller size */
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+    padding-bottom: 90px;
+    padding-top: 0;
+    /* Header is inside container, but let's reset top padding */
+  }
+
+  /* Reset header margin/padding for mobile if needed, but sticky covers it */
+  .app-header {
+    margin: 0 -1rem 1.5rem -1rem;
+    /* Edge to edge on mobile */
+    border-radius: 0 0 1rem 1rem;
+  }
+
+  .admin-badge {
+    display: none;
+    /* Hide extra badges on small screens if needed */
+  }
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+.search-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-card);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+  width: 200px;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+}
+
+.search-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  border: none;
+  background: var(--color-accent-primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.search-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.search-button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.error-message {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.info-message {
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Dashboard Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  width: 100%;
+  align-items: stretch;
+  /* Ensure both columns are same height */
+}
+
+/* Common Window Panel Style */
+.dashboard-panel {
+  background: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* Fill grid cell */
+  overflow: hidden;
+}
+
+.dashboard-left-col {
+  /* Inherits flex column from panel class */
+  gap: 0;
+  /* Remove gap, handle spacing internally or via padding */
+}
+
+.dashboard-right-col {
+  min-height: 0;
+}
+
+.dashboard-right-col {
+  /* Ensure this column takes full height and allows children to expand */
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Old sidebar styles removed or repurposed */
+.dashboard-left-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.dashboard-main {
+  min-width: 0;
+  /* Prevents grid blowout */
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-container {
+    max-width: 100%;
+  }
+}
+
+@media (min-width: 1400px) {
+  .app-container {
+    max-width: 1400px;
+  }
+}
+
+
+/* Chat Window Styles */
+.chat-window {
+  /* Removed border/bg since it will be inside a dashboard-panel or IS the panel content */
+  background: transparent;
+  height: auto;
+  /* Let it fill the flex container */
+  flex: 1;
+  /* Grow to fill column */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.initial-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1rem;
+  gap: 1.5rem;
+  height: 100%;
+  color: var(--color-text-secondary);
+}
+
+.initial-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  max-width: 400px;
+}
+
+.initial-content h2 {
+  font-family: var(--font-header);
+  font-size: 1.8rem;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.initial-content p {
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+}
+
+.start-chat-btn {
+  background: var(--color-accent-primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.start-chat-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.chat-header {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+
+.loading-indicator {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-style: italic;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.message-bubble {
+  max-width: 85%;
+  padding: 1rem;
+  border-radius: 1rem;
+  line-height: 1.5;
+  font-size: 0.95rem;
+  position: relative;
+}
+
+.message-bubble.user {
+  align-self: flex-end;
+  background: var(--color-accent-primary);
+  color: white;
+  border-bottom-right-radius: 0.2rem;
+}
+
+.message-bubble.model {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text-primary);
+  border-bottom-left-radius: 0.2rem;
+}
+
+.message-content h1,
+.message-content h2,
+.message-content h3 {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.message-content p {
+  margin-bottom: 0.5rem;
+}
+
+.message-content ul,
+.message-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Chat Input Area */
+.chat-input-area {
+  padding: 1rem;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  gap: 0.8rem;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-input {
+  flex: 1;
+  padding: 0.8rem 1rem;
+  border-radius: 2rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-main);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--color-accent-primary);
+}
+
+.send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: var(--color-accent-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+}
+
+.send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.send-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+}
+
+.error-message.small {
+  margin: 0 1rem 0.5rem;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* Team Card Styles (modified for panel header) */
+.team-card {
+  /* Removed card container styles */
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  /* Separator instead of full border */
+}
+
+.team-card h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-family: var(--font-header);
+}
+
+.team-stats {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.team-stat-item {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.stat-label {
+  color: var(--color-text-secondary);
+}
+
+.stat-value {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem;
+    padding-bottom: 90px;
+  }
+
+  .app-header h1 {
+    font-size: 1.8rem;
+  }
+
+  .dashboard-panel {
+    border-radius: var(--radius-md);
+  }
+
+  .team-stats {
+    gap: 1rem;
+    justify-content: space-between;
+  }
+}

@@ -1,0 +1,51 @@
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #1a1a1a;
+    /* Dark background matching the theme often found in variables */
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0;
+    z-index: 1000;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    padding-bottom: env(safe-area-inset-bottom, 8px);
+    /* Handle iPhone X+ safe area */
+}
+
+.bottom-nav-item {
+    background: transparent;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #888;
+    font-size: 0.75rem;
+    padding: 4px 8px;
+    flex: 1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.bottom-nav-item .nav-icon {
+    font-size: 1.25rem;
+    transition: transform 0.2s;
+}
+
+.bottom-nav-item:hover {
+    color: #ccc;
+}
+
+.bottom-nav-item.active {
+    color: #00ff87;
+    /* FPL Accent Green */
+}
+
+.bottom-nav-item.active .nav-icon {
+    transform: translateY(-2px);
+}

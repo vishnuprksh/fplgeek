@@ -1,0 +1,295 @@
+.pitch-container {
+    width: 100%;
+    /* Keep max-width if desired, or let it fill */
+    /* max-width: 700px; */
+    padding: 1.5rem;
+    /* Padding inside the panel */
+    flex: 1;
+    /* Check if this needs to grow */
+    display: flex;
+    flex-direction: column;
+}
+
+.pitch {
+    background: linear-gradient(180deg, #1a7431 0%, #155e28 100%);
+    border-radius: var(--radius-lg);
+    padding: 3rem 1rem;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Subtle internal border */
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 1.5rem;
+    flex: 1;
+    /* Fill available space */
+    min-height: 600px;
+}
+
+/* Pitch lines (simplified) */
+.pitch::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%);
+}
+
+.pitch::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 120px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.pitch-line {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    /* Tighter gap to fit wider cards */
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.row-def {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.row-mid {
+    margin-bottom: auto;
+}
+
+.pitch-player {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: 90px;
+    /* Increased from 60px */
+    transition: transform 0.2s;
+    cursor: pointer;
+    z-index: 5;
+}
+
+.pitch-player:hover {
+    transform: scale(1.1) translateY(-5px);
+    z-index: 50;
+}
+
+.player-shirt {
+    width: 60px;
+    /* Increased from 44px */
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    margin-bottom: -10px;
+    /* Overlap slightly with box */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    /* Thicker border */
+    z-index: 2;
+    position: relative;
+}
+
+.player-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+    transform: scale(1.1);
+    /* Zoom in on face slightly */
+}
+
+/* Fallback Shirt Styles */
+.type-1 .shirt-body {
+    background: #fbbf24;
+}
+
+/* GKP - Yellow */
+.type-2 .shirt-body {
+    background: #3b82f6;
+}
+
+/* DEF - Blue */
+.type-3 .shirt-body {
+    background: #10b981;
+}
+
+/* MID - Green */
+.type-4 .shirt-body {
+    background: #ef4444;
+}
+
+/* FWD - Red */
+.shirt-body {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    opacity: 0.9;
+}
+
+
+.player-info {
+    background: rgba(0, 0, 0, 0.85);
+    /* Darker background */
+    padding: 12px 6px 6px;
+    /* Extra top padding for overlap */
+    border-radius: var(--radius-md);
+    text-align: center;
+    width: 100%;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.player-name {
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #fff;
+    margin-bottom: 2px;
+}
+
+.player-meta {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 0.65rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 2px;
+    font-weight: 500;
+}
+
+.player-team {
+    text-transform: uppercase;
+    color: #ffd700;
+    /* Gold for team name */
+}
+
+.player-price {
+    color: #e2e8f0;
+}
+
+.player-points {
+    font-size: 0.9rem;
+    color: #10b981;
+    /* Bright green for points */
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+}
+
+.pts-label {
+    font-size: 0.6rem;
+    font-weight: 400;
+    color: var(--color-text-muted);
+}
+
+.captain-badge,
+.vice-captain-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    z-index: 5;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.captain-badge {
+    background: #000;
+}
+
+.vice-captain-badge {
+    background: #666;
+}
+
+.bench {
+    background: var(--color-bg-card);
+    margin-top: 1rem;
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.bench-title {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+
+.bench-players {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    /* Allow bench wrapping */
+}
+
+@media (max-width: 600px) {
+    .pitch-container {
+        padding: 0;
+    }
+
+    .pitch {
+        padding: 1.5rem 0.25rem;
+        gap: 0.5rem;
+        min-height: 500px;
+    }
+
+    .pitch-player {
+        width: 18%;
+        /* Flexible width instead of fixed pixel */
+        max-width: 65px;
+    }
+
+    .player-shirt {
+        width: 40px;
+        height: 40px;
+        border-width: 2px;
+    }
+
+    .player-info {
+        padding: 10px 2px 2px;
+    }
+
+    .player-name {
+        font-size: 0.6rem;
+    }
+
+    .player-points {
+        font-size: 0.75rem;
+    }
+
+    .pitch-line {
+        gap: 2px;
+    }
+}
