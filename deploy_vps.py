@@ -75,6 +75,8 @@ def deploy():
             return c.before
 
         send_cmd(child, f'mkdir -p {REMOTE_DIR}')
+        # Clean stale source files to prevent build errors from deleted files
+        send_cmd(child, f'rm -rf {REMOTE_DIR}/src {REMOTE_DIR}/local_functions')
         send_cmd(child, f'tar -xzf /root/fplgeek.tar.gz -C {REMOTE_DIR}')
         send_cmd(child, f'rm /root/fplgeek.tar.gz')
         # Combined command to ensure we are in dir
