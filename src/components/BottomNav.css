@@ -44,8 +44,11 @@
 .bottom-nav-item.active {
     color: #00ff87;
     /* FPL Accent Green */
+    text-shadow: 0 0 10px rgba(0, 255, 135, 0.5);
+    /* Active Glow */
 }
 
 .bottom-nav-item.active .nav-icon {
-    transform: translateY(-2px);
+    transform: translateY(-4px) scale(1.1);
+    /* More pop */
 }

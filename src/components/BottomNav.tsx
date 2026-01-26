@@ -13,7 +13,6 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChangeView 
         { id: 'fixtures', label: 'Fixtures', icon: '📅' },
         { id: 'players', label: 'Players', icon: '🏃' },
         { id: 'predictions', label: 'AI', icon: '🔮' },
-        { id: 'best-team', label: 'Best XI', icon: '🏆' },
         { id: 'ai-history', label: 'History', icon: '📜' },
     ];
 

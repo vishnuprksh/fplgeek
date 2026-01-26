@@ -7,7 +7,6 @@ import { PitchView } from './components/PitchView';
 import { FixtureAnalysis } from './components/FixtureAnalysis';
 import { PlayerAnalysis } from './components/PlayerAnalysis';
 import { Predictions } from './components/Predictions';
-import { BestTeam } from './components/BestTeam';
 import { ChatWindow } from './components/ChatWindow';
 import { TransferModal } from './components/TransferModal';
 import { AiHistory } from './components/AiHistory';
@@ -23,7 +22,7 @@ function App() {
   const [staticData, setStaticData] = useState<BootstrapStatic | null>(null);
   const [picksData, setPicksData] = useState<TeamPicks | null>(null);
   const [fixtures, setFixtures] = useState<Match[]>([]);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'best-team' | 'ai-history'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history'>('dashboard');
   // Mutable state for transfers
   const [activePicks, setActivePicks] = useState<Pick[]>([]);
   const [bank, setBank] = useState(0);
@@ -335,29 +334,130 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <h1>FPL Geek</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
+          <div style={{
+            fontSize: '1.5rem',
+            background: 'linear-gradient(135deg, #00ff87 0%, #60efff 100%)',
+            borderRadius: '8px',
+            width: '36px',
+            height: '36px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#1a0524',
+            fontWeight: 'bold'
+          }}>
+            G
+          </div>
+          <h1 style={{
+            background: 'linear-gradient(to right, #ffffff, #e0e0e0)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            margin: 0,
+            fontSize: '1.4rem'
+          }}>FPL Geek</h1>
         </div>
         <div className="user-avatar" title="User Profile">
-          👤
+          <div style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            background: 'rgba(255,255,255,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            border: '1px solid rgba(255,255,255,0.2)'
+          }}>
+            👤
+          </div>
         </div>
       </header>
 
       <main className="main-content">
         {currentView === 'dashboard' && (
           <>
-            <form onSubmit={handleSubmit} className="search-form">
-              <input
-                type="number"
-                value={teamId}
-                onChange={(e) => setTeamId(Number(e.target.value))}
-                placeholder="Enter Team ID"
-                className="search-input"
-              />
-              <button type="submit" disabled={loading || !staticData} className="search-button">
-                {loading ? 'Loading...' : 'Load Team'}
-              </button>
-            </form>
+            {!teamData && !loading && (
+              <div className="fade-in hero-section" style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minHeight: '60vh',
+                textAlign: 'center',
+                padding: '2rem'
+              }}>
+                <div style={{
+                  fontSize: '4rem',
+                  marginBottom: '1rem',
+                  filter: 'drop-shadow(0 0 20px rgba(0,255,135,0.3))'
+                }}>
+                  🔮
+                </div>
+                <h2 style={{
+                  fontSize: '2.5rem',
+                  marginBottom: '0.5rem',
+                  background: 'linear-gradient(to right, #00ff87, #60efff)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}>
+                  Welcome to FPL Geek
+                </h2>
+                <p style={{ color: '#aaa', fontSize: '1.1rem', marginBottom: '2rem', maxWidth: '400px' }}>
+                  AI-Powered Analytics to dominate your mini-leagues.
+                </p>
+
+                <form onSubmit={handleSubmit} className="search-form-hero" style={{
+                  background: 'rgba(255, 255, 255, 0.05)',
+                  padding: '2rem',
+                  borderRadius: '16px',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  backdropFilter: 'blur(10px)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1rem',
+                  width: '100%',
+                  maxWidth: '350px'
+                }}>
+                  <input
+                    type="number"
+                    value={teamId}
+                    onChange={(e) => setTeamId(Number(e.target.value))}
+                    placeholder="Enter Team ID"
+                    className="search-input"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      background: 'rgba(0,0,0,0.3)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      color: '#fff',
+                      borderRadius: '8px',
+                      fontSize: '1rem'
+                    }}
+                  />
+                  <button type="submit" disabled={loading || !staticData} className="search-button" style={{
+                    width: '100%',
+                    padding: '12px',
+                    background: 'linear-gradient(90deg, #00ff87 0%, #00d4ff 100%)',
+                    border: 'none',
+                    borderRadius: '8px',
+                    color: '#000',
+                    fontWeight: 'bold',
+                    fontSize: '1rem',
+                    cursor: 'pointer',
+                    transition: 'transform 0.2s'
+                  }}>
+                    {loading ? 'Initializing...' : 'Analyze Team 🚀'}
+                  </button>
+                </form>
+              </div>
+            )}
+
+            {/* Hidden Input for header ref fetching if needed, effectively removed from main view flow */}
+            {teamData && (
+              <form onSubmit={handleSubmit} style={{ display: 'none' }}>
+                <input type="hidden" value={teamId} />
+              </form>
+            )}
 
             {error && <div className="error-message">{error}</div>}
 
@@ -534,16 +634,7 @@ function App() {
           </div>
         )}
 
-        {currentView === 'best-team' && staticData && (
-          <div className="fade-in">
-            <BestTeam
-              elements={staticData.elements}
-              teams={staticData.teams}
-              fixtures={fixtures}
-              teamId={teamId}
-            />
-          </div>
-        )}
+
 
         {currentView === 'ai-history' && staticData && (
           <div className="fade-in">

@@ -89,14 +89,21 @@ export function PitchView({
                 {isSold && (
                     <div style={{
                         position: 'absolute',
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        color: '#ef4444',
-                        fontSize: '3em',
+                        top: '-8px',
+                        left: '-8px',
+                        width: '24px',
+                        height: '24px',
+                        background: '#ef4444',
+                        color: 'white',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '0.9em',
                         fontWeight: 'bold',
                         zIndex: 20,
-                        textShadow: '0 0 10px rgba(0,0,0,0.8)'
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
+                        border: '2px solid #1a0524'
                     }}>
                         ✕
                     </div>
@@ -106,19 +113,21 @@ export function PitchView({
                     <div className="ai-badge" style={{
                         position: 'absolute',
                         top: '-8px',
-                        right: '-15px',
-                        background: '#37003c',
+                        right: '-10px',
+                        background: 'rgba(55, 0, 60, 0.9)',
+                        backdropFilter: 'blur(4px)',
                         color: '#00ff87',
                         fontSize: '0.7em',
-                        padding: '2px 4px',
-                        borderRadius: '0px',
-                        border: '1px solid #fff',
+                        padding: '2px 6px',
+                        borderRadius: '12px',
+                        border: '1px solid #00ff87',
                         fontWeight: 'bold',
                         zIndex: 10,
-                        boxShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                        minWidth: '40px'
+                        boxShadow: '0 0 8px rgba(0, 255, 135, 0.3)',
+                        minWidth: '35px',
+                        textAlign: 'center'
                     }}>
-                        {(prediction.totalForecast / 5).toFixed(1)} xP
+                        {(prediction.totalForecast / 5).toFixed(1)}
                     </div>
                 )}
                 <div className="player-info">
