@@ -334,132 +334,63 @@ function App() {
   return (
     <div className="app-container">
       <header className="app-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-          <div style={{
-            fontSize: '1.5rem',
-            background: 'linear-gradient(135deg, #00ff87 0%, #60efff 100%)',
-            borderRadius: '8px',
-            width: '36px',
-            height: '36px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#1a0524',
-            fontWeight: 'bold'
-          }}>
-            G
-          </div>
-          <h1 style={{
-            background: 'linear-gradient(to right, #ffffff, #e0e0e0)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            margin: 0,
-            fontSize: '1.4rem'
-          }}>FPL Geek</h1>
+        <div className="logo-container">
+          <div className="logo-icon">⚽</div>
+          <h1>FPL GEEK</h1>
         </div>
-        <div className="user-avatar" title="User Profile">
-          <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            background: 'rgba(255,255,255,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid rgba(255,255,255,0.2)'
-          }}>
-            👤
-          </div>
-        </div>
+        <div className="user-avatar" onClick={() => window.location.reload()}>VP</div>
       </header>
 
       <main className="main-content">
+        {!teamData && (
+          <div className="hero-section">
+            <div className="hero-content">
+              <span className="hero-badge">AI-Powered FPL Tools</span>
+              <h2>Dominate Your League</h2>
+              <p>Get advanced analytics, AI team recommendations, and fixture insights to stay ahead in your Fantasy Premier League.</p>
+              <div className="search-form">
+                <input
+                  type="number"
+                  placeholder="Enter Team ID"
+                  value={teamId || ''}
+                  onChange={(e) => setTeamId(Number(e.target.value))}
+                  className="search-input"
+                  onKeyPress={(e) => e.key === 'Enter' && fetchData(teamId)}
+                />
+                <button
+                  onClick={() => fetchData(teamId)}
+                  disabled={loading}
+                  className="search-button"
+                >
+                  {loading ? 'Crunching Numbers...' : 'Analyze My Team'}
+                </button>
+              </div>
+              <div className="hero-stats">
+                <div className="hero-stat">
+                  <span className="stat-label">Trusted by</span>
+                  <span className="stat-number">10k+ Managers</span>
+                </div>
+                <div className="hero-stat">
+                  <span className="stat-label">Data Points</span>
+                  <span className="stat-number">Real-time</span>
+                </div>
+              </div>
+            </div>
+            <div className="hero-visual">
+              <div className="vibe-orb"></div>
+            </div>
+          </div>
+        )}
+
+        {error && <div className="error-message">{error}</div>}
+
         {currentView === 'dashboard' && (
           <>
-            {!teamData && !loading && (
-              <div className="fade-in hero-section" style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                minHeight: '60vh',
-                textAlign: 'center',
-                padding: '2rem'
-              }}>
-                <div style={{
-                  fontSize: '4rem',
-                  marginBottom: '1rem',
-                  filter: 'drop-shadow(0 0 20px rgba(0,255,135,0.3))'
-                }}>
-                  🔮
-                </div>
-                <h2 style={{
-                  fontSize: '2.5rem',
-                  marginBottom: '0.5rem',
-                  background: 'linear-gradient(to right, #00ff87, #60efff)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}>
-                  Welcome to FPL Geek
-                </h2>
-                <p style={{ color: '#aaa', fontSize: '1.1rem', marginBottom: '2rem', maxWidth: '400px' }}>
-                  AI-Powered Analytics to dominate your mini-leagues.
-                </p>
-
-                <form onSubmit={handleSubmit} className="search-form-hero" style={{
-                  background: 'rgba(255, 255, 255, 0.05)',
-                  padding: '2rem',
-                  borderRadius: '16px',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  backdropFilter: 'blur(10px)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  width: '100%',
-                  maxWidth: '350px'
-                }}>
-                  <input
-                    type="number"
-                    value={teamId}
-                    onChange={(e) => setTeamId(Number(e.target.value))}
-                    placeholder="Enter Team ID"
-                    className="search-input"
-                    style={{
-                      width: '100%',
-                      padding: '12px',
-                      background: 'rgba(0,0,0,0.3)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      color: '#fff',
-                      borderRadius: '8px',
-                      fontSize: '1rem'
-                    }}
-                  />
-                  <button type="submit" disabled={loading || !staticData} className="search-button" style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: 'linear-gradient(90deg, #00ff87 0%, #00d4ff 100%)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    color: '#000',
-                    fontWeight: 'bold',
-                    fontSize: '1rem',
-                    cursor: 'pointer',
-                    transition: 'transform 0.2s'
-                  }}>
-                    {loading ? 'Initializing...' : 'Analyze Team 🚀'}
-                  </button>
-                </form>
+            {loading && (
+              <div className="info-message">
+                Fetching data from FPL API...
               </div>
             )}
-
-            {/* Hidden Input for header ref fetching if needed, effectively removed from main view flow */}
-            {teamData && (
-              <form onSubmit={handleSubmit} style={{ display: 'none' }}>
-                <input type="hidden" value={teamId} />
-              </form>
-            )}
-
-            {error && <div className="error-message">{error}</div>}
 
             {teamData && !loading && (
               <div className="fade-in">
@@ -548,12 +479,6 @@ function App() {
                           )}
                         </div>
 
-                        {isOptimizing && !optimizationResult && (
-                          <div style={{ fontSize: '0.8em', color: '#ccc' }}>
-                            Click players below to mark for replacement (✕)
-                          </div>
-                        )}
-
                         {optimizationResult && (
                           <div style={{ fontSize: '0.8em', color: '#00ff87' }}>
                             Gain: +{(optimizationResult.lineup.totalPredictedPoints - activePicks.reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0)).toFixed(1)} pts
@@ -634,8 +559,6 @@ function App() {
           </div>
         )}
 
-
-
         {currentView === 'ai-history' && staticData && (
           <div className="fade-in">
             <AiHistory
@@ -659,8 +582,6 @@ function App() {
       )}
 
       <BottomNav currentView={currentView} onChangeView={setCurrentView} />
-
-
     </div>
   );
 }
