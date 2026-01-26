@@ -1,23 +1,26 @@
-import { onCall } from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import { Router, Request, Response } from 'express';
 import { GoogleGenAI } from "@google/genai";
 
-export const generateTransferSuggestions = onCall({ timeoutSeconds: 60, secrets: ["GOOGLE_API_KEY"], cors: true }, async (request) => {
-    const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
-    const genAI = new GoogleGenAI({ apiKey: GOOGLE_API_KEY });
+const router = Router();
 
-    // Auth check removed for local dev
-    // if (!request.auth) { ... }
-
-    const { userSquad, dreamSquad, chipStatus } = request.data;
-
-    if (!userSquad || !dreamSquad) {
-        throw new Error("User squad and Dream squad are required");
-    }
-
-    logger.info("Generating transfer suggestions...");
-
+router.post('/', async (req: Request, res: Response) => {
     try {
+        const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
+        if (!GOOGLE_API_KEY) {
+            res.status(500).json({ error: "Server configuration error" });
+            return;
+        }
+
+        const genAI = new GoogleGenAI({ apiKey: GOOGLE_API_KEY });
+        const { userSquad, dreamSquad, chipStatus } = req.body;
+
+        if (!userSquad || !dreamSquad) {
+            res.status(400).json({ error: "User squad and Dream squad are required" });
+            return;
+        }
+
+        console.log("Generating transfer suggestions...");
+
         const prompt = `
         You are an elite Fantasy Premier League (FPL) manager and analyst.
         
@@ -49,7 +52,7 @@ export const generateTransferSuggestions = onCall({ timeoutSeconds: 60, secrets:
         `;
 
         const result = await genAI.models.generateContent({
-            model: "gemini-3-flash-preview",
+            model: "gemini-2.0-flash",
             contents: [{
                 role: "user",
                 parts: [{ text: prompt }]
@@ -60,10 +63,12 @@ export const generateTransferSuggestions = onCall({ timeoutSeconds: 60, secrets:
         });
 
         const text = result.text;
-        return { report: text };
+        res.json({ report: text });
 
     } catch (error: any) {
-        logger.error("Error generating suggestions:", error);
-        throw new Error(`Failed to generate suggestions: ${error.message}`);
+        console.error("Error generating suggestions:", error);
+        res.status(500).json({ error: `Failed to generate suggestions: ${error.message}` });
     }
 });
+
+export default router;

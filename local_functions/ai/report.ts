@@ -1,22 +1,27 @@
-import { onCall } from "firebase-functions/v2/https";
-import * as logger from "firebase-functions/logger";
+import { Router, Request, Response } from 'express';
 import { GoogleGenAI } from "@google/genai";
 
-export const generateTeamReport = onCall({ timeoutSeconds: 60, secrets: ["GOOGLE_API_KEY"], cors: true }, async (request) => {
-    const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
-    const genAI = new GoogleGenAI({ apiKey: GOOGLE_API_KEY });
-    // Auth check removed for local dev
-    // if (!request.auth) { ... }
+const router = Router();
 
-    const { players } = request.data;
-
-    if (!players || !Array.isArray(players) || players.length === 0) {
-        throw new Error("Invalid players data");
-    }
-
-    logger.info(`Generating report for ${players.length} players using gemini-3-flash-preview...`);
-
+router.post('/', async (req: Request, res: Response) => {
     try {
+        const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY || "";
+        if (!GOOGLE_API_KEY) {
+            console.error("GOOGLE_API_KEY is missing");
+            res.status(500).json({ error: "Server configuration error" });
+            return;
+        }
+
+        const genAI = new GoogleGenAI({ apiKey: GOOGLE_API_KEY });
+        const { players } = req.body;
+
+        if (!players || !Array.isArray(players) || players.length === 0) {
+            res.status(400).json({ error: "Invalid players data" });
+            return;
+        }
+
+        console.log(`Generating report for ${players.length} players using gemini-2.0-flash...`);
+
         const prompt = `
         You are an expert Fantasy Premier League (FPL) analyst. I need a "Team Health Report" for the following squad:
         
@@ -49,7 +54,7 @@ export const generateTeamReport = onCall({ timeoutSeconds: 60, secrets: ["GOOGLE
         `;
 
         const result = await genAI.models.generateContent({
-            model: "gemini-3-flash-preview",
+            model: "gemini-2.0-flash",
             contents: [{
                 role: "user",
                 parts: [{ text: prompt }]
@@ -60,10 +65,12 @@ export const generateTeamReport = onCall({ timeoutSeconds: 60, secrets: ["GOOGLE
         });
 
         const text = result.text;
-        return { report: text };
+        res.json({ report: text });
 
     } catch (error: any) {
-        logger.error("Error generating report:", error);
-        throw new Error(`Failed to generate report: ${error.message}`);
+        console.error("Error generating report:", error);
+        res.status(500).json({ error: `Failed to generate report: ${error.message}` });
     }
 });
+
+export default router;

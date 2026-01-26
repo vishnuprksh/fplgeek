@@ -1,22 +1,22 @@
-import { app } from '../lib/firebase';
-import { getFunctions, httpsCallable } from "firebase/functions";
+// aiService.ts - Updated to use local server proxy
+// We now call our local server endpoints prefixed with /ai-api (proxied by Nginx)
 
 export type AnalysisType = 'general' | 'player' | 'buy-hold-sell';
+
+const API_BASE = '/ai-api';
 
 export const aiService = {
     async generateTeamReport(teamName: string, recentPerformance: string, strengths: string, weaknesses: string): Promise<string> {
         try {
-            const functions = getFunctions(app);
-            const generateAnalysis = httpsCallable(functions, 'generateTeamAnalysis');
-
-            const result = await generateAnalysis({
-                teamName,
-                recentPerformance,
-                strengths,
-                weaknesses
+            const response = await fetch(`${API_BASE}/analysis`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ teamName, recentPerformance, strengths, weaknesses })
             });
 
-            return (result.data as any).report;
+            if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
+            const data = await response.json();
+            return data.report;
         } catch (error) {
             console.error("Error generating report:", error);
             throw error;
@@ -65,23 +65,24 @@ Please provide a concise but insightful initial analysis.
 Then, be ready to answer my follow-up questions about transfers, captaincy, and strategy.`;
             }
 
-            // Return an object that mimics the previous chat interface but calls Cloud Function
             return {
                 sendMessage: async (message: string) => {
-                    const functions = getFunctions(app);
-                    const chatFn = httpsCallable(functions, 'startChat');
-                    const result = await chatFn({
-                        message,
-                        systemInstruction,
-                        // History handling would need to be managed here or on backend if we want stateful chat.
-                        // For now, we'll send just the current message as a single turn or manage history locally if needed.
-                        // The Cloud Function expects 'history' array if we want context.
-                        // Let's assume stateless for this simple migration or we'd need to store history in state.
-                        history: []
+                    const response = await fetch(`${API_BASE}/chat`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message,
+                            systemInstruction,
+                            history: [] // Stateless for now
+                        })
                     });
+
+                    if (!response.ok) throw new Error(`Chat API Error: ${response.statusText}`);
+                    const data = await response.json();
+
                     return {
                         response: {
-                            text: () => (result.data as any).response
+                            text: () => data.response
                         }
                     };
                 }
@@ -95,10 +96,15 @@ Then, be ready to answer my follow-up questions about transfers, captaincy, and 
 
     async getHealthReport(players: string[]): Promise<string> {
         try {
-            const functions = getFunctions(app);
-            const generateReport = httpsCallable(functions, 'generateTeamReport');
-            const result = await generateReport({ players });
-            return (result.data as any).report;
+            const response = await fetch(`${API_BASE}/report`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ players })
+            });
+
+            if (!response.ok) throw new Error(`Report API Error: ${response.statusText}`);
+            const data = await response.json();
+            return data.report;
         } catch (error) {
             console.error("Error getting health report:", error);
             throw error;
@@ -107,10 +113,15 @@ Then, be ready to answer my follow-up questions about transfers, captaincy, and 
 
     async getTransferSuggestions(userSquad: string[], dreamSquad: string[], chipStatus?: string): Promise<string> {
         try {
-            const functions = getFunctions(app);
-            const generateSuggestions = httpsCallable(functions, 'generateTransferSuggestions');
-            const result = await generateSuggestions({ userSquad, dreamSquad, chipStatus });
-            return (result.data as any).report;
+            const response = await fetch(`${API_BASE}/suggestions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userSquad, dreamSquad, chipStatus })
+            });
+
+            if (!response.ok) throw new Error(`Suggestions API Error: ${response.statusText}`);
+            const data = await response.json();
+            return data.report;
         } catch (error) {
             console.error("Error getting transfer suggestions:", error);
             throw error;

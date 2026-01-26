@@ -1,7 +1,7 @@
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-const { ingestData } = require("../functions/src/ingest.ts");
+const { ingestData } = require("./ingestLogic.ts");
 const { SqliteRepository } = require("./sqliteRepository.ts");
 
 console.log("DEBUG: Imports loaded", { ingestData: typeof ingestData, SqliteRepository: typeof SqliteRepository });

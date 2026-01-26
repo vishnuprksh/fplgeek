@@ -1,5 +1,5 @@
 services:
-  fplgeek:
+  web:
     build: .
     restart: always
     environment:
@@ -10,6 +10,19 @@ services:
       - nginx-proxy
     expose:
       - "80"
+    depends_on:
+      - server
+
+  server:
+    build: ./local_functions
+    restart: always
+    env_file: .env
+    environment:
+      - PORT=3000
+    networks:
+      - nginx-proxy
+    volumes:
+      - ./public/data:/app/public/data
 
 networks:
   nginx-proxy:
