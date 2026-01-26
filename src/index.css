@@ -1,5 +1,31 @@
 @import './styles/variables.css';
 
+/* Custom Scrollbar - Human Polish */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #37003c;
+  border-radius: 10px;
+  border: 2px solid #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff87;
+}
+
+/* Global focus and selection vibe */
+::selection {
+  background: #00ff87;
+  color: #1a1a1a;
+}
+
 *,
 *::before,
 *::after {

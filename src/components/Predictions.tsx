@@ -3,11 +3,11 @@ import type { Player, Team, Match } from '../types/fpl';
 import { generatePredictions } from '../utils/predictions';
 import type { PredictionResult } from '../utils/predictions';
 
-import { fplService } from '../services/fpl';
 import { getDataProvider } from '../services/dataFactory';
 import './PlayerAnalysis.css'; // Reusing table styles
 // import { PitchView } from './PitchView'; // We can reuse or adapt this
 import './PlayerAnalysis.css'; // Reusing table styles
+import { SkeletonTable } from './SkeletonLoader';
 
 interface PredictionsProps {
     elements: Player[];
@@ -120,55 +120,89 @@ export function Predictions({ elements, teams, fixtures }: PredictionsProps) {
                 </div>
             )}
 
-            <div className="table-container">
-                <table className="analysis-table">
-                    <thead>
-                        <tr>
-                            <th>Player</th>
-                            <th>Team</th>
-                            <th>Pos</th>
-                            <th>Price</th>
-                            <th>Smart Val</th>
-                            <th>Predicted (5 GWs)</th>
-                            <th>GW+1</th>
-                            <th>GW+2</th>
-                            <th>GW+3</th>
-                            <th>GW+4</th>
-                            <th>GW+5</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {allPredictions.filter(p => !excludedPlayers.has(p.player.id)).slice(0, 100).map(pred => (
-                            <tr key={pred.player.id}>
-                                <td>
-                                    <div style={{ fontWeight: 'bold' }}>{pred.player.web_name}</div>
-                                </td>
-                                <td>{getTeamName(pred.player.team)}</td>
-                                <td>{['GKP', 'DEF', 'MID', 'FWD'][pred.player.element_type - 1]}</td>
-                                <td>£{(pred.cost / 10).toFixed(1)}m</td>
-                                <td>
-                                    <div className="dvs-badge" style={{ backgroundColor: '#37003c', color: '#fff', padding: '2px 6px', borderRadius: '4px', textAlign: 'center' }}>
-                                        {pred.smartValue.toFixed(0)}
-                                    </div>
-                                </td>
-                                <td style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{pred.totalForecast.toFixed(1)}</td>
-                                {pred.next5Points.map((pt, i) => (
-                                    <td key={i} style={{ color: pt > 4 ? '#00ff87' : 'inherit' }}>{pt.toFixed(1)}</td>
+            {allPredictions.length === 0 ? (
+                <div style={{ padding: '40px 0' }}>
+                    <SkeletonTable />
+                </div>
+            ) : (
+                <div className="table-container">
+                    {allPredictions.filter(p => !excludedPlayers.has(p.player.id)).length === 0 ? (
+                        <div style={{
+                            textAlign: 'center',
+                            padding: '60px 20px',
+                            background: 'rgba(255,255,255,0.02)',
+                            borderRadius: '12px',
+                            border: '1px dashed rgba(255,255,255,0.1)'
+                        }}>
+                            <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🔮</div>
+                            <h3 style={{ color: '#00ff87', marginBottom: '8px' }}>The Crystal Ball is Cloudy</h3>
+                            <p style={{ color: '#888' }}>Either you've excluded everyone, or we're waiting for those elite differentials to pop up.</p>
+                            <button
+                                onClick={() => setExcludedPlayers(new Set())}
+                                style={{
+                                    marginTop: '20px',
+                                    padding: '8px 20px',
+                                    background: '#37003c',
+                                    color: '#fff',
+                                    border: 'none',
+                                    borderRadius: '20px',
+                                    fontSize: '0.9rem'
+                                }}
+                            >
+                                Reset Exclusions
+                            </button>
+                        </div>
+                    ) : (
+                        <table className="analysis-table">
+                            <thead>
+                                <tr>
+                                    <th>Player</th>
+                                    <th>Team</th>
+                                    <th>Pos</th>
+                                    <th>Price</th>
+                                    <th>Smart Val</th>
+                                    <th>Predicted (5 GWs)</th>
+                                    <th>GW+1</th>
+                                    <th>GW+2</th>
+                                    <th>GW+3</th>
+                                    <th>GW+4</th>
+                                    <th>GW+5</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {allPredictions.filter(p => !excludedPlayers.has(p.player.id)).slice(0, 100).map(pred => (
+                                    <tr key={pred.player.id}>
+                                        <td>
+                                            <div style={{ fontWeight: 'bold' }}>{pred.player.web_name}</div>
+                                        </td>
+                                        <td>{getTeamName(pred.player.team)}</td>
+                                        <td>{['GKP', 'DEF', 'MID', 'FWD'][pred.player.element_type - 1]}</td>
+                                        <td>£{(pred.cost / 10).toFixed(1)}m</td>
+                                        <td>
+                                            <div className="dvs-badge" style={{ backgroundColor: '#37003c', color: '#fff', padding: '2px 6px', borderRadius: '4px', textAlign: 'center' }}>
+                                                {pred.smartValue.toFixed(0)}
+                                            </div>
+                                        </td>
+                                        <td style={{ fontWeight: 'bold', fontSize: '1.1em' }}>{pred.totalForecast.toFixed(1)}</td>
+                                        {pred.next5Points.map((pt, i) => (
+                                            <td key={i} style={{ color: pt > 4 ? '#00ff87' : 'inherit' }}>{pt.toFixed(1)}</td>
+                                        ))}
+                                        <td>
+                                            <button
+                                                onClick={() => toggleExclusion(pred.player.id)}
+                                                style={{ background: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '4px', cursor: 'pointer', padding: '2px 6px' }}
+                                            >
+                                                Exclude
+                                            </button>
+                                        </td>
+                                    </tr>
                                 ))}
-                                <td>
-                                    <button
-                                        onClick={() => toggleExclusion(pred.player.id)}
-                                        style={{ background: '#ffebee', color: '#c62828', border: '1px solid #ffcdd2', borderRadius: '4px', cursor: 'pointer', padding: '2px 6px' }}
-                                    >
-                                        Exclude
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                            </tbody>
+                        </table>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
