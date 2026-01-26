@@ -35,7 +35,7 @@ function App() {
   const [isProcessingOpt, setIsProcessingOpt] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorStatus, setErrorStatus] = useState<string | null>(null);
 
   useEffect(() => {
     // Load static data and fixtures once on mount
@@ -54,7 +54,7 @@ function App() {
         }
       } catch (e) {
         console.error("Failed to load global FPL data", e);
-        setError("Failed to load FPL database.");
+        setErrorStatus("Failed to load FPL database.");
       }
     };
     loadGlobals();
@@ -68,7 +68,7 @@ function App() {
 
   const fetchData = async (id: number) => {
     setLoading(true);
-    setError(null);
+    setErrorStatus(null);
     setPicksData(null);
 
     try {
@@ -114,7 +114,7 @@ function App() {
       }
     } catch (err) {
       console.error(err);
-      setError('Failed to fetch team data. Please try again.');
+      setErrorStatus('Failed to fetch team data. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -212,10 +212,7 @@ function App() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    fetchData(teamId);
-  };
+
 
   const handleTransfer = (playerOut: Player, playerIn: Player) => {
     // Determine Selling Price
@@ -382,7 +379,7 @@ function App() {
           </div>
         )}
 
-        {error && <div className="error-message">{error}</div>}
+        {errorStatus && <div className="error-message">{errorStatus}</div>}
 
         {currentView === 'dashboard' && (
           <>
