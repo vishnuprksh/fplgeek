@@ -1,6 +1,7 @@
 {
     "name": "fplgeek-server",
     "version": "1.0.0",
+    "type": "module",
     "description": "Local API server for FPL Geek",
     "main": "server.ts",
     "scripts": {

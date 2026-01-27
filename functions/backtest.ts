@@ -1,7 +1,7 @@
 
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const Database = require('better-sqlite3');
+const _require = createRequire(import.meta.url);
+const Database = _require('better-sqlite3');
 import path from 'path';
 
 // Solver Logic (Simplified/Ported for Node)
@@ -199,7 +199,7 @@ async function runBacktest() {
 
     const results = [];
 
-    for (const gw of sortedRounds) {
+    for (const gw of (sortedRounds as number[])) {
         // if (gw < 2) continue; // Skip GW1 check removed
         console.log(`\nAnalyzing GW${gw}...`);
 

@@ -2,6 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Load environment variables from root .env
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -13,10 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 // Routes will be imported here
-import reportRoutes from './ai/report';
-import chatRoutes from './ai/chat';
-import analysisRoutes from './ai/teamAnalysis';
-import suggestionRoutes from './ai/suggestions';
+import reportRoutes from './ai/report.js';
+import chatRoutes from './ai/chat.js';
+import analysisRoutes from './ai/teamAnalysis.js';
+import suggestionRoutes from './ai/suggestions.js';
 
 // Health check
 app.get('/health', (req, res) => {

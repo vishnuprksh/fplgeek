@@ -1,6 +1,6 @@
 import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const Database = require('better-sqlite3');
+const _require = createRequire(import.meta.url);
+const Database = _require('better-sqlite3');
 import path from 'path';
 
 const dbPath = path.resolve(process.cwd(), "public/data/fpl.sqlite");
@@ -40,7 +40,7 @@ async function generatePredictions() {
 
     // 3. Process each player
     const projections: any[] = [];
-    rawPlayers.forEach(p => {
+    rawPlayers.forEach((p: any) => {
         const history = (rawHistory[p.id] || []).sort((a: any, b: any) => b.round - a.round);
         if (history.length === 0) return;
 

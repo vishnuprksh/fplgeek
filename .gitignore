@@ -37,8 +37,19 @@ public/data/*.sqlite-shm
 
 # Build artifacts
 functions/lib/
+functions/node_modules/
+
+# Firebase
+.firebase/
 
 # Research results
 research/results/
 *.tar.gz
 .env
+
+# Debug / Utility scripts
+debug_price.ts
+debug_vps.py
+deploy_vps.py
+setup_vps.py
+nginx.conf

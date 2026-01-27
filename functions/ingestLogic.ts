@@ -1,13 +1,7 @@
+import { IDatabaseRepository } from "./src/db/repository.js";
+import { Team, Event, ElementType } from "./src/types.js";
 
-import { Team, Event, ElementType } from "../functions/src/types";
-
-// Interface ported locally to avoid dependency chains
-export interface IDatabaseRepository {
-    saveFixtures(fixtures: any[]): Promise<void>;
-    batchWritePlayers(players: any[]): Promise<void>;
-    saveStaticData(teams: Team[], events: Event[], elementTypes: ElementType[]): Promise<void>;
-    savePlayerHistory(playerId: number, history: any[]): Promise<void>;
-}
+// Removed duplicate require/Database to fix lint errors or incorrect logic
 
 export interface ILogger {
     info(msg: string, ...args: any[]): void;
@@ -62,8 +56,9 @@ export async function ingestData(repo: IDatabaseRepository, logger: ILogger) {
             try {
                 const summary = await fetchJson(`${BASE_URL}/element-summary/${player.id}/`);
                 const history = summary.history;
+                const historyPast = summary.history_past;
 
-                await repo.savePlayerHistory(player.id, history);
+                await repo.savePlayerHistory(player.id, history, historyPast);
 
                 if (i % 10 === 0) logger.info(`Processed ${i} / ${activePlayers.length} player histories.`);
                 await sleep(50); // Be nice to the API

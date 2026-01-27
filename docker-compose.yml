@@ -14,7 +14,7 @@ services:
       - server
 
   server:
-    build: ./local_functions
+    build: ./functions
     restart: always
     env_file: .env
     environment:

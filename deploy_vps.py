@@ -76,11 +76,13 @@ def deploy():
 
         send_cmd(child, f'mkdir -p {REMOTE_DIR}')
         # Clean stale source files to prevent build errors from deleted files
-        send_cmd(child, f'rm -rf {REMOTE_DIR}/src {REMOTE_DIR}/local_functions')
+        # Deep cleanup: remove everything except .env
+        send_cmd(child, f'find {REMOTE_DIR} -mindepth 1 ! -name ".env" -delete')
         send_cmd(child, f'tar -xzf /root/fplgeek.tar.gz -C {REMOTE_DIR}')
         send_cmd(child, f'rm /root/fplgeek.tar.gz')
         # Combined command to ensure we are in dir
-        send_cmd(child, f'cd {REMOTE_DIR} && docker compose up -d --build')
+        send_cmd(child, f'ls -R {REMOTE_DIR}') # Debug: Show VPS file structure
+        send_cmd(child, f'cd {REMOTE_DIR} && docker compose down --remove-orphans && docker compose build --no-cache && docker compose up -d --force-recreate')
         
         print("Deployment commands executed.")
         child.sendline('exit')

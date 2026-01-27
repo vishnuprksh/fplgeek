@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "ingest:local": "tsx local_functions/ingest.ts",
+    "ingest:local": "tsx functions/ingest.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
