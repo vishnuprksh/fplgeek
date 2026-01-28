@@ -2,7 +2,7 @@
 .app-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 0 2rem 2rem 2rem;
   padding-bottom: 90px;
   /* Space for bottom nav */
 }
@@ -11,17 +11,21 @@
 .app-header {
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 1000;
   background: rgba(26, 26, 26, 0.95);
   backdrop-filter: blur(10px);
-  padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  width: 100%;
+}
+
+.header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  text-align: left;
-  margin-bottom: 1.5rem;
 }
 
 .logo-container {
@@ -48,6 +52,7 @@
   font-weight: 800;
   background: linear-gradient(135deg, #00ff87 0%, #60a5fa 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   margin: 0;
   text-transform: uppercase;
@@ -94,9 +99,12 @@
 
   /* Reset header margin/padding for mobile if needed, but sticky covers it */
   .app-header {
-    margin: 0 -1rem 1.5rem -1rem;
-    /* Edge to edge on mobile */
-    border-radius: 0 0 1rem 1rem;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .header-inner {
+    padding: 0.75rem 1rem;
   }
 
   .admin-badge {
@@ -154,6 +162,7 @@
   line-height: 1.1;
   background: linear-gradient(to bottom, #fff, #999);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 

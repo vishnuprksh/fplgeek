@@ -1,5 +1,4 @@
 import type { Player, Match, Team } from '../types/fpl';
-import { calculateSmartValue, calculateNormalizationFactors } from './smartValue';
 
 // ML Model Coefficients (from ml_model_report.md)
 const COEFF = {
@@ -41,19 +40,17 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
         matches.sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
     });
 
-    // 2. Calculate Normalization Factors once for the whole dataset
-    const normFactors = calculateNormalizationFactors(elements);
-
     // 3. Predict for each player
     elements.forEach(p => {
         // Filter out inactive players to speed up optimization and clean UI
         if (p.minutes < 90 && parseFloat(p.form) < 0.5) return;
 
-        // Use Pre-calculated Weighted Smart Value if available, else fallback to live calc
-        // Firestore data includes 'smart_value' (0-1 range approx, from analysis.ts)
-        const smartValue = p.smart_value !== undefined
-            ? p.smart_value
-            : calculateSmartValue(p, normFactors);
+        // Use Pre-calculated Weighted Smart Value.
+        // It comes in as 0-100 range from calculateSmartValues.
+        const rawSmartValue = p.smart_value ?? 0;
+
+        // Normalize to 0-1 for the regression formula
+        const smartValueNorm = rawSmartValue / 100;
 
         const myFixtures = teamFixtures.get(p.team) || [];
         const next5 = myFixtures.slice(0, 5);
@@ -66,7 +63,7 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
             // Linear Regression Formula for VALUE (Points per £m)
             // Val = Intercept + (C1 * SmartVal) + (C2 * Home) + (C3 * Price)
             const predValue = COEFF.INTERCEPT +
-                (COEFF.SMART_VAL * smartValue) +
+                (COEFF.SMART_VAL * smartValueNorm) +
                 (COEFF.HOME * (isHome ? 1 : 0)) +
                 (COEFF.PRICE * p.now_cost);
 
@@ -75,10 +72,6 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
             let predPoints = predValue * (p.now_cost / 10);
 
             // Decay/Adjustment for availability (simple chance_of_playing check)
-            // Decay/Adjustment for availability (simple chance_of_playing check)
-            // Handle null (unknown) or undefined. If it's 100 or null, we might assume 100?
-            // Actually API says null means "Active/Available" usually, unless status says otherwise.
-            // But let's check for explicit number.
             const chance = p.chance_of_playing_next_round;
             if (chance !== null && chance !== undefined) {
                 predPoints = predPoints * (chance / 100);
@@ -96,7 +89,7 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
 
         predictions.push({
             player: p,
-            smartValue: smartValue * 100, // UX expects 0-100 scale
+            smartValue: rawSmartValue, // UX expects 0-100 scale
             predictedPoints: totalForecast / 5, // Avg per game
             next5Points: predictedPointsList,
             totalForecast: totalForecast,

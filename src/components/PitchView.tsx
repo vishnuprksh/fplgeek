@@ -130,6 +130,27 @@ export function PitchView({
                         {(prediction.totalForecast / 5).toFixed(1)}
                     </div>
                 )}
+
+                {!isSold && player.smart_value !== undefined && (
+                    <div style={{
+                        position: 'absolute',
+                        top: '18px',
+                        right: '-10px',
+                        background: player.smart_value >= 70 ? '#4caf50' : player.smart_value >= 50 ? '#8bc34a' : player.smart_value >= 30 ? '#ffc107' : '#f44336',
+                        color: '#fff',
+                        fontSize: '0.65em',
+                        padding: '1px 4px',
+                        borderRadius: '8px',
+                        fontWeight: 'bold',
+                        zIndex: 9,
+                        minWidth: '25px',
+                        textAlign: 'center',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                    }}>
+                        {player.smart_value.toFixed(0)}
+                    </div>
+                )}
+
                 <div className="player-info">
                     <div className="player-name">{player.web_name}</div>
                     <div className="player-meta">

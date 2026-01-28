@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react';
 import type { Player, Team, UnifiedPlayer } from '../types/fpl';
 import './PlayerAnalysis.css';
 import { PlayerDetailModal } from './PlayerDetailModal';
-import { calculateSmartValue, calculateNormalizationFactors } from '../utils/smartValue';
+
 
 interface PlayerAnalysisProps {
     elements: Player[];
@@ -21,19 +21,12 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
-    // Calculate Smart Value (DVS/AVS)
+    // Elements already have smart_value calculated in App.tsx
     const enrichedPlayers = useMemo(() => {
-        const normFactors = calculateNormalizationFactors(elements);
-
-        return elements.map(p => {
-            // Use server-side smart_value if available (0-1 range)
-            const smartValue = p.smart_value !== undefined && p.smart_value !== null
-                ? Number(p.smart_value)
-                : calculateSmartValue(p, normFactors);
-
-            const finalVal = isNaN(smartValue) ? 0 : smartValue;
-            return { ...p, smart_value: finalVal * 100 };
-        });
+        return elements.map(p => ({
+            ...p,
+            smart_value: (p.smart_value || 0)
+        }));
     }, [elements]);
 
     const handleSort = (field: SortField) => {
@@ -151,8 +144,8 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
                                 <td>{getPosition(player.element_type)}</td>
                                 <td>
                                     {(player.element_type >= 1 && player.element_type <= 4) ? (
-                                        <div className="dvs-badge" style={{ backgroundColor: getScoreColor(player.smart_value), color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', textAlign: 'center', fontSize: '0.85em' }}>
-                                            {player.smart_value.toFixed(0)} <span style={{ fontSize: '0.7em', opacity: 0.8, marginLeft: '4px' }}>({getScoreLabel(player.element_type)})</span>
+                                        <div className="dvs-badge" style={{ backgroundColor: getScoreColor(player.smart_value || 0), color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', textAlign: 'center', fontSize: '0.85em' }}>
+                                            {(player.smart_value || 0).toFixed(0)} <span style={{ fontSize: '0.7em', opacity: 0.8, marginLeft: '4px' }}>({getScoreLabel(player.element_type)})</span>
                                         </div>
                                     ) : (
                                         <span style={{ color: '#ccc' }}>-</span>

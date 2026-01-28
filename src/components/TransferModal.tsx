@@ -67,6 +67,15 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
         })
         .sort((a, b) => (b.smart_value || 0) - (a.smart_value || 0)); // Sort by Smart Value Descending
 
+    // Helper for score colors
+    const getScoreColor = (score: number) => {
+        if (score >= 70) return '#4caf50'; // High Green
+        if (score >= 50) return '#8bc34a'; // Light Green
+        if (score >= 30) return '#ffc107'; // Yellow
+        if (score >= 15) return '#ff9800'; // Orange
+        return '#f44336'; // Red
+    };
+
     return (
         <div className="modal-backdrop" onClick={onClose}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -109,6 +118,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                     {recommendations.map(rec => {
                                         const balanceChange = sellingPrice - rec.now_cost;
                                         const status = getTransferStatus(rec);
+                                        const sv = rec.smart_value || 0;
 
                                         return (
                                             <tr key={rec.id} className={!status.valid ? "row-disabled" : ""}>
@@ -118,7 +128,21 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                 <td className={balanceChange >= 0 ? "positive-diff" : "negative-diff"}>
                                                     {balanceChange > 0 ? `+£${(balanceChange / 10).toFixed(1)}` : balanceChange < 0 ? `-£${(Math.abs(balanceChange) / 10).toFixed(1)}` : `£0.0`}
                                                 </td>
-                                                <td className="smart-value-cell">{(rec.smart_value || 0).toFixed(2)}</td>
+                                                <td className="smart-value-cell">
+                                                    <div style={{
+                                                        backgroundColor: getScoreColor(sv),
+                                                        color: '#fff',
+                                                        padding: '2px 8px',
+                                                        borderRadius: '4px',
+                                                        fontWeight: 'bold',
+                                                        display: 'inline-block',
+                                                        minWidth: '40px',
+                                                        textAlign: 'center',
+                                                        fontSize: '0.9em'
+                                                    }}>
+                                                        {sv.toFixed(0)}
+                                                    </div>
+                                                </td>
                                                 <td>
                                                     {status.valid ? (
                                                         <button

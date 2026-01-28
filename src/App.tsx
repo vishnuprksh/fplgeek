@@ -15,8 +15,10 @@ import './App.css';
 import { BottomNav } from './components/BottomNav';
 import { optimizeTransfers } from './utils/solver';
 import type { PredictionResult } from './utils/predictions';
+import { calculateSmartValues } from './utils/smartValue';
 
 function App() {
+  console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
   const [teamData, setTeamData] = useState<TeamEntry | null>(null);
   const [staticData, setStaticData] = useState<BootstrapStatic | null>(null);
@@ -40,21 +42,35 @@ function App() {
   useEffect(() => {
     // Load static data and fixtures once on mount
     const loadGlobals = async () => {
+      console.log("🔄 loadGlobals starting...");
       try {
-        const [bootstrap, matches] = await Promise.all([
-          fplService.getBootstrapStatic(),
-          fplService.getFixtures()
-        ]);
-        setStaticData(bootstrap);
+        console.log("📡 Fetching bootstrap...");
+        const bootstrap = await fplService.getBootstrapStatic();
+        console.log("✅ Bootstrap fetched with", bootstrap?.elements?.length, "elements");
+
+        // Calculate Smart Values Globally
+        if (bootstrap) {
+          console.log("🧮 Calculating smart values...");
+          const start = performance.now();
+          bootstrap.elements = calculateSmartValues(bootstrap.elements);
+          console.log("✅ Smart values calculated in", (performance.now() - start).toFixed(2), "ms");
+        }
+        setStaticData(bootstrap); // Render immediately
+
+        console.log("📡 Fetching fixtures...");
+        const matches = await fplService.getFixtures();
+        console.log("✅ Fixtures fetched:", matches?.length);
         setFixtures(matches);
+
+        console.log("✅ All globals loaded");
 
         // After static loaded, load default team
         if (bootstrap) {
           fetchData(teamId);
         }
       } catch (e) {
-        console.error("Failed to load global FPL data", e);
-        setErrorStatus("Failed to load FPL database.");
+        console.error("❌ Failed to load global FPL data", e);
+        setErrorStatus("Failed to load FPL database or fixtures.");
       }
     };
     loadGlobals();
@@ -329,122 +345,107 @@ function App() {
   };
 
   return (
-    <div className="app-container">
+    <>
       <header className="app-header">
-        <div className="logo-container">
-          <div className="logo-icon">⚽</div>
-          <h1>FPL GEEK</h1>
-        </div>
-        <div className="user-avatar" onClick={() => window.location.reload()}>VP</div>
-      </header>
-
-      <main className="main-content">
-        {!teamData && (
-          <div className="hero-section">
-            <div className="hero-content">
-              <span className="hero-badge">AI-Powered FPL Tools</span>
-              <h2>Dominate Your League</h2>
-              <p>Get advanced analytics, AI team recommendations, and fixture insights to stay ahead in your Fantasy Premier League.</p>
-              <div className="search-form">
-                <input
-                  type="number"
-                  placeholder="Enter Team ID"
-                  value={teamId || ''}
-                  onChange={(e) => setTeamId(Number(e.target.value))}
-                  className="search-input"
-                  onKeyPress={(e) => e.key === 'Enter' && fetchData(teamId)}
-                />
-                <button
-                  onClick={() => fetchData(teamId)}
-                  disabled={loading}
-                  className="search-button"
-                >
-                  {loading ? 'Crunching Numbers...' : 'Analyze My Team'}
-                </button>
-              </div>
-              <div className="hero-stats">
-                <div className="hero-stat">
-                  <span className="stat-label">Trusted by</span>
-                  <span className="stat-number">10k+ Managers</span>
-                </div>
-                <div className="hero-stat">
-                  <span className="stat-label">Data Points</span>
-                  <span className="stat-number">Real-time</span>
-                </div>
-              </div>
-            </div>
-            <div className="hero-visual">
-              <div className="vibe-orb"></div>
-            </div>
+        <div className="header-inner">
+          <div className="logo-container">
+            <div className="logo-icon">⚽</div>
+            <h1>FPL GEEK</h1>
           </div>
-        )}
-
-        {errorStatus && <div className="error-message">{errorStatus}</div>}
-
-        {currentView === 'dashboard' && (
-          <>
-            {loading && (
-              <div className="info-message">
-                Fetching data from FPL API...
+          <div className="user-avatar" onClick={() => window.location.reload()}>VP</div>
+        </div>
+      </header>
+      <div className="app-container">
+        <main className="main-content">
+          {!teamData && (
+            <div className="hero-section">
+              <div className="hero-content">
+                <span className="hero-badge">AI-Powered FPL Tools</span>
+                <h2>Dominate Your League</h2>
+                <p>Get advanced analytics, AI team recommendations, and fixture insights to stay ahead in your Fantasy Premier League.</p>
+                <div className="search-form">
+                  <input
+                    type="number"
+                    placeholder="Enter Team ID"
+                    value={teamId || ''}
+                    onChange={(e) => setTeamId(Number(e.target.value))}
+                    className="search-input"
+                    onKeyPress={(e) => e.key === 'Enter' && fetchData(teamId)}
+                  />
+                  <button
+                    onClick={() => fetchData(teamId)}
+                    disabled={loading}
+                    className="search-button"
+                  >
+                    {loading ? 'Crunching Numbers...' : 'Analyze My Team'}
+                  </button>
+                </div>
+                <div className="hero-stats">
+                  <div className="hero-stat">
+                    <span className="stat-label">Trusted by</span>
+                    <span className="stat-number">10k+ Managers</span>
+                  </div>
+                  <div className="hero-stat">
+                    <span className="stat-label">Data Points</span>
+                    <span className="stat-number">Real-time</span>
+                  </div>
+                </div>
               </div>
-            )}
+              <div className="hero-visual">
+                <div className="vibe-orb"></div>
+              </div>
+            </div>
+          )}
 
-            {teamData && !loading && (
-              <div className="fade-in">
-                <div className="dashboard-grid">
-                  {/* LEFT COLUMN: My Team */}
-                  <div className="dashboard-left-col dashboard-panel">
-                    <TeamCard
-                      team={teamData}
-                      totalValue={picksData?.entry_history.value}
-                      bank={bank}
-                    />
+          {errorStatus && <div className="error-message">{errorStatus}</div>}
 
-                    {activePicks.length > 0 && (
-                      <div style={{ padding: '0 20px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '40px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                          <h3 style={{ margin: 0 }}>👤 My Team</h3>
+          {currentView === 'dashboard' && (
+            <>
+              {loading && (
+                <div className="info-message">
+                  Fetching data from FPL API...
+                </div>
+              )}
 
-                          {!isOptimizing ? (
-                            <button
-                              onClick={toggleOptimizationMode}
-                              style={{
-                                background: 'transparent',
-                                border: '1px solid #00ff87',
-                                color: '#00ff87',
-                                borderRadius: '50px',
-                                padding: '4px 12px',
-                                fontSize: '0.8em',
-                                cursor: 'pointer',
-                                display: 'flex', alignItems: 'center', gap: '5px'
-                              }}
-                            >
-                              ⚡ Optimize
-                            </button>
-                          ) : (
-                            <div style={{ display: 'flex', gap: '10px' }}>
+              {teamData && !loading && (
+                <div className="fade-in">
+                  <div className="dashboard-grid">
+                    {/* LEFT COLUMN: My Team */}
+                    <div className="dashboard-left-col dashboard-panel">
+                      <TeamCard
+                        team={teamData}
+                        totalValue={picksData?.entry_history.value}
+                        bank={bank}
+                      />
+
+                      {activePicks.length > 0 && (
+                        <div style={{ padding: '0 20px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '40px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <h3 style={{ margin: 0 }}>👤 My Team</h3>
+
+                            {!isOptimizing ? (
                               <button
-                                onClick={runOptimization}
-                                disabled={isProcessingOpt}
+                                onClick={toggleOptimizationMode}
                                 style={{
-                                  background: '#00ff87',
-                                  border: 'none',
-                                  color: '#000',
+                                  background: 'transparent',
+                                  border: '1px solid #00ff87',
+                                  color: '#00ff87',
                                   borderRadius: '50px',
                                   padding: '4px 12px',
                                   fontSize: '0.8em',
                                   cursor: 'pointer',
-                                  fontWeight: 'bold'
+                                  display: 'flex', alignItems: 'center', gap: '5px'
                                 }}
                               >
-                                {isProcessingOpt ? 'Thinking...' : 'Run Optimization'}
+                                ⚡ Optimize
                               </button>
-
-                              {optimizationResult && (
+                            ) : (
+                              <div style={{ display: 'flex', gap: '10px' }}>
                                 <button
-                                  onClick={applyOptimization}
+                                  onClick={runOptimization}
+                                  disabled={isProcessingOpt}
                                   style={{
-                                    background: '#ffd700',
+                                    background: '#00ff87',
                                     border: 'none',
                                     color: '#000',
                                     borderRadius: '50px',
@@ -454,132 +455,149 @@ function App() {
                                     fontWeight: 'bold'
                                   }}
                                 >
-                                  Apply Changes
+                                  {isProcessingOpt ? 'Thinking...' : 'Run Optimization'}
                                 </button>
-                              )}
 
-                              <button
-                                onClick={toggleOptimizationMode}
-                                style={{
-                                  background: 'rgba(255,255,255,0.1)',
-                                  border: 'none',
-                                  color: '#ccc',
-                                  borderRadius: '50px',
-                                  padding: '4px 12px',
-                                  fontSize: '0.8em',
-                                  cursor: 'pointer'
-                                }}
-                              >
-                                Cancel
-                              </button>
+                                {optimizationResult && (
+                                  <button
+                                    onClick={applyOptimization}
+                                    style={{
+                                      background: '#ffd700',
+                                      border: 'none',
+                                      color: '#000',
+                                      borderRadius: '50px',
+                                      padding: '4px 12px',
+                                      fontSize: '0.8em',
+                                      cursor: 'pointer',
+                                      fontWeight: 'bold'
+                                    }}
+                                  >
+                                    Apply Changes
+                                  </button>
+                                )}
+
+                                <button
+                                  onClick={toggleOptimizationMode}
+                                  style={{
+                                    background: 'rgba(255,255,255,0.1)',
+                                    border: 'none',
+                                    color: '#ccc',
+                                    borderRadius: '50px',
+                                    padding: '4px 12px',
+                                    fontSize: '0.8em',
+                                    cursor: 'pointer'
+                                  }}
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            )}
+                          </div>
+
+                          {optimizationResult && (
+                            <div style={{ fontSize: '0.8em', color: '#00ff87' }}>
+                              Gain: +{(optimizationResult.lineup.totalPredictedPoints - activePicks.reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0)).toFixed(1)} pts
+                            </div>
+                          )}
+
+                          {!isOptimizing && (
+                            <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.9em', display: 'flex', gap: '15px' }}>
+                              <span>
+                                <b>XI:</b> {(activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 5).toFixed(1)}
+                              </span>
+                              <span style={{ color: '#ccc' }}>
+                                <b>Bench:</b> {(activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 5).toFixed(1)}
+                              </span>
+                              <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg/gw)</span>
                             </div>
                           )}
                         </div>
+                      )}
 
-                        {optimizationResult && (
-                          <div style={{ fontSize: '0.8em', color: '#00ff87' }}>
-                            Gain: +{(optimizationResult.lineup.totalPredictedPoints - activePicks.reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0)).toFixed(1)} pts
-                          </div>
-                        )}
-
-                        {!isOptimizing && (
-                          <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.9em', display: 'flex', gap: '15px' }}>
-                            <span>
-                              <b>XI:</b> {(activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 5).toFixed(1)}
-                            </span>
-                            <span style={{ color: '#ccc' }}>
-                              <b>Bench:</b> {(activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 5).toFixed(1)}
-                            </span>
-                            <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg/gw)</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {activePicks.length > 0 && staticData && (
-                      <PitchView
-                        picks={activePicks}
-                        elements={staticData.elements}
-                        teams={staticData.teams}
-                        onPlayerClick={setSelectedTransferPlayer}
-                        predictions={predictionsMap}
-                        isOptimizing={isOptimizing}
-                        selectedToSell={selectedToSell}
-                        onToggleSell={handleToggleSell}
-                      />
-                    )}
-                  </div>
-
-                  {/* RIGHT COLUMN: AI Assistant */}
-                  <div className="dashboard-right-col dashboard-panel">
-                    <div style={{ padding: '15px', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
-                      <h3 style={{ margin: 0 }}>💬 AI Assistant</h3>
+                      {activePicks.length > 0 && staticData && (
+                        <PitchView
+                          picks={activePicks}
+                          elements={staticData.elements}
+                          teams={staticData.teams}
+                          onPlayerClick={setSelectedTransferPlayer}
+                          predictions={predictionsMap}
+                          isOptimizing={isOptimizing}
+                          selectedToSell={selectedToSell}
+                          onToggleSell={handleToggleSell}
+                        />
+                      )}
                     </div>
-                    <ChatWindow
-                      teamData={teamData}
-                      picks={activePicks}
-                      elements={staticData?.elements}
-                    />
+
+                    {/* RIGHT COLUMN: AI Assistant */}
+                    <div className="dashboard-right-col dashboard-panel">
+                      <div style={{ padding: '15px', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
+                        <h3 style={{ margin: 0 }}>💬 AI Assistant</h3>
+                      </div>
+                      <ChatWindow
+                        teamData={teamData}
+                        picks={activePicks}
+                        elements={staticData?.elements}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </>
+              )}
+            </>
+          )}
+
+          {currentView === 'fixtures' && staticData && (
+            <div className="fade-in">
+              <FixtureAnalysis
+                fixtures={fixtures}
+                teams={staticData.teams}
+                currentEvent={staticData.events.find(e => e.is_next)?.id || 1}
+              />
+            </div>
+          )}
+
+          {currentView === 'players' && staticData && (
+            <div className="fade-in">
+              <PlayerAnalysis
+                elements={staticData.elements}
+                teams={staticData.teams}
+              />
+            </div>
+          )}
+
+          {currentView === 'predictions' && staticData && (
+            <div className="fade-in">
+              <Predictions
+                elements={staticData.elements}
+                teams={staticData.teams}
+                fixtures={fixtures}
+              />
+            </div>
+          )}
+
+          {currentView === 'ai-history' && staticData && (
+            <div className="fade-in">
+              <AiHistory
+                elements={staticData.elements}
+                teams={staticData.teams}
+              />
+            </div>
+          )}
+        </main>
+
+        {selectedTransferPlayer && staticData && (
+          <TransferModal
+            player={selectedTransferPlayer}
+            elements={staticData.elements}
+            teams={staticData.teams}
+            currentPicks={activePicks}
+            bank={bank}
+            onClose={() => setSelectedTransferPlayer(null)}
+            onTransfer={handleTransfer}
+          />
         )}
-
-        {currentView === 'fixtures' && staticData && (
-          <div className="fade-in">
-            <FixtureAnalysis
-              fixtures={fixtures}
-              teams={staticData.teams}
-              currentEvent={staticData.events.find(e => e.is_next)?.id || 1}
-            />
-          </div>
-        )}
-
-        {currentView === 'players' && staticData && (
-          <div className="fade-in">
-            <PlayerAnalysis
-              elements={staticData.elements}
-              teams={staticData.teams}
-            />
-          </div>
-        )}
-
-        {currentView === 'predictions' && staticData && (
-          <div className="fade-in">
-            <Predictions
-              elements={staticData.elements}
-              teams={staticData.teams}
-              fixtures={fixtures}
-            />
-          </div>
-        )}
-
-        {currentView === 'ai-history' && staticData && (
-          <div className="fade-in">
-            <AiHistory
-              elements={staticData.elements}
-              teams={staticData.teams}
-            />
-          </div>
-        )}
-      </main>
-
-      {selectedTransferPlayer && staticData && (
-        <TransferModal
-          player={selectedTransferPlayer}
-          elements={staticData.elements}
-          teams={staticData.teams}
-          currentPicks={activePicks}
-          bank={bank}
-          onClose={() => setSelectedTransferPlayer(null)}
-          onTransfer={handleTransfer}
-        />
-      )}
-
+      </div>
       <BottomNav currentView={currentView} onChangeView={setCurrentView} />
-    </div>
+    </>
   );
 }
 
