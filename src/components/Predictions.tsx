@@ -38,7 +38,7 @@ export function Predictions({ elements, teams, fixtures }: PredictionsProps) {
 
                         return {
                             player: player,
-                            smartValue: (player as any).smart_value ? (player as any).smart_value * 100 : 50,
+                            smartValue: (player as any).smart_value || 0,
                             predictedPoints: sp.total5Week / 5,
                             next5Points: sp.projections.map((p: any) => p.xP),
                             totalForecast: sp.total5Week,

@@ -49,12 +49,12 @@ function App() {
         console.log("✅ Bootstrap fetched with", bootstrap?.elements?.length, "elements");
 
         // Calculate Smart Values Globally
-        if (bootstrap) {
-          console.log("🧮 Calculating smart values...");
-          const start = performance.now();
-          bootstrap.elements = calculateSmartValues(bootstrap.elements);
-          console.log("✅ Smart values calculated in", (performance.now() - start).toFixed(2), "ms");
-        }
+        // if (bootstrap) {
+        //   console.log("🧮 Calculating smart values...");
+        //   const start = performance.now();
+        //   bootstrap.elements = calculateSmartValues(bootstrap.elements);
+        //   console.log("✅ Smart values calculated in", (performance.now() - start).toFixed(2), "ms");
+        // }
         setStaticData(bootstrap); // Render immediately
 
         console.log("📡 Fetching fixtures...");

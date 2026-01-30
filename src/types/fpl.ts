@@ -59,6 +59,16 @@ export interface Player {
         type: number;
         cost: number;
     };
+    upcoming_fixtures?: {
+        id: number;
+        event: number;
+        kickoff_time: string;
+        opponent_team: number;
+        is_home: boolean;
+        difficulty: number;
+        predicted_points: number;
+        strength_ratio: number;
+    }[];
 }
 
 export interface Team {

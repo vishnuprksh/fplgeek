@@ -37,6 +37,49 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                 </div>
 
                 <div className="modal-body">
+                    {/* Upcoming Fixtures Predictions */}
+                    {player.upcoming_fixtures && player.upcoming_fixtures.length > 0 && (
+                        <div className="fixtures-section">
+                            <h3>Upcoming Fixtures (Predicted Points)</h3>
+                            <div className="table-wrapper">
+                                <table className="history-table fixtures-table">
+                                    <thead>
+                                        <tr>
+                                            <th>GW</th>
+                                            <th>Opponent</th>
+                                            <th>Diff</th>
+                                            <th>Kickoff</th>
+                                            <th>Pred Pts</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {player.upcoming_fixtures.map((fix) => {
+                                            const opponent = fix.opponent_team ? getTeamName(fix.opponent_team) : '-';
+                                            const difficultyClass = `diff-${fix.difficulty}`;
+                                            const date = new Date(fix.kickoff_time).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+                                            return (
+                                                <tr key={fix.id} className="fixture-row">
+                                                    <td>{fix.event}</td>
+                                                    <td>
+                                                        {opponent} <span className="venue">{fix.is_home ? '(H)' : '(A)'}</span>
+                                                    </td>
+                                                    <td>
+                                                        <span className={`difficulty-badge ${difficultyClass}`}>{fix.difficulty}</span>
+                                                    </td>
+                                                    <td className="date-cell">{date}</td>
+                                                    <td className="predicted-points">
+                                                        <strong>{fix.predicted_points?.toFixed(1) || '-'}</strong>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="history-section">
                         <h3>Match History ({sortedHistory.length} matches)</h3>
                         <div className="table-wrapper">

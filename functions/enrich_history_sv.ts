@@ -201,7 +201,7 @@ async function runEnrichment() {
                 }
             }
             const pData = JSON.parse(db.prepare("SELECT data FROM players WHERE id = ?").get(p.id).data);
-            pData.smart_value = latestSV / 100;
+            pData.smart_value = latestSV; // Store as 0-100 range for consistency
             updatePlayer.run(JSON.stringify(pData), p.id);
         }
         return count;
