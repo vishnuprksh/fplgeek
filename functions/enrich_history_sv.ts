@@ -1,3 +1,4 @@
+
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
@@ -6,169 +7,208 @@ import path from 'path';
 const dbPath = path.resolve(process.cwd(), "public/data/fpl.sqlite");
 const db = new Database(dbPath);
 
-const ALPHA = 0.5;
-const TARGET_SEASON = '2425';
+// Optimized Parameters
+const PARAMS: { [key: number]: any } = {
+    1: { lambda: 0.3, weights: { xg: 0.02, xa: 0.61, cs: 0.17, saves: 0.00, xgc_inv: 0.29, minutes_rel: 0.76 } },
+    2: { lambda: 0.5, weights: { xg: 0.26, xa: 0.13, cs: 0.06, saves: 0.82, xgc_inv: 0.12, minutes_rel: 0.80 } },
+    3: { lambda: 0.1, weights: { xg: 0.99, xa: 0.95, cs: 0.09, saves: 0.46, xgc_inv: 0.05, minutes_rel: 0.45 } },
+    4: { lambda: 0.3, weights: { xg: 0.21, xa: 0.99, cs: 0.34, saves: 0.82, xgc_inv: 0.00, minutes_rel: 0.36 } },
+};
 
-interface Player {
-    id: number;
-    element_type: number;
-    now_cost: number;
-    web_name: string;
-    history: any[];
+// Fix Absolute Round Logic: Summaries (Past) < Current Matches
+function getAbsoluteRound(h: any): number {
+    const isCurrent = !h.season_name || h.season_name === '2024/25' || h.season === '2024/25';
+    if (isCurrent) {
+        const r = h.round || 999;
+        // Current season matches should be AFTER past summary.
+        // Map to 100+ to leave space for past seasons.
+        return 100 + r;
+    }
+    // Past seasons (Summary rows) -> 0
+    return 0;
 }
 
-function calculateMean(stats: any[]) {
-    let sumMin = 0, sumXG = 0, sumXA = 0, sumCS = 0, sumSaves = 0, sumXGC = 0;
-    const count = stats.length;
-    if (count === 0) return { minutes: 0, xg: 0, xa: 0, clean_sheets: 0, saves: 0, xgc: 0 };
-
-    stats.forEach(m => {
-        sumMin += m.minutes || 0;
-        sumXG += parseFloat(m.threat || '0');
-        sumXA += parseFloat(m.creativity || '0');
-        sumCS += m.clean_sheets || 0;
-        sumSaves += m.saves || 0;
-        sumXGC += parseFloat(m.expected_goals_conceded || '0');
-    });
-
-    return {
-        minutes: sumMin / count,
-        xg: sumXG / count,
-        xa: sumXA / count,
-        clean_sheets: sumCS / count,
-        saves: sumSaves / count,
-        xgc: sumXGC / count
-    };
+function calcEMA(values: number[], lambda: number): number {
+    if (values.length === 0) return 0;
+    let num = 0, den = 0;
+    for (let i = 0; i < values.length; i++) {
+        const val = values[i];
+        const age = values.length - 1 - i;
+        const weight = Math.exp(-lambda * age);
+        num += val * weight;
+        den += weight;
+    }
+    return den === 0 ? 0 : num / den;
 }
 
 async function runEnrichment() {
-    console.log("🛠️ Starting Historical Smart Value Enrichment...");
+    console.log("🛠️ Starting Historical Smart Value Enrichment (Optimized v3 - Fix High SV)...");
 
     const rawPlayers = db.prepare("SELECT data FROM players").all().map((r: any) => JSON.parse(r.data));
     const rawHistory = db.prepare("SELECT player_id, fixture_id, data FROM player_history").all().reduce((acc: any, r: any) => {
         if (!acc[r.player_id]) acc[r.player_id] = [];
         const h = JSON.parse(r.data);
-        h._fid = r.fixture_id; // Keep track for update
+        h._fid = r.fixture_id;
+        h._absRound = getAbsoluteRound(h);
         acc[r.player_id].push(h);
         return acc;
     }, {});
 
-    const players: Player[] = rawPlayers.map((p: any) => ({
+    const players = rawPlayers.map((p: any) => ({
         ...p,
         history: rawHistory[p.id] || []
     }));
 
-    const maxRound = Math.max(...players.flatMap(p => p.history.map(h => h.round)), 1);
-    console.log(`Determined max round: ${maxRound}`);
+    const maxAbsRound = Math.max(...players.flatMap((p: any) => p.history.map((h: any) => h._absRound)), 1);
+    console.log(`Max Round: ${maxAbsRound}`);
 
-    // Loop through each week to calculate SV at that point in time
-    for (let week = 1; week <= maxRound; week++) {
-        console.log(`Calculating for GW${week}...`);
-
-        const globalMax = { min: 45, xg: 1, xa: 1, cs: 1, saves: 1, xgc: 1 };
+    for (let week = 0; week <= maxAbsRound; week++) {
         const playersAtWeek: any[] = [];
+        let maxRawScore = 0.001;
 
-        // 1. Calculate Global Maximas up to 'week'
-        players.forEach(p => {
-            const hUpToNow = p.history.filter((h: any) => h.round <= week).sort((a, b) => b.round - a.round);
+        // Calculate Scores for all players at this week
+        players.forEach((p: any) => {
+            const hUpToNow = p.history
+                .filter((h: any) => h._absRound <= week && h.minutes !== undefined)
+                .sort((a: any, b: any) => {
+                    const tA = a.kickoff_time ? new Date(a.kickoff_time).getTime() : 0;
+                    const tB = b.kickoff_time ? new Date(b.kickoff_time).getTime() : 0;
+                    // summary rows (0) < past matches < current matches
+                    if (tA !== tB) return tA - tB;
+                    return a._absRound - b._absRound;
+                });
+
             if (hUpToNow.length === 0) return;
 
-            const season = calculateMean(hUpToNow);
-            const form = calculateMean(hUpToNow.slice(0, 5));
+            const type = p.element_type as 1 | 2 | 3 | 4;
+            const config = PARAMS[type] || PARAMS[2];
 
-            const blended = {
-                minutes: (1 - ALPHA) * season.minutes + ALPHA * form.minutes,
-                xg: (1 - ALPHA) * season.xg + ALPHA * form.xg,
-                xa: (1 - ALPHA) * season.xa + ALPHA * form.xa,
-                clean_sheets: (1 - ALPHA) * season.clean_sheets + ALPHA * form.clean_sheets,
-                saves: (1 - ALPHA) * season.saves + ALPHA * form.saves,
-                xgc: (1 - ALPHA) * season.xgc + ALPHA * form.xgc
+            // Extract Series with Normalization for Summaries
+            const extractStat = (h: any, key: string, fallback: string | number = 0) => {
+                let val = parseFloat(h[key] || (h.threat && key === 'expected_goals' ? (parseFloat(h.threat) / 100).toString() : '0') || fallback.toString());
+
+                // If this is a summary row (minutes > 120), normalize to per-90
+                if (h.minutes > 120) {
+                    const matches = Math.max(1, h.minutes / 90);
+                    val = val / matches;
+                }
+                return val;
             };
 
-            if (blended.minutes > globalMax.min) globalMax.min = blended.minutes;
-            if (blended.xg > globalMax.xg) globalMax.xg = blended.xg;
-            if (blended.xa > globalMax.xa) globalMax.xa = blended.xa;
-            if (blended.clean_sheets > globalMax.cs) globalMax.cs = blended.clean_sheets;
-            if (blended.saves > globalMax.saves) globalMax.saves = blended.saves;
-            if (blended.xgc > globalMax.xgc) globalMax.xgc = blended.xgc;
+            const xg = hUpToNow.map((h: any) => extractStat(h, 'expected_goals'));
+            const xa = hUpToNow.map((h: any) => extractStat(h, 'expected_assists'));
+            const cs = hUpToNow.map((h: any) => extractStat(h, 'clean_sheets'));
+            const saves = hUpToNow.map((h: any) => extractStat(h, 'saves'));
+            const xgc = hUpToNow.map((h: any) => extractStat(h, 'expected_goals_conceded'));
 
-            playersAtWeek.push({ p, blended, weekMatch: p.history.find(h => h.round === week) });
+            // Minutes: If summary, cap at 90 for the EMA input
+            const mins = hUpToNow.map((h: any) => h.minutes > 120 ? 90 : h.minutes);
+
+            // EMA
+            const sXG = calcEMA(xg, config.lambda);
+            const sXA = calcEMA(xa, config.lambda);
+            const sCS = calcEMA(cs, config.lambda);
+            const sSaves = calcEMA(saves, config.lambda);
+            const sXGC = calcEMA(xgc, config.lambda);
+            const sMin = calcEMA(mins, config.lambda);
+
+            // Features
+            const f_xg = sXG;
+            const f_xa = sXA;
+            const f_cs = sCS;
+            const f_saves = sSaves;
+            const f_xgc_inv = Math.max(0, 3 - sXGC);
+            const f_min_rel = Math.pow(Math.min(1, sMin / 90), 0.5);
+
+            // Weighted Sum
+            const w = config.weights;
+            let rawScore = (w.xg * f_xg) +
+                (w.xa * f_xa) +
+                (w.cs * f_cs) +
+                (w.saves * f_saves) +
+                (w.xgc_inv * f_xgc_inv) +
+                (w.minutes_rel * f_min_rel);
+
+            // Reliability Dampener
+            const reliability = Math.min(1, sMin / 60);
+            rawScore *= reliability;
+
+            if (rawScore > maxRawScore) maxRawScore = rawScore;
+
+            // Find ALL matches for this week (handling duplicates/summaries)
+            const weekMatches = p.history.filter((h: any) => h._absRound === week);
+            playersAtWeek.push({ p, rawScore, weekMatches });
         });
 
-        // 2. Assign Smart Value to the history entry of that week
-        playersAtWeek.forEach(({ p, blended, weekMatch }) => {
-            if (!weekMatch) return;
+        // Assign Normalized Scores
+        const FIXED_MAX = 4.0;
 
-            const b = blended;
-            const nXG = b.xg / globalMax.xg;
-            const nXA = b.xa / globalMax.xa;
-            const nCS = b.clean_sheets / globalMax.cs;
-            const nSaves = b.saves / globalMax.saves;
-            const nInvXGC = Math.max(0, 1 - (b.xgc / 3.0));
+        playersAtWeek.forEach(({ p, rawScore, weekMatches }) => {
+            if (!weekMatches || weekMatches.length === 0) return;
+            const sv = (rawScore / FIXED_MAX) * 100;
 
-            let power = (p.element_type === 1 || p.element_type === 2) ? 0.7 : 0.3;
-            const reliability = Math.pow(b.minutes / globalMax.min, power);
-
-            let rawScore = 0;
-            switch (p.element_type) {
-                case 1: rawScore = (0.35 * nCS) + (0.35 * nSaves); break;
-                case 2: rawScore = (0.30 * nInvXGC) + (0.50 * nXG) + (0.20 * nXA); break;
-                case 3: rawScore = (0.50 * nXG) + (0.40 * nXA) + (0.10 * nCS); break;
-                case 4: rawScore = (0.60 * nXG) + (0.40 * nXA); break;
-            }
-
-            // Confidence Factor: Penalize small sample sizes (threshold ~5 full games)
-            const statsUpToNow = p.history.filter((h: any) => h.round <= week);
-            const cumulativeMinutes = statsUpToNow.reduce((acc: number, m: any) => acc + (m.minutes || 0), 0);
-
-            const confidence = Math.min(1, cumulativeMinutes / 450);
-
-            const smartValue = ((rawScore * reliability * 1000) / (p.now_cost / 10)) * confidence;
-
-            weekMatch.smart_value = Number(smartValue.toFixed(2));
-            weekMatch.smart_score = Number((rawScore * reliability * confidence).toFixed(4));
+            // Update ALL matching rows
+            weekMatches.forEach((m: any) => {
+                m.smart_value = Number(sv.toFixed(2));
+                m.smart_score = rawScore;
+            });
         });
+
+        if (week % 50 === 0) console.log(`Processed Week ${week}`);
     }
 
-    // 3. Batch Update Database
-    console.log("💾 Writing updates to database...");
+    // Batch Update
+    console.log("💾 Writing updates...");
     const updateHistory = db.prepare("UPDATE player_history SET data = ? WHERE player_id = ? AND fixture_id = ?");
     const updatePlayer = db.prepare("UPDATE players SET data = ? WHERE id = ?");
 
-    const transaction = db.transaction((allPlayers: Player[]) => {
-        let totalH = 0;
+    const transaction = db.transaction((allPlayers: any[]) => {
+        let count = 0;
         for (const p of allPlayers) {
-            // Update History
             let latestSV = 0;
             let latestRound = -1;
-
             for (const h of p.history) {
                 const fid = h._fid;
                 delete h._fid;
+                delete h._absRound;
                 updateHistory.run(JSON.stringify(h), p.id, fid);
-                totalH++;
+                count++;
 
-                if (h.round > latestRound && h.smart_value !== undefined) {
-                    latestRound = h.round;
-                    latestSV = h.smart_value;
+                // Update Logic: Use normal rounds for Current Season Only?
+                // Or use absolute round? 
+                // The issue: "Summary Row" (Round 999) was getting picked up because 999 > 23.
+                // But in 'getAbsoluteRound', we mapped Summary to 0.
+                // However, h.round is still 999 in the data object.
+                // We should EXPLICITLY ignore rows with undefined round or round > 38 for 'latestSV' logic.
+
+                if (h.round && h.round <= 38 && h.smart_value !== undefined && h.season_name !== '2024/25') {
+                    // Wait, season_name != 24/25 was excluding current matches? NO.
+                    // The old logic was: `&& h.season_name !== '2024/25'`?
+                    // Previous logic: `if (h.round > latestRound && h.smart_value !== undefined && h.season_name !== '2024/25')`
+                    // Why exlude 24/25? 
+                    // This was likely a bug in the old script? 
+                    // Actually, ingested data for 24/25 usually has NO season_name (undefined).
+                    // While 23/24 has '2023/24'.
+                    // So `!== '2024/25'` was effectively a no-op if undefined? 
+
+                    // Correct Logic:
+                    // Only update player.smart_value from VALID MATCH ROUNDS (1-38).
+                    // Not summary rows (999).
+                    if (h.round > latestRound) {
+                        latestRound = h.round;
+                        latestSV = h.smart_value;
+                    }
                 }
             }
-
-            // Update Player Top-Level
-            const playerJson = JSON.parse(db.prepare("SELECT data FROM players WHERE id = ?").get(p.id).data);
-            playerJson.smart_value = latestSV / 100; // Normalize 0-1 for common usage
-            updatePlayer.run(JSON.stringify(playerJson), p.id);
+            const pData = JSON.parse(db.prepare("SELECT data FROM players WHERE id = ?").get(p.id).data);
+            pData.smart_value = latestSV / 100;
+            updatePlayer.run(JSON.stringify(pData), p.id);
         }
-        return totalH;
+        return count;
     });
 
-    const updatedCount = transaction(players);
-    console.log(`✅ Success! Updated ${updatedCount} historical entries and top-level player records.`);
-
-
-    // Verification
-    const row = db.prepare("SELECT data FROM player_history LIMIT 1").get();
-    console.log("Verification Row (End):", row.data.substring(row.data.length - 100));
+    const c = transaction(players);
+    console.log(`Updated ${c} records.`);
 }
 
 runEnrichment().catch(console.error);

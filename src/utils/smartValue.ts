@@ -1,22 +1,20 @@
 import type { UnifiedPlayer } from '../types/fpl';
 
 // Optimized Parameters from Grid Search
-const PARAMS = {
-    1: { lambda: 1.0, tau: 20, wMin: 0.3, wPPG: 0.5, wStat: 0.1, wICT: 0.1 }, // GKP
-    2: { lambda: 1.0, tau: 10, wMin: 0.6, wPPG: 0.2, wStat: 0.1, wICT: 0.1 }, // DEF
-    3: { lambda: 1.0, tau: 10, wMin: 0.2, wPPG: 0.6, wStat: 0.1, wICT: 0.1 }, // MID
-    4: { lambda: 1.0, tau: 10, wMin: 0.2, wPPG: 0.6, wStat: 0.1, wICT: 0.1 }, // FWD
+const PARAMS: { [key: number]: any } = {
+    1: { lambda: 0.3, weights: { xg: 0.02, xa: 0.61, cs: 0.17, saves: 0.00, xgc_inv: 0.29, minutes_rel: 0.76 } },
+    2: { lambda: 0.5, weights: { xg: 0.26, xa: 0.13, cs: 0.06, saves: 0.82, xgc_inv: 0.12, minutes_rel: 0.80 } },
+    3: { lambda: 0.1, weights: { xg: 0.99, xa: 0.95, cs: 0.09, saves: 0.46, xgc_inv: 0.05, minutes_rel: 0.45 } },
+    4: { lambda: 0.3, weights: { xg: 0.21, xa: 0.99, cs: 0.34, saves: 0.82, xgc_inv: 0.00, minutes_rel: 0.36 } },
 };
 
 export interface ComputedStats {
-    emaMin: number;
-    emaPPG: number;
-    emaStat: number; // Saves/Inf/Thr depending on pos
-    emaICT: number;
+    rawScore: number;
+    finalValue: number;
 }
 
 // Helper: Calculate Exponential Moving Average
-// values: [oldest, ..., newest]
+// Helper: Calculate Exponential Moving Average
 function calculateEMA(values: number[], lambda: number): number {
     if (values.length === 0) return 0;
     let numerator = 0;
@@ -24,7 +22,7 @@ function calculateEMA(values: number[], lambda: number): number {
 
     for (let i = 0; i < values.length; i++) {
         const val = values[i];
-        const age = values.length - 1 - i; // 0 for most recent
+        const age = values.length - 1 - i;
         const weight = Math.exp(-lambda * age);
         numerator += val * weight;
         denominator += weight;
@@ -34,115 +32,90 @@ function calculateEMA(values: number[], lambda: number): number {
 
 /**
  * Calculates Smart Value for a list of players.
- * Returns a new array of players with the 'smart_value' field populated.
  */
 export function calculateSmartValues(players: UnifiedPlayer[]): UnifiedPlayer[] {
-    console.log("🚀 calculateSmartValues called with", players.length, "players");
-    // 1. Calculate Raw EMAs for every player
-    const playerStats = new Map<number, ComputedStats>();
-    const maxStats = {
-        min: 1,
-        ppg: 1,
-        stat: 1,
-        ict: 1
-    };
+    console.log("🚀 calculateSmartValues (v3 Normalized) called with", players.length, "players");
 
-    players.forEach(p => {
-        if (!p.history || p.history.length === 0) {
-            playerStats.set(p.id, { emaMin: 0, emaPPG: 0, emaStat: 0, emaICT: 0 });
-            return;
-        }
-
-        const type = p.element_type as 1 | 2 | 3 | 4;
-        const config = PARAMS[type] || PARAMS[2]; // Default to DEF if unknown
-
-        // Filter valid history (minutes > 0 or decent points? No, take all games played)
-        // Sort history by round/kickoff
-        const history = [...p.history].sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
-
-        // Extract series
-        const mins = history.map(h => h.minutes);
-        const ppgs = history.map(h => h.total_points);
-
-        let stats: number[] = [];
-        if (type === 1) stats = history.map(h => h.saves);
-        else if (type === 2) stats = history.map(h => parseFloat(h.influence));
-        else if (type === 3) stats = history.map(h => parseFloat(h.influence));
-        else if (type === 4) stats = history.map(h => parseFloat(h.threat));
-
-        const icts = history.map(h => {
-            const cost = h.value;
-            const ict = parseFloat(h.ict_index);
-            // Economy: ICT per Cost. (Cost is in 0.1m, e.g. 50 = 5.0m)
-            return cost > 0 ? (ict / (cost / 10)) : 0;
-        });
-
-        const emaMin = calculateEMA(mins, config.lambda);
-        const emaPPG = calculateEMA(ppgs, config.lambda);
-        const emaStat = calculateEMA(stats, config.lambda);
-        const emaICT = calculateEMA(icts, config.lambda);
-
-        // Update Maxes (Global or per position? Usually helps to normalize globally for comparison, 
-        // but Smart Value is position-relative typically. Let's normalize globally to keep it simple first, 
-        // or effectively per-pos since we apply usage weights. Let's track global max to map to 0-1 range cleanly)
-        if (emaMin > maxStats.min) maxStats.min = emaMin;
-        if (emaPPG > maxStats.ppg) maxStats.ppg = emaPPG;
-        if (emaStat > maxStats.stat) maxStats.stat = emaStat;
-        if (emaICT > maxStats.ict) maxStats.ict = emaICT;
-
-        playerStats.set(p.id, { emaMin, emaPPG, emaStat, emaICT });
-    });
-
-    // 2. Compute Final Score
-    return players.map(p => {
-        const stats = playerStats.get(p.id);
-        if (!stats) return { ...p, smart_value: 0 };
+    const scores = players.map(p => {
+        if (!p.history || p.history.length === 0) return { p, raw: 0 };
 
         const type = p.element_type as 1 | 2 | 3 | 4;
         const config = PARAMS[type] || PARAMS[2];
 
-        const normMin = stats.emaMin / maxStats.min;
-        const normPPG = stats.emaPPG / maxStats.ppg;
-        const normStat = stats.emaStat / maxStats.stat;
-        const normICT = stats.emaICT / maxStats.ict;
+        // 1. Filter out Summary Rows and Bad Data
+        const cleanHistory = p.history.filter(h => {
+            // Exclude rows with unrealistic minutes (>120 implies summary row)
+            if (h.minutes > 120) return false;
+            // Exclude rows with missing gameweek info unless clearly current
+            // For safety in live calc, let's just use raw entries but capped minutes
+            return true;
+        });
 
-        let score = (config.wMin * normMin) +
-            (config.wPPG * normPPG) +
-            (config.wStat * normStat) +
-            (config.wICT * normICT);
+        // 2. Sort Logic: Try to use kickoff_time, fallback to ID or round
+        const history = [...cleanHistory].sort((a, b) => {
+            const timeA = new Date(a.kickoff_time).getTime();
+            const timeB = new Date(b.kickoff_time).getTime();
+            if (!isNaN(timeA) && !isNaN(timeB)) return timeA - timeB;
+            return (a.round || 0) - (b.round || 0);
+        });
 
-        // Games Played Bonus
-        // Bonus Factor = 1 - e^(-N / Tau)
-        const gamesPlayed = p.history ? p.history.length : 0;
-        const bonus = 1 - Math.exp(-gamesPlayed / config.tau);
+        // Extract Series with Normalization (Live Safety)
+        const extractStat = (h: any, key: string, fallback: string | number = 0) => {
+            let val = parseFloat(h[key] || (h.threat && key === 'expected_goals' ? (parseFloat(h.threat) / 100).toString() : '0') || fallback.toString());
 
-        score *= bonus;
-
-        // Scale to 0-100 for display
-        // Since score is roughly 0-1 (if maxes are hit), multiply by 100.
-        // However, since we multiply by bonus (0-1), it naturally scales down.
-        // We might want to normalize the final scores against the BEST player to fill the 0-100 gauge.
-
-        return {
-            ...p,
-            smart_value_raw: score // Store raw for normalization step if needed later?
+            // Safety: If somehow a summary row slipped through (minutes > 120), normalize it
+            if (h.minutes > 120) {
+                const matches = Math.max(1, h.minutes / 90);
+                val = val / matches;
+            }
+            return val;
         };
-    }).map((p) => {
-        // Optional: Normalize final scores so top player is 100?
-        // Or just return raw * 100. Let's do raw * 100 but maybe boost a bit if they are low.
-        // If the best player has score 0.6, they should be 100.
-        // Let's find max raw score.
-        // Actually, let's just do * 100 first.
-        // But finding max score in the array is safer.
-        return p;
-    }).map((p, _, arr) => {
-        // Normalize to 0-100 based on Max Score in the dataset
-        // This ensures the best player is 100 (or close to it).
-        const maxScore = arr.reduce((max, curr) => Math.max(max, (curr as any).smart_value_raw || 0), 0.1);
-        const raw = (p as any).smart_value_raw || 0;
-        const final = (raw / maxScore) * 100;
 
-        return { ...p, smart_value: final };
+        const xg = history.map((h: any) => extractStat(h, 'expected_goals'));
+        const xa = history.map((h: any) => extractStat(h, 'expected_assists'));
+        const cs = history.map((h: any) => extractStat(h, 'clean_sheets'));
+        const saves = history.map((h: any) => extractStat(h, 'saves'));
+        const xgc = history.map((h: any) => extractStat(h, 'expected_goals_conceded'));
+        const mins = history.map((h: any) => h.minutes > 120 ? 90 : h.minutes);
+
+        // Calculate EMAs
+        const sXG = calculateEMA(xg, config.lambda);
+        const sXA = calculateEMA(xa, config.lambda);
+        const sCS = calculateEMA(cs, config.lambda);
+        const sSaves = calculateEMA(saves, config.lambda);
+        const sXGC = calculateEMA(xgc, config.lambda);
+        const sMin = calculateEMA(mins, config.lambda);
+
+        // Transform Features
+        const f_xg = sXG;
+        const f_xa = sXA;
+        const f_cs = sCS;
+        const f_saves = sSaves;
+        const f_xgc_inv = Math.max(0, 3 - sXGC);
+        const f_min_rel = Math.pow(Math.min(1, sMin / 90), 0.5);
+
+        // Weighted Sum
+        const w = config.weights;
+        let rawScore = (w.xg * f_xg) +
+            (w.xa * f_xa) +
+            (w.cs * f_cs) +
+            (w.saves * f_saves) +
+            (w.xgc_inv * f_xgc_inv) +
+            (w.minutes_rel * f_min_rel);
+
+        // Apply Multiplicative Reliability Factor
+        const reliability = Math.min(1, sMin / 60);
+        rawScore *= reliability;
+
+        return { p, raw: rawScore };
     });
-}
 
+    // Use fixed constant for normalization to preserve absolute variance
+    const FIXED_MAX = 4.0;
+
+    return scores.map(({ p, raw }) => ({
+        ...p,
+        smart_value: Number(((raw / FIXED_MAX) * 100).toFixed(1)), // 0-100, 1 decimal
+        smart_value_raw: raw
+    }));
+}
