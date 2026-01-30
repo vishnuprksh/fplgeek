@@ -10,13 +10,23 @@ interface PlayerDetailModalProps {
 export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailModalProps) {
     const getTeamName = (id: number) => staticData.teams.find(t => t.id === id)?.short_name;
 
-    // Sort history by season (desc) then round (desc)
-    const sortedHistory = [...player.history].sort((a, b) => {
-        const seasonA = a.season || '2526';
-        const seasonB = b.season || '2526';
-        if (seasonA !== seasonB) return seasonB.localeCompare(seasonA);
-        return b.round - a.round;
-    });
+    // Filter out summary rows (where round is missing) and sort
+    const sortedHistory = player.history
+        .filter(h => h.round !== undefined && h.round !== null)
+        .sort((a, b) => {
+            // Determine season for sorting. 
+            // Current season usually lacks explicit season_name in 'data' but we can infer or default to '2025/26' (maximal)
+            // Ingested 24/25 data has season_name = '2024/25'
+            const seasonA = a.season_name || a.season || '2025/26';
+            const seasonB = b.season_name || b.season || '2025/26';
+
+            if (seasonA !== seasonB) {
+                // Descending season (2025/26 -> 2024/25 -> ...)
+                return seasonB.localeCompare(seasonA);
+            }
+            // Descending round
+            return (b.round || 0) - (a.round || 0);
+        });
 
     return (
         <div className="modal-backdrop" onClick={onClose}>
@@ -52,16 +62,26 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                 </thead>
                                 <tbody>
                                     {sortedHistory.map((match, idx) => {
-                                        const opponent = getTeamName(match.opponent_team);
+                                        const opponent = match.opponent_team ? getTeamName(match.opponent_team) : '-';
                                         const isHome = match.was_home;
-                                        const score = isHome ? `${match.team_h_score}-${match.team_a_score}` : `${match.team_a_score}-${match.team_h_score}`;
-                                        const season = match.season === '2425' ? '24/25' : '25/26';
+                                        const score = match.opponent_team
+                                            ? (isHome ? `${match.team_h_score}-${match.team_a_score}` : `${match.team_a_score}-${match.team_h_score}`)
+                                            : '-';
+
+                                        // Use actual season or default to '25/26' (current) if missing
+                                        // Past seasons come as summaries with a 'season_name' or 'season' field
+                                        let season = match.season_name || match.season || '25/26';
+
+                                        // Normalize to YY/YY format (e.g. 2024/25 -> 24/25)
+                                        if (season.length === 7 && season.indexOf('/') === 4) {
+                                            season = season.substring(2);
+                                        }
 
                                         return (
                                             <tr key={idx} className="match-row">
                                                 <td className="season-cell">{season}</td>
-                                                <td>{match.round}</td>
-                                                <td>{opponent} ({isHome ? 'H' : 'A'})</td>
+                                                <td>{match.round || 'All'}</td>
+                                                <td>{opponent} {match.opponent_team ? (isHome ? '(H)' : '(A)') : ''}</td>
                                                 <td>{score}</td>
                                                 <td>{match.minutes}</td>
                                                 <td>{match.goals_scored}</td>

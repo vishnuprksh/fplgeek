@@ -177,5 +177,5 @@ export interface PlayerSummary {
 }
 
 export interface UnifiedPlayer extends Player {
-    history: (PlayerHistory & { season?: string })[];
+    history: (PlayerHistory & { season?: string; season_name?: string })[];
 }
