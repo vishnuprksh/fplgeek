@@ -26,3 +26,4 @@
     - [x] Autonomous decision making (transfers, chips, team selection)
     - [x] Detailed decision report generation
     - [x] Show Predicted Points (xP) in History
+    - [x] Differential Card Restriction (Max 2 players with <10% ownership)

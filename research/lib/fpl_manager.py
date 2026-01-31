@@ -1,5 +1,11 @@
 from .config import STARTING_BUDGET
 
+def is_differential(player):
+    """
+    Check if a player is a differential (ownership < 10%)
+    """
+    return float(player.get('selected_by_percent', 0)) < 10.0
+
 def calculate_selling_price(purchase_price, current_price):
     """
     FPL Selling Price Logic:
@@ -17,6 +23,7 @@ def calculate_selling_price(purchase_price, current_price):
 def get_best_starting_squad(predictions):
     """
     Initial squad selection - Greedy Algorithm
+    Enforces max 2 differential players (<10% ownership)
     """
     squad = []
     # Ownership Constraint: Only consider players suitable for "template" teams (> 5% ownership)
@@ -30,15 +37,22 @@ def get_best_starting_squad(predictions):
     final_squad = []
     total_cost = 0
     team_counts = {}
+    differential_count = 0  # Track differential players
     
     def add_player(p):
-        nonlocal total_cost
+        nonlocal total_cost, differential_count
         if total_cost + p['cost'] > 1000: return False
         if team_counts.get(p['team'], 0) >= 3: return False
+        
+        # Check differential limit (max 2 players with <10% ownership)
+        if is_differential(p) and differential_count >= 2:
+            return False
         
         final_squad.append(p)
         total_cost += p['cost']
         team_counts[p['team']] = team_counts.get(p['team'], 0) + 1
+        if is_differential(p):
+            differential_count += 1
         return True
 
     if gkps: add_player(gkps[0])
@@ -312,6 +326,19 @@ class FPLManager:
                     if current_team_counts.get(team_id, 0) >= 3:
                         if self.players_map[p_out['id']]['team'] != team_id:
                              continue
+                    
+                    # Check differential limit (max 2 players with <10% ownership)
+                    # Count current differentials in squad
+                    current_differential_count = sum(1 for pid in current_squad_ids 
+                                                    if pid in self.players_map 
+                                                    and float(self.players_map[pid].get('selected_by_percent', 0)) < 10.0)
+                    
+                    # If bringing in a differential and we already have 2, skip
+                    # Unless we're also selling a differential (net zero change)
+                    if is_differential(p_in):
+                        if current_differential_count >= 2 and not is_differential(p_out):
+                            continue
+                    
                     cost_pts = 4 if self.free_transfers <= 0 else 0
                     gain = (p_in['xp'] - p_out['xp']) - cost_pts
                     if gain > best_gain:
