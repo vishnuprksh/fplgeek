@@ -82,55 +82,109 @@ def main():
     # 5. Gameweek Loop
     results_history = []
     
-    for gw in sim_gws:
-        print(f"--- GW {gw} ---")
-        
-        # A. PREDICTION PHASE
-        gw_candidates = []
-        
+    # Helper for 5-GW Lookahead
+    def predict_gw(target_gw, frozen_gw=None):
+        preds_map = {}
         for pos in POSITIONS:
-            samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
-            if not samples: continue
+            # 1. Get Samples for TARGET gw (for Context: Opponent, Difficulty, etc.)
+            target_samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == target_gw]
+            if not target_samples: continue
+
+            # 2. Get Form Data (History Sequence)
+            if frozen_gw:
+                # Lookahead Case: Use Form from FROZEN GW
+                frozen_samples_map = {d['id']: d['history_sequence'] for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == frozen_gw}
+                
+                final_samples = []
+                final_seqs = []
+                
+                for s in target_samples:
+                    if s['id'] in frozen_samples_map:
+                        final_samples.append(s)
+                        final_seqs.append(frozen_samples_map[s['id']])
+                
+                if not final_samples: continue
+                
+                X_seq = np.array(final_seqs, dtype=np.float32)
+                # Use Target Context
+                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in final_samples], dtype=np.float32)
+                X_opp = np.array([d['ctx_opponent'] for d in final_samples], dtype=np.float32)
+                predict_samples = final_samples
             
-            X_seq = np.array([d['history_sequence'] for d in samples], dtype=np.float32)
-            X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in samples], dtype=np.float32)
-            X_opp = np.array([d['ctx_opponent'] for d in samples], dtype=np.float32)
-            
+            else:
+                # Standard Case
+                X_seq = np.array([d['history_sequence'] for d in target_samples], dtype=np.float32)
+                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in target_samples], dtype=np.float32)
+                X_opp = np.array([d['ctx_opponent'] for d in target_samples], dtype=np.float32)
+                predict_samples = target_samples
+
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
             
-            preds = models[pos].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
-            
-            for i, s in enumerate(samples):
+            p_vals = models[pos].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
+            for i, s in enumerate(predict_samples):
+                preds_map[s['id']] = float(p_vals[i])
+        return preds_map
+
+    for gw in sim_gws:
+        print(f"--- GW {gw} ---")
+        
+        # A. PREDICTION PHASE (Current + Long Term)
+        # 1. Current GW Predictions
+        current_preds_map = predict_gw(gw)
+        
+        # 2. Long Term Predictions (Avg next 5 GWs)
+        long_term_xp_map = {pid: 0.0 for pid in current_preds_map}
+        count_map = {pid: 0 for pid in current_preds_map}
+        
+        # Look ahead up to 5 GWs (including current)
+        for offset in range(5): 
+            target_gw = gw + offset
+            # Use FROZEN form from current GW to prevent data leak
+            future_preds = predict_gw(target_gw, frozen_gw=gw)
+            for pid, xp in future_preds.items():
+                if pid in long_term_xp_map:
+                    long_term_xp_map[pid] += xp
+                    count_map[pid] += 1
+        
+        gw_candidates = []
+        for pos in POSITIONS:
+            samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
+            for s in samples:
+                pid = s['id']
+                if pid not in current_preds_map: continue
+                
+                real_xp = current_preds_map[pid]
+                avg_xp = long_term_xp_map[pid] / max(1, count_map[pid])
+
                 gw_candidates.append({
-                    'id': s['id'],
+                    'id': pid,
                     'name': s['name'],
-                    'type': players_map[s['id']]['element_type'],
-                    'team': players_map[s['id']]['team'],
+                    'type': players_map[pid]['element_type'],
+                    'team': players_map[pid]['team'],
                     'cost': s['ctx_price'],
-                    'xp': float(preds[i]),
+                    'xp': real_xp,
+                    'xp_long_term': avg_xp,
                     'actual': s['target']
                 })
         
         # B. MANAGER DECISIONS
+        # Use Long-Term XP for Transfers/Init
+        candidates_for_transfers = [{**c, 'xp': c['xp_long_term']} for c in gw_candidates]
+
         if gw == sim_gws[0]:
-            init_squad, cost = get_best_starting_squad(gw_candidates)
+            init_squad, cost = get_best_starting_squad(candidates_for_transfers)
             manager.initialize_squad(init_squad, cost)
             transfers = []
             active_chip_used = None
         else:
             manager.free_transfers = min(manager.free_transfers + 1, 5)
-            transfers, active_chip_used = manager.make_transfers(gw_candidates, gw_candidates, gw)
+            transfers, active_chip_used = manager.make_transfers(candidates_for_transfers, candidates_for_transfers, gw)
             
-        # Selection
+        # Selection (Use REAL current XP)
         starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
         
-        # Score calculation and History Recording (Simplified for brevity as logic is mostly same)
-        # Using existing robust logic from old file
-        # ... 
-        
-        # NOTE: For brevity in this refactor, I reimplement the scoring loop concisely directly.
-        
+        # Score calculation and History Recording
         playing_squad = starters
         if active_chip_used == "bench_boost":
             playing_squad = starters + bench

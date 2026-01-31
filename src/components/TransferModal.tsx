@@ -54,8 +54,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
         .filter(e => {
             const isPositionMatch = e.element_type === player.element_type;
             const isNotSelf = e.id !== player.id;
-            const hasSmartValue = e.smart_value !== undefined;
-
             // Search Logic
             const searchLower = searchTerm.toLowerCase();
             const nameMatch = !searchTerm ||
@@ -63,18 +61,12 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                 e.first_name.toLowerCase().includes(searchLower) ||
                 e.second_name.toLowerCase().includes(searchLower);
 
-            return isPositionMatch && isNotSelf && hasSmartValue && nameMatch;
+            return isPositionMatch && isNotSelf && nameMatch;
         })
-        .sort((a, b) => (b.smart_value || 0) - (a.smart_value || 0)); // Sort by Smart Value Descending
+        .sort((a, b) => (b.total_points || 0) - (a.total_points || 0)); // Sort by Total Points Descending
 
     // Helper for score colors
-    const getScoreColor = (score: number) => {
-        if (score >= 70) return '#4caf50'; // High Green
-        if (score >= 50) return '#8bc34a'; // Light Green
-        if (score >= 30) return '#ffc107'; // Yellow
-        if (score >= 15) return '#ff9800'; // Orange
-        return '#f44336'; // Red
-    };
+
 
     return (
         <div className="modal-backdrop" onClick={onClose}>
@@ -101,7 +93,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
 
                 <div className="modal-body">
                     <div className="recommendation-section">
-                        <h3>Top Smart Value Replacements {searchTerm && `(Found ${recommendations.length})`}</h3>
+                        <h3>Top Replacements {searchTerm && `(Found ${recommendations.length})`}</h3>
                         <div className="table-wrapper">
                             <table className="transfer-table">
                                 <thead>
@@ -110,7 +102,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                         <th>Team</th>
                                         <th>Cost</th>
                                         <th>Diff</th>
-                                        <th>Smart Value</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -118,7 +109,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                     {recommendations.map(rec => {
                                         const balanceChange = sellingPrice - rec.now_cost;
                                         const status = getTransferStatus(rec);
-                                        const sv = rec.smart_value || 0;
 
                                         return (
                                             <tr key={rec.id} className={!status.valid ? "row-disabled" : ""}>
@@ -127,21 +117,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                 <td>£{(rec.now_cost / 10).toFixed(1)}</td>
                                                 <td className={balanceChange >= 0 ? "positive-diff" : "negative-diff"}>
                                                     {balanceChange > 0 ? `+£${(balanceChange / 10).toFixed(1)}` : balanceChange < 0 ? `-£${(Math.abs(balanceChange) / 10).toFixed(1)}` : `£0.0`}
-                                                </td>
-                                                <td className="smart-value-cell">
-                                                    <div style={{
-                                                        backgroundColor: getScoreColor(sv),
-                                                        color: '#fff',
-                                                        padding: '2px 8px',
-                                                        borderRadius: '4px',
-                                                        fontWeight: 'bold',
-                                                        display: 'inline-block',
-                                                        minWidth: '40px',
-                                                        textAlign: 'center',
-                                                        fontSize: '0.9em'
-                                                    }}>
-                                                        {sv.toFixed(0)}
-                                                    </div>
                                                 </td>
                                                 <td>
                                                     {status.valid ? (
@@ -164,6 +139,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                     </div>
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

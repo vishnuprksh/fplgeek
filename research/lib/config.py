@@ -7,7 +7,7 @@ POSITIONS = ["GKP", "DEF", "MID", "FWD"]
 
 # Feature Params
 SEQ_LEN = 5
-NUM_FEATURES = 13
+NUM_FEATURES = 12
 
 # Constants
 STARTING_BUDGET = 1000

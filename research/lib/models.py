@@ -14,7 +14,7 @@ def clean_and_scale(X_seq, X_ctx):
     X_ctx = np.nan_to_num(X_ctx, nan=0.0, posinf=0.0, neginf=0.0)
     
     # 2. Scale (Simple Global Scaling)
-    scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 100, 15, 1, 20], dtype=np.float32)
+    scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 15, 1, 20], dtype=np.float32)
     X_seq = X_seq / scales_seq.reshape(1, 1, -1)
     
     scales_ctx = np.array([1, 5, 15, 200], dtype=np.float32)

@@ -173,10 +173,13 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         teams={teams}
                                         onPlayerClick={() => { }}
                                         isOptimizing={false}
-                                        showSmartValue={false}
                                         predictions={h.squad.reduce((acc, p) => ({
                                             ...acc,
-                                            [p.id]: { totalForecast: p.xp }
+                                            [p.id]: { totalForecast: p.xp * 5 }
+                                        }), {})}
+                                        points={h.squad.reduce((acc, p) => ({
+                                            ...acc,
+                                            [p.id]: p.points
                                         }), {})}
                                     />
 

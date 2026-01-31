@@ -29,7 +29,6 @@ interface RawMatch {
     goals_conceded: number;
     saves: number;
     selected: number;
-    smart_value: number;
     kickoff_time: string;
     team_h_difficulty?: number; // Joined later
     team_a_difficulty?: number; // Joined later
@@ -180,7 +179,7 @@ function main() {
                     parseFloatSafe(past.goals_conceded),
                     parseFloatSafe(past.saves),
                     Math.log1p(parseFloatSafe(past.selected)), // Log transform ownership
-                    parseFloatSafe(past.smart_value || 0),
+                    // REMOVED: parseFloatSafe(past.smart_value || 0),
                     parseFloatSafe(past.value) / 10.0, // Normalize price approx
                     past.was_home ? 1 : 0,
                     parseFloatSafe(past.total_points) // Include points history!

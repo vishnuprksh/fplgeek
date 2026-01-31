@@ -1,16 +1,10 @@
 import type { Player, Match, Team } from '../types/fpl';
 
 // ML Model Coefficients (from ml_model_report.md)
-const COEFF = {
-    INTERCEPT: 0.2630,
-    SMART_VAL: 0.7460,
-    HOME: 0.0657,
-    PRICE: -0.0032
-};
+
 
 export interface PredictionResult {
     player: Player;
-    smartValue: number;
     predictedPoints: number;
     next5Points: number[]; // Points for next 5 GWs
     totalForecast: number;
@@ -45,31 +39,26 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
         // Filter out inactive players to speed up optimization and clean UI
         if (p.minutes < 90 && parseFloat(p.form) < 0.5) return;
 
-        // Use Pre-calculated Weighted Smart Value.
-        // It comes in as 0-100 range from calculateSmartValues.
-        const rawSmartValue = p.smart_value ?? 0;
-
-        // Normalize to 0-1 for the regression formula
-        const smartValueNorm = rawSmartValue / 100;
-
         const myFixtures = teamFixtures.get(p.team) || [];
         const next5 = myFixtures.slice(0, 5);
 
         const predictedPointsList: number[] = [];
 
-        next5.forEach(match => {
-            const isHome = match.team_h === p.team;
+        // Base expected points from FPL (this round)
+        const baseEp = parseFloat(p.ep_next) || 0;
 
-            // Linear Regression Formula for VALUE (Points per £m)
-            // Val = Intercept + (C1 * SmartVal) + (C2 * Home) + (C3 * Price)
-            const predValue = COEFF.INTERCEPT +
-                (COEFF.SMART_VAL * smartValueNorm) +
-                (COEFF.HOME * (isHome ? 1 : 0)) +
-                (COEFF.PRICE * p.now_cost);
+        next5.forEach((_match, index) => {
+            // Simple decay/variation for future fixtures or just use baseEp
+            // For now, let's just use baseEp as a starting point and adjust slightly for difficulty if we wanted,
+            // but keeping it simple is safer.
+            // We'll just use baseEp for the immediate next one, and maybe 'form' for others?
+            // Actually, simplest is to just project 'form' or 'ep_next' for all 5.
+            let predPoints = baseEp;
 
-            // Convert Value -> Points
-            // Points = Value * (Price / 10)
-            let predPoints = predValue * (p.now_cost / 10);
+            // Decay for future rounds (uncertainty)
+            if (index > 0) {
+                predPoints = parseFloat(p.form) || 0;
+            }
 
             // Decay/Adjustment for availability (simple chance_of_playing check)
             const chance = p.chance_of_playing_next_round;
@@ -89,7 +78,6 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
 
         predictions.push({
             player: p,
-            smartValue: rawSmartValue, // UX expects 0-100 scale
             predictedPoints: totalForecast / 5, // Avg per game
             next5Points: predictedPointsList,
             totalForecast: totalForecast,

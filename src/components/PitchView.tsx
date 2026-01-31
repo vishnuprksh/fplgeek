@@ -12,8 +12,8 @@ interface PitchViewProps {
     isOptimizing?: boolean;
     selectedToSell?: Set<number>;
     onToggleSell?: (id: number) => void;
-    showSmartValue?: boolean;
     onSwap?: (id1: number, id2: number) => void;
+    points?: Record<number, number>; // Historical points override
 }
 
 const ItemTypes = {
@@ -31,8 +31,8 @@ function PitchPlayer({
     isSold,
     onToggleSell,
     onPlayerClick,
-    showSmartValue,
-    onSwap
+    onSwap,
+    points
 }: {
     pick: Pick;
     player: UnifiedPlayer;
@@ -42,8 +42,8 @@ function PitchPlayer({
     isSold: boolean;
     onToggleSell?: (id: number) => void;
     onPlayerClick?: (player: UnifiedPlayer) => void;
-    showSmartValue?: boolean;
     onSwap?: (id1: number, id2: number) => void;
+    points?: number;
 }) {
 
     const getImageUrl = (code: number) => `https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`;
@@ -156,16 +156,6 @@ function PitchPlayer({
                 </div>
             )}
 
-            {!isSold && showSmartValue && player.smart_value !== undefined && (
-                <div style={{
-                    position: 'absolute', top: '18px', right: '-10px',
-                    background: player.smart_value >= 70 ? '#4caf50' : player.smart_value >= 50 ? '#8bc34a' : player.smart_value >= 30 ? '#ffc107' : '#f44336',
-                    color: '#fff', fontSize: '0.65em', padding: '1px 4px', borderRadius: '8px',
-                    fontWeight: 'bold', zIndex: 9, minWidth: '25px', textAlign: 'center', boxShadow: '0 1px 2px rgba(0,0,0,0.3)'
-                }}>
-                    {player.smart_value.toFixed(0)}
-                </div>
-            )}
 
             <div className="player-info">
                 <div className="player-name">{player.web_name}</div>
@@ -174,7 +164,7 @@ function PitchPlayer({
                     <span className="player-price">£{((pick.selling_price ?? player.now_cost) / 10).toFixed(1)}</span>
                 </div>
                 <div className="player-points" style={{ fontSize: '0.8em' }}>
-                    {player.event_points} (GW)
+                    {points !== undefined ? points : player.event_points} (GW)
                 </div>
             </div>
             {pick.is_captain && <div className="captain-badge">C</div>}
@@ -192,8 +182,8 @@ export function PitchView({
     isOptimizing = false,
     selectedToSell = new Set(),
     onToggleSell,
-    showSmartValue = true,
-    onSwap
+    onSwap,
+    points
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);
@@ -230,7 +220,8 @@ export function PitchView({
                 isSold={selectedToSell.has(player.id)}
                 onToggleSell={onToggleSell}
                 onPlayerClick={onPlayerClick}
-                showSmartValue={showSmartValue}
+                points={points ? points[player.id] : undefined}
+
                 onSwap={onSwap}
             />
         );

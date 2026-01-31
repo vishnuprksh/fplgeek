@@ -15,9 +15,9 @@ OUTPUT_FILE = "model_performance.md"
 
 # --- Findings from Analysis (Step 61) ---
 # Sequence Features derived from generate_dataset.ts:
-# [Minutes, xG, xA, Threat, Creativity, Influence, GC, Saves, log(Selected), SmartValue, Price, WasHome, Points]
+# [Minutes, xG, xA, Threat, Creativity, Influence, GC, Saves, log(Selected), Price, WasHome, Points]
 SEQ_LEN = 5
-NUM_FEATURES = 13 
+NUM_FEATURES = 12 
 
 def load_data(pos):
     filepath = os.path.join(DATA_DIR, f"dataset_{pos}.json")
@@ -126,10 +126,10 @@ def main():
             X_opp = np.nan_to_num(X_opp, nan=1100.0, posinf=1350.0, neginf=1000.0)
             
             # 2. Scale (Simple Global Scaling for Stability)
-            # Sequence: [Min, xG, xA, Thr, Cre, Inf, GC, Sav, Sel, SV, Price, Home, Pts]
+            # Sequence: [Min, xG, xA, Thr, Cre, Inf, GC, Sav, Sel, Price, Home, Pts]
             # Min(90), Sel(log~14), Price(~10), Inf(~30), Threat(~50)
             # We divide by rough max values to normalize to 0-1 range approx
-            scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 100, 15, 1, 20], dtype=np.float32)
+            scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 15, 1, 20], dtype=np.float32)
             X_seq = X_seq / scales_seq.reshape(1, 1, -1)
             
             # Context: [Home, Diff, Price, Rest]

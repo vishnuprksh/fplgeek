@@ -50,15 +50,6 @@ export interface Player {
     points_per_game: string;
     status: string;
     cost_change_start: number;
-    smart_value?: number;
-    stats?: {
-        wMin: number;
-        wInf: number;
-        wThr: number;
-        wIct: number;
-        type: number;
-        cost: number;
-    };
     upcoming_fixtures?: {
         id: number;
         event: number;
@@ -176,8 +167,7 @@ export interface PlayerHistory {
     expected_goals_conceded?: string;
 
     // Computed/Enriched
-    smart_value?: number;
-    smart_score?: number;
+    // Computed/Enriched
 }
 
 export interface PlayerSummary {

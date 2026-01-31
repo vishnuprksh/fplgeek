@@ -227,7 +227,6 @@ function App() {
                           isOptimizing={isOptimizing}
                           selectedToSell={selectedToSell}
                           onToggleSell={handleToggleSell}
-                          showSmartValue={true}
                           onSwap={handleSwap}
                         />
                       )}
