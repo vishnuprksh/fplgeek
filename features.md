@@ -22,3 +22,7 @@
     - [x] Add Selected % Filter (Requested)
 - [ ] Calculate Total Seasonal Stats <!-- id: 4 -->
     - [ ] Verify consistency across seasons
+- [x] AI FPL Manager <!-- id: 7 -->
+    - [x] Autonomous decision making (transfers, chips, team selection)
+    - [x] Detailed decision report generation
+    - [x] Show Predicted Points (xP) in History

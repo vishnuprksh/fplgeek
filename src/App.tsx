@@ -1,7 +1,8 @@
-
 import { useEffect, useState } from 'react';
-import { fplService } from './services/fpl';
-import type { TeamEntry, BootstrapStatic, TeamPicks, Match, Player, Pick } from './types/fpl';
+import { useFPLData } from './hooks/useFPLData';
+import { useTransfers } from './hooks/useTransfers';
+import { useOptimization } from './hooks/useOptimization';
+
 import { TeamCard } from './components/TeamCard';
 import { PitchView } from './components/PitchView';
 import { FixtureAnalysis } from './components/FixtureAnalysis';
@@ -10,393 +11,73 @@ import { PlayerAnalysis } from './components/PlayerAnalysis';
 import { ChatWindow } from './components/ChatWindow';
 import { TransferModal } from './components/TransferModal';
 import { AiHistory } from './components/AiHistory';
-import { getDataProvider } from './services/dataFactory';
 import './App.css';
 import { BottomNav } from './components/BottomNav';
-import { optimizeTransfers } from './utils/solver';
-import type { PredictionResult } from './utils/predictions';
-import { calculateSmartValues } from './utils/smartValue';
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import type { Player } from './types/fpl';
 
 function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [teamData, setTeamData] = useState<TeamEntry | null>(null);
-  const [staticData, setStaticData] = useState<BootstrapStatic | null>(null);
-  const [picksData, setPicksData] = useState<TeamPicks | null>(null);
-  const [fixtures, setFixtures] = useState<Match[]>([]);
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history'>('dashboard');
-  // Mutable state for transfers
-  const [activePicks, setActivePicks] = useState<Pick[]>([]);
-  const [bank, setBank] = useState(0);
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 
-  // Optimization State
-  const [isOptimizing, setIsOptimizing] = useState(false);
-  const [selectedToSell, setSelectedToSell] = useState<Set<number>>(new Set());
-  const [optimizationResult, setOptimizationResult] = useState<{ lineup: any, transfers: any[] } | null>(null);
-  const [isProcessingOpt, setIsProcessingOpt] = useState(false);
+  // 1. Data Fetching Hook
+  const {
+    staticData,
+    fixtures,
+    predictionsMap,
+    teamData,
+    picksData,
+    transfersHistory,
+    loading,
+    error,
+    loadTeam
+  } = useFPLData();
 
-  const [loading, setLoading] = useState(false);
-  const [errorStatus, setErrorStatus] = useState<string | null>(null);
+  // 2. Transfers & State Hook
+  const {
+    activePicks,
+    bank,
+    handleSwap,
+    handleTransfer,
+    handleBatchTransfer
+  } = useTransfers(picksData, staticData, transfersHistory);
 
+  // 3. Optimization Hook
+  const {
+    isOptimizing,
+    isProcessing: isProcessingOpt,
+    optimizationResult,
+    selectedToSell,
+    toggleOptimizationMode,
+    handleToggleSell,
+    runOptimization
+  } = useOptimization(activePicks, staticData, predictionsMap, bank);
+
+
+  // Load default team when static data is ready (and no team data yet)
   useEffect(() => {
-    // Load static data and fixtures once on mount
-    const loadGlobals = async () => {
-      console.log("🔄 loadGlobals starting...");
-      try {
-        console.log("📡 Fetching bootstrap...");
-        const bootstrap = await fplService.getBootstrapStatic();
-        console.log("✅ Bootstrap fetched with", bootstrap?.elements?.length, "elements");
-
-        // Calculate Smart Values Globally
-        // if (bootstrap) {
-        //   console.log("🧮 Calculating smart values...");
-        //   const start = performance.now();
-        //   bootstrap.elements = calculateSmartValues(bootstrap.elements);
-        //   console.log("✅ Smart values calculated in", (performance.now() - start).toFixed(2), "ms");
-        // }
-        setStaticData(bootstrap); // Render immediately
-
-        console.log("📡 Fetching fixtures...");
-        const matches = await fplService.getFixtures();
-        console.log("✅ Fixtures fetched:", matches?.length);
-        setFixtures(matches);
-
-        console.log("✅ All globals loaded");
-
-        // After static loaded, load default team
-        if (bootstrap) {
-          fetchData(teamId);
-        }
-      } catch (e) {
-        console.error("❌ Failed to load global FPL data", e);
-        setErrorStatus("Failed to load FPL database or fixtures.");
-      }
-    };
-    loadGlobals();
-  }, []);
-
-  // Helper outside or inside
-  const calculateSellingPrice = (purchasePrice: number, nowCost: number) => {
-    if (nowCost <= purchasePrice) return nowCost;
-    return purchasePrice + Math.floor((nowCost - purchasePrice) / 2);
-  };
-
-  const fetchData = async (id: number) => {
-    setLoading(true);
-    setErrorStatus(null);
-    setPicksData(null);
-
-    try {
-      if (!staticData) return; // Should be loaded
-
-      // 1. Get Team Details & Transfers
-      const [data, transfersHistory] = await Promise.all([
-        fplService.getTeamDetails(id),
-        fplService.getTransfers(id)
-      ]);
-      setTeamData(data);
-
-      // 2. Get Picks for current event
-      if (data.current_event) {
-        const picks = await fplService.getTeamPicks(id, data.current_event);
-        setPicksData(picks);
-
-        // 3. Calculate Prices
-        const picksWithPrices = picks.picks.map(p => {
-          const player = staticData.elements.find(e => e.id === p.element);
-          if (!player) return { ...p, selling_price: 0, purchase_price: 0 };
-
-          // Find latest transfer-in
-          const lastTransfer = transfersHistory
-            .filter((t: any) => t.element_in === p.element)
-            .sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime())[0];
-
-          // If no transfer found, assume they were in initial squad (Start Price)
-          // cost_change_start = Now - Start => Start = Now - cost_change_start
-          const purchasePrice = lastTransfer ? lastTransfer.element_in_cost : (player.now_cost - player.cost_change_start);
-
-          const sellingPrice = calculateSellingPrice(purchasePrice, player.now_cost);
-
-          return {
-            ...p,
-            purchase_price: purchasePrice,
-            selling_price: sellingPrice
-          };
-        });
-
-        setActivePicks(picksWithPrices);
-        setBank(picks.entry_history.bank);
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorStatus('Failed to fetch team data. Please try again.');
-    } finally {
-      setLoading(false);
+    if (staticData && !teamData) {
+      loadTeam(teamId);
     }
-  };
+  }, [staticData, teamData, teamId, loadTeam]);
 
-  // Predictions State
-  const [predictionsMap, setPredictionsMap] = useState<Record<number, { totalForecast: number, next5Points: number[] }>>({});
-
-  useEffect(() => {
-    // Load predictions only if we have static data (elements)
-    if (!staticData) return;
-
-    const loadPredictions = async () => {
-      try {
-        const storedPreds = await getDataProvider().getPredictions();
-        if (storedPreds && storedPreds.length > 0) {
-          const map: Record<number, any> = {};
-
-          storedPreds.forEach((sp: any) => {
-            map[sp.id] = {
-              totalForecast: sp.total5Week,
-              next5Points: sp.projections.map((p: any) => p.xP)
-            };
-          });
-          setPredictionsMap(map);
-        }
-      } catch (e) {
-        console.error("Failed to load predictions for dashboard", e);
-      }
-    };
-    loadPredictions();
-  }, [staticData]);
-
-
-  const toggleOptimizationMode = () => {
-    if (isOptimizing) {
-      // Cancel
-      setIsOptimizing(false);
-      setSelectedToSell(new Set());
-      setOptimizationResult(null);
-    } else {
-      setIsOptimizing(true);
-    }
-  };
-
-  const isValidFormation = (picks: Pick[]) => {
-    const starters = picks.filter(p => p.position <= 11);
-    const gkps = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 1).length;
-    const defs = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 2).length;
-    const mids = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 3).length; // Min ?
-    const fwds = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 4).length;
-
-    if (gkps !== 1) return false;
-    if (defs < 3) return false;
-    if (fwds < 1) return false;
-    // Max constraints are natural due to 11 players?
-    // 3 def + 1 fwd + 1 gkp = 5. Remaining 6.
-    // If 6 mids? FPL allows 5 mids max? No, 2-5-3 is valid. 5-4-1 valid. 5-3-2 valid. 4-5-1 valid. 3-5-2 valid. 4-4-2 valid.
-    // Is 5-5-0 valid? No min 1 fwd.
-    // Is 2-5-3 valid? No min 3 def.
-    return true;
-  };
-
-  const handleSwap = (id1: number, id2: number) => {
-    setActivePicks(prev => {
-      const newPicks = [...prev];
-      const p1Index = newPicks.findIndex(p => p.element === id1);
-      const p2Index = newPicks.findIndex(p => p.element === id2);
-
-      if (p1Index === -1 || p2Index === -1) return prev;
-
-      // Swap positions
-      const pos1 = newPicks[p1Index].position;
-      const pos2 = newPicks[p2Index].position;
-
-      // Mutate clone
-      newPicks[p1Index] = { ...newPicks[p1Index], position: pos2 };
-      newPicks[p2Index] = { ...newPicks[p2Index], position: pos1 };
-
-      // Sort by position to keep data clean
-      newPicks.sort((a, b) => a.position - b.position);
-
-      // Validate Formation if swapping starter <-> bench
-      const isP1Starter = pos1 <= 11;
-      const isP2Starter = pos2 <= 11;
-
-      if (isP1Starter !== isP2Starter) {
-        if (!isValidFormation(newPicks)) {
-          alert("Invalid Formation! You must have at least 1 GK, 3 Defenders, and 1 Forward.");
-          return prev;
-        }
-      }
-
-      return newPicks;
-    });
-  };
-
-  const handleToggleSell = (id: number) => {
-    const next = new Set(selectedToSell);
-    if (next.has(id)) next.delete(id);
-    else next.add(id);
-    setSelectedToSell(next);
-    setOptimizationResult(null);
-  };
-
-  const runOptimization = () => {
-    if (!staticData || !activePicks.length) return;
-    setIsProcessingOpt(true);
-
-    setTimeout(() => {
-      // Build current squad structure
-      const currentSquad = activePicks.map(p => {
-        const player = staticData.elements.find(e => e.id === p.element);
-        const pred = predictionsMap[p.element];
-        if (!player) return null;
-        return {
-          player,
-          cost: p.selling_price ?? player.now_cost, // Fallback to now_cost if selling_price missing
-          predictedPoints: (pred?.totalForecast || 0) / 5,
-          totalForecast: pred?.totalForecast || 0,
-          smartValue: 0,
-          next5Points: []
-        } as PredictionResult;
-      }).filter(Boolean) as PredictionResult[];
-
-      // Build candidates (all robust players)
-      const allCandidates: PredictionResult[] = staticData.elements.map(e => ({
-        player: e,
-        cost: e.now_cost, // USE BUY PRICE for candidates
-        predictedPoints: (predictionsMap[e.id]?.totalForecast || 0) / 5,
-        totalForecast: predictionsMap[e.id]?.totalForecast || 0,
-        smartValue: 0,
-        next5Points: []
-      })).filter(p => p.totalForecast > 0);
-
-      const res = optimizeTransfers(currentSquad, selectedToSell, bank, allCandidates);
-      setOptimizationResult(res);
-      setIsProcessingOpt(false);
-    }, 100);
-  };
-
+  // Bridge Optimization Application to Transfer Logic
   const applyOptimization = () => {
     if (!optimizationResult) return;
     handleBatchTransfer(
       optimizationResult.transfers.map((t: any) => ({ in: t.in.player, out: t.out.player })),
       [...optimizationResult.lineup.starting11, ...optimizationResult.lineup.bench]
     );
+    toggleOptimizationMode(); // Turn off optimization mode after applying
   };
 
-
-
-  const handleTransfer = (playerOut: Player, playerIn: Player) => {
-    // Determine Selling Price
-    const pick = activePicks.find(p => p.element === playerOut.id);
-    const sellPrice = pick ? pick.selling_price : playerOut.now_cost;
-
-    // 1. Validation (Double Safe)
-    const costDiff = playerIn.now_cost - sellPrice; // Price Diff = Buy Price - Sell Price
-    if (bank - costDiff < 0) {
-      alert(`Insufficient funds! Need £${costDiff / 10}m but have £${bank / 10}m.`);
-      return;
-    }
-
-    // 2. Update Picks
-    const newPicks = activePicks.map(p => {
-      if (p.element === playerOut.id) {
-        return {
-          ...p,
-          element: playerIn.id,
-          selling_price: playerIn.now_cost, // Reset for new player
-          purchase_price: playerIn.now_cost
-        };
-      }
-      return p;
-    });
-
-    setActivePicks(newPicks);
-    setBank(prev => prev - costDiff);
+  const onTransferWrapper = (playerOut: Player, playerIn: Player) => {
+    handleTransfer(playerOut, playerIn);
     setSelectedTransferPlayer(null); // Close modal
-  };
-
-  const handleBatchTransfer = (transfers: { in: Player, out: Player }[], newLineup?: any[]) => {
-    let currentBank = bank;
-    let newPicks = [...activePicks];
-
-    // 1. Apply Transfers (ID Swaps) & Calc Bank
-    let totalCostDiff = 0;
-
-    transfers.forEach(t => {
-      const pick = activePicks.find(p => p.element === t.out.id);
-      const sellPrice = pick ? pick.selling_price : t.out.now_cost;
-      totalCostDiff += (t.in.now_cost - sellPrice);
-    });
-
-    if (currentBank - totalCostDiff < 0) {
-      alert(`Insufficient funds for these transfers! Need £${totalCostDiff / 10}m.`);
-      return;
-    }
-
-    transfers.forEach(t => {
-      const pickIdx = newPicks.findIndex(p => p.element === t.out.id);
-      if (pickIdx !== -1) {
-        newPicks[pickIdx] = {
-          ...newPicks[pickIdx],
-          element: t.in.id,
-          selling_price: t.in.now_cost,
-          purchase_price: t.in.now_cost
-        };
-      }
-    });
-
-    // 2. Apply Lineup (Formation / Bench Ordering)
-    if (newLineup && newLineup.length === 15) {
-      // newLineup is array of PredictionResult (ordered 1-11 XI, 12-15 Bench)
-      // We need to re-assign positions to matching picks
-
-      const orderedPicks: Pick[] = [];
-
-      newLineup.forEach((p, index) => {
-        const pick = newPicks.find(existing => existing.element === p.player.id);
-        if (pick) {
-          orderedPicks.push({
-            ...pick,
-            position: index + 1,
-            multiplier: index < 11 ? 1 : 0, // Reset multipliers: XI gets 1, Bench 0
-            is_captain: false,      // Reset captaincy for safety (user should pick) or auto-pick?
-            is_vice_captain: false  // For now reset. 
-          });
-        }
-      });
-
-      // Auto-pick captain (highest predicted in XI)
-      if (orderedPicks.length === 15) {
-        // Find best in XI
-        let bestIdx = 0;
-        let maxP = -1;
-        newLineup.slice(0, 11).forEach((p, i) => {
-          if (p.totalForecast > maxP) {
-            maxP = p.totalForecast;
-            bestIdx = i;
-          }
-        });
-        orderedPicks[bestIdx].is_captain = true;
-        orderedPicks[bestIdx].multiplier = 2;
-
-        // Vice captain (2nd best)
-        let vcIdx = (bestIdx === 0 ? 1 : 0);
-        let maxVC = -1;
-        newLineup.slice(0, 11).forEach((p, i) => {
-          if (i !== bestIdx && p.totalForecast > maxVC) {
-            maxVC = p.totalForecast;
-            vcIdx = i;
-          }
-        });
-        orderedPicks[vcIdx].is_vice_captain = true;
-
-        newPicks = orderedPicks;
-      }
-    }
-
-    setActivePicks(newPicks);
-    setBank(prev => prev - totalCostDiff);
-    toggleOptimizationMode();
   };
 
   return (
@@ -425,10 +106,10 @@ function App() {
                     value={teamId || ''}
                     onChange={(e) => setTeamId(Number(e.target.value))}
                     className="search-input"
-                    onKeyPress={(e) => e.key === 'Enter' && fetchData(teamId)}
+                    onKeyPress={(e) => e.key === 'Enter' && loadTeam(teamId)}
                   />
                   <button
-                    onClick={() => fetchData(teamId)}
+                    onClick={() => loadTeam(teamId)}
                     disabled={loading}
                     className="search-button"
                   >
@@ -452,7 +133,7 @@ function App() {
             </div>
           )}
 
-          {errorStatus && <div className="error-message">{errorStatus}</div>}
+          {error && <div className="error-message">{error}</div>}
 
           {currentView === 'dashboard' && (
             <>
@@ -607,7 +288,7 @@ function App() {
             currentPicks={activePicks}
             bank={bank}
             onClose={() => setSelectedTransferPlayer(null)}
-            onTransfer={handleTransfer}
+            onTransfer={onTransferWrapper}
           />
         )}
       </div >

@@ -2,7 +2,6 @@
 import { useState, useEffect } from 'react';
 import type { Player, Team, Pick } from '../types/fpl';
 import { PitchView } from './PitchView';
-import { getDataProvider } from '../services/dataFactory';
 import './AiHistory.css';
 
 interface AiHistoryProps {
@@ -10,20 +9,29 @@ interface AiHistoryProps {
     teams: Team[];
 }
 
+interface Transfer {
+    in: string;
+    out: string;
+}
+
+interface SquadPlayer {
+    id: number;
+    name: string;
+    points: number;
+    xp: number;
+    role: 'C' | 'V' | 'S' | 'B';
+}
+
 interface BacktestResult {
     gw: number;
-    ai_points: number;
-    xp: number;
-    squad: {
-        id: number;
-        name: string;
-        team: number;
-        type: number;
-        xp: number;
-        actual: number;
-        cost: number;
-        is_captain?: boolean;
-    }[];
+    points: number;
+    net_points: number;
+    transfer_cost: number;
+    active_chip?: string | null;
+    total_xp?: number;
+    bank: number;
+    transfers: Transfer[];
+    squad: SquadPlayer[];
 }
 
 export function AiHistory({ elements, teams }: AiHistoryProps) {
@@ -34,14 +42,17 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     useEffect(() => {
         const loadHistory = async () => {
             try {
-                const results = await getDataProvider().getBacktestHistory();
-                // results is array of { data: string } or raw objects?
-                // sqliteService.querySingle logic: "if row.data && typeof row.data === 'string' ... result.push(JSON.parse(row.data))"
-                // So results IS the parsed object array.
-                // Wait, logic in step 1515: `if (row.data) result.push(JSON.parse(row.data))`.
-                // Step 1509 (Script): `INSERT VALUES (?, JSON.stringify(record))`.
-                // So yes, `getBacktestHistory` returns the `record` object directly.
+                // We fetch the new JSON file. Assuming data provider sends the raw JSON.
+                // In a real app we might need a specific API endpoint but here we reused the mechanism.
+                // Or we can fetch 'ai_manager_history.json' directly if public?
+                // The getDataProvider().getBacktestHistory() reads 'backtest_results.json'.
+                // I need to change the DataProvider usage OR ensure 'ai_manager_history.json' is read.
+                // For now, let's assume I should fetch the new file.
+
+                const response = await fetch('/data/ai_manager_history.json');
+                const results: BacktestResult[] = await response.json();
                 setHistory(results);
+
                 if (results.length > 0) {
                     setExpandedGW(results[0].gw);
                 }
@@ -58,106 +69,104 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
         setExpandedGW(expandedGW === gw ? null : gw);
     };
 
-    const getPicksFromSquad = (squad: BacktestResult['squad']): Pick[] => {
-        // Map backtest squad to Pick[] for PitchView
-        // Squad is 15 players. 11 starters, 4 bench?
-        // Script logic: `result.starting11`. Then `result.bench`. The `squad` saved in DB is CONCATENATED.
-        // `squad: result.starting11.map(...)`.
-        // Wait! In `backtest.ts` step 1509:
-        // `squad: result.starting11.map(...)` 
-        // IT ONLY STORES STARTING 11? 
-        // Line 256: `squad: result.starting11.map(p => ...)` 
-        // Does it include bench? No.
-        // The script ONLY saved Starting 11.
-        // "Optimization": Runs `solve` which returns `starting11`.
-        // The `solve` function in `backtest.ts`:
-        // Returns `optimizeStartingXI(bestSquad)`.
-        // `optimizeStartingXI` returns `{ ..., starting11, bench }`.
-        // BUT the saving logic (Line 256) ONLY accessed `result.starting11`.
-        // Ideally we want the full squad.
-        // It's acceptable for now to just show the XI ("AI Team").
-        // But PitchView expects 15 players usually?
-        // If I pass 11 picks, PitchView might break or show empty bench.
-        // `PitchView` maps `picks`. If picks has 11 items, it will render 11.
+    const getPicksFromSquad = (squad: SquadPlayer[]): Pick[] => {
+        // Filter starters for pitch view
+        const starters = squad.filter(p => p.role !== 'B');
 
-        return squad.map((p, idx) => ({
+        // PitchView expects specific positions usually, but we can just map 1-11
+        // We need to map `element` id.
+        return starters.map((p, idx) => ({
             element: p.id,
             position: idx + 1,
-            multiplier: p.is_captain ? 2 : 1,
-            is_captain: !!p.is_captain,
-            is_vice_captain: false,
-            selling_price: p.cost,
-            purchase_price: p.cost
+            multiplier: p.role === 'C' ? 2 : 1,
+            is_captain: p.role === 'C',
+            is_vice_captain: p.role === 'V',
+            selling_price: 0,
+            purchase_price: 0
         }));
     };
 
-    const totalAiPoints = history.reduce((sum, h) => sum + h.ai_points, 0);
-    const avgAiPoints = history.length > 0 ? totalAiPoints / history.length : 0;
-    const totalXp = history.reduce((sum, h) => sum + h.xp, 0);
+    const totalNetPoints = history.reduce((sum, h) => sum + h.net_points, 0);
+    const avgNetPoints = history.length > 0 ? totalNetPoints / history.length : 0;
+    const totalTransfers = history.reduce((sum, h) => sum + h.transfers.length, 0);
+    const totalPredicted = history.reduce((sum, h) => sum + (h.total_xp || 0), 0);
 
-    // Calculate MAE (Mean Absolute Error) for the squad
-    // MAE = sum(|actual - prediction|) / n
-    const calculateMae = (res: BacktestResult) => {
-        const sumError = res.squad.reduce((sum, p) => sum + Math.abs(p.actual - p.xp), 0);
-        return sumError / res.squad.length;
+    const getChipLabel = (chip: string) => {
+        switch (chip) {
+            case 'wildcard': return 'WC';
+            case 'freehit': return 'FH';
+            case 'bench_boost': return 'BB';
+            case 'triple_captain': return 'TC';
+            default: return chip;
+        }
     };
 
-    const avgMae = history.length > 0
-        ? history.reduce((sum, h) => sum + calculateMae(h), 0) / history.length
-        : 0;
-
-    if (loading) return <div style={{ padding: '20px', color: 'white' }}>Loading History...</div>;
+    if (loading) return <div style={{ padding: '20px', color: 'white' }}>Loading Simulation...</div>;
 
     return (
         <div className="ai-history-container">
             <div className="history-summary">
                 <div className="stat-card">
-                    <h3>Total AI Points</h3>
-                    <div className="stat-value highlight">{totalAiPoints}</div>
+                    <h3>Tot Actual Points</h3>
+                    <div className="stat-value highlight">{totalNetPoints}</div>
+                </div>
+                <div className="stat-card">
+                    <h3>Tot Predicted</h3>
+                    <div className="stat-value">{totalPredicted.toFixed(0)}</div>
                 </div>
                 <div className="stat-card">
                     <h3>Avg per GW</h3>
-                    <div className="stat-value">{avgAiPoints.toFixed(1)}</div>
+                    <div className="stat-value">{avgNetPoints.toFixed(1)}</div>
                 </div>
                 <div className="stat-card">
-                    <h3>Total Predicted</h3>
-                    <div className="stat-value">{totalXp.toFixed(1)}</div>
-                </div>
-                <div className="stat-card">
-                    <h3>Prediction MAE</h3>
-                    <div className="stat-value warning">{avgMae.toFixed(2)}</div>
-                    <div className="stat-sub">Lower is better</div>
-                </div>
-                <div className="stat-card">
-                    <h3>Weeks Analyzed</h3>
-                    <div className="stat-value">{history.length}</div>
+                    <h3>Total Transfers</h3>
+                    <div className="stat-value">{totalTransfers}</div>
                 </div>
             </div>
 
             <div className="gameweek-list">
                 {history.map(h => {
-                    const gwMae = calculateMae(h);
                     return (
                         <div key={h.gw} className="gw-card">
                             <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
                                 <div className="gw-info">
-                                    <span className="gw-label">Gameweek {h.gw}</span>
+                                    <span className="gw-label">GW {h.gw}</span>
                                     <span className="gw-points">
-                                        <span className="label">Actual:</span>
-                                        <strong className={h.ai_points >= 60 ? 'high-score' : 'med-score'}>{h.ai_points}</strong>
+                                        <strong className={h.net_points >= 60 ? 'high-score' : 'med-score'}>{h.net_points}</strong> pts
+                                        <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
+                                            (xP: {h.total_xp ? h.total_xp.toFixed(1) : '0.0'})
+                                        </span>
                                     </span>
-                                    <span className="gw-xp">
-                                        (xP: {h.xp.toFixed(1)})
+                                    {h.transfer_cost > 0 && <span className="gw-hits">(-{h.transfer_cost} hit)</span>}
+                                    <span className="gw-transfers-badge">
+                                        {h.transfers.length > 0 ? `${h.transfers.length} Tx` : 'No Tx'}
                                     </span>
-                                    <span className="gw-mae">
-                                        MAE: {gwMae.toFixed(2)}
-                                    </span>
+                                    {h.active_chip && (
+                                        <span className={`chip-badge chip-${h.active_chip}`}>
+                                            {getChipLabel(h.active_chip)}
+                                        </span>
+                                    )}
                                 </div>
                                 <div className="expand-icon">{expandedGW === h.gw ? '▲' : '▼'}</div>
                             </div>
 
                             {expandedGW === h.gw && (
                                 <div className="gw-body">
+                                    {/* Transfers Section */}
+                                    {h.transfers.length > 0 && (
+                                        <div className="transfers-section">
+                                            <h4>Transfers Made</h4>
+                                            {h.transfers.map((t, i) => (
+                                                <div key={i} className="transfer-row">
+                                                    <span className="tx-out">OUT: {t.out}</span>
+                                                    <span className="tx-arrow">➔</span>
+                                                    <span className="tx-in">IN: {t.in}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Pitch View */}
                                     <PitchView
                                         picks={getPicksFromSquad(h.squad)}
                                         elements={elements as any}
@@ -167,22 +176,42 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         showSmartValue={false}
                                         predictions={h.squad.reduce((acc, p) => ({
                                             ...acc,
-                                            [p.id]: { totalForecast: p.xp * 5 } // Hack: PitchView divides by 5. We want to show p.xp.
+                                            [p.id]: { totalForecast: p.xp }
                                         }), {})}
                                     />
-                                    <div className="squad-list-text">
+
+                                    {/* Bench Section */}
+                                    <div className="bench-section">
+                                        <h4>Bench</h4>
+                                        <div className="bench-list">
+                                            {h.squad.filter(p => p.role === 'B').map(p => (
+                                                <div key={p.id} className="bench-player">
+                                                    {p.name} ({p.points}pts)
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Detailed Stats */}
+                                    <div className="squad-list-text" style={{ marginTop: '1rem' }}>
                                         <h4>Detailed Score</h4>
                                         <ul>
                                             {h.squad.map(p => {
-                                                const teamName = teams.find(t => t.id === p.team)?.short_name;
+                                                const teamName = teams.find(t => {
+                                                    const playerMeta = elements.find(el => el.id === p.id);
+                                                    return t.id === playerMeta?.team;
+                                                })?.short_name;
+
+                                                const isCap = p.role === 'C';
+
                                                 return (
-                                                    <li key={p.id} className={`player-row ${p.is_captain ? 'captain' : ''}`}>
+                                                    <li key={p.id} className={`player-row role-${p.role}`}>
                                                         <span className="player-name">
-                                                            {p.name} ({teamName}) {p.is_captain && <span className="c-badge">C</span>}
+                                                            {p.name} ({teamName}) {isCap && <span className="c-badge">C</span>} {p.role === 'V' && <span className="v-badge">V</span>}
                                                         </span>
                                                         <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
                                                         <span className="player-actual">
-                                                            {p.is_captain ? `${p.actual * 2}` : p.actual} pts
+                                                            {isCap ? `${p.points * 2}` : p.points} pts
                                                         </span>
                                                     </li>
                                                 );
