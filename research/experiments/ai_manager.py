@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from research.lib.config import *
 from research.lib.utils import load_json
 from research.lib.models import build_model, clean_and_scale
-from research.lib.fpl_manager import FPLManager, get_best_starting_squad
+from research.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price
 
 def main():
     print("🚀 Starting AI Manager Simulation (Refactored)...")
@@ -42,7 +42,20 @@ def main():
     players = [json.loads(r['data']) for r in cursor.fetchall()]
     players_map = {p['id']: p for p in players}
     
-    # 3. Simulation Range (25/26 Season)
+    # 3. Build Price History Lookup
+    print("💰 Building price history...")
+    price_history = {}  # {player_id: {gw: price}}
+    for pos in POSITIONS:
+        for record in all_data[pos]:
+            pid = record['id']
+            gw = record['gw']
+            price = record['ctx_price']
+            
+            if pid not in price_history:
+                price_history[pid] = {}
+            price_history[pid][gw] = price
+    
+    # 4. Simulation Range (25/26 Season)
     sim_gws = sorted(list(set([d['gw'] for p in POSITIONS for d in all_data[p] if d.get('season') == '25/26'])))
     if not sim_gws:
         print("Error: No 25/26 data found.")
@@ -175,12 +188,23 @@ def main():
 
         if gw == sim_gws[0]:
             init_squad, cost = get_best_starting_squad(candidates_for_transfers)
-            manager.initialize_squad(init_squad, cost)
+            
+            # Build initial prices for purchase tracking
+            initial_prices = {p['id']: price_history[p['id']][gw] for p in init_squad if p['id'] in price_history and gw in price_history[p['id']]}
+            
+            manager.initialize_squad(init_squad, cost, initial_prices)
             transfers = []
             active_chip_used = None
+            
+            # Build price lookup for current GW (needed for history)
+            price_lookup = {pid: price_history[pid][gw] for pid in price_history if gw in price_history[pid]}
         else:
             manager.free_transfers = min(manager.free_transfers + 1, 5)
-            transfers, active_chip_used = manager.make_transfers(candidates_for_transfers, candidates_for_transfers, gw)
+            
+            # Build price lookup for current GW
+            price_lookup = {pid: price_history[pid][gw] for pid in price_history if gw in price_history[pid]}
+            
+            transfers, active_chip_used = manager.make_transfers(candidates_for_transfers, candidates_for_transfers, gw, price_lookup)
             
         # Selection (Use REAL current XP)
         starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
@@ -206,11 +230,42 @@ def main():
             
             gw_points += pts
             gw_xp += xp
-            squad_details.append({'id': p['id'], 'name': p['name'], 'points': p['actual'], 'xp': p['xp'], 'selected_by_percent': p.get('selected_by_percent', '0.0'), 'role': 'C' if is_cap else ('V' if is_vice else 'S')})
+            
+            # Get purchase price and calculate selling price
+            purchase_price = manager.purchase_prices.get(p['id'], p['cost'])
+            current_price = price_lookup.get(p['id'], p['cost'])
+            selling_price = calculate_selling_price(purchase_price, current_price)
+            
+            squad_details.append({
+                'id': p['id'], 
+                'name': p['name'], 
+                'points': p['actual'], 
+                'xp': p['xp'], 
+                'selected_by_percent': p.get('selected_by_percent', '0.0'), 
+                'role': 'C' if is_cap else ('V' if is_vice else 'S'),
+                'purchase_price': purchase_price,
+                'current_price': current_price,
+                'selling_price': selling_price
+            })
 
         bench_players_visual = bench if active_chip_used != "bench_boost" else []
         for p in bench_players_visual:
-            squad_details.append({'id': p['id'], 'name': p['name'], 'points': p['actual'], 'xp': p['xp'], 'selected_by_percent': p.get('selected_by_percent', '0.0'), 'role': 'B'})
+            # Get purchase price and calculate selling price
+            purchase_price = manager.purchase_prices.get(p['id'], p['cost'])
+            current_price = price_lookup.get(p['id'], p['cost'])
+            selling_price = calculate_selling_price(purchase_price, current_price)
+            
+            squad_details.append({
+                'id': p['id'], 
+                'name': p['name'], 
+                'points': p['actual'], 
+                'xp': p['xp'], 
+                'selected_by_percent': p.get('selected_by_percent', '0.0'), 
+                'role': 'B',
+                'purchase_price': purchase_price,
+                'current_price': current_price,
+                'selling_price': selling_price
+            })
             
         hits_cost = sum(t['cost'] for t in transfers)
         if active_chip_used in ["wildcard", "freehit"]: hits_cost = 0
@@ -229,8 +284,10 @@ def main():
         if active_chip_used == "freehit" and hasattr(manager, 'original_squad'):
             manager.squad = manager.original_squad
             manager.bank = manager.original_bank
+            manager.purchase_prices = manager.original_purchase_prices  # Restore prices
             del manager.original_squad
             del manager.original_bank
+            del manager.original_purchase_prices
             
         # D. TRAINING PHASE
         print(f"📈 Updating models...")

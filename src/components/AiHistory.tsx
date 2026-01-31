@@ -21,6 +21,9 @@ interface SquadPlayer {
     points: number;
     xp: number;
     role: 'C' | 'V' | 'S' | 'B';
+    purchase_price?: number;
+    current_price?: number;
+    selling_price?: number;
 }
 
 interface BacktestResult {
@@ -83,8 +86,8 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
             multiplier: p.role === 'C' ? 2 : 1,
             is_captain: p.role === 'C',
             is_vice_captain: p.role === 'V',
-            selling_price: 0,
-            purchase_price: 0
+            selling_price: p.selling_price || 0,
+            purchase_price: p.purchase_price || 0
         }));
     };
 
@@ -191,7 +194,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         <div className="bench-list">
                                             {h.squad.filter(p => p.role === 'B').map(p => (
                                                 <div key={p.id} className="bench-player">
-                                                    {p.name} ({p.points}pts)
+                                                    {p.name} ({p.points}pts) - £{(p.selling_price || 0).toFixed(1)}m
                                                 </div>
                                             ))}
                                         </div>
@@ -214,6 +217,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                         <span className="player-name">
                                                             {p.name} ({teamName}) {isCap && <span className="c-badge">C</span>} {p.role === 'V' && <span className="v-badge">V</span>}
                                                         </span>
+                                                        <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
                                                         <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
                                                         <span className="player-actual">
                                                             {isCap ? `${p.points * 2}` : p.points} pts

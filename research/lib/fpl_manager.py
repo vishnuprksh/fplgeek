@@ -1,5 +1,19 @@
 from .config import STARTING_BUDGET
 
+def calculate_selling_price(purchase_price, current_price):
+    """
+    FPL Selling Price Logic:
+    - If price increased: sell_price = purchase + (profit / 2)
+    - If price decreased: sell_price = current (full loss)
+    
+    Prices are in 0.1m units (e.g., 55 = 5.5m)
+    """
+    if current_price > purchase_price:
+        profit = current_price - purchase_price
+        return purchase_price + (profit / 2.0)  # Half profit
+    else:
+        return current_price  # Full loss
+
 def get_best_starting_squad(predictions):
     """
     Initial squad selection - Greedy Algorithm
@@ -49,6 +63,9 @@ class FPLManager:
         self.bank = STARTING_BUDGET
         self.free_transfers = 1
         
+        # Purchase Price Tracking (FPL Mechanics)
+        self.purchase_prices = {}  # {player_id: purchase_price}
+        
         # Chip State
         # "they are recharged after week 19" -> 2 sets.
         self.chips_available = {
@@ -59,10 +76,18 @@ class FPLManager:
         }
         self.active_chip = None
     
-    def initialize_squad(self, best_starting_squad, cost):
+    def initialize_squad(self, best_starting_squad, cost, initial_prices):
+        """
+        Initialize squad with purchase price tracking
+        initial_prices: {player_id: price}
+        """
         self.squad = [p['id'] for p in best_starting_squad]
         self.bank = STARTING_BUDGET - cost
         self.free_transfers = 0
+        
+        # Track purchase prices
+        for p in best_starting_squad:
+            self.purchase_prices[p['id']] = initial_prices.get(p['id'], p['cost'])
 
     def optimize_lineup(self, current_gw_preds, active_chip=None):
         """
@@ -196,9 +221,10 @@ class FPLManager:
         
         return None
 
-    def make_transfers(self, current_gw_preds, all_candidates, gw):
+    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None):
         """
         Handle Transfers AND Chips (Wildcard/FreeHit)
+        price_lookup: {player_id: current_price} for this GW
         """
         active_chip = self.decide_chip(current_gw_preds, gw)
         self.active_chip = active_chip
@@ -211,12 +237,21 @@ class FPLManager:
                 self.bank = 0 
                 cost = sum([p['cost'] for p in best_squad])
                 self.bank = 1000 - cost
+                
+                # Reset purchase prices to current prices
+                self.purchase_prices = {}
+                for p in best_squad:
+                    current_price = price_lookup.get(p['id'], p['cost']) if price_lookup else p['cost']
+                    self.purchase_prices[p['id']] = current_price
+                
                 return [], active_chip
                 
             elif active_chip == "freehit":
                 self.chips_available['freehit'] -= 1
                 self.original_squad = list(self.squad)
                 self.original_bank = self.bank
+                self.original_purchase_prices = self.purchase_prices.copy()  # Preserve prices
+                
                 best_squad, _ = get_best_starting_squad(all_candidates)
                 self.squad = [p['id'] for p in best_squad]
                 self.bank = 0
@@ -230,7 +265,7 @@ class FPLManager:
         elif active_chip == "triple_captain":
             self.chips_available['triple_captain'] -= 1
             
-        # Standard Transfers Logic (Greedy)
+        # Standard Transfers Logic (Greedy) with Selling Price Mechanics
         squad_ids = set(self.squad)
         team_counts = {}
         for pid in self.squad:
@@ -244,6 +279,7 @@ class FPLManager:
         current_bank = self.bank
         current_squad_ids = list(self.squad)
         current_team_counts = team_counts.copy()
+        current_purchase_prices = self.purchase_prices.copy()
         
         while transfers_done < max_transfers_this_turn:
             best_move = None
@@ -257,7 +293,12 @@ class FPLManager:
             candidates_out = mock_squad_xp[:5]
             
             for p_out in candidates_out:
-                budget = current_bank + p_out['cost']
+                # Calculate selling price using FPL mechanics
+                current_price = price_lookup.get(p_out['id'], p_out['cost']) if price_lookup else p_out['cost']
+                purchase_price = current_purchase_prices.get(p_out['id'], current_price)
+                selling_price = calculate_selling_price(purchase_price, current_price)
+                
+                budget = current_bank + selling_price  # Use selling price, not current
                 pos_candidates = [c for c in all_candidates 
                                   if c['type'] == p_out['type'] 
                                   and c['cost'] <= budget
@@ -275,13 +316,21 @@ class FPLManager:
                     gain = (p_in['xp'] - p_out['xp']) - cost_pts
                     if gain > best_gain:
                         best_gain = gain
-                        best_move = (p_out, p_in, cost_pts)
+                        best_move = (p_out, p_in, cost_pts, selling_price)
             
             if best_move and best_gain > 0.5:
-                p_out, p_in, cost_pts = best_move
+                p_out, p_in, cost_pts, selling_price = best_move
                 current_squad_ids.remove(p_out['id'])
                 current_squad_ids.append(p_in['id'])
-                current_bank = current_bank + p_out['cost'] - p_in['cost']
+                
+                # Update bank using selling price
+                current_bank = current_bank + selling_price - p_in['cost']
+                
+                # Update purchase prices
+                del current_purchase_prices[p_out['id']]
+                purchase_price_in = price_lookup.get(p_in['id'], p_in['cost']) if price_lookup else p_in['cost']
+                current_purchase_prices[p_in['id']] = purchase_price_in
+                
                 current_team_counts[self.players_map[p_out['id']]['team']] -= 1
                 current_team_counts[p_in['team']] = current_team_counts.get(p_in['team'], 0) + 1
                 self.free_transfers -= 1
@@ -296,4 +345,5 @@ class FPLManager:
         
         self.squad = current_squad_ids
         self.bank = current_bank
+        self.purchase_prices = current_purchase_prices
         return transfers_log, active_chip

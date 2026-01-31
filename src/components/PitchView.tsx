@@ -161,7 +161,16 @@ function PitchPlayer({
                 <div className="player-name">{player.web_name}</div>
                 <div className="player-meta">
                     <span className="player-team">{team?.short_name}</span>
-                    <span className="player-price">£{((pick.selling_price ?? player.now_cost) / 10).toFixed(1)}</span>
+                    <span className="player-price">£{
+                        // If selling_price exists and is < 20, it's already in decimal format (e.g., 5.5)
+                        // Otherwise, divide by 10 (FPL API format, e.g., 55 -> 5.5)
+                        pick.selling_price && pick.selling_price < 20
+                            ? pick.selling_price.toFixed(1)
+                            : ((pick.selling_price ?? player.now_cost) / 10).toFixed(1)
+                    }</span>
+                </div>
+                <div className="player-ownership" style={{ fontSize: '0.7em', color: '#00d2ff', marginTop: '2px' }}>
+                    {parseFloat(player.selected_by_percent).toFixed(1)}% owned
                 </div>
                 <div className="player-points" style={{ fontSize: '0.8em' }}>
                     {points !== undefined ? points : player.event_points} (GW)
