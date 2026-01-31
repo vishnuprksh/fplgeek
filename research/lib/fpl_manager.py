@@ -106,6 +106,7 @@ class FPLManager:
     def optimize_lineup(self, current_gw_preds, active_chip=None):
         """
         Selects Starting XI (1 GKP, 3+ DEF, 1+ FWD) and Captain.
+        Captain must have 30%+ ownership.
         """
         squad_preds = [p for p in current_gw_preds if p['id'] in self.squad]
         squad_preds.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
@@ -113,9 +114,27 @@ class FPLManager:
         if not squad_preds:
              return [], [], None, None
 
-        # Captaincy
-        captain_id = squad_preds[0]['id']
-        vice_captain_id = squad_preds[1]['id'] if len(squad_preds) > 1 else squad_preds[0]['id']
+        # Captaincy - Require 30%+ ownership
+        captain_candidates = [p for p in squad_preds if float(p.get('selected_by_percent', 0)) >= 30.0]
+        
+        if captain_candidates:
+            # Pick highest xP from eligible candidates (already sorted by xP)
+            captain_id = captain_candidates[0]['id']
+        else:
+            # Fallback: pick highest ownership player if no one meets 30% threshold
+            captain_id = max(squad_preds, key=lambda x: float(x.get('selected_by_percent', 0)))['id']
+        
+        # Vice-captain - same logic
+        vice_captain_candidates = [p for p in squad_preds if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
+        
+        if vice_captain_candidates:
+            vice_captain_id = vice_captain_candidates[0]['id']
+        elif len(squad_preds) > 1:
+            # Fallback: pick highest ownership player (excluding captain)
+            vice_captain_id = max([p for p in squad_preds if p['id'] != captain_id], 
+                                 key=lambda x: float(x.get('selected_by_percent', 0)))['id']
+        else:
+            vice_captain_id = captain_id
         
         # Triple Captain Logic override is handled by scoring engine, here we just select C
 
