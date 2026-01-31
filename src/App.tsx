@@ -17,6 +17,9 @@ import { optimizeTransfers } from './utils/solver';
 import type { PredictionResult } from './utils/predictions';
 import { calculateSmartValues } from './utils/smartValue';
 
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+
 function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
@@ -174,6 +177,58 @@ function App() {
     } else {
       setIsOptimizing(true);
     }
+  };
+
+  const isValidFormation = (picks: Pick[]) => {
+    const starters = picks.filter(p => p.position <= 11);
+    const gkps = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 1).length;
+    const defs = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 2).length;
+    const mids = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 3).length; // Min ?
+    const fwds = starters.filter(p => staticData!.elements.find(e => e.id === p.element)?.element_type === 4).length;
+
+    if (gkps !== 1) return false;
+    if (defs < 3) return false;
+    if (fwds < 1) return false;
+    // Max constraints are natural due to 11 players?
+    // 3 def + 1 fwd + 1 gkp = 5. Remaining 6.
+    // If 6 mids? FPL allows 5 mids max? No, 2-5-3 is valid. 5-4-1 valid. 5-3-2 valid. 4-5-1 valid. 3-5-2 valid. 4-4-2 valid.
+    // Is 5-5-0 valid? No min 1 fwd.
+    // Is 2-5-3 valid? No min 3 def.
+    return true;
+  };
+
+  const handleSwap = (id1: number, id2: number) => {
+    setActivePicks(prev => {
+      const newPicks = [...prev];
+      const p1Index = newPicks.findIndex(p => p.element === id1);
+      const p2Index = newPicks.findIndex(p => p.element === id2);
+
+      if (p1Index === -1 || p2Index === -1) return prev;
+
+      // Swap positions
+      const pos1 = newPicks[p1Index].position;
+      const pos2 = newPicks[p2Index].position;
+
+      // Mutate clone
+      newPicks[p1Index] = { ...newPicks[p1Index], position: pos2 };
+      newPicks[p2Index] = { ...newPicks[p2Index], position: pos1 };
+
+      // Sort by position to keep data clean
+      newPicks.sort((a, b) => a.position - b.position);
+
+      // Validate Formation if swapping starter <-> bench
+      const isP1Starter = pos1 <= 11;
+      const isP2Starter = pos2 <= 11;
+
+      if (isP1Starter !== isP2Starter) {
+        if (!isValidFormation(newPicks)) {
+          alert("Invalid Formation! You must have at least 1 GK, 3 Defenders, and 1 Forward.");
+          return prev;
+        }
+      }
+
+      return newPicks;
+    });
   };
 
   const handleToggleSell = (id: number) => {
@@ -345,7 +400,7 @@ function App() {
   };
 
   return (
-    <>
+    <DndProvider backend={HTML5Backend}>
       <header className="app-header">
         <div className="header-inner">
           <div className="logo-container">
@@ -491,6 +546,8 @@ function App() {
                           isOptimizing={isOptimizing}
                           selectedToSell={selectedToSell}
                           onToggleSell={handleToggleSell}
+                          showSmartValue={true}
+                          onSwap={handleSwap}
                         />
                       )}
                     </div>
@@ -555,7 +612,7 @@ function App() {
         )}
       </div >
       <BottomNav currentView={currentView} onChangeView={setCurrentView} />
-    </>
+    </DndProvider>
   );
 }
 
