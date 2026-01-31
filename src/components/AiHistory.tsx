@@ -142,7 +142,11 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                     teams={teams}
                                     onPlayerClick={() => { }}
                                     isOptimizing={false}
-                                    predictions={{}} // No live predictions needed
+                                    showSmartValue={false}
+                                    predictions={h.squad.reduce((acc, p) => ({
+                                        ...acc,
+                                        [p.id]: { totalForecast: p.xp * 5 } // Hack: PitchView divides by 5. We want to show p.xp.
+                                    }), {})}
                                 />
                                 <div className="squad-list-text">
                                     <h4>Detailed Score</h4>

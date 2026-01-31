@@ -12,6 +12,7 @@ interface PitchViewProps {
     isOptimizing?: boolean;
     selectedToSell?: Set<number>;
     onToggleSell?: (id: number) => void;
+    showSmartValue?: boolean;
 }
 
 export function PitchView({
@@ -22,7 +23,8 @@ export function PitchView({
     predictions,
     isOptimizing = false,
     selectedToSell = new Set(),
-    onToggleSell
+    onToggleSell,
+    showSmartValue = true
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);
@@ -131,7 +133,7 @@ export function PitchView({
                     </div>
                 )}
 
-                {!isSold && player.smart_value !== undefined && (
+                {!isSold && showSmartValue && player.smart_value !== undefined && (
                     <div style={{
                         position: 'absolute',
                         top: '18px',

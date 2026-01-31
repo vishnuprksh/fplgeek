@@ -426,51 +426,24 @@ function App() {
                             {!isOptimizing ? (
                               <button
                                 onClick={toggleOptimizationMode}
-                                style={{
-                                  background: 'transparent',
-                                  border: '1px solid #00ff87',
-                                  color: '#00ff87',
-                                  borderRadius: '50px',
-                                  padding: '4px 12px',
-                                  fontSize: '0.8em',
-                                  cursor: 'pointer',
-                                  display: 'flex', alignItems: 'center', gap: '5px'
-                                }}
+                                className="optimize-btn"
                               >
-                                ⚡ Optimize
+                                ⚡ Optimize (5 GWs)
                               </button>
                             ) : (
                               <div style={{ display: 'flex', gap: '10px' }}>
                                 <button
                                   onClick={runOptimization}
                                   disabled={isProcessingOpt}
-                                  style={{
-                                    background: '#00ff87',
-                                    border: 'none',
-                                    color: '#000',
-                                    borderRadius: '50px',
-                                    padding: '4px 12px',
-                                    fontSize: '0.8em',
-                                    cursor: 'pointer',
-                                    fontWeight: 'bold'
-                                  }}
+                                  className="optimize-btn active"
                                 >
-                                  {isProcessingOpt ? 'Thinking...' : 'Run Optimization'}
+                                  {isProcessingOpt ? 'Thinking...' : '▶ Run Auto-Pick'}
                                 </button>
 
                                 {optimizationResult && (
                                   <button
                                     onClick={applyOptimization}
-                                    style={{
-                                      background: '#ffd700',
-                                      border: 'none',
-                                      color: '#000',
-                                      borderRadius: '50px',
-                                      padding: '4px 12px',
-                                      fontSize: '0.8em',
-                                      cursor: 'pointer',
-                                      fontWeight: 'bold'
-                                    }}
+                                    className="optimize-btn apply"
                                   >
                                     Apply Changes
                                   </button>
@@ -478,18 +451,12 @@ function App() {
 
                                 <button
                                   onClick={toggleOptimizationMode}
-                                  style={{
-                                    background: 'rgba(255,255,255,0.1)',
-                                    border: 'none',
-                                    color: '#ccc',
-                                    borderRadius: '50px',
-                                    padding: '4px 12px',
-                                    fontSize: '0.8em',
-                                    cursor: 'pointer'
-                                  }}
+                                  className="optimize-btn"
+                                  style={{ border: '1px solid #ef4444', color: '#ef4444' }}
                                 >
-                                  Cancel
+                                  ✕ Cancel
                                 </button>
+
                               </div>
                             )}
                           </div>
@@ -586,7 +553,7 @@ function App() {
             onTransfer={handleTransfer}
           />
         )}
-      </div>
+      </div >
       <BottomNav currentView={currentView} onChangeView={setCurrentView} />
     </>
   );

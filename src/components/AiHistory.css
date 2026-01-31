@@ -1,8 +1,8 @@
 
 .ai-history-container {
     padding: 20px;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%;
+    /* Ensure it fills available space */
 }
 
 .history-summary {
@@ -12,18 +12,19 @@
 }
 
 .stat-card {
-    background: linear-gradient(135deg, #1e1e1e, #2a2a2a);
+    background: var(--color-bg-card);
     padding: 20px;
     border-radius: 12px;
     flex: 1;
     text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
 }
 
 .stat-card h3 {
     margin: 0 0 10px 0;
     font-size: 0.9em;
-    color: #aaa;
+    color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -31,7 +32,7 @@
 .stat-value {
     font-size: 2.2em;
     font-weight: bold;
-    color: #fff;
+    color: var(--color-text-primary);
 }
 
 .stat-value.highlight {
@@ -40,16 +41,17 @@
 }
 
 .gw-card {
-    background: #fff;
+    background: var(--color-bg-card);
     border-radius: 8px;
     margin-bottom: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .gw-header {
     padding: 15px 20px;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.02);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -58,7 +60,7 @@
 }
 
 .gw-header:hover {
-    background: #f9f9f9;
+    background: rgba(255, 255, 255, 0.05);
 }
 
 .gw-info {
@@ -70,13 +72,13 @@
 .gw-label {
     font-weight: bold;
     font-size: 1.1em;
-    color: #37003c;
+    color: var(--color-text-primary);
     width: 120px;
 }
 
 .gw-points {
     font-size: 1.1em;
-    color: #333;
+    color: var(--color-text-secondary);
 }
 
 .gw-points strong {
@@ -84,29 +86,38 @@
     font-size: 1.2em;
 }
 
-.high-score { color: #00ff87; text-shadow: 0 1px 1px rgba(0,0,0,0.5); background: #37003c; padding: 2px 8px; border-radius: 4px; }
-.med-score { color: #37003c; }
+.high-score {
+    color: #00ff87;
+    text-shadow: 0 0 5px rgba(0, 255, 135, 0.3);
+}
+
+.med-score {
+    color: var(--color-text-primary);
+}
 
 .gw-xp {
-    color: #888;
+    color: var(--color-text-secondary);
     font-size: 0.9em;
 }
 
 .gw-body {
-    border-top: 1px solid #eee;
-    background: #f0f0f0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
     padding: 20px;
 }
 
 .squad-list-text {
     margin-top: 20px;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.02);
     padding: 15px;
     border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .squad-list-text h4 {
     margin-top: 0;
+    margin-bottom: 1em;
+    color: var(--color-text-secondary);
 }
 
 .squad-list-text ul {
@@ -119,14 +130,28 @@
 
 .player-row {
     width: calc(33% - 10px);
-    background: #f9f9f9;
-    padding: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 8px 12px;
     border-radius: 4px;
     display: flex;
     justify-content: space-between;
     font-size: 0.9em;
+    border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.player-name { font-weight: bold; }
-.player-xp { color: #666; font-size: 0.8em; }
-.player-actual { font-weight: bold; color: #37003c; }
+.player-name {
+    font-weight: bold;
+    color: var(--color-text-primary);
+}
+
+.player-xp {
+    color: var(--color-text-secondary);
+    font-size: 0.85em;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+.player-actual {
+    font-weight: bold;
+    color: #00ff87;
+}
