@@ -94,6 +94,17 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     const avgAiPoints = history.length > 0 ? totalAiPoints / history.length : 0;
     const totalXp = history.reduce((sum, h) => sum + h.xp, 0);
 
+    // Calculate MAE (Mean Absolute Error) for the squad
+    // MAE = sum(|actual - prediction|) / n
+    const calculateMae = (res: BacktestResult) => {
+        const sumError = res.squad.reduce((sum, p) => sum + Math.abs(p.actual - p.xp), 0);
+        return sumError / res.squad.length;
+    };
+
+    const avgMae = history.length > 0
+        ? history.reduce((sum, h) => sum + calculateMae(h), 0) / history.length
+        : 0;
+
     if (loading) return <div style={{ padding: '20px', color: 'white' }}>Loading History...</div>;
 
     return (
@@ -112,61 +123,72 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                     <div className="stat-value">{totalXp.toFixed(1)}</div>
                 </div>
                 <div className="stat-card">
+                    <h3>Prediction MAE</h3>
+                    <div className="stat-value warning">{avgMae.toFixed(2)}</div>
+                    <div className="stat-sub">Lower is better</div>
+                </div>
+                <div className="stat-card">
                     <h3>Weeks Analyzed</h3>
                     <div className="stat-value">{history.length}</div>
                 </div>
             </div>
 
             <div className="gameweek-list">
-                {history.map(h => (
-                    <div key={h.gw} className="gw-card">
-                        <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
-                            <div className="gw-info">
-                                <span className="gw-label">Gameweek {h.gw}</span>
-                                <span className="gw-points">
-                                    <span className="label">Actual:</span>
-                                    <strong className={h.ai_points >= 60 ? 'high-score' : 'med-score'}>{h.ai_points}</strong>
-                                </span>
-                                <span className="gw-xp">
-                                    (xP: {h.xp.toFixed(1)})
-                                </span>
-                            </div>
-                            <div className="expand-icon">{expandedGW === h.gw ? '▲' : '▼'}</div>
-                        </div>
-
-                        {expandedGW === h.gw && (
-                            <div className="gw-body">
-                                <PitchView
-                                    picks={getPicksFromSquad(h.squad)}
-                                    elements={elements as any}
-                                    teams={teams}
-                                    onPlayerClick={() => { }}
-                                    isOptimizing={false}
-                                    showSmartValue={false}
-                                    predictions={h.squad.reduce((acc, p) => ({
-                                        ...acc,
-                                        [p.id]: { totalForecast: p.xp * 5 } // Hack: PitchView divides by 5. We want to show p.xp.
-                                    }), {})}
-                                />
-                                <div className="squad-list-text">
-                                    <h4>Detailed Score</h4>
-                                    <ul>
-                                        {h.squad.map(p => {
-                                            const teamName = teams.find(t => t.id === p.team)?.short_name;
-                                            return (
-                                                <li key={p.id} className="player-row">
-                                                    <span className="player-name">{p.name} ({teamName})</span>
-                                                    <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
-                                                    <span className="player-actual">{p.actual} pts</span>
-                                                </li>
-                                            );
-                                        })}
-                                    </ul>
+                {history.map(h => {
+                    const gwMae = calculateMae(h);
+                    return (
+                        <div key={h.gw} className="gw-card">
+                            <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
+                                <div className="gw-info">
+                                    <span className="gw-label">Gameweek {h.gw}</span>
+                                    <span className="gw-points">
+                                        <span className="label">Actual:</span>
+                                        <strong className={h.ai_points >= 60 ? 'high-score' : 'med-score'}>{h.ai_points}</strong>
+                                    </span>
+                                    <span className="gw-xp">
+                                        (xP: {h.xp.toFixed(1)})
+                                    </span>
+                                    <span className="gw-mae">
+                                        MAE: {gwMae.toFixed(2)}
+                                    </span>
                                 </div>
+                                <div className="expand-icon">{expandedGW === h.gw ? '▲' : '▼'}</div>
                             </div>
-                        )}
-                    </div>
-                ))}
+
+                            {expandedGW === h.gw && (
+                                <div className="gw-body">
+                                    <PitchView
+                                        picks={getPicksFromSquad(h.squad)}
+                                        elements={elements as any}
+                                        teams={teams}
+                                        onPlayerClick={() => { }}
+                                        isOptimizing={false}
+                                        showSmartValue={false}
+                                        predictions={h.squad.reduce((acc, p) => ({
+                                            ...acc,
+                                            [p.id]: { totalForecast: p.xp * 5 } // Hack: PitchView divides by 5. We want to show p.xp.
+                                        }), {})}
+                                    />
+                                    <div className="squad-list-text">
+                                        <h4>Detailed Score</h4>
+                                        <ul>
+                                            {h.squad.map(p => {
+                                                const teamName = teams.find(t => t.id === p.team)?.short_name;
+                                                return (
+                                                    <li key={p.id} className="player-row">
+                                                        <span className="player-name">{p.name} ({teamName})</span>
+                                                        <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
+                                                        <span className="player-actual">{p.actual} pts</span>
+                                                    </li>
+                                                );
+                                            })}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
         </div>
     );
