@@ -1,4 +1,4 @@
-import type { Player, Team } from '../types/fpl';
+import type { Player } from '../types/fpl';
 import './PlayerHistoryModal.css';
 
 interface BacktestResult {
@@ -11,6 +11,7 @@ interface BacktestResult {
         name: string;
         points: number;
         xp: number;
+        selected_by_percent?: string | number;
         role: 'C' | 'V' | 'S' | 'B';
     }>;
 }
@@ -24,23 +25,20 @@ interface PlayerHistoryModalProps {
 
 export function PlayerHistoryModal({ player, history, onClose, teamName }: PlayerHistoryModalProps) {
     // Filter history for this player
+    // Filter history for this player
     const playerHistory = history.map(h => {
         const squadPlayer = h.squad.find(p => p.id === player.id);
-        if (!squadPlayer) return null;
         return {
             gw: h.gw,
+            inSquad: !!squadPlayer,
             ...squadPlayer
         };
-    }).filter(h => h !== null) as Array<{
-        gw: number;
-        points: number;
-        xp: number;
-        role: 'C' | 'V' | 'S' | 'B';
-    }>;
+    }).sort((a, b) => a.gw - b.gw); // Ensure chronological order filter(h => h !== null) removed to keep all GWs match
 
-    const totalPoints = playerHistory.reduce((sum, h) => sum + h.points, 0);
-    const avgPoints = playerHistory.length > 0 ? (totalPoints / playerHistory.length).toFixed(1) : '0.0';
-    const totalXp = playerHistory.reduce((sum, h) => sum + h.xp, 0).toFixed(1);
+    const validHistory = playerHistory.filter(h => h.inSquad);
+    const totalPoints = validHistory.reduce((sum, h) => sum + (h.points || 0), 0);
+    const avgPoints = validHistory.length > 0 ? (totalPoints / validHistory.length).toFixed(1) : '0.0';
+    const totalXp = validHistory.reduce((sum, h) => sum + (h.xp || 0), 0).toFixed(1);
 
     return (
         <div className="modal-backdrop" onClick={onClose}>
@@ -75,17 +73,27 @@ export function PlayerHistoryModal({ player, history, onClose, teamName }: Playe
                                 <tr>
                                     <th>GW</th>
                                     <th>Role</th>
+                                    <th>Selected %</th>
                                     <th>xP</th>
                                     <th>Points</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {playerHistory.map(h => (
-                                    <tr key={h.gw}>
+                                    <tr key={h.gw} className={!h.inSquad ? 'row-inactive' : ''}>
                                         <td>{h.gw}</td>
-                                        <td className={`role-${h.role}`}>{h.role === 'S' ? 'Start' : (h.role === 'B' ? 'Bench' : h.role)}</td>
-                                        <td>{h.xp.toFixed(1)}</td>
-                                        <td className="points-cell">{h.points}</td>
+                                        {h.inSquad ? (
+                                            <>
+                                                <td className={`role-${h.role}`}>{h.role === 'S' ? 'Start' : (h.role === 'B' ? 'Bench' : h.role)}</td>
+                                                <td>{h.selected_by_percent || '-'}%</td>
+                                                <td>{h.xp?.toFixed(1)}</td>
+                                                <td className="points-cell">{h.points}</td>
+                                            </>
+                                        ) : (
+                                            <td colSpan={4} style={{ textAlign: 'center', color: '#666', fontStyle: 'italic' }}>
+                                                Not in Squad
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>

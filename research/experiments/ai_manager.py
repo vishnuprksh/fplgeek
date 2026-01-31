@@ -206,11 +206,11 @@ def main():
             
             gw_points += pts
             gw_xp += xp
-            squad_details.append({'id': p['id'], 'name': p['name'], 'points': p['actual'], 'xp': p['xp'], 'role': 'C' if is_cap else ('V' if is_vice else 'S')})
+            squad_details.append({'id': p['id'], 'name': p['name'], 'points': p['actual'], 'xp': p['xp'], 'selected_by_percent': p.get('selected_by_percent', '0.0'), 'role': 'C' if is_cap else ('V' if is_vice else 'S')})
 
         bench_players_visual = bench if active_chip_used != "bench_boost" else []
         for p in bench_players_visual:
-            squad_details.append({'id': p['id'], 'name': p['name'], 'points': p['actual'], 'xp': p['xp'], 'role': 'B'})
+            squad_details.append({'id': p['id'], 'name': p['name'], 'points': p['actual'], 'xp': p['xp'], 'selected_by_percent': p.get('selected_by_percent', '0.0'), 'role': 'B'})
             
         hits_cost = sum(t['cost'] for t in transfers)
         if active_chip_used in ["wildcard", "freehit"]: hits_cost = 0

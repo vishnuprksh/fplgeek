@@ -5,10 +5,13 @@ def get_best_starting_squad(predictions):
     Initial squad selection - Greedy Algorithm
     """
     squad = []
-    gkps = sorted([p for p in predictions if p['type'] == 1], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-    defs = sorted([p for p in predictions if p['type'] == 2], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-    mids = sorted([p for p in predictions if p['type'] == 3], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-    fwds = sorted([p for p in predictions if p['type'] == 4], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    # Ownership Constraint: Only consider players suitable for "template" teams (> 5% ownership)
+    valid_predictions = [p for p in predictions if float(p.get('selected_by_percent', 0)) > 5.0]
+    
+    gkps = sorted([p for p in valid_predictions if p['type'] == 1], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    defs = sorted([p for p in valid_predictions if p['type'] == 2], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    mids = sorted([p for p in valid_predictions if p['type'] == 3], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    fwds = sorted([p for p in valid_predictions if p['type'] == 4], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
 
     final_squad = []
     total_cost = 0
@@ -258,7 +261,8 @@ class FPLManager:
                 pos_candidates = [c for c in all_candidates 
                                   if c['type'] == p_out['type'] 
                                   and c['cost'] <= budget
-                                  and c['id'] not in current_squad_ids]
+                                  and c['id'] not in current_squad_ids
+                                  and float(c.get('selected_by_percent', 0)) > 5.0] # Constraint ownership
                 
                 top_targets = sorted(pos_candidates, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)[:5]
                 
