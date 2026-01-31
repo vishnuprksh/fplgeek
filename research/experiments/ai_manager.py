@@ -42,14 +42,15 @@ def main():
     players = [json.loads(r['data']) for r in cursor.fetchall()]
     players_map = {p['id']: p for p in players}
     
-    # 3. Build Price History Lookup
+    # 3. Build Price History Lookup (Scaled to 0.1m units)
     print("💰 Building price history...")
     price_history = {}  # {player_id: {gw: price}}
     for pos in POSITIONS:
         for record in all_data[pos]:
             pid = record['id']
             gw = record['gw']
-            price = record['ctx_price']
+            # Scale price: 5.6 -> 56
+            price = int(record['ctx_price'] * 10)
             
             if pid not in price_history:
                 price_history[pid] = {}
@@ -175,7 +176,7 @@ def main():
                     'name': s['name'],
                     'type': players_map[pid]['element_type'],
                     'team': players_map[pid]['team'],
-                    'cost': s['ctx_price'],
+                    'cost': int(s['ctx_price'] * 10), # Scale to 0.1m units
                     'xp': real_xp,
                     'xp_long_term': avg_xp,
                     'actual': s['target'],
@@ -245,9 +246,9 @@ def main():
                 'xp': p['xp'], 
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'C' if is_cap else ('V' if is_vice else 'S'),
-                'purchase_price': purchase_price,
-                'current_price': current_price,
-                'selling_price': selling_price,
+                'purchase_price': purchase_price / 10.0,
+                'current_price': current_price / 10.0,
+                'selling_price': selling_price / 10.0,
                 'status': p.get('status', 'a')
             })
 
@@ -265,9 +266,9 @@ def main():
                 'xp': p['xp'], 
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'B',
-                'purchase_price': purchase_price,
-                'current_price': current_price,
-                'selling_price': selling_price,
+                'purchase_price': purchase_price / 10.0,
+                'current_price': current_price / 10.0,
+                'selling_price': selling_price / 10.0,
                 'status': p.get('status', 'a')
             })
             
@@ -279,7 +280,7 @@ def main():
             'gw': gw, 'points': gw_points, 'total_xp': gw_xp, 'net_points': net_score,
             'transfer_cost': hits_cost, 'active_chip': active_chip_used,
             'transfers': [{'in': t['in']['name'], 'out': t['out']['name']} for t in transfers],
-            'squad': squad_details, 'bank': manager.bank,
+            'squad': squad_details, 'bank': manager.bank / 10.0,
             'free_transfers': manager.free_transfers
         }
         results_history.append(history_entry)
