@@ -53,3 +53,5 @@ debug_vps.py
 deploy_vps.py
 setup_vps.py
 nginx.conf
+public/data/processed/
+venv/
