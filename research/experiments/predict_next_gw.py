@@ -189,6 +189,17 @@ def main():
             
             current_price = sample['ctx_price'] # Estimate
             
+            # Load Teams for Strength Lookup
+            if 'teams_map' not in locals():
+                conn = sqlite3.connect(DB_PATH)
+                cursor = conn.cursor()
+                cursor.execute("SELECT id, data FROM teams")
+                teams_rows = cursor.fetchall()
+                teams_map = {}
+                for r in teams_rows:
+                     teams_map[r[0]] = json.loads(r[1])
+                conn.close()
+
             for f in p_fixtures:
                  # Rest: Hard to calc perfectly without previous match time. Assume 7 days (168h) for simplicity or default 100h
                  hours_rest = 100.0 
@@ -198,13 +209,26 @@ def main():
                      current_price,
                      hours_rest
                  ])
-                 opp_list.append(f['opponent'])
+                 
+                 # Fix: Use Team Strength not ID
+                 opp_id = f['opponent']
+                 opp_data = teams_map.get(opp_id)
+                 opp_strength = 1100
+                 if opp_data:
+                     if f['is_home']:
+                         # We are home, they are away
+                         opp_strength = opp_data.get('strength_overall_away', 1100)
+                     else:
+                         opp_strength = opp_data.get('strength_overall_home', 1100)
+                 
+                 opp_list.append(opp_strength)
             
             X_ctx = np.array(ctx_list, dtype=np.float32)
             X_opp = np.array(opp_list, dtype=np.float32)
             
             # Scale
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
+            X_opp = X_opp / 1350.0 # Fix: Scale opponent strength
             
             # Predict
             preds = model.predict([X_seq, X_ctx, X_opp], verbose=0).flatten()

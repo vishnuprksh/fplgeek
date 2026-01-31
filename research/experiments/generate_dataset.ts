@@ -76,9 +76,17 @@ function main() {
         historyByPlayer[row.player_id].push(JSON.parse(row.data));
     });
 
+    // 2. Fetch Team Data for Strength
+    const teams = db.prepare("SELECT id, data FROM teams").all().map((r: any) => ({
+        id: r.id,
+        ...JSON.parse(r.data)
+    }));
+    const teamsMap: Record<number, any> = {};
+    teams.forEach((t: any) => teamsMap[t.id] = t);
+
     const fixturesRaw = db.prepare("SELECT data FROM fixtures").all().map((r: any) => JSON.parse(r.data));
 
-    // 2. Processing
+    // 3. Processing
     const datasets: Record<string, ProcessedSample[]> = {
         "GKP": [], "DEF": [], "MID": [], "FWD": []
     };
@@ -134,6 +142,28 @@ function main() {
             const prevTime = new Date(prevMatch.kickoff_time).getTime();
             const hoursRest = (currTime - prevTime) / (1000 * 60 * 60);
 
+            // Calc Opponent Strength
+            // If we are Home, opponent is Away -> use Opponent Strength Away
+            // If we are Away, opponent is Home -> use Opponent Strength Home
+            const opponentId = targetMatch.opponent_team;
+            const opponent = teamsMap[opponentId];
+            let opponentStrength = 1100; // Default fallback
+
+            if (opponent) {
+                if (targetMatch.was_home) {
+                    // We are Home, Opponent is Away
+                    opponentStrength = opponent.strength_overall_away || opponent.strength || 1100;
+                } else {
+                    // We are Away, Opponent is Home
+                    opponentStrength = opponent.strength_overall_home || opponent.strength || 1100;
+                }
+
+                // If it's the simplified 'strength' (1-5), scale it to ~1000 range
+                if (opponentStrength < 100) {
+                    opponentStrength = 1000 + (opponentStrength - 3) * 100;
+                }
+            }
+
             // Construct History Sequence
             const seqData: number[][] = [];
 
@@ -164,7 +194,7 @@ function main() {
                 season: season, // New Field
                 target: targetMatch.total_points,
                 ctx_was_home: targetMatch.was_home ? 1 : 0,
-                ctx_opponent: targetMatch.opponent_team,
+                ctx_opponent: opponentStrength, // UPDATED: Now using actual team strength!
                 ctx_difficulty: difficulty,
                 ctx_price: targetMatch.value / 10.0,
                 ctx_hours_rest: Math.min(hoursRest, 300), // Cap at ~12 days to avoid huge outliers

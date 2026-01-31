@@ -84,13 +84,12 @@ def build_model():
     # 2. Context Input (Dense)
     ctx_input = Input(shape=(4,), name="ctx_input")
     
-    # 3. Opponent Embedding
+    # 3. Opponent Strength (Float)
     opp_input = Input(shape=(1,), name="opp_input")
-    opp_embed = Embedding(input_dim=21, output_dim=4)(opp_input) # 20 teams + 1 buffer
-    opp_flat = Flatten()(opp_embed)
+    # No embedding for continuous strength variable
     
-    # Concatenate
-    concat = Concatenate()([x, ctx_input, opp_flat])
+    # Concatenate: LSTM Out + Context + Opponent
+    concat = Concatenate()([x, ctx_input, opp_input])
     
     # Dense Layers
     dense = Dense(32, activation='relu')(concat)
@@ -104,7 +103,7 @@ def build_model():
 def main():
     report = "# Deep Learning Model Report: FPL Points Prediction\n\n"
     report += "## Methodology\n"
-    report += "- **Architecture**: Hybrid LSTM (History) + Embedding (Opponent) + Dense (Context).\n"
+    report += "- **Architecture**: Hybrid LSTM (History) + Dense (Context + Opp Strength).\n"
     report += "- **Training Split**: Train on historical data (GW < 11), Test on GW >= 11.\n"
     report += "- **Loss Function**: Mean Squared Error (MSE).\n\n"
     report += "## Results by Position\n\n"
@@ -120,10 +119,11 @@ def main():
         # For simplicity in this script, we'll do simplistic global scaling or just let NN handle it (BatchNorm would be better).
         # We'll rely on our data being roughly normalized (Price/10, etc) in generate_dataset.ts
         # Preprocessing to avoid NaNs
-        def clean_and_scale(X_seq, X_ctx):
+        def clean_and_scale(X_seq, X_ctx, X_opp):
             # 1. Replace NaN/Inf
             X_seq = np.nan_to_num(X_seq, nan=0.0, posinf=0.0, neginf=0.0)
             X_ctx = np.nan_to_num(X_ctx, nan=0.0, posinf=0.0, neginf=0.0)
+            X_opp = np.nan_to_num(X_opp, nan=1100.0, posinf=1350.0, neginf=1000.0)
             
             # 2. Scale (Simple Global Scaling for Stability)
             # Sequence: [Min, xG, xA, Thr, Cre, Inf, GC, Sav, Sel, SV, Price, Home, Pts]
@@ -136,13 +136,16 @@ def main():
             scales_ctx = np.array([1, 5, 15, 200], dtype=np.float32)
             X_ctx = X_ctx / scales_ctx.reshape(1, -1)
             
-            return X_seq, X_ctx
+            # Opponent: Strength ~1000-1350
+            X_opp = X_opp / 1350.0
+            
+            return X_seq, X_ctx, X_opp
 
         (X_seq_train, X_ctx_train, X_opp_train, y_train, _, _), \
         (X_seq_test, X_ctx_test, X_opp_test, y_test, names_test, gws_test) = prepare_tensors(data)
         
-        X_seq_train, X_ctx_train = clean_and_scale(X_seq_train, X_ctx_train)
-        X_seq_test, X_ctx_test = clean_and_scale(X_seq_test, X_ctx_test)
+        X_seq_train, X_ctx_train, X_opp_train = clean_and_scale(X_seq_train, X_ctx_train, X_opp_train)
+        X_seq_test, X_ctx_test, X_opp_test = clean_and_scale(X_seq_test, X_ctx_test, X_opp_test)
         
         if len(y_train) < 50:
             print(f"Skipping {pos}: Insufficient training data ({len(y_train)} samples)")
