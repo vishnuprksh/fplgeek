@@ -179,7 +179,9 @@ def main():
                     'xp': real_xp,
                     'xp_long_term': avg_xp,
                     'actual': s['target'],
-                    'selected_by_percent': float(players_map[pid].get('selected_by_percent', 0))
+                    'selected_by_percent': float(players_map[pid].get('selected_by_percent', 0)),
+                    'status': players_map[pid].get('status', 'a'),
+                    'chance_of_playing_this_round': players_map[pid].get('chance_of_playing_this_round')
                 })
         
         # B. MANAGER DECISIONS
@@ -245,7 +247,8 @@ def main():
                 'role': 'C' if is_cap else ('V' if is_vice else 'S'),
                 'purchase_price': purchase_price,
                 'current_price': current_price,
-                'selling_price': selling_price
+                'selling_price': selling_price,
+                'status': p.get('status', 'a')
             })
 
         bench_players_visual = bench if active_chip_used != "bench_boost" else []
@@ -264,7 +267,8 @@ def main():
                 'role': 'B',
                 'purchase_price': purchase_price,
                 'current_price': current_price,
-                'selling_price': selling_price
+                'selling_price': selling_price,
+                'status': p.get('status', 'a')
             })
             
         hits_cost = sum(t['cost'] for t in transfers)

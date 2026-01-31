@@ -6,6 +6,24 @@ def is_differential(player):
     """
     return float(player.get('selected_by_percent', 0)) < 10.0
 
+def should_bench_player(player):
+    """
+    Check if a player should be benched due to injury/fitness concerns.
+    Auto-bench if not fully fit (status != 'a' or any injury concern).
+    """
+    status = player.get('status', 'a')
+    chance = player.get('chance_of_playing_this_round')
+    
+    # Bench if not available (injured, unavailable, suspended, doubtful)
+    if status != 'a':
+        return True
+    
+    # Bench if chance of playing is < 100 (if specified)
+    if chance is not None and chance < 100:
+        return True
+    
+    return False
+
 def calculate_selling_price(purchase_price, current_price):
     """
     FPL Selling Price Logic:
@@ -143,10 +161,15 @@ class FPLManager:
         starters = []
         bench = []
         
-        gkps = [p for p in squad_preds if p['type'] == 1]
-        defs = [p for p in squad_preds if p['type'] == 2]
-        mids = [p for p in squad_preds if p['type'] == 3]
-        fwds = [p for p in squad_preds if p['type'] == 4]
+        # Separate fit and injured players
+        fit_players = [p for p in squad_preds if not should_bench_player(p)]
+        injured_players = [p for p in squad_preds if should_bench_player(p)]
+        
+        # Use only fit players for lineup selection
+        gkps = [p for p in fit_players if p['type'] == 1]
+        defs = [p for p in fit_players if p['type'] == 2]
+        mids = [p for p in fit_players if p['type'] == 3]
+        fwds = [p for p in fit_players if p['type'] == 4]
         
         if gkps: starters.append(gkps.pop(0))
         for _ in range(3): 
@@ -181,6 +204,9 @@ class FPLManager:
                 
             if not added:
                 bench.append(p)
+        
+        # Add injured/unfit players to the bench (at the end)
+        bench.extend(injured_players)
         
         bench.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         return starters, bench, captain_id, vice_captain_id

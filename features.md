@@ -28,3 +28,4 @@
     - [x] Show Predicted Points (xP) in History
     - [x] Differential Card Restriction (Max 2 players with <10% ownership)
     - [x] Captain Ownership Restriction (Captain must have 30%+ ownership)
+    - [x] Injury-Based Auto-Benching (Avoids players with <100% chance of playing)
