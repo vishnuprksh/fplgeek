@@ -132,32 +132,7 @@ class FPLManager:
         if not squad_preds:
              return [], [], None, None
 
-        # Captaincy - Require 30%+ ownership
-        captain_candidates = [p for p in squad_preds if float(p.get('selected_by_percent', 0)) >= 30.0]
-        
-        if captain_candidates:
-            # Pick highest xP from eligible candidates (already sorted by xP)
-            captain_id = captain_candidates[0]['id']
-        else:
-            # Fallback: pick highest ownership player if no one meets 30% threshold
-            captain_id = max(squad_preds, key=lambda x: float(x.get('selected_by_percent', 0)))['id']
-        
-        # Vice-captain - same logic
-        vice_captain_candidates = [p for p in squad_preds if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
-        
-        if vice_captain_candidates:
-            vice_captain_id = vice_captain_candidates[0]['id']
-        elif len(squad_preds) > 1:
-            # Fallback: pick highest ownership player (excluding captain)
-            vice_captain_id = max([p for p in squad_preds if p['id'] != captain_id], 
-                                 key=lambda x: float(x.get('selected_by_percent', 0)))['id']
-        else:
-            vice_captain_id = captain_id
-        
-        # Triple Captain Logic override is handled by scoring engine, here we just select C
-
-        # Bench Boost: All 15 play. Lineup distinction still exists for formation rules but points count for all.
-        
+        # 1. Select Starting XI first (prioritize fit players)
         starters = []
         bench = []
         
@@ -209,6 +184,31 @@ class FPLManager:
         bench.extend(injured_players)
         
         bench.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+
+        # 2. Select Captain from Starters (using ownership constraint)
+        starters_sorted = sorted(starters, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+        
+        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 30.0]
+        
+        captain_id = None
+        if captain_candidates:
+            captain_id = captain_candidates[0]['id']
+        elif starters_sorted:
+             # Fallback: pick highest ownership player in starting XI
+            captain_id = max(starters_sorted, key=lambda x: float(x.get('selected_by_percent', 0)))['id']
+
+        # Vice-captain
+        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
+        
+        vice_captain_id = None
+        if vice_captain_candidates:
+            vice_captain_id = vice_captain_candidates[0]['id']
+        elif len(starters_sorted) > 1:
+            vice_captain_id = max([p for p in starters_sorted if p['id'] != captain_id], 
+                                 key=lambda x: float(x.get('selected_by_percent', 0)))['id']
+        else:
+            vice_captain_id = captain_id
+
         return starters, bench, captain_id, vice_captain_id
 
     def decide_chip(self, current_gw_preds, gw):
