@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import type { Player, Team, Pick } from '../types/fpl';
 import { PitchView } from './PitchView';
+import { PlayerHistoryModal } from './PlayerHistoryModal';
 import './AiHistory.css';
 
 interface AiHistoryProps {
@@ -38,6 +39,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     const [history, setHistory] = useState<BacktestResult[]>([]);
     const [expandedGW, setExpandedGW] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
+    const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
     useEffect(() => {
         const loadHistory = async () => {
@@ -171,7 +173,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         picks={getPicksFromSquad(h.squad)}
                                         elements={elements as any}
                                         teams={teams}
-                                        onPlayerClick={() => { }}
+                                        onPlayerClick={(p) => setSelectedPlayer(p)}
                                         isOptimizing={false}
                                         predictions={h.squad.reduce((acc, p) => ({
                                             ...acc,
@@ -227,6 +229,14 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                     );
                 })}
             </div>
+            {selectedPlayer && (
+                <PlayerHistoryModal
+                    player={selectedPlayer}
+                    history={history}
+                    onClose={() => setSelectedPlayer(null)}
+                    teamName={teams.find(t => t.id === selectedPlayer.team)?.short_name}
+                />
+            )}
         </div>
     );
 }

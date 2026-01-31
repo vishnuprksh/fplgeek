@@ -5,10 +5,10 @@ def get_best_starting_squad(predictions):
     Initial squad selection - Greedy Algorithm
     """
     squad = []
-    gkps = sorted([p for p in predictions if p['type'] == 1], key=lambda x: x['xp'], reverse=True)
-    defs = sorted([p for p in predictions if p['type'] == 2], key=lambda x: x['xp'], reverse=True)
-    mids = sorted([p for p in predictions if p['type'] == 3], key=lambda x: x['xp'], reverse=True)
-    fwds = sorted([p for p in predictions if p['type'] == 4], key=lambda x: x['xp'], reverse=True)
+    gkps = sorted([p for p in predictions if p['type'] == 1], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    defs = sorted([p for p in predictions if p['type'] == 2], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    mids = sorted([p for p in predictions if p['type'] == 3], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+    fwds = sorted([p for p in predictions if p['type'] == 4], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
 
     final_squad = []
     total_cost = 0
@@ -66,7 +66,7 @@ class FPLManager:
         Selects Starting XI (1 GKP, 3+ DEF, 1+ FWD) and Captain.
         """
         squad_preds = [p for p in current_gw_preds if p['id'] in self.squad]
-        squad_preds.sort(key=lambda x: x['xp'], reverse=True)
+        squad_preds.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
         if not squad_preds:
              return [], [], None, None
@@ -93,7 +93,7 @@ class FPLManager:
         for _ in range(1):
             if fwds: starters.append(fwds.pop(0))
             
-        remaining = sorted(gkps + defs + mids + fwds, key=lambda x: x['xp'], reverse=True)
+        remaining = sorted(gkps + defs + mids + fwds, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
         ct_def = 3
         ct_mid = 0
@@ -121,7 +121,7 @@ class FPLManager:
             if not added:
                 bench.append(p)
         
-        bench.sort(key=lambda x: x['xp'], reverse=True)
+        bench.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         return starters, bench, captain_id, vice_captain_id
 
     def decide_chip(self, current_gw_preds, gw):
@@ -260,7 +260,7 @@ class FPLManager:
                                   and c['cost'] <= budget
                                   and c['id'] not in current_squad_ids]
                 
-                top_targets = sorted(pos_candidates, key=lambda x: x['xp'], reverse=True)[:5]
+                top_targets = sorted(pos_candidates, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)[:5]
                 
                 for p_in in top_targets:
                     team_id = p_in['team']

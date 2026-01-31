@@ -165,7 +165,8 @@ def main():
                     'cost': s['ctx_price'],
                     'xp': real_xp,
                     'xp_long_term': avg_xp,
-                    'actual': s['target']
+                    'actual': s['target'],
+                    'selected_by_percent': float(players_map[pid].get('selected_by_percent', 0))
                 })
         
         # B. MANAGER DECISIONS

@@ -197,13 +197,35 @@ export function PitchView({
     // Sort picks by position for rendering logic?
     // Actually, we filter by position.
 
-    const starters = picks.filter(p => p.position <= 11);
-    const bench = picks.filter(p => p.position > 11);
+    // Sorting Helper
+    const sortPicks = (p1: Pick, p2: Pick) => {
+        const player1 = getPlayer(p1.element);
+        const player2 = getPlayer(p2.element);
 
-    const goalkeepers = starters.filter(p => getPlayer(p.element)?.element_type === 1);
-    const defenders = starters.filter(p => getPlayer(p.element)?.element_type === 2);
-    const midfielders = starters.filter(p => getPlayer(p.element)?.element_type === 3);
-    const forwards = starters.filter(p => getPlayer(p.element)?.element_type === 4);
+        if (!player1 || !player2) return 0;
+
+        // 1. Predicted Points (Descending)
+        const xp1 = predictions && predictions[player1.id] ? predictions[player1.id].totalForecast : 0;
+        const xp2 = predictions && predictions[player2.id] ? predictions[player2.id].totalForecast : 0;
+
+        if (xp1 !== xp2) {
+            return xp2 - xp1;
+        }
+
+        // 2. Selected By Percent (Descending) - Secondary Sort
+        const sel1 = parseFloat(player1.selected_by_percent) || 0;
+        const sel2 = parseFloat(player2.selected_by_percent) || 0;
+
+        return sel2 - sel1;
+    };
+
+    const starters = picks.filter(p => p.position <= 11);
+    const bench = picks.filter(p => p.position > 11).sort(sortPicks);
+
+    const goalkeepers = starters.filter(p => getPlayer(p.element)?.element_type === 1).sort(sortPicks);
+    const defenders = starters.filter(p => getPlayer(p.element)?.element_type === 2).sort(sortPicks);
+    const midfielders = starters.filter(p => getPlayer(p.element)?.element_type === 3).sort(sortPicks);
+    const forwards = starters.filter(p => getPlayer(p.element)?.element_type === 4).sort(sortPicks);
 
     const renderPitchPlayer = (pick: Pick) => {
         const player = getPlayer(pick.element);
