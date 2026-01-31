@@ -34,6 +34,7 @@ interface BacktestResult {
     active_chip?: string | null;
     total_xp?: number;
     bank: number;
+    free_transfers?: number;
     transfers: Transfer[];
     squad: SquadPlayer[];
 }
@@ -124,8 +125,16 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                     <div className="stat-value">{avgNetPoints.toFixed(1)}</div>
                 </div>
                 <div className="stat-card">
-                    <h3>Total Transfers</h3>
+                    <h3>Tot Transfers</h3>
                     <div className="stat-value">{totalTransfers}</div>
+                </div>
+                <div className="stat-card">
+                    <h3>Current Bank</h3>
+                    <div className="stat-value">£{(history.length > 0 ? history[history.length - 1].bank : 0).toFixed(1)}m</div>
+                </div>
+                <div className="stat-card">
+                    <h3>Current FTs</h3>
+                    <div className="stat-value">{history.length > 0 ? (history[history.length - 1].free_transfers ?? 1) : 1}</div>
                 </div>
             </div>
 
@@ -145,6 +154,9 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                     {h.transfer_cost > 0 && <span className="gw-hits">(-{h.transfer_cost} hit)</span>}
                                     <span className="gw-transfers-badge">
                                         {h.transfers.length > 0 ? `${h.transfers.length} Tx` : 'No Tx'}
+                                        <span style={{ fontSize: '0.8em', marginLeft: '6px', opacity: 0.8 }}>
+                                            (£{h.bank.toFixed(1)}m, {h.free_transfers ?? 1} FT)
+                                        </span>
                                     </span>
                                     {h.active_chip && (
                                         <span className={`chip-badge chip-${h.active_chip}`}>

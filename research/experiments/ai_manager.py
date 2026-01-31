@@ -279,7 +279,8 @@ def main():
             'gw': gw, 'points': gw_points, 'total_xp': gw_xp, 'net_points': net_score,
             'transfer_cost': hits_cost, 'active_chip': active_chip_used,
             'transfers': [{'in': t['in']['name'], 'out': t['out']['name']} for t in transfers],
-            'squad': squad_details, 'bank': manager.bank
+            'squad': squad_details, 'bank': manager.bank,
+            'free_transfers': manager.free_transfers
         }
         results_history.append(history_entry)
         
