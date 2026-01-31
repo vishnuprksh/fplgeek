@@ -165,6 +165,18 @@ export class SqliteProvider implements IDataProvider {
     }
 
     async getBacktestHistory(): Promise<any[]> {
+        // Attempt to fetch generated JSON backtest first
+        try {
+            const response = await fetch('/data/backtest_results.json');
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Loaded backtest results from JSON file");
+                return data;
+            }
+        } catch (e) {
+            console.warn("Failed to fetch backtest_results.json", e);
+        }
+
         await this.ensureInitialized();
         if (!this.db) throw new Error("Database not initialized");
 
