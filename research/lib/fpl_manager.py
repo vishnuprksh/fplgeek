@@ -390,7 +390,7 @@ class FPLManager:
                         best_gain = gain
                         best_move = (p_out, p_in, cost_pts, selling_price)
             
-            if best_move and best_gain > 0.5:
+            if best_move and best_gain > 1.0:
                 p_out, p_in, cost_pts, selling_price = best_move
                 current_squad_ids.remove(p_out['id'])
                 current_squad_ids.append(p_in['id'])
