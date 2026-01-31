@@ -86,23 +86,23 @@ function main() {
     let totalSamples = 0;
 
     for (const player of players) {
-        const history = historyByPlayer[player.id];
-        if (!history || history.length < LOOKBACK) continue;
+        // Filter out matches with missing data
+        const historyRawData = historyByPlayer[player.id] || [];
+        const history = historyRawData.filter(m => m.kickoff_time && !isNaN(new Date(m.kickoff_time).getTime()));
+        if (history.length < LOOKBACK) continue;
 
-        // Sort by Kickoff Time (Chronological) to handle multiple seasons correctly
+        // Sort by Kickoff Time (Chronological: Oldest -> Newest)
         history.sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
 
         // Iterate through rounds to create samples
-        // We predict Round T. We need history from T-1, T-2...
-        // We must respect Season boundaries. History window should probably NOT cross seasons (reset form).
-        // OR we allow it but note the long gap (hoursRest will be huge).
-
-        for (let i = LOOKBACK; i < history.length; i++) {
+        for (let i = 0; i < history.length; i++) {
             const targetMatch = history[i];
             const gw = parseInt(targetMatch.round as any);
-            if (isNaN(gw)) continue; // Skip bad data
+            if (isNaN(gw)) continue;
 
-            // Determine Season
+            // Skip entries if we don't have enough history for the sequence
+            if (i < LOOKBACK) continue;
+
             const date = new Date(targetMatch.kickoff_time);
             const season = date.getFullYear() === 2024 || (date.getFullYear() === 2025 && date.getMonth() < 6) ? "24/25" : "25/26";
 

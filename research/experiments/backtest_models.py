@@ -2,28 +2,35 @@ import json
 import numpy as np
 import pandas as pd
 import tensorflow as tf
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, LSTM, Dense, Concatenate, Dropout, Embedding, Flatten
+from tensorflow.keras.optimizers import Adam
 import sqlite3
 import os
 
 # Configuration
 DATA_DIR = "public/data/processed"
-MODELS_DIR = "public/models"
+MODELS_DIR = "public/models/backtest" # Separate dir for backtest models
 DB_PATH = "public/data/fpl.sqlite"
 OUTPUT_FILE = "public/data/backtest_results.json"
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]
 
-# Load Models (Global)
-models = {}
+# Feature Params
+SEQ_LEN = 5
+NUM_FEATURES = 13
+
+# --- Helper Functions ---
 
 def load_json(path):
     with open(path, "r") as f:
         return json.load(f)
 
 def clean_and_scale(X_seq, X_ctx):
-    # Same scaling as training
+    # 1. Replace NaN/Inf
     X_seq = np.nan_to_num(X_seq, nan=0.0, posinf=0.0, neginf=0.0)
     X_ctx = np.nan_to_num(X_ctx, nan=0.0, posinf=0.0, neginf=0.0)
     
+    # 2. Scale (Simple Global Scaling)
     scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 100, 15, 1, 20], dtype=np.float32)
     X_seq = X_seq / scales_seq.reshape(1, 1, -1)
     
@@ -32,44 +39,53 @@ def clean_and_scale(X_seq, X_ctx):
     
     return X_seq, X_ctx
 
-def get_best_squad(predictions, budget=1000):
-    # predictions: list of {id, name, team, type, cost, xp, actual}
-    # Simple Greedy approach for now:
-    # 1. Sort by XP
-    # 2. Pick top: 1 GKP, 3 DEF, 3 MID, 1 FWD (Base 8)
-    # 3. Fill remaining 3 slots with highest XP players from valid positions to make valid formation
-    # Formation rules: 1 GKP, 3-5 DEF, 2-5 MID, 1-3 FWD.
-    # Total 11 players.
+def build_model():
+    # 1. Sequence Input (LSTM)
+    seq_input = Input(shape=(SEQ_LEN, NUM_FEATURES), name="seq_input")
+    x = LSTM(32, return_sequences=False)(seq_input)
+    x = Dropout(0.2)(x)
     
-    # Group by pos
+    # 2. Context Input (Dense)
+    ctx_input = Input(shape=(4,), name="ctx_input")
+    
+    # 3. Opponent Embedding
+    opp_input = Input(shape=(1,), name="opp_input")
+    opp_embed = Embedding(input_dim=21, output_dim=4)(opp_input) # 20 teams + 1 buffer
+    opp_flat = Flatten()(opp_embed)
+    
+    # Concatenate
+    concat = Concatenate()([x, ctx_input, opp_flat])
+    
+    # Dense Layers
+    dense = Dense(32, activation='relu')(concat)
+    dense = Dense(16, activation='relu')(dense)
+    output = Dense(1, activation='linear')(dense) # Regression
+    
+    model = Model(inputs=[seq_input, ctx_input, opp_input], outputs=output)
+    model.compile(optimizer=Adam(learning_rate=0.001), loss='mse', metrics=['mae'])
+    return model
+
+def get_best_squad(predictions, budget=1000):
+    # Sort by XP (5-week sum)
     gkps = sorted([p for p in predictions if p['type'] == 1], key=lambda x: x['xp'], reverse=True)
     defs = sorted([p for p in predictions if p['type'] == 2], key=lambda x: x['xp'], reverse=True)
     mids = sorted([p for p in predictions if p['type'] == 3], key=lambda x: x['xp'], reverse=True)
     fwds = sorted([p for p in predictions if p['type'] == 4], key=lambda x: x['xp'], reverse=True)
 
     squad = []
-    cost = 0
-
-    # Force 1 GKP
-    if gkps: squad.append(gkps.pop(0))
     
-    # Force 3 DEF
+    # 1. Core Structure (1 GKP, 3 DEF, 2 MID, 1 FWD) - Minimal valid set to build on
+    if gkps: squad.append(gkps.pop(0))
     for _ in range(3): 
         if defs: squad.append(defs.pop(0))
-        
-    # Force 2 MID
     for _ in range(2): 
         if mids: squad.append(mids.pop(0))
-        
-    # Force 1 FWD
     for _ in range(1): 
         if fwds: squad.append(fwds.pop(0))
         
-    # Fill remaining 4 spots with best available
-    remaining = sorted(defs + mids + fwds, key=lambda x: x['xp'], reverse=True)
+    # 2. Fill remaining 4 spots with best points (respecting max constraints)
+    remaining = sorted(defs + mids + fwds, key=lambda x: x['xp'], reverse=True) # GKP usually only 1 needed
     
-    # Naive fill (doesn't check strict formation max limits, but usually ok)
-    # DEF max 5, MID max 5, FWD max 3
     def_count = 3
     mid_count = 2
     fwd_count = 1
@@ -89,22 +105,18 @@ def get_best_squad(predictions, budget=1000):
             
     return squad
 
-def main():
-    print("Starting Backtest...")
-    
-    # Load Models
-    for pos in POSITIONS:
-        path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
-        if os.path.exists(path):
-            models[pos] = tf.keras.models.load_model(path)
-            print(f"Loaded {pos} model")
+# --- Main Logic ---
 
-    # Load All Processed Data
-    all_data = {} # pos -> list of samples
+def main():
+    print("Starting Realtime Simulation Backtest...")
+    os.makedirs(MODELS_DIR, exist_ok=True)
+    
+    # 1. Load Data
+    all_data = {}
     for pos in POSITIONS:
         all_data[pos] = load_json(os.path.join(DATA_DIR, f"dataset_{pos}.json"))
-
-    # Load Fixtures & Players from DB
+        
+    # 2. Load Fixtures/Players Metadata
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -116,285 +128,217 @@ def main():
     players = [json.loads(r['data']) for r in cursor.fetchall()]
     players_map = {p['id']: p for p in players}
     
-    cursor.execute("SELECT data FROM events WHERE id='events'")
-    events_row = cursor.fetchone()
-    if events_row:
-        events = json.loads(events_row['data'])
+    # Find active simulation GWs (Season 25/26)
+    # We simulate from GW 1 to Current
+    sim_gws = sorted(list(set([d['gw'] for p in POSITIONS for d in all_data[p] if d.get('season') == '25/26'])))
+    if not sim_gws:
+        print("No simulation data found for 25/26. Using 24/25?")
+        # Fallback logic if needed, but we saw 25/26 in file.
+        sim_gws = range(1, 24)
     else:
-        events = []
+        # Limit to contiguous range starting 1
+        sim_gws = [g for g in sim_gws if g >= 1]
     
-    current_gw_obj = next((e for e in events if e['is_current']), None)
-    if not current_gw_obj: current_gw = 23
-    else: current_gw = current_gw_obj['id']
-    
-    conn.close()
+    print(f"Simulating GWs: {sim_gws}")
 
+    # 3. Initial Training (Season 24/25)
+    models = {}
+    print("Initializing Models (Training on Season 24/25)...")
+    
+    for pos in POSITIONS:
+        raw_data = all_data[pos]
+        # Filter Train Data
+        train_samples = [d for d in raw_data if d.get('season') == '24/25']
+        
+        if not train_samples:
+            print(f"Warning: No training data for {pos} in 24/25. Model will be random.")
+            models[pos] = build_model()
+            continue
+            
+        X_seq = np.array([d['history_sequence'] for d in train_samples], dtype=np.float32)
+        X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in train_samples], dtype=np.float32)
+        X_opp = np.array([d['ctx_opponent'] for d in train_samples], dtype=np.float32)
+        y = np.array([d['target'] for d in train_samples], dtype=np.float32)
+        
+        X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
+        X_opp = X_opp / 1350.0
+        
+        model = build_model()
+        model.fit([X_seq, X_ctx, X_opp], y, epochs=10, batch_size=32, verbose=0)
+        models[pos] = model
+        print(f"Trained {pos} base model ({len(train_samples)} samples)")
+
+    # 4. Simulation Loop
     results = []
     
-    # Backtest Loop: GW 11 to Current
-    for gw in range(11, current_gw + 1):
-        print(f"Analyzing GW {gw}...")
+    # Pre-build Team Fixtures Maps for efficiency
+    # TeamID -> GW -> Info
+    team_fixtures_map = {}
+    for f in fixtures:
+        h = f['team_h']
+        a = f['team_a']
+        gw = f['event']
+        if not gw: continue
         
-        # 1. Identify Fixtures for this GW
-        gw_fixtures = [f for f in fixtures if f['event'] == gw]
-        if not gw_fixtures: continue
+        if h not in team_fixtures_map: team_fixtures_map[h] = {}
+        team_fixtures_map[h][gw] = { 'opponent': a, 'difficulty': f['team_h_difficulty'], 'was_home': 1 }
         
-        # 2. Predict Points for all players (5-week projection)
-        predictions = []
+        if a not in team_fixtures_map: team_fixtures_map[a] = {}
+        team_fixtures_map[a][gw] = { 'opponent': h, 'difficulty': f['team_a_difficulty'], 'was_home': 0 }
+
+    for gw in sim_gws:
+        print(f"--- Simulating GW {gw} ---")
         
-        # We need to predict for GW, GW+1, ..., GW+4
-        # We assume player history doesn't change for the future predictions (Simplified)
-        # But we MUST update the Context (Opponent, Difficulty, Home/Away)
+        # A. Predict & Selection (5-week)
+        # Note: We can only use current model state.
         
-        # Pre-calculate fixtures for next 5 weeks
-        # Map: PlayerID -> [List of 5 Contexts]
-        player_future_ctx = {}
-        
-        for offset in range(5): # 0 to 4
-            target_gw = gw + offset
-            # Find fixtures for this target_gw
-            target_fixtures = [f for f in fixtures if f['event'] == target_gw]
-            
-            for f in target_fixtures:
-                # Home Player
-                h_id = f['team_h']
-                # Away Player
-                a_id = f['team_a']
-                
-                # Difficulty
-                h_diff = f['team_h_difficulty']
-                a_diff = f['team_a_difficulty']
-                
-                # We need to map TEAM ID to PLAYERS
-                # Simplification: Iterate all players, check their team
-                # Efficient: Pre-map TeamID -> [PlayerIDs] ?
-                # Or just iterate players in the outer loop and find their fixture.
-                pass
-        
-        # Optimization: Build map of Team -> Fixtures for next 5 GWs
-        team_fixtures_map = {} # TeamID -> { GW: FixtureInfo }
-        for offset in range(5):
-            target_gw = gw + offset
-            target_fixtures = [f for f in fixtures if f['event'] == target_gw]
-            for f in target_fixtures:
-                # Home Team Info
-                if f['team_h'] not in team_fixtures_map: team_fixtures_map[f['team_h']] = {}
-                team_fixtures_map[f['team_h']][target_gw] = {
-                    'opponent': f['team_a'], # Opponent Team ID
-                    'difficulty': f['team_h_difficulty'],
-                    'was_home': 1
-                }
-                # Away Team Info
-                if f['team_a'] not in team_fixtures_map: team_fixtures_map[f['team_a']] = {}
-                team_fixtures_map[f['team_a']][target_gw] = {
-                    'opponent': f['team_h'],
-                    'difficulty': f['team_a_difficulty'],
-                    'was_home': 0
-                }
+        predictions = [] # meta + xp
         
         for pos in POSITIONS:
-            if pos not in models: continue
-            model = models[pos]
-            samples = all_data[pos]
+            # Get Candidates for Current GW (from dataset for convenience, as it holds seq)
+            # We use '25/26' rows for this GW.
+            # In reality, we would construct this from raw data, but using dataset row is fine
+            # as long as we haven't trained on it yet.
             
-            # Prepare Batch
-            # We need to run inference 5 times per player.
-            # Batch 0: Offset 0
-            # Batch 1: Offset 1 ...
+            samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
+            if not samples: continue
             
-            # Group samples by player
-            # Only process players who have a match in CURRENT GW (valid starter)
-            # Actually, we should consider players even if they blank GW1 but score big GW2-5?
-            # get_best_squad usually picks valid XI for THIS week.
-            # If a player has NO game in GW T, his 'actual' is 0.
-            # If we pick him based on 5-week potential, we suffer 0 this week.
-            # This is valid FPL strategy (preparing for DGW etc).
+            # For each candidate, we need 5-week sequence inputs.
+            # GW + 0: Use sample's own inputs.
+            # GW + 1..4: Construct inputs using updated Context (Opponent etc).
+            # Sequence (History)? Fixed to current (Simplification).
             
-            valid_samples = [s for s in samples if s.get('season') == '25/26' and s['gw'] == gw]
+            X_seq_dim = np.array([s['history_sequence'] for s in samples], dtype=np.float32)
+            X_seq_dim, _ = clean_and_scale(X_seq_dim, np.zeros((len(samples), 4)))
             
-            if not valid_samples: continue
-            
-            # We need to construct inputs for 5 offsets.
-            # X_seq is constant (history up to GW-1).
-            # X_ctx varies.
-            
-            X_seq_list = []
-            X_ctx_list_5 = [[], [], [], [], []] # 5 lists for 5 offsets
-            X_opp_list_5 = [[], [], [], [], []]
-            
-            meta_list = []
-            
-            for s in valid_samples:
-                p_meta = players_map.get(s['id'])
-                if not p_meta: continue
-                
-                tid = p_meta['team']
-                
-                # Check if team has fixture in current GW (Offset 0)
-                # S['ctx_...'] in dataset is correct for Offset 0.
-                
-                # History is constant
-                X_seq_list.append(s['history_sequence'])
-                
-                meta_list.append({
-                    'id': s['id'],
-                    'name': s['name'],
-                    'team': p_meta['team'],
-                    'type': p_meta['element_type'],
-                    'cost': p_meta['now_cost'],
-                    'actual': s['target'],
-                    'xp_1': 0,
-                    'xp_5': 0
-                })
-
-                # Build Contexts for 5 weeks
-                for offset in range(5):
-                    target_gw = gw + offset
-                    
-                    # Default values (No match / Blank GW)
-                    # If blank, complexity: Model expects valid input?
-                    # We feed "Average Opponent" or "Hard Opponent"?
-                    # Difficulty 5 (Max) for Blank? Or 0?
-                    # Price, Rest: Constant?
-                    # Opponent: ?
-                    
-                    fix_info = team_fixtures_map.get(tid, {}).get(target_gw)
-                    
-                    if fix_info:
-                        # Map Opponent Team ID to Difficulty Rank?
-                        # In `generate_dataset.ts`, opponent is mapped to 1-5 rank (fdr).
-                        # Wait, `ctx_opponent` input to model is Opponent Difficulty?
-                        # `predict_next_gw.py` line 140: `row_team['strength_overall_away']`.
-                        # It uses Team Strength!
-                        # `dataset` has `ctx_opponent`. In generate_dataset, it is `opponent_team` ID?
-                        # No, `ctx_opponent` in the python script usually refers to "Opponent Strength".
-                        # Let's check `train_models.py` or `generate_dataset.json`.
-                        # `generate_dataset.ts`:
-                        # `ctx_opponent: fixture.team_h === p.team ? awayTeam.strength : homeTeam.strength`
-                        # So it is STRENGTH (approx 1000-1350).
-                        # In `backtest`, `s['ctx_opponent']` is already there for Offset 0.
-                        # For Offset 1+, we need to look up Opponent Strength from SQLite `teams` table?
-                        # Backtest script loaded `players` but not `teams`.
-                        # I must assume I need to fetch TEAM STRENGTHS.
-                        # I will use `s['ctx_opponent']` for Offset 0.
-                        # For others, I'll approximate using Difficulty * 250?
-                        # Or just use Difficulty.
-                        
-                        # Fix: `train_models.py` scales `ctx_sequence` (Wait `ctx_opp` is usually separate input?)
-                        # `train_models.py`: `X_opp = np.array([s['ctx_opponent'] for s in samples])`.
-                        # `clean_and_scale`: `scales_ctx = [1, 5, 15, 200]`. (Home, Diff, Price, Rest).
-                        # Opp scales?
-                        # `train_models.py` doesn't scale X_opp in `clean_and_scale` explicitly?
-                        # Be careful.
-                        # Line 106 train_models: `X_opp = X_opp / 1350.0` (Hardcoded inline).
-                        # Okay.
-                        
-                        # If fix_info exists:
-                        was_home = fix_info['was_home']
-                        diff = fix_info['difficulty']
-                        price = s['ctx_price']
-                        rest = 144.0 # detailed rest hours hard to calc, assume 6 days
-                        
-                        # Opponent Strength?
-                        # I don't have teams loaded.
-                        # I'll use Difficulty as proxy for Strength?
-                        # Diff 1-5. Strength ~ 1000 + (Diff * 60)?
-                        # Very rough.
-                        # Better: Use `s['ctx_opponent']` if offset=0.
-                        # Else use 1000 + (diff * 100).
-                        
-                        opp_strength = 1000 + (diff * 60)
-                        if offset == 0: opp_strength = s['ctx_opponent']
-                        
-                        X_ctx_list_5[offset].append([was_home, diff, price, rest])
-                        X_opp_list_5[offset].append(opp_strength)
-                        
-                    else:
-                        # Blank GW. Predict 0.
-                        # How to tell model "0"?
-                        # Send dummy input and manually set result to 0 later?
-                        # Yes.
-                        X_ctx_list_5[offset].append([0, 5, s['ctx_price'], 200])
-                        X_opp_list_5[offset].append(1350) # Hardest opp
-            
-            if not X_seq_list: continue
-
-            # Run 5 Inferences
-            X_seq = np.array(X_seq_list, dtype=np.float32)
-            X_seq, _ = clean_and_scale(X_seq, np.zeros((len(X_seq), 4))) # Clean seq only
-
-            total_preds = np.zeros(len(meta_list))
+            total_preds = np.zeros(len(samples))
+            xp_1w = np.zeros(len(samples))
             
             for offset in range(5):
-                X_ctx = np.array(X_ctx_list_5[offset], dtype=np.float32)
-                X_opp = np.array(X_opp_list_5[offset], dtype=np.float32)
+                target_gw = gw + offset
+                
+                # Build Context for Batch
+                ctx_list = []
+                opp_list = []
+                
+                for s in samples:
+                    # Find fixture
+                    # We need Team ID
+                    meta = players_map.get(s['id'])
+                    if not meta: 
+                        ctx_list.append([0, 5, 0, 0]) # Dummy
+                        opp_list.append(1350)
+                        continue
+                        
+                    tid = meta['team']
+                    fix = team_fixtures_map.get(tid, {}).get(target_gw)
+                    
+                    if fix:
+                        # Context: [Home, Diff, Price, Rest]
+                        # Price: assume constant s['ctx_price']
+                        # Rest: assume 6 days (144hrs)
+                        # Opponent: Strength approx 1000 + diff*60
+                        
+                        opp_strength = 1000 + (fix['difficulty'] * 60)
+                        if offset == 0: opp_strength = s['ctx_opponent'] # Use exact if available
+                        
+                        ctx_list.append([fix['was_home'], fix['difficulty'], s['ctx_price'], 144.0])
+                        opp_list.append(opp_strength)
+                    else:
+                        # Blank
+                        ctx_list.append([0, 5, s['ctx_price'], 200]) # Diff 5 for blank (suppression)
+                        opp_list.append(1350)
+                
+                X_ctx = np.array(ctx_list, dtype=np.float32)
+                X_opp = np.array(opp_list, dtype=np.float32)
                 
                 # Scale
-                _, X_ctx = clean_and_scale(np.zeros_like(X_seq), X_ctx)
-                X_opp = X_opp / 1350.0 # Inline scaling matches train_models
+                _, X_ctx = clean_and_scale(np.zeros_like(X_seq_dim), X_ctx)
+                X_opp = X_opp / 1350.0
                 
-                preds = model.predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
+                # Predict
+                preds = models[pos].predict([X_seq_dim, X_ctx, X_opp], verbose=0).flatten()
                 
-                # Zero out blanks (no fixture in map)
-                # Re-check fixture map?
-                # We used dummy inputs for blanks. Model might predict 2-3 points even for hard match.
-                # We need to explicitly mask blanks.
-                
-                for i, m in enumerate(meta_list):
-                    p_team = m['team']
-                    t_gw = gw + offset
-                    if not team_fixtures_map.get(p_team, {}).get(t_gw):
-                        preds[i] = 0.0
-                
+                # Mask Blanks (Manual check)
+                for i, s in enumerate(samples):
+                    meta = players_map.get(s['id'])
+                    if meta:
+                        tid = meta['team']
+                        if not team_fixtures_map.get(tid, {}).get(target_gw):
+                            preds[i] = 0.0
+                            
                 total_preds += preds
+                if offset == 0: yp_1w = preds # Logic for display
                 
                 if offset == 0:
-                    for i, m in enumerate(meta_list):
-                        m['xp_1'] = float(preds[i])
+                    xp_1w = preds
 
-            # Store 5-week total
-            for i, m in enumerate(meta_list):
-                m['xp'] = float(total_preds[i]) # Set XP to 5-week sum for SELECTION
-                predictions.append(m)
-
-        # 3. Form Squad
+            # Merge results
+            for i, s in enumerate(samples):
+                predictions.append({
+                    'id': s['id'],
+                    'name': s['name'],
+                    'type': players_map[s['id']]['element_type'],
+                    'team': players_map[s['id']]['team'],
+                    'cost': s['ctx_price'],
+                    'xp': float(total_preds[i]), # 5-Week Sum
+                    'xp_1': float(xp_1w[i]),       # 1-Week
+                    'actual': s['target']
+                })
+        
+        # Select Squad
         best_squad = get_best_squad(predictions)
         
-        if not best_squad: continue
+        if best_squad:
+            ai_score = sum([p['actual'] for p in best_squad])
+            xp_sum_1w = sum([p['xp_1'] for p in best_squad])
+            
+            # Format Result (using xp_1 for visual consistency vs actual)
+            squad_display = []
+            for p in best_squad:
+                pd = p.copy()
+                pd['xp'] = p['xp_1'] # Display next gw pred
+                squad_display.append(pd)
+                
+            results.append({
+                'gw': gw,
+                'ai_points': float(ai_score),
+                'xp': float(xp_sum_1w), # 1w Sum
+                'squad': squad_display
+            })
+            print(f"GW {gw}: Pred {xp_sum_1w:.1f} | Actual {ai_score} (5W Model)")
         
-        # 4. Calculate Totals
-        ai_points = sum([p['actual'] for p in best_squad])
+        # B. Online Training (Update Models)
+        # Train on the data from THIS GW (gw)
+        # We simulate that the GW has finished, so we have the labels (actual points).
         
-        # IMPORTANT: 'xp' in result should probably be the 1-week prediction for Comparison?
-        # Or 5-week? User said "Compare prediction and actual".
-        # Comparing 5-week Sum to 1-week Actual is weird visually (280 vs 50).
-        # I will revert the 'xp' field in the Saved Result to 'xp_1' (Next GW only) for display correctness.
-        # But selection was made using 'xp' (5-week).
-        
-        final_squad_display = []
-        xp_total_1w = 0
-        
-        for p in best_squad:
-            p_display = p.copy()
-            p_display['xp'] = p['xp_1'] # Show 1-week prediction in UI
-            p_display['xp_5w'] = p['xp'] # Keep 5-week for debug?
-            xp_total_1w += p['xp_1']
-            final_squad_display.append(p_display)
-
-        results.append({
-            'gw': gw,
-            'ai_points': float(ai_points),
-            'xp': float(xp_total_1w), # Show 1-week Sum
-            'squad': final_squad_display
-        })
-        
-        print(f"GW {gw}: Predicted (1W) {xp_total_1w:.1f}, Actual {ai_points}. Selected using 5W Sum.")
+        print(f"Updating models with GW {gw} data...")
+        for pos in POSITIONS:
+            # Extract samples for this GW
+            # Re-read to be clean
+            samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
+            if not samples: continue
+            
+            X_seq = np.array([d['history_sequence'] for d in samples], dtype=np.float32)
+            X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in samples], dtype=np.float32)
+            X_opp = np.array([d['ctx_opponent'] for d in samples], dtype=np.float32)
+            y = np.array([d['target'] for d in samples], dtype=np.float32)
+            
+            X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
+            X_opp = X_opp / 1350.0
+            
+            # Incremental Fit
+            # Small learning rate to avoid destroying existing knowledge?
+            # Or just standard fit. 
+            # Epochs=5 usually enough for fine-tuning.
+            
+            models[pos].fit([X_seq, X_ctx, X_opp], y, epochs=5, batch_size=32, verbose=0)
 
     # Save Results
-    results.reverse() # Newest first
+    results.reverse()
     with open(OUTPUT_FILE, "w") as f:
         json.dump(results, f)
-    print(f"Saved results to {OUTPUT_FILE}")
+    print(f"Sim done. Results saved to {OUTPUT_FILE}")
 
 if __name__ == "__main__":
     main()
