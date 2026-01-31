@@ -6,7 +6,7 @@ import { TeamCard } from './components/TeamCard';
 import { PitchView } from './components/PitchView';
 import { FixtureAnalysis } from './components/FixtureAnalysis';
 import { PlayerAnalysis } from './components/PlayerAnalysis';
-import { Predictions } from './components/Predictions';
+
 import { ChatWindow } from './components/ChatWindow';
 import { TransferModal } from './components/TransferModal';
 import { AiHistory } from './components/AiHistory';
@@ -560,16 +560,7 @@ function App() {
               <PlayerAnalysis
                 elements={staticData.elements}
                 teams={staticData.teams}
-              />
-            </div>
-          )}
-
-          {currentView === 'predictions' && staticData && (
-            <div className="fade-in">
-              <Predictions
-                elements={staticData.elements}
-                teams={staticData.teams}
-                fixtures={fixtures}
+                predictions={predictionsMap}
               />
             </div>
           )}

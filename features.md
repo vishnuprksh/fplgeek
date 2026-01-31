@@ -11,5 +11,14 @@
     - [x] Form x Strength Ratio model
     - [x] 5-Gameweek predictive pipeline in backend
     - [x] Integrated display in player detail modal
+- [x] Deep Learning Predictions <!-- id: 5 -->
+    - [x] LSTM/Deep Learning Model for GKP, DEF, MID, FWD
+    - [x] 5-Gameweek Future Predictions
+    - [x] Integration with UI (JSON-based)
+- [x] Unified Player Table <!-- id: 6 -->
+    - [x] Combine Players and Predictions page
+    - [x] Sortable by AI Predictions
+    - [x] Add Selected % Metric (Requested)
+    - [x] Add Selected % Filter (Requested)
 - [ ] Calculate Total Seasonal Stats <!-- id: 4 -->
     - [ ] Verify consistency across seasons

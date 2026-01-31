@@ -5,29 +5,38 @@ import './PlayerAnalysis.css';
 import { PlayerDetailModal } from './PlayerDetailModal';
 
 
+
 interface PlayerAnalysisProps {
     elements: Player[];
     teams: Team[];
+    predictions?: Record<number, { totalForecast: number, next5Points: number[] }>;
 }
 
-type SortField = keyof Player | 'smart_value';
+type SortField = keyof Player | 'smart_value' | 'predicted_points' | 'next_gw_points';
 type SortDirection = 'asc' | 'desc';
 
-export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
+export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisProps) {
     const [search, setSearch] = useState('');
     const [positionFilter, setPositionFilter] = useState<number | 'all'>('all');
     const [teamFilter, setTeamFilter] = useState<number | 'all'>('all');
-    const [sortField, setSortField] = useState<SortField>('smart_value');
+    const [maxOwnership, setMaxOwnership] = useState<number | 'all'>('all');
+    const [sortField, setSortField] = useState<SortField>('predicted_points');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
     // Elements already have smart_value calculated in App.tsx
     const enrichedPlayers = useMemo(() => {
-        return elements.map(p => ({
-            ...p,
-            smart_value: (p.smart_value || 0)
-        }));
-    }, [elements]);
+        return elements.map(p => {
+            const pred = predictions ? predictions[p.id] : null;
+            return {
+                ...p,
+                smart_value: (p.smart_value || 0),
+                predicted_points: pred ? pred.totalForecast : 0,
+                next_gw_points: pred && pred.next5Points.length > 0 ? pred.next5Points[0] : 0,
+                ownership: parseFloat(p.selected_by_percent || "0")
+            };
+        });
+    }, [elements, predictions]);
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -43,19 +52,31 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
             const matchesSearch = p.web_name.toLowerCase().includes(search.toLowerCase());
             const matchesPosition = positionFilter === 'all' || p.element_type === positionFilter;
             const matchesTeam = teamFilter === 'all' || p.team === teamFilter;
-            return matchesSearch && matchesPosition && matchesTeam;
+            const matchesOwnership = maxOwnership === 'all' || p.ownership <= maxOwnership;
+            return matchesSearch && matchesPosition && matchesTeam && matchesOwnership;
         }).sort((a, b) => {
-            // Handle Smart Value sort
+            // Handle Custom sorts
             if (sortField === 'smart_value') {
                 const valA = a.smart_value ?? 0;
                 const valB = b.smart_value ?? 0;
                 return sortDirection === 'asc' ? valA - valB : valB - valA;
             }
-            const valA = Number(a[sortField as keyof Player] || 0);
-            const valB = Number(b[sortField as keyof Player] || 0);
+            if (sortField === 'predicted_points') {
+                const valA = a.predicted_points ?? 0;
+                const valB = b.predicted_points ?? 0;
+                return sortDirection === 'asc' ? valA - valB : valB - valA;
+            }
+            if (sortField === 'next_gw_points') {
+                const valA = a.next_gw_points ?? 0;
+                const valB = b.next_gw_points ?? 0;
+                return sortDirection === 'asc' ? valA - valB : valB - valA;
+            }
+
+            const valA = Number((a as any)[sortField] || 0);
+            const valB = Number((b as any)[sortField] || 0);
             return sortDirection === 'asc' ? valA - valB : valB - valA;
         });
-    }, [enrichedPlayers, search, positionFilter, teamFilter, sortField, sortDirection]);
+    }, [enrichedPlayers, search, positionFilter, teamFilter, maxOwnership, sortField, sortDirection]);
 
     const getTeamName = (id: number) => teams.find(t => t.id === id)?.short_name || '-';
     const getPosition = (type: number) => {
@@ -108,6 +129,19 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
                 </select>
 
                 <select
+                    value={maxOwnership}
+                    onChange={(e) => setMaxOwnership(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                    className="filter-select"
+                >
+                    <option value="all">Any Ownership</option>
+                    <option value="50">Under 50%</option>
+                    <option value="20">Under 20%</option>
+                    <option value="10">Differential (&lt;10%)</option>
+                    <option value="5">Differential (&lt;5%)</option>
+                    <option value="2">Ultra (&lt;2%)</option>
+                </select>
+
+                <select
                     value={teamFilter}
                     onChange={(e) => setTeamFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                     className="filter-select"
@@ -126,6 +160,8 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
                             <th>Name</th>
                             <th>Team</th>
                             <th>Pos</th>
+                            <th onClick={() => handleSort('predicted_points')} className="sortable">AI Pred (5GW) {sortField === 'predicted_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('next_gw_points')} className="sortable">Next GW {sortField === 'next_gw_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('smart_value')} className="sortable">Smart Val {sortField === 'smart_value' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -134,7 +170,7 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredPlayers.slice(0, 50).map(player => (
+                        {filteredPlayers.slice(0, 100).map(player => (
                             <tr key={player.id} onClick={() => setSelectedPlayer(player)} className="clickable-row">
                                 <td className="player-name-cell">
                                     <div className="player-name-main">{player.web_name}</div>
@@ -142,6 +178,12 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
                                 </td>
                                 <td>{getTeamName(player.team)}</td>
                                 <td>{getPosition(player.element_type)}</td>
+                                <td style={{ fontWeight: 'bold', color: player.predicted_points > 25 ? '#00ff87' : '#fff' }}>
+                                    {player.predicted_points.toFixed(1)}
+                                </td>
+                                <td style={{ color: player.next_gw_points > 5 ? '#00ff87' : '#fff' }}>
+                                    {player.next_gw_points.toFixed(1)}
+                                </td>
                                 <td>
                                     {(player.element_type >= 1 && player.element_type <= 4) ? (
                                         <div className="dvs-badge" style={{ backgroundColor: getScoreColor(player.smart_value || 0), color: '#fff', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '60px', textAlign: 'center', fontSize: '0.85em' }}>
@@ -160,7 +202,7 @@ export function PlayerAnalysis({ elements, teams }: PlayerAnalysisProps) {
                     </tbody>
                 </table>
                 <div className="table-footer">
-                    Showing top {Math.min(filteredPlayers.length, 50)} of {filteredPlayers.length} matches
+                    Showing top {Math.min(filteredPlayers.length, 100)} of {filteredPlayers.length} matches
                 </div>
             </div>
 
