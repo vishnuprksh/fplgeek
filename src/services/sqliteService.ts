@@ -140,6 +140,18 @@ export class SqliteProvider implements IDataProvider {
     }
 
     async getPredictions(): Promise<any[]> {
+        // Attempt to fetch generated JSON predictions first
+        try {
+            const response = await fetch('/data/ai_predictions.json');
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Loaded predictions from JSON file");
+                return data;
+            }
+        } catch (e) {
+            console.warn("Failed to fetch ai_predictions.json", e);
+        }
+
         await this.ensureInitialized();
         if (!this.db) throw new Error("Database not initialized");
 

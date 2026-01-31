@@ -166,6 +166,12 @@ def main():
         totals['mae'].append(mae)
         totals['rmse'].append(rmse)
         
+        # Save Model
+        model_path = f"public/models/model_{pos}.keras"
+        os.makedirs("public/models", exist_ok=True)
+        model.save(model_path)
+        print(f"Saved {pos} model to {model_path}")
+
         print(f"{pos} Results: MAE={mae:.4f}, RMSE={rmse:.4f}")
         
         report += f"### {pos} Model\n"
