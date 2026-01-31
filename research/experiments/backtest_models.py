@@ -286,27 +286,37 @@ def main():
                     'actual': s['target']
                 })
         
-        # Select Squad
-        best_squad = get_best_squad(predictions)
+        # Select best squad (11 players)
+        squad = get_best_squad(predictions)
         
-        if best_squad:
-            ai_score = sum([p['actual'] for p in best_squad])
-            xp_sum_1w = sum([p['xp_1'] for p in best_squad])
-            
-            # Format Result (using xp_1 for visual consistency vs actual)
-            squad_display = []
-            for p in best_squad:
-                pd = p.copy()
-                pd['xp'] = p['xp_1'] # Display next gw pred
-                squad_display.append(pd)
-                
-            results.append({
-                'gw': gw,
-                'ai_points': float(ai_score),
-                'xp': float(xp_sum_1w), # 1w Sum
-                'squad': squad_display
-            })
-            print(f"GW {gw}: Pred {xp_sum_1w:.1f} | Actual {ai_score} (5W Model)")
+        # Identify Captain (Highest XP)
+        # We use 1-week XP for captaincy as it's more tactical
+        captain = max(squad, key=lambda x: x['xp_1'])
+        
+        # Calculate actual points (Double Captain points)
+        ai_points = sum([p['actual'] for p in squad]) + captain['actual']
+        
+        # Record result
+        record = {
+            'gw': gw,
+            'ai_points': float(ai_points),
+            'xp': float(sum([p['xp_1'] for p in squad])), # Total squad 1w xP
+            'captain_id': captain['id'],
+            'squad': [{
+                'id': p['id'],
+                'name': p['name'],
+                'type': p['type'],
+                'team': p['team'],
+                'cost': p['cost'],
+                'xp': p['xp_1'], # 1-week prediction for display
+                'xp_5w': p['xp'],
+                'actual': p['actual'],
+                'is_captain': p['id'] == captain['id']
+            } for p in squad]
+        }
+        results.append(record)
+        
+        print(f"GW {gw}: Pred {record['xp']:.1f} | Actual {ai_points} (CPT: {captain['name']} {captain['actual']}pts)")
         
         # B. Online Training (Update Models)
         # Train on the data from THIS GW (gw)

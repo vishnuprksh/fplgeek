@@ -22,6 +22,7 @@ interface BacktestResult {
         xp: number;
         actual: number;
         cost: number;
+        is_captain?: boolean;
     }[];
 }
 
@@ -82,8 +83,8 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
         return squad.map((p, idx) => ({
             element: p.id,
             position: idx + 1,
-            multiplier: 1,
-            is_captain: idx === 0, // Mock captain
+            multiplier: p.is_captain ? 2 : 1,
+            is_captain: !!p.is_captain,
             is_vice_captain: false,
             selling_price: p.cost,
             purchase_price: p.cost
@@ -175,10 +176,14 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                             {h.squad.map(p => {
                                                 const teamName = teams.find(t => t.id === p.team)?.short_name;
                                                 return (
-                                                    <li key={p.id} className="player-row">
-                                                        <span className="player-name">{p.name} ({teamName})</span>
+                                                    <li key={p.id} className={`player-row ${p.is_captain ? 'captain' : ''}`}>
+                                                        <span className="player-name">
+                                                            {p.name} ({teamName}) {p.is_captain && <span className="c-badge">C</span>}
+                                                        </span>
                                                         <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
-                                                        <span className="player-actual">{p.actual} pts</span>
+                                                        <span className="player-actual">
+                                                            {p.is_captain ? `${p.actual * 2}` : p.actual} pts
+                                                        </span>
                                                     </li>
                                                 );
                                             })}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import type { Pick, Team, UnifiedPlayer } from '../types/fpl';
+import './PitchView.css';
 
 interface PitchViewProps {
     picks: Pick[];
