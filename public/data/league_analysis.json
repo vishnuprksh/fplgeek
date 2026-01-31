@@ -1,0 +1,7326 @@
+{
+  "league_id": 865,
+  "total_teams_analyzed": 100,
+  "history": [
+    {
+      "gw": 1,
+      "top_owned": [
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 86,
+          "percent": 86.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 85,
+          "percent": 85.0
+        },
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 64,
+          "percent": 64.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 59,
+          "percent": 59.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 59,
+          "percent": 59.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 56,
+          "percent": 56.00000000000001
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 54,
+          "percent": 54.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 52,
+          "percent": 52.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 47,
+          "percent": 47.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 44,
+          "percent": 44.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 508,
+          "name": "N.Williams (NFO)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 506,
+          "name": "Murillo (NFO)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 402,
+          "name": "A\u00eft-Nouri (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 370,
+          "name": "Frimpong (LIV)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 505,
+          "name": "Milenkovi\u0107 (NFO)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 145,
+          "name": "De Cuyper (BHA)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 610,
+          "name": "Wan-Bissaka (WHU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 211,
+          "name": "A.Ramsey (BUR)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 625,
+          "name": "F\u00fcllkrug (WHU)",
+          "count": 8,
+          "percent": 8.0
+        }
+      ]
+    },
+    {
+      "gw": 2,
+      "top_owned": [
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 87,
+          "percent": 87.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 83,
+          "percent": 83.0
+        },
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 66,
+          "percent": 66.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 63,
+          "percent": 63.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 57,
+          "percent": 56.99999999999999
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 56,
+          "percent": 56.00000000000001
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 52,
+          "percent": 52.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 50,
+          "percent": 50.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 44,
+          "percent": 44.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 508,
+          "name": "N.Williams (NFO)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 506,
+          "name": "Murillo (NFO)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 402,
+          "name": "A\u00eft-Nouri (MCI)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 505,
+          "name": "Milenkovi\u0107 (NFO)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 145,
+          "name": "De Cuyper (BHA)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 211,
+          "name": "A.Ramsey (BUR)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 610,
+          "name": "Wan-Bissaka (WHU)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 8,
+          "percent": 8.0
+        }
+      ]
+    },
+    {
+      "gw": 3,
+      "top_owned": [
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 86,
+          "percent": 86.0
+        },
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 73,
+          "percent": 73.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 68,
+          "percent": 68.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 61,
+          "percent": 61.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 53,
+          "percent": 53.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 45,
+          "percent": 45.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 44,
+          "percent": 44.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 31,
+          "percent": 31.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 31,
+          "percent": 31.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 506,
+          "name": "Murillo (NFO)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 508,
+          "name": "N.Williams (NFO)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 525,
+          "name": "Wood (NFO)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 505,
+          "name": "Milenkovi\u0107 (NFO)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 402,
+          "name": "A\u00eft-Nouri (MCI)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 145,
+          "name": "De Cuyper (BHA)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 8,
+          "percent": 8.0
+        }
+      ]
+    },
+    {
+      "gw": 4,
+      "top_owned": [
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 87,
+          "percent": 87.0
+        },
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 73,
+          "percent": 73.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 66,
+          "percent": 66.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 65,
+          "percent": 65.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 57,
+          "percent": 56.99999999999999
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 53,
+          "percent": 53.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 43,
+          "percent": 43.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 43,
+          "percent": 43.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 506,
+          "name": "Murillo (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 508,
+          "name": "N.Williams (NFO)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 419,
+          "name": "Grealish (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 525,
+          "name": "Wood (NFO)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 612,
+          "name": "L.Paquet\u00e1 (WHU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 8,
+          "percent": 8.0
+        }
+      ]
+    },
+    {
+      "gw": 5,
+      "top_owned": [
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 86,
+          "percent": 86.0
+        },
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 78,
+          "percent": 78.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 76,
+          "percent": 76.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 58,
+          "percent": 57.99999999999999
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 52,
+          "percent": 52.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 44,
+          "percent": 44.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 43,
+          "percent": 43.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 508,
+          "name": "N.Williams (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 506,
+          "name": "Murillo (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 419,
+          "name": "Grealish (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 525,
+          "name": "Wood (NFO)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 505,
+          "name": "Milenkovi\u0107 (NFO)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 612,
+          "name": "L.Paquet\u00e1 (WHU)",
+          "count": 8,
+          "percent": 8.0
+        }
+      ]
+    },
+    {
+      "gw": 6,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 88,
+          "percent": 88.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 70,
+          "percent": 70.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 66,
+          "percent": 66.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 54,
+          "percent": 54.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 45,
+          "percent": 45.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 44,
+          "percent": 44.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 508,
+          "name": "N.Williams (NFO)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 525,
+          "name": "Wood (NFO)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 419,
+          "name": "Grealish (EVE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 717,
+          "name": "Xavi (TOT)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 660,
+          "name": "Stach (LEE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 7,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 91,
+          "percent": 91.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 88,
+          "percent": 88.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 76,
+          "percent": 76.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 64,
+          "percent": 64.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 63,
+          "percent": 63.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 38,
+          "name": "Konsa (AVL)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 660,
+          "name": "Stach (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 419,
+          "name": "Grealish (EVE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 8,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 89,
+          "percent": 89.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 660,
+          "name": "Stach (LEE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 9,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 52,
+          "percent": 52.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 31,
+          "percent": 31.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 568,
+          "name": "Pedro Porro (TOT)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 603,
+          "name": "Diouf (WHU)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 241,
+          "name": "Caicedo (CHE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 660,
+          "name": "Stach (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 10,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 93,
+          "percent": 93.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 65,
+          "percent": 65.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 57,
+          "percent": 56.99999999999999
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 50,
+          "percent": 50.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 666,
+          "name": "Gy\u00f6keres (ARS)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 668,
+          "name": "Xhaka (SUN)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 100,
+          "name": "Kroupi.Jr (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 241,
+          "name": "Caicedo (CHE)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 11,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 93,
+          "percent": 93.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 91,
+          "percent": 91.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 70,
+          "percent": 70.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 58,
+          "percent": 57.99999999999999
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 57,
+          "percent": 56.99999999999999
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 241,
+          "name": "Caicedo (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 225,
+          "name": "James (CHE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 668,
+          "name": "Xhaka (SUN)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 582,
+          "name": "Kudus (TOT)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 100,
+          "name": "Kroupi.Jr (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 12,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 91,
+          "percent": 91.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 80,
+          "percent": 80.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 71,
+          "percent": 71.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 68,
+          "percent": 68.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 58,
+          "percent": 57.99999999999999
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 54,
+          "percent": 54.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 53,
+          "percent": 53.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 43,
+          "percent": 43.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 241,
+          "name": "Caicedo (CHE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 427,
+          "name": "Reijnders (MCI)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 668,
+          "name": "Xhaka (SUN)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 225,
+          "name": "James (CHE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 335,
+          "name": "King (FUL)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 469,
+          "name": "Pope (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 67,
+          "name": "Petrovi\u0107 (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 100,
+          "name": "Kroupi.Jr (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 13,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 91,
+          "percent": 91.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 74,
+          "percent": 74.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 65,
+          "percent": 65.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 56,
+          "percent": 56.00000000000001
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 54,
+          "percent": 54.0
+        },
+        {
+          "id": 36,
+          "name": "Cash (AVL)",
+          "count": 50,
+          "percent": 50.0
+        },
+        {
+          "id": 381,
+          "name": "M.Salah (LIV)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 32,
+          "name": "Martinez (AVL)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 120,
+          "name": "Schade (BRE)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 31,
+          "percent": 31.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 113,
+          "name": "Van den Berg (BRE)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 541,
+          "name": "Reinildo (SUN)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 447,
+          "name": "Heaven (MUN)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 418,
+          "name": "Doku (MCI)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 83,
+          "name": "O.Dango (BRE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 74,
+          "name": "Truffert (BOU)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 14,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 87,
+          "percent": 87.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 72,
+          "percent": 72.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 66,
+          "percent": 66.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 66,
+          "percent": 66.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 59,
+          "percent": 59.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 57,
+          "percent": 56.99999999999999
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 54,
+          "percent": 54.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 50,
+          "percent": 50.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 31,
+          "percent": 31.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 267,
+          "name": "Sarr (CRY)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 67,
+          "name": "Petrovi\u0107 (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 100,
+          "name": "Kroupi.Jr (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 178,
+          "name": "Welbeck (BHA)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 668,
+          "name": "Xhaka (SUN)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 502,
+          "name": "Sels (NFO)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 15,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 84,
+          "percent": 84.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 71,
+          "percent": 71.0
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 70,
+          "percent": 70.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 68,
+          "percent": 68.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 57,
+          "percent": 56.99999999999999
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 47,
+          "percent": 47.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 47,
+          "percent": 47.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 299,
+          "name": "Ndiaye (EVE)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 178,
+          "name": "Welbeck (BHA)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 384,
+          "name": "Gakpo (LIV)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 476,
+          "name": "Burn (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 485,
+          "name": "Gordon (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 224,
+          "name": "Cucurella (CHE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 5,
+          "percent": 5.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 5,
+          "percent": 5.0
+        },
+        {
+          "id": 668,
+          "name": "Xhaka (SUN)",
+          "count": 5,
+          "percent": 5.0
+        },
+        {
+          "id": 477,
+          "name": "Livramento (NEW)",
+          "count": 5,
+          "percent": 5.0
+        }
+      ]
+    },
+    {
+      "gw": 16,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 97,
+          "percent": 97.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 87,
+          "percent": 87.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 84,
+          "percent": 84.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 83,
+          "percent": 83.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 80,
+          "percent": 80.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 61,
+          "percent": 61.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 54,
+          "percent": 54.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 725,
+          "name": "Hincapie (ARS)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 36,
+          "name": "Cash (AVL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 266,
+          "name": "Eze (ARS)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 387,
+          "name": "Szoboszlai (LIV)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 67,
+          "name": "Petrovi\u0107 (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 256,
+          "name": "Mu\u00f1oz (CRY)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 113,
+          "name": "Van den Berg (BRE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 83,
+          "name": "O.Dango (BRE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 5,
+          "percent": 5.0
+        }
+      ]
+    },
+    {
+      "gw": 17,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 100,
+          "percent": 100.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 95,
+          "percent": 95.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 89,
+          "percent": 89.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 84,
+          "percent": 84.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 82,
+          "percent": 82.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 73,
+          "percent": 73.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 59,
+          "percent": 59.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 58,
+          "percent": 57.99999999999999
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 725,
+          "name": "Hincapie (ARS)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 257,
+          "name": "Lacroix (CRY)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 283,
+          "name": "Mateta (CRY)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 113,
+          "name": "Van den Berg (BRE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 67,
+          "name": "Petrovi\u0107 (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 387,
+          "name": "Szoboszlai (LIV)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 18,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 99,
+          "percent": 99.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 87,
+          "percent": 87.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 82,
+          "percent": 82.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 71,
+          "percent": 71.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 58,
+          "percent": 57.99999999999999
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 56,
+          "percent": 56.00000000000001
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 50,
+          "percent": 50.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 725,
+          "name": "Hincapie (ARS)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 113,
+          "name": "Van den Berg (BRE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 691,
+          "name": "Calvert-Lewin (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 390,
+          "name": "Gravenberch (LIV)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 67,
+          "name": "Petrovi\u0107 (BOU)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 19,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 99,
+          "percent": 99.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 84,
+          "percent": 84.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 80,
+          "percent": 80.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 74,
+          "percent": 74.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 65,
+          "percent": 65.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 56,
+          "percent": 56.00000000000001
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 46,
+          "percent": 46.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 33,
+          "percent": 33.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 473,
+          "name": "Hall (NEW)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 387,
+          "name": "Szoboszlai (LIV)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 160,
+          "name": "Minteh (BHA)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 67,
+          "name": "Petrovi\u0107 (BOU)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 725,
+          "name": "Hincapie (ARS)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 113,
+          "name": "Van den Berg (BRE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 736,
+          "name": "Donnarumma (MCI)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 261,
+          "name": "Richards (CRY)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 20,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 99,
+          "percent": 99.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 85,
+          "percent": 85.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 80,
+          "percent": 80.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 70,
+          "percent": 70.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 63,
+          "percent": 63.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 58,
+          "percent": 57.99999999999999
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 56,
+          "percent": 56.00000000000001
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 47,
+          "percent": 47.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 32,
+          "percent": 32.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 473,
+          "name": "Hall (NEW)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 403,
+          "name": "Gvardiol (MCI)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 485,
+          "name": "Gordon (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 387,
+          "name": "Szoboszlai (LIV)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 691,
+          "name": "Calvert-Lewin (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 348,
+          "name": "Rodon (LEE)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 21,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 99,
+          "percent": 99.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 83,
+          "percent": 83.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 80,
+          "percent": 80.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 71,
+          "percent": 71.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 70,
+          "percent": 70.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 45,
+          "percent": 45.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 43,
+          "percent": 43.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 34,
+          "percent": 34.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 473,
+          "name": "Hall (NEW)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 485,
+          "name": "Gordon (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 407,
+          "name": "Matheus N. (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 691,
+          "name": "Calvert-Lewin (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 387,
+          "name": "Szoboszlai (LIV)",
+          "count": 6,
+          "percent": 6.0
+        },
+        {
+          "id": 714,
+          "name": "Woltemade (NEW)",
+          "count": 6,
+          "percent": 6.0
+        }
+      ]
+    },
+    {
+      "gw": 22,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 99,
+          "percent": 99.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 85,
+          "percent": 85.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 79,
+          "percent": 79.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 75,
+          "percent": 75.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 66,
+          "percent": 66.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 51,
+          "percent": 51.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 47,
+          "percent": 47.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 45,
+          "percent": 45.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 44,
+          "percent": 44.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 40,
+          "percent": 40.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 38,
+          "percent": 38.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 30,
+          "percent": 30.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 29,
+          "percent": 28.999999999999996
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 11,
+          "percent": 11.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 473,
+          "name": "Hall (NEW)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 485,
+          "name": "Gordon (NEW)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 84,
+          "name": "Tavernier (BOU)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 36,
+          "name": "Cash (AVL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 23,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 99,
+          "percent": 99.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 87,
+          "percent": 87.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 79,
+          "percent": 79.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 49,
+          "percent": 49.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 48,
+          "percent": 48.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 45,
+          "percent": 45.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 45,
+          "percent": 45.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 43,
+          "percent": 43.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 414,
+          "name": "Foden (MCI)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 36,
+          "percent": 36.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 35,
+          "percent": 35.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 25,
+          "percent": 25.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 488,
+          "name": "Bruno G. (NEW)",
+          "count": 20,
+          "percent": 20.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 19,
+          "percent": 19.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 12,
+          "percent": 12.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 575,
+          "name": "Van de Ven (TOT)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 450,
+          "name": "Cunha (MUN)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 473,
+          "name": "Hall (NEW)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 303,
+          "name": "Garner (EVE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 36,
+          "name": "Cash (AVL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 485,
+          "name": "Gordon (NEW)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    },
+    {
+      "gw": 24,
+      "top_owned": [
+        {
+          "id": 430,
+          "name": "Haaland (MCI)",
+          "count": 96,
+          "percent": 96.0
+        },
+        {
+          "id": 5,
+          "name": "Gabriel (ARS)",
+          "count": 90,
+          "percent": 90.0
+        },
+        {
+          "id": 449,
+          "name": "B.Fernandes (MUN)",
+          "count": 86,
+          "percent": 86.0
+        },
+        {
+          "id": 470,
+          "name": "D\u00fabravka (BUR)",
+          "count": 78,
+          "percent": 78.0
+        },
+        {
+          "id": 237,
+          "name": "Enzo (CHE)",
+          "count": 67,
+          "percent": 67.0
+        },
+        {
+          "id": 136,
+          "name": "Thiago (BRE)",
+          "count": 60,
+          "percent": 60.0
+        },
+        {
+          "id": 21,
+          "name": "Rice (ARS)",
+          "count": 53,
+          "percent": 53.0
+        },
+        {
+          "id": 47,
+          "name": "Rogers (AVL)",
+          "count": 47,
+          "percent": 47.0
+        },
+        {
+          "id": 16,
+          "name": "Saka (ARS)",
+          "count": 42,
+          "percent": 42.0
+        },
+        {
+          "id": 226,
+          "name": "Chalobah (CHE)",
+          "count": 41,
+          "percent": 41.0
+        },
+        {
+          "id": 317,
+          "name": "Andersen (FUL)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 8,
+          "name": "J.Timber (ARS)",
+          "count": 39,
+          "percent": 39.0
+        },
+        {
+          "id": 329,
+          "name": "Wilson (FUL)",
+          "count": 37,
+          "percent": 37.0
+        },
+        {
+          "id": 684,
+          "name": "Thiaw (NEW)",
+          "count": 28,
+          "percent": 28.000000000000004
+        },
+        {
+          "id": 1,
+          "name": "Raya (ARS)",
+          "count": 27,
+          "percent": 27.0
+        },
+        {
+          "id": 119,
+          "name": "Mbeumo (MUN)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 291,
+          "name": "Tarkowski (EVE)",
+          "count": 26,
+          "percent": 26.0
+        },
+        {
+          "id": 139,
+          "name": "Verbruggen (BHA)",
+          "count": 24,
+          "percent": 24.0
+        },
+        {
+          "id": 82,
+          "name": "Semenyo (MCI)",
+          "count": 23,
+          "percent": 23.0
+        },
+        {
+          "id": 661,
+          "name": "Ekitik\u00e9 (LIV)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 252,
+          "name": "Marc Guiu (CHE)",
+          "count": 22,
+          "percent": 22.0
+        },
+        {
+          "id": 694,
+          "name": "Mukiele (SUN)",
+          "count": 21,
+          "percent": 21.0
+        },
+        {
+          "id": 220,
+          "name": "S\u00e1nchez (CHE)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 373,
+          "name": "Virgil (LIV)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 683,
+          "name": "Alderete (SUN)",
+          "count": 18,
+          "percent": 18.0
+        },
+        {
+          "id": 624,
+          "name": "Bowen (WHU)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 235,
+          "name": "Palmer (CHE)",
+          "count": 17,
+          "percent": 17.0
+        },
+        {
+          "id": 260,
+          "name": "Gu\u00e9hi (MCI)",
+          "count": 16,
+          "percent": 16.0
+        },
+        {
+          "id": 101,
+          "name": "Kelleher (BRE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 151,
+          "name": "Van Hecke (BHA)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 441,
+          "name": "Dorgu (MUN)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 249,
+          "name": "Jo\u00e3o Pedro (CHE)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 100,
+          "name": "Kroupi.Jr (BOU)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 382,
+          "name": "Wirtz (LIV)",
+          "count": 15,
+          "percent": 15.0
+        },
+        {
+          "id": 287,
+          "name": "Pickford (EVE)",
+          "count": 14,
+          "percent": 14.000000000000002
+        },
+        {
+          "id": 517,
+          "name": "Anderson (NFO)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 749,
+          "name": "Man\u00e9 (WOL)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 72,
+          "name": "Senesi (BOU)",
+          "count": 13,
+          "percent": 13.0
+        },
+        {
+          "id": 191,
+          "name": "Est\u00e8ve (BUR)",
+          "count": 10,
+          "percent": 10.0
+        },
+        {
+          "id": 97,
+          "name": "Evanilson (BOU)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 417,
+          "name": "Cherki (MCI)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 242,
+          "name": "Dewsbury-Hall (EVE)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 411,
+          "name": "O'Reilly (MCI)",
+          "count": 9,
+          "percent": 9.0
+        },
+        {
+          "id": 106,
+          "name": "Collins (BRE)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 64,
+          "name": "Watkins (AVL)",
+          "count": 8,
+          "percent": 8.0
+        },
+        {
+          "id": 36,
+          "name": "Cash (AVL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 295,
+          "name": "Keane (EVE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 337,
+          "name": "Ra\u00fal (FUL)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 473,
+          "name": "Hall (NEW)",
+          "count": 7,
+          "percent": 7.000000000000001
+        },
+        {
+          "id": 347,
+          "name": "Gudmundsson (LEE)",
+          "count": 7,
+          "percent": 7.000000000000001
+        }
+      ]
+    }
+  ]
+}

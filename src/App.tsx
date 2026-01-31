@@ -11,6 +11,7 @@ import { PlayerAnalysis } from './components/PlayerAnalysis';
 import { ChatWindow } from './components/ChatWindow';
 import { TransferModal } from './components/TransferModal';
 import { AiHistory } from './components/AiHistory';
+import { LeagueAnalysis } from './components/LeagueAnalysis';
 import './App.css';
 import { BottomNav } from './components/BottomNav';
 
@@ -21,7 +22,7 @@ import type { Player } from './types/fpl';
 function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league'>('dashboard');
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 
   // 1. Data Fetching Hook
@@ -275,6 +276,12 @@ function App() {
                 elements={staticData.elements}
                 teams={staticData.teams}
               />
+            </div>
+          )}
+
+          {currentView === 'league' && (
+            <div className="fade-in">
+              <LeagueAnalysis />
             </div>
           )}
         </main>

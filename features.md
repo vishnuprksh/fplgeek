@@ -29,3 +29,6 @@
     - [x] Differential Card Restriction (Max 2 players with <10% ownership)
     - [x] Captain Ownership Restriction (Captain must have 30%+ ownership)
     - [x] Injury-Based Auto-Benching (Avoids players with <100% chance of playing)
+- [ ] League Ownership Analysis <!-- id: 8 -->
+    - [ ] Fetch all teams in a classic league
+    - [ ] Historical ownership visualization
