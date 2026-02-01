@@ -40,53 +40,75 @@ def calculate_selling_price(purchase_price, current_price):
 
 def get_best_starting_squad(predictions):
     """
-    Initial squad selection - Greedy Algorithm
+    Global optimization for initial squad selection using Linear Programming.
+    Maximizes total predicted points subject to FPL constraints.
     Enforces max 2 differential players (<10% ownership)
+    Excludes injured/unavailable players
     """
-    squad = []
-    # Ownership Constraint: Only consider players suitable for "template" teams (> 5% ownership)
-    valid_predictions = [p for p in predictions if float(p.get('selected_by_percent', 0)) > 5.0]
+    from pulp import LpMaximize, LpProblem, LpVariable, lpSum, LpBinary, PULP_CBC_CMD
     
-    gkps = sorted([p for p in valid_predictions if p['type'] == 1], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-    defs = sorted([p for p in valid_predictions if p['type'] == 2], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-    mids = sorted([p for p in valid_predictions if p['type'] == 3], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-    fwds = sorted([p for p in valid_predictions if p['type'] == 4], key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
-
-    final_squad = []
+    # Filter valid players (ownership > 5%, not injured)
+    valid_predictions = [
+        p for p in predictions 
+        if float(p.get('selected_by_percent', 0)) > 5.0
+        and not should_bench_player(p)
+    ]
+    
+    if len(valid_predictions) < 15:
+        # Fallback: not enough players
+        print(f"⚠️ Only {len(valid_predictions)} valid players available (need 15)")
+        return [], 0
+    
+    # Create optimization problem
+    prob = LpProblem("FPL_Squad_Selection", LpMaximize)
+    
+    # Decision variables: binary (0 or 1) for each player
+    player_vars = {p['id']: LpVariable(f"player_{p['id']}", cat=LpBinary) 
+                   for p in valid_predictions}
+    
+    # Objective: Maximize total predicted points
+    prob += lpSum([p['xp'] * player_vars[p['id']] for p in valid_predictions])
+    
+    # Constraint 1: Budget (£100m = 1000 in 0.1m units)
+    prob += lpSum([p['cost'] * player_vars[p['id']] for p in valid_predictions]) <= 1000
+    
+    # Constraint 2: Exactly 15 players
+    prob += lpSum([player_vars[p['id']] for p in valid_predictions]) == 15
+    
+    # Constraint 3: Position requirements
+    gkps = [p for p in valid_predictions if p['type'] == 1]
+    defs = [p for p in valid_predictions if p['type'] == 2]
+    mids = [p for p in valid_predictions if p['type'] == 3]
+    fwds = [p for p in valid_predictions if p['type'] == 4]
+    
+    prob += lpSum([player_vars[p['id']] for p in gkps]) == 2
+    prob += lpSum([player_vars[p['id']] for p in defs]) == 5
+    prob += lpSum([player_vars[p['id']] for p in mids]) == 5
+    prob += lpSum([player_vars[p['id']] for p in fwds]) == 3
+    
+    # Constraint 4: Max 3 players per team
+    teams = set(p['team'] for p in valid_predictions)
+    for team_id in teams:
+        team_players = [p for p in valid_predictions if p['team'] == team_id]
+        prob += lpSum([player_vars[p['id']] for p in team_players]) <= 3
+    
+    # Constraint 5: Max 2 differential players (< 10% ownership)
+    differentials = [p for p in valid_predictions if is_differential(p)]
+    prob += lpSum([player_vars[p['id']] for p in differentials]) <= 2
+    
+    # Solve (suppress output)
+    prob.solve(PULP_CBC_CMD(msg=0))
+    
+    # Extract selected players
+    selected_squad = []
     total_cost = 0
-    team_counts = {}
-    differential_count = 0  # Track differential players
     
-    def add_player(p):
-        nonlocal total_cost, differential_count
-        if total_cost + p['cost'] > 1000: return False
-        if team_counts.get(p['team'], 0) >= 3: return False
-        
-        # Check differential limit (max 2 players with <10% ownership)
-        if is_differential(p) and differential_count >= 2:
-            return False
-        
-        final_squad.append(p)
-        total_cost += p['cost']
-        team_counts[p['team']] = team_counts.get(p['team'], 0) + 1
-        if is_differential(p):
-            differential_count += 1
-        return True
-
-    if gkps: add_player(gkps[0])
-    if len(gkps) > 1: add_player(gkps[-1])
+    for p in valid_predictions:
+        if player_vars[p['id']].varValue == 1:
+            selected_squad.append(p)
+            total_cost += p['cost']
     
-    for p in defs: 
-        if len([x for x in final_squad if x['type']==2]) >= 5: break
-        add_player(p)
-    for p in mids:
-        if len([x for x in final_squad if x['type']==3]) >= 5: break
-        add_player(p)
-    for p in fwds:
-        if len([x for x in final_squad if x['type']==4]) >= 3: break
-        add_player(p)
-        
-    return final_squad, total_cost
+    return selected_squad, total_cost
 
 class FPLManager:
     def __init__(self, players_map):

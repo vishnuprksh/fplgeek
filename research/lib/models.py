@@ -17,7 +17,9 @@ def clean_and_scale(X_seq, X_ctx):
     scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 15, 1, 20], dtype=np.float32)
     X_seq = X_seq / scales_seq.reshape(1, 1, -1)
     
-    scales_ctx = np.array([1, 5, 15, 200], dtype=np.float32)
+    # 9 context features: [was_home, difficulty, price, hours_rest,
+    #                      all_time_avg_pts, all_time_total_pts, all_time_goals_per_90, all_time_xg_per_90, all_time_games_played]
+    scales_ctx = np.array([1, 5, 15, 200, 10, 400, 1.0, 1.0, 50], dtype=np.float32)
     X_ctx = X_ctx / scales_ctx.reshape(1, -1)
     
     return X_seq, X_ctx
@@ -36,8 +38,8 @@ def build_model():
     x = Bidirectional(LSTM(32, return_sequences=False))(seq_input)
     x = Dropout(0.2)(x)
     
-    # 2. Context Input (Dense)
-    ctx_input = Input(shape=(4,), name="ctx_input")
+    # 2. Context Input (Dense) - 9 features including all-time stats
+    ctx_input = Input(shape=(9,), name="ctx_input")
     
     # 3. Opponent Input (Embedding) - OPTIMIZED
     opp_input = Input(shape=(1,), name="opp_input")

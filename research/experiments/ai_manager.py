@@ -81,7 +81,10 @@ def main():
             continue
             
         X_seq = np.array([d['history_sequence'] for d in train_samples], dtype=np.float32)
-        X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in train_samples], dtype=np.float32)
+        X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
+                           d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
+                           d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
+                          for d in train_samples], dtype=np.float32)
         X_opp = np.array([d['ctx_opponent'] for d in train_samples], dtype=np.float32)
         y = np.array([d['target'] for d in train_samples], dtype=np.float32)
         
@@ -121,14 +124,20 @@ def main():
                 
                 X_seq = np.array(final_seqs, dtype=np.float32)
                 # Use Target Context
-                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in final_samples], dtype=np.float32)
+                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
+                                   d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
+                                   d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
+                                  for d in final_samples], dtype=np.float32)
                 X_opp = np.array([d['ctx_opponent'] for d in final_samples], dtype=np.float32)
                 predict_samples = final_samples
             
             else:
                 # Standard Case
                 X_seq = np.array([d['history_sequence'] for d in target_samples], dtype=np.float32)
-                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in target_samples], dtype=np.float32)
+                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
+                                   d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
+                                   d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
+                                  for d in target_samples], dtype=np.float32)
                 X_opp = np.array([d['ctx_opponent'] for d in target_samples], dtype=np.float32)
                 predict_samples = target_samples
 
@@ -137,7 +146,19 @@ def main():
             
             p_vals = models[pos].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
             for i, s in enumerate(predict_samples):
-                preds_map[s['id']] = float(p_vals[i])
+                xp = float(p_vals[i])
+                
+                # Manual Boost for GW 1 Elite Players
+                # Model underestimates elite players in GW 1 due to lack of current season form
+                # Use ownership as a proxy for quality/expectations
+                if target_gw == 1:
+                    ownership = float(s.get('selected_by_percent', 0))
+                    if ownership > 30.0:
+                        xp *= 1.3  # 30% boost for high ownership
+                    elif ownership > 15.0:
+                        xp *= 1.15 # 15% boost for medium-high ownership
+                        
+                preds_map[s['id']] = xp
         return preds_map
 
     for gw in sim_gws:
@@ -302,7 +323,10 @@ def main():
             if not samples: continue
             
             X_seq = np.array([d['history_sequence'] for d in samples], dtype=np.float32)
-            X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in samples], dtype=np.float32)
+            X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
+                               d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
+                               d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
+                              for d in samples], dtype=np.float32)
             X_opp = np.array([d['ctx_opponent'] for d in samples], dtype=np.float32)
             y = np.array([d['target'] for d in samples], dtype=np.float32)
             
