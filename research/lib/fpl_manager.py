@@ -260,13 +260,36 @@ class FPLManager:
         
         # --- Decision Tree ---
         
+        # --- Decision Tree ---
+        
+        # 0. FORCED USAGE (Must use all chips by GW 19)
+        if gw <= 19:
+            weeks_left = 19 - gw + 1
+            chips_left = sum(self.chips_available.values())
+            
+            if chips_left >= weeks_left:
+                # We MUST play a chip this week to clear the backlog
+                # Priority of forced play:
+                # 1. Triple Captain (Safest/Easiest to burn)
+                # 2. Bench Boost (If bench is somewhat decent)
+                # 3. Free Hit (If team needs it)
+                # 4. Wildcard (Last resort)
+                
+                if self.chips_available['triple_captain']:
+                    return "triple_captain"
+                elif self.chips_available['bench_boost']:
+                    return "bench_boost"
+                elif self.chips_available['freehit']:
+                    return "freehit"
+                elif self.chips_available['wildcard']:
+                    return "wildcard"
+
         # 1. Wildcard (Panic Button or Refresh)
-        # WC1 Expiry: Must use by GW 19 if available
+        # WC1 Expiry: Must use by GW 19 if available (Handled by forced usage above essentially, but kept for logic)
         if self.chips_available['wildcard'] > 0:
-            # If we are in the first half (<= 19) and have a WC, use it if it's GW 19 ("Use it or lose it" logic)
-            # OR if team is struggling
-            must_use = (gw == 19 and not self.wildcard_2_awarded) 
-            if must_use or team_predicted_score < 40:
+            if gw == 19 and not self.wildcard_2_awarded:
+                 return "wildcard" # Should be caught by force above, but safety net
+            if team_predicted_score < 40:
                 return "wildcard"
         
         # 2. Bench Boost
@@ -285,8 +308,6 @@ class FPLManager:
             if len(zeros) >= 3:
                 return "freehit"
 
-        # 5. Pressure Usage (Simulate "burning" chips is not really a thing for FH/BB/TC in same way, removed artificial pressure for now)
-        # Main pressure is WC1 expiring at GW 19, which is handled above.
         return None
 
     def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None):
@@ -294,14 +315,18 @@ class FPLManager:
         Handle Transfers AND Chips (Wildcard/FreeHit)
         price_lookup: {player_id: current_price} for this GW
         """
-        # CHECK FOR WC2 REFRESH
-        if gw == 20 and not self.wildcard_2_awarded:
+        # CHECK FOR CHIP RENEWAL AT GW 20
+        # "all the four chips must be used before gw 19... after it renews"
+        if gw == 20:
+            print(f"🔄 GW {gw}: All Chips Renewed for Second Half!")
+            self.chips_available = {
+                "wildcard": 1,
+                "freehit": 1,
+                "bench_boost": 1,
+                "triple_captain": 1
+            }
+            # We treat the second WC as just "wildcard" in the available slots
             self.wildcard_2_awarded = True
-            # If we used WC1, it's 0 -> become 1.
-            # If we didn't use WC1, it's 1 -> stays 1 (we lost the first one).
-            # So effectively, just set to 1.
-            self.chips_available['wildcard'] = 1
-            print(f"🃏 GW {gw}: Second Wildcard Awarded!")
 
         active_chip = self.decide_chip(current_gw_preds, gw)
         self.active_chip = active_chip

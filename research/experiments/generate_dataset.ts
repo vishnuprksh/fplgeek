@@ -169,7 +169,18 @@ function main() {
             if (i < LOOKBACK) continue;
 
             const date = new Date(targetMatch.kickoff_time);
-            const season = date.getFullYear() === 2024 || (date.getFullYear() === 2025 && date.getMonth() < 6) ? "24/25" : "25/26";
+            let season = "Unknown";
+            const year = date.getFullYear();
+            const month = date.getMonth(); // 0-11
+
+            // Logic: Season starts Aug (7), ends May (4) usually
+            if ((year === 2023 && month >= 7) || (year === 2024 && month < 6)) {
+                season = "23/24";
+            } else if ((year === 2024 && month >= 7) || (year === 2025 && month < 6)) {
+                season = "24/25";
+            } else if ((year === 2025 && month >= 7) || (year === 2026 && month < 6)) {
+                season = "25/26";
+            }
 
             // If crossing seasons (huge gap), we might want to skip or just accept the gap.
             // Let's accept it but allow hours_rest to be capped.

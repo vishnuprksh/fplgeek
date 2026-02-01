@@ -330,3 +330,57 @@
     background: linear-gradient(45deg, #000000, #434343);
     border: 1px solid #fff;
 }
+
+.chip-summary-container {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+}
+
+.chip-status-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 100px;
+    transition: all 0.2s ease;
+}
+
+.chip-status-card.used {
+    background: rgba(255, 255, 255, 0.02);
+    opacity: 0.7;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.chip-status-card.available {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 51, 234, 0.1));
+    border-color: rgba(147, 51, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chip-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.chip-used-at {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+.chip-available-tag {
+    font-size: 0.75rem;
+    color: #4ade80;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: rgba(74, 222, 128, 0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+}

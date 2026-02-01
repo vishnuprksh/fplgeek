@@ -3,6 +3,7 @@
 - [x] View Player Data <!-- id: 1 -->
     - [x] Historical season data
     - [x] Current 24/25 season data
+    - [x] Historical 23/24 season data
 - [x] Smart Value Calculation Metric <!-- id: 2 -->
     - [x] EMA-based form modeling
     - [x] Mathematical optimization for per-match correlation

@@ -1,6 +1,8 @@
 
 import { useState, useEffect } from 'react';
 import type { Player, Team, Pick } from '../types/fpl';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { PitchView } from './PitchView';
 import { PlayerHistoryModal } from './PlayerHistoryModal';
 import './AiHistory.css';
@@ -45,6 +47,21 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     const [expandedGW, setExpandedGW] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+    const [showRules, setShowRules] = useState(false);
+    const [rulesContent, setRulesContent] = useState('');
+
+    useEffect(() => {
+        const loadRules = async () => {
+            try {
+                const response = await fetch('/manager_rules.md');
+                const text = await response.text();
+                setRulesContent(text);
+            } catch (e) {
+                console.error("Failed to load rules", e);
+            }
+        };
+        loadRules();
+    }, []);
 
     useEffect(() => {
         const loadHistory = async () => {
@@ -112,6 +129,29 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
 
     return (
         <div className="ai-history-container">
+            <div className="history-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                <h2 style={{ margin: 0, color: '#fff' }}>AI Manager History</h2>
+                <button
+                    className="rules-btn"
+                    onClick={() => setShowRules(true)}
+                    style={{
+                        padding: '8px 16px',
+                        background: 'rgba(255, 255, 255, 0.1)',
+                        border: '1px solid rgba(255, 255, 255, 0.2)',
+                        borderRadius: '6px',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        fontWeight: 'bold',
+                        fontSize: '0.9rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                    }}
+                >
+                    <span role="img" aria-label="book">📜</span> Manager Rules
+                </button>
+            </div>
+
             <div className="history-summary">
                 <div className="stat-card">
                     <h3>Tot Actual Points</h3>
@@ -137,6 +177,27 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                     <h3>Current FTs</h3>
                     <div className="stat-value">{history.length > 0 ? (history[history.length - 1].free_transfers ?? 1) : 1}</div>
                 </div>
+            </div>
+
+            {/* Chip Usage Summary */}
+            <div className="chip-summary-container">
+                {['wildcard', 'freehit', 'bench_boost', 'triple_captain'].map(chip => {
+                    // Find if/when this chip was used
+                    // Note: We might use chips multiple times now (renewal), so find ALL usages
+                    const usages = history.filter(h => h.active_chip === chip).map(h => h.gw);
+                    const label = getChipLabel(chip);
+
+                    return (
+                        <div key={chip} className={`chip-status-card ${usages.length > 0 ? 'used' : 'available'}`}>
+                            <span className="chip-name">{label}</span>
+                            {usages.length > 0 ? (
+                                <span className="chip-used-at">GW {usages.join(', ')}</span>
+                            ) : (
+                                <span className="chip-available-tag">AVAIL</span>
+                            )}
+                        </div>
+                    );
+                })}
             </div>
 
             <div className="gameweek-list">
@@ -275,6 +336,41 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                     onClose={() => setSelectedPlayer(null)}
                     teamName={teams.find(t => t.id === selectedPlayer.team)?.short_name}
                 />
+            )}
+
+            {showRules && (
+                <div className="modal-overlay" onClick={() => setShowRules(false)} style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    background: 'rgba(0, 0, 0, 0.8)',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    zIndex: 1000
+                }}>
+                    <div className="modal-content" onClick={e => e.stopPropagation()} style={{
+                        background: '#1e293b',
+                        padding: '30px',
+                        borderRadius: '12px',
+                        maxWidth: '800px',
+                        width: '90%',
+                        maxHeight: '90vh',
+                        overflowY: 'auto',
+                        border: '1px solid rgba(255, 255, 255, 0.1)',
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)'
+                    }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '15px' }}>
+                            <h2 style={{ margin: 0, color: '#fff' }}>Manager Rules</h2>
+                            <button onClick={() => setShowRules(false)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', fontSize: '1.5rem' }}>×</button>
+                        </div>
+                        <div className="markdown-content" style={{ color: '#e2e8f0', lineHeight: '1.6', padding: '0 10px' }}>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{rulesContent}</ReactMarkdown>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );
