@@ -65,7 +65,25 @@ def prepare_tensors(data):
     # Extract Arrays
     def get_arrays(batch):
         X_seq = np.array([d['history_sequence'] for d in batch], dtype=np.float32)
-        X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest']] for d in batch], dtype=np.float32)
+        X_ctx = np.array([[
+            # Original features
+            d['ctx_was_home'], 
+            d['ctx_difficulty'], 
+            d['ctx_price'], 
+            d['ctx_hours_rest'],
+            # Last season features (player quality)
+            d.get('ctx_last_season_avg_points', 0),
+            d.get('ctx_last_season_total_points', 0),
+            d.get('ctx_last_season_goals_per_90', 0),
+            d.get('ctx_last_season_xg_per_90', 0),
+            d.get('ctx_last_season_consistency', 0),
+            # Current season features (recent form)
+            d.get('ctx_current_season_avg_points', 0),
+            d.get('ctx_current_season_games', 0),
+            d.get('ctx_current_season_goals_per_90', 0),
+            d.get('ctx_current_season_xg_per_90', 0),
+            d.get('ctx_current_season_minutes_avg', 0)
+        ] for d in batch], dtype=np.float32)
         # Opponent ID for Embedding
         X_opp = np.array([d['ctx_opponent'] for d in batch], dtype=np.float32)
         y = np.array([d['target'] for d in batch], dtype=np.float32)
@@ -81,8 +99,8 @@ def build_model():
     x = LSTM(32, return_sequences=False)(seq_input)
     x = Dropout(0.2)(x)
     
-    # 2. Context Input (Dense)
-    ctx_input = Input(shape=(4,), name="ctx_input")
+    # 2. Context Input (Dense) - Now 14 features
+    ctx_input = Input(shape=(14,), name="ctx_input")
     
     # 3. Opponent Strength (Float)
     opp_input = Input(shape=(1,), name="opp_input")
@@ -132,8 +150,29 @@ def main():
             scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 15, 1, 20], dtype=np.float32)
             X_seq = X_seq / scales_seq.reshape(1, 1, -1)
             
-            # Context: [Home, Diff, Price, Rest]
-            scales_ctx = np.array([1, 5, 15, 200], dtype=np.float32)
+            # Context: [Home, Diff, Price, Rest, LastSeasonAvgPts, LastSeasonTotalPts, 
+            #           LastSeasonGoalsPer90, LastSeasonXGPer90, LastSeasonConsistency,
+            #           CurrentSeasonAvgPts, CurrentSeasonGames, CurrentSeasonGoalsPer90,
+            #           CurrentSeasonXGPer90, CurrentSeasonMinutesAvg]
+            scales_ctx = np.array([
+                # Original
+                1,      # home (binary)
+                5,      # difficulty (1-5)
+                15,     # price (~4-15)
+                200,    # hours_rest (~0-300)
+                # Last season (player quality baseline)
+                10,     # last_season_avg_points (~0-10)
+                300,    # last_season_total_points (~0-300)
+                1.5,    # last_season_goals_per_90 (~0-1.5)
+                1.5,    # last_season_xg_per_90 (~0-1.5)
+                5,      # last_season_consistency (std dev ~0-5)
+                # Current season (recent form)
+                10,     # current_season_avg_points (~0-10)
+                38,     # current_season_games (~0-38)
+                1.5,    # current_season_goals_per_90 (~0-1.5)
+                1.5,    # current_season_xg_per_90 (~0-1.5)
+                90      # current_season_minutes_avg (~0-90)
+            ], dtype=np.float32)
             X_ctx = X_ctx / scales_ctx.reshape(1, -1)
             
             # Opponent: Strength ~1000-1350

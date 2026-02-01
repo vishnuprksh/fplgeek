@@ -46,6 +46,18 @@ interface ProcessedSample {
     ctx_difficulty: number;
     ctx_price: number;
     ctx_hours_rest: number;
+    // Last Season Features (Player Quality Baseline)
+    ctx_last_season_avg_points: number;
+    ctx_last_season_total_points: number;
+    ctx_last_season_goals_per_90: number;
+    ctx_last_season_xg_per_90: number;
+    ctx_last_season_consistency: number;
+    // Current Season Features (Recent Form)
+    ctx_current_season_avg_points: number;
+    ctx_current_season_games: number;
+    ctx_current_season_goals_per_90: number;
+    ctx_current_season_xg_per_90: number;
+    ctx_current_season_minutes_avg: number;
     // History Sequence (Flat for now, but ordered)
     history_sequence: number[][]; // [ [min, xG, xA...], [min, xG, xA...] ]
 }
@@ -54,6 +66,56 @@ interface ProcessedSample {
 function parseFloatSafe(val: any): number {
     const f = parseFloat(val);
     return isNaN(f) ? 0 : f;
+}
+
+function getSeason(kickoffTime: string): string {
+    const date = new Date(kickoffTime);
+    const year = date.getFullYear();
+    const month = date.getMonth();
+
+    // Season runs from August (month 7) to May (month 4)
+    // If month is Aug-Dec, season is year/year+1
+    // If month is Jan-Jul, season is year-1/year
+    if (month >= 7) {
+        return `${year % 100}/${(year + 1) % 100}`;
+    } else {
+        return `${(year - 1) % 100}/${year % 100}`;
+    }
+}
+
+interface SeasonStats {
+    avg_points: number;
+    total_points: number;
+    goals_per_90: number;
+    xg_per_90: number;
+    consistency: number;
+    avg_minutes: number;
+    games_played: number;
+}
+
+function calculateSeasonStats(matches: RawMatch[]): SeasonStats | null {
+    if (matches.length === 0) {
+        return null;
+    }
+
+    const totalMinutes = matches.reduce((sum, m) => sum + m.minutes, 0);
+    const totalPoints = matches.reduce((sum, m) => sum + m.total_points, 0);
+    const totalGoals = matches.reduce((sum, m) => sum + parseFloatSafe((m as any).goals_scored || 0), 0);
+    const totalXG = matches.reduce((sum, m) => sum + parseFloatSafe(m.expected_goals), 0);
+
+    const avgPoints = totalPoints / matches.length;
+    const pointsVariance = matches.reduce((sum, m) => sum + Math.pow(m.total_points - avgPoints, 2), 0) / matches.length;
+    const consistency = Math.sqrt(pointsVariance);
+
+    return {
+        avg_points: avgPoints,
+        total_points: totalPoints,
+        goals_per_90: totalMinutes > 0 ? (totalGoals / totalMinutes) * 90 : 0,
+        xg_per_90: totalMinutes > 0 ? (totalXG / totalMinutes) * 90 : 0,
+        consistency: consistency,
+        avg_minutes: totalMinutes / matches.length,
+        games_played: matches.length
+    };
 }
 
 // --- Main ---
@@ -186,6 +248,17 @@ function main() {
                 ]);
             }
 
+            // Calculate Cross-Season Statistics
+            // Split history by season (up to current match, excluding it)
+            const historyBeforeTarget = history.slice(0, i);
+
+            const lastSeasonMatches = historyBeforeTarget.filter(m => getSeason(m.kickoff_time) === '24/25');
+            const currentSeasonMatches = historyBeforeTarget.filter(m => getSeason(m.kickoff_time) === '25/26');
+
+            const lastSeasonStats = calculateSeasonStats(lastSeasonMatches);
+            const currentSeasonStats = calculateSeasonStats(currentSeasonMatches);
+
+
             const sample: ProcessedSample = {
                 name: player.web_name,
                 id: player.id,
@@ -197,6 +270,18 @@ function main() {
                 ctx_difficulty: difficulty,
                 ctx_price: targetMatch.value / 10.0,
                 ctx_hours_rest: Math.min(hoursRest, 300), // Cap at ~12 days to avoid huge outliers
+                // Last Season Features (Player Quality Baseline)
+                ctx_last_season_avg_points: lastSeasonStats?.avg_points || 0,
+                ctx_last_season_total_points: lastSeasonStats?.total_points || 0,
+                ctx_last_season_goals_per_90: lastSeasonStats?.goals_per_90 || 0,
+                ctx_last_season_xg_per_90: lastSeasonStats?.xg_per_90 || 0,
+                ctx_last_season_consistency: lastSeasonStats?.consistency || 0,
+                // Current Season Features (Recent Form)
+                ctx_current_season_avg_points: currentSeasonStats?.avg_points || 0,
+                ctx_current_season_games: currentSeasonStats?.games_played || 0,
+                ctx_current_season_goals_per_90: currentSeasonStats?.goals_per_90 || 0,
+                ctx_current_season_xg_per_90: currentSeasonStats?.xg_per_90 || 0,
+                ctx_current_season_minutes_avg: currentSeasonStats?.avg_minutes || 0,
                 history_sequence: seqData
             };
 
