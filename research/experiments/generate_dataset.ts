@@ -29,6 +29,7 @@ interface RawMatch {
     goals_conceded: number;
     saves: number;
     selected: number;
+    selected_by_percent: string; // From API (can be string or number, stored as text in DB likely)
     kickoff_time: string;
     team_h_difficulty?: number; // Joined later
     team_a_difficulty?: number; // Joined later
@@ -40,6 +41,7 @@ interface ProcessedSample {
     gw: number;
     season: string;
     target: number;
+    selected_by_percent: number; // New field for ownership boost
     // Context
     ctx_was_home: number;
     ctx_opponent: number;
@@ -253,6 +255,7 @@ function main() {
                 gw: gw,
                 season: season, // New Field
                 target: targetMatch.total_points,
+                selected_by_percent: parseFloatSafe(targetMatch.selected_by_percent),
                 ctx_was_home: targetMatch.was_home ? 1 : 0,
                 ctx_opponent: opponentStrength, // UPDATED: Now using actual team strength!
                 ctx_difficulty: difficulty,
