@@ -39,6 +39,9 @@ def deploy():
         '--exclude=dist',
         '--exclude=.git',
         '--exclude=.firebase',
+        '--exclude=public/data/processed',
+        '--exclude=research/results',
+        '--exclude=research/experiments',
         '.'
     ], cwd=LOCAL_DIR, check=True)
     

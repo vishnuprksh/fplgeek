@@ -101,11 +101,12 @@ class FPLManager:
         # Chip State
         # "they are recharged after week 19" -> 2 sets.
         self.chips_available = {
-            "wildcard": 2,
-            "freehit": 2,
-            "bench_boost": 2,
-            "triple_captain": 2
+            "wildcard": 1,
+            "freehit": 1,
+            "bench_boost": 1,
+            "triple_captain": 1
         }
+        self.wildcard_2_awarded = False
         self.active_chip = None
     
     def initialize_squad(self, best_starting_squad, cost, initial_prices):
@@ -238,46 +239,32 @@ class FPLManager:
         # --- Decision Tree ---
         
         # 1. Wildcard (Panic Button or Refresh)
+        # WC1 Expiry: Must use by GW 19 if available
         if self.chips_available['wildcard'] > 0:
-            must_use = (self.chips_available['wildcard'] == 2 and gw == 19)
+            # If we are in the first half (<= 19) and have a WC, use it if it's GW 19 ("Use it or lose it" logic)
+            # OR if team is struggling
+            must_use = (gw == 19 and not self.wildcard_2_awarded) 
             if must_use or team_predicted_score < 40:
                 return "wildcard"
         
         # 2. Bench Boost
         if self.chips_available['bench_boost'] > 0:
-            must_use = (self.chips_available['bench_boost'] == 2 and gw == 19)
-            if must_use or bench_xp > 15:
+            if bench_xp > 15:
                 return "bench_boost"
                 
         # 3. Triple Captain
         if self.chips_available['triple_captain'] > 0:
-            must_use = (self.chips_available['triple_captain'] == 2 and gw == 19)
-            if must_use or top_scorer_xp > 10:
+            if top_scorer_xp > 10:
                 return "triple_captain"
         
         # 4. Free Hit
         if self.chips_available['freehit'] > 0:
-            must_use = (self.chips_available['freehit'] == 2 and gw == 19)
-            if must_use:
-                return "freehit"
             zeros = [p for p in starters if p['xp'] < 0.5]
             if len(zeros) >= 3:
                 return "freehit"
 
-        # 5. Pressure Usage
-        chips_to_burn = 0
-        if is_first_half:
-            if self.chips_available['wildcard'] == 2: chips_to_burn += 1
-            if self.chips_available['freehit'] == 2: chips_to_burn += 1
-            if self.chips_available['bench_boost'] == 2: chips_to_burn += 1
-            if self.chips_available['triple_captain'] == 2: chips_to_burn += 1
-            
-            if chips_to_burn > weeks_left_in_half:
-                if self.chips_available['triple_captain'] == 2: return "triple_captain"
-                if self.chips_available['bench_boost'] == 2: return "bench_boost"
-                if self.chips_available['freehit'] == 2: return "freehit"
-                if self.chips_available['wildcard'] == 2: return "wildcard"
-        
+        # 5. Pressure Usage (Simulate "burning" chips is not really a thing for FH/BB/TC in same way, removed artificial pressure for now)
+        # Main pressure is WC1 expiring at GW 19, which is handled above.
         return None
 
     def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None):
@@ -285,6 +272,15 @@ class FPLManager:
         Handle Transfers AND Chips (Wildcard/FreeHit)
         price_lookup: {player_id: current_price} for this GW
         """
+        # CHECK FOR WC2 REFRESH
+        if gw == 20 and not self.wildcard_2_awarded:
+            self.wildcard_2_awarded = True
+            # If we used WC1, it's 0 -> become 1.
+            # If we didn't use WC1, it's 1 -> stays 1 (we lost the first one).
+            # So effectively, just set to 1.
+            self.chips_available['wildcard'] = 1
+            print(f"🃏 GW {gw}: Second Wildcard Awarded!")
+
         active_chip = self.decide_chip(current_gw_preds, gw)
         self.active_chip = active_chip
         
@@ -345,7 +341,15 @@ class FPLManager:
             best_gain = 0
             
             mock_squad_xp = [p for p in current_gw_preds if p['id'] in current_squad_ids]
-            mock_squad_xp.sort(key=lambda x: x['xp'])
+            
+            # Sort by: 1. Availability (Injured first), 2. Low XP
+            # status != 'a' or chance < 100 -> Priority 0 (Sell first)
+            # status == 'a' -> Priority 1
+            def get_out_priority(p):
+                is_available = p.get('status', 'a') == 'a' and p.get('chance_of_playing_this_round', 100) == 100
+                return (1 if is_available else 0, p['xp'])
+                
+            mock_squad_xp.sort(key=get_out_priority)
             # Ensure we have players to sell
             if not mock_squad_xp: break
 
@@ -390,28 +394,38 @@ class FPLManager:
                         best_gain = gain
                         best_move = (p_out, p_in, cost_pts, selling_price)
             
-            if best_move and best_gain > 1.0:
+            
+            # Accept transfer if:
+            # 1. Gain > 1.0 (normal case)
+            # 2. Selling injured player and gain > 0 (any improvement)
+            if best_move:
                 p_out, p_in, cost_pts, selling_price = best_move
-                current_squad_ids.remove(p_out['id'])
-                current_squad_ids.append(p_in['id'])
+                is_injured = p_out.get('status', 'a') != 'a' or (p_out.get('chance_of_playing_this_round') is not None and p_out.get('chance_of_playing_this_round') < 100)
+                threshold = 0.0 if is_injured else 1.0
                 
-                # Update bank using selling price
-                current_bank = current_bank + selling_price - p_in['cost']
-                
-                # Update purchase prices
-                del current_purchase_prices[p_out['id']]
-                purchase_price_in = price_lookup.get(p_in['id'], p_in['cost']) if price_lookup else p_in['cost']
-                current_purchase_prices[p_in['id']] = purchase_price_in
-                
-                current_team_counts[self.players_map[p_out['id']]['team']] -= 1
-                current_team_counts[p_in['team']] = current_team_counts.get(p_in['team'], 0) + 1
-                self.free_transfers -= 1
-                transfers_done += 1
-                transfers_log.append({
-                    "in": p_in,
-                    "out": p_out,
-                    "cost": cost_pts
-                })
+                if best_gain > threshold:
+                    current_squad_ids.remove(p_out['id'])
+                    current_squad_ids.append(p_in['id'])
+                    
+                    # Update bank using selling price
+                    current_bank = current_bank + selling_price - p_in['cost']
+                    
+                    # Update purchase prices
+                    del current_purchase_prices[p_out['id']]
+                    purchase_price_in = price_lookup.get(p_in['id'], p_in['cost']) if price_lookup else p_in['cost']
+                    current_purchase_prices[p_in['id']] = purchase_price_in
+                    
+                    current_team_counts[self.players_map[p_out['id']]['team']] -= 1
+                    current_team_counts[p_in['team']] = current_team_counts.get(p_in['team'], 0) + 1
+                    self.free_transfers -= 1
+                    transfers_done += 1
+                    transfers_log.append({
+                        "in": p_in,
+                        "out": p_out,
+                        "cost": cost_pts
+                    })
+                else:
+                    break
             else:
                 break
         

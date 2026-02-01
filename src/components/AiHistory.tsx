@@ -24,6 +24,7 @@ interface SquadPlayer {
     purchase_price?: number;
     current_price?: number;
     selling_price?: number;
+    status?: string;
 }
 
 interface BacktestResult {
@@ -144,7 +145,16 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                         <div key={h.gw} className="gw-card">
                             <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
                                 <div className="gw-info">
-                                    <span className="gw-label">GW {h.gw}</span>
+                                    <span className="gw-label">
+                                        GW {h.gw}
+                                        {h.squad.some(p => p.status && p.status !== 'a') && (
+                                            <span title="Squad contains injured/unavailable players" style={{
+                                                marginLeft: '6px',
+                                                color: '#eab308',
+                                                fontSize: '0.9em'
+                                            }}>⚠️</span>
+                                        )}
+                                    </span>
                                     <span className="gw-points">
                                         <strong className={h.net_points >= 60 ? 'high-score' : 'med-score'}>{h.net_points}</strong> pts
                                         <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
@@ -198,6 +208,10 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                             ...acc,
                                             [p.id]: p.points
                                         }), {})}
+                                        statuses={h.squad.reduce((acc, p) => ({
+                                            ...acc,
+                                            [p.id]: p.status || 'a'
+                                        }), {})}
                                     />
 
                                     {/* Bench Section */}
@@ -227,7 +241,16 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                 return (
                                                     <li key={p.id} className={`player-row role-${p.role}`}>
                                                         <span className="player-name">
-                                                            {p.name} ({teamName}) {isCap && <span className="c-badge">C</span>} {p.role === 'V' && <span className="v-badge">V</span>}
+                                                            {p.name} ({teamName})
+                                                            {isCap && <span className="c-badge">C</span>}
+                                                            {p.role === 'V' && <span className="v-badge">V</span>}
+                                                            {p.status && p.status !== 'a' && (
+                                                                <span title="Injured/Unavailable" style={{
+                                                                    marginLeft: '4px',
+                                                                    color: '#eab308',
+                                                                    fontSize: '0.9em'
+                                                                }}>⚠️</span>
+                                                            )}
                                                         </span>
                                                         <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
                                                         <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
