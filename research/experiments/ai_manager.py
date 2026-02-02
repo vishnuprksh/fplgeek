@@ -95,6 +95,11 @@ def main():
         model.fit([X_seq, X_ctx, X_opp], y, epochs=10, batch_size=32, verbose=0)
         models[pos] = model
         print(f"✅ Trained {pos} ({len(train_samples)} samples)")
+        
+        # Save model for inspection
+        model_path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
+        model.save(model_path)
+        print(f"💾 Saved {pos} model to {model_path}")
 
     # 5. Gameweek Loop
     results_history = []
@@ -148,15 +153,19 @@ def main():
             for i, s in enumerate(predict_samples):
                 xp = float(p_vals[i])
                 
-                # Manual Boost for GW 1 Elite Players
-                # Model underestimates elite players in GW 1 due to lack of current season form
-                # Use ownership as a proxy for quality/expectations
-                if target_gw == 1:
-                    ownership = float(s.get('selected_by_percent', 0))
-                    if ownership > 30.0:
-                        xp *= 1.3  # 30% boost for high ownership
-                    elif ownership > 15.0:
-                        xp *= 1.15 # 15% boost for medium-high ownership
+                # Manual Boost for GW 1-4 Elite Players
+                # Model underestimates elite players in early season due to lack of current season form
+                # Extend to first few GWs to ensure long-term planning sees value
+                if target_gw <= 4:
+                    all_time_avg = s.get('ctx_all_time_avg_points', 0)
+                    games_played = s.get('ctx_all_time_games_played', 0)
+                    
+                    if all_time_avg > 5.0 and games_played > 50:
+                        xp *= 1.5  # Proven elite (Haaland: 5.24, Salah: 5.5+)
+                    elif all_time_avg > 4.5 and games_played > 38:
+                        xp *= 1.3  # Very good players
+                    elif all_time_avg > 4.0 and games_played > 38:
+                        xp *= 1.15 # Good players
                         
                 preds_map[s['id']] = xp
         return preds_map

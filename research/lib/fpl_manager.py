@@ -65,9 +65,22 @@ def get_best_starting_squad(predictions):
     # Decision variables: binary (0 or 1) for each player
     player_vars = {p['id']: LpVariable(f"player_{p['id']}", cat=LpBinary) 
                    for p in valid_predictions}
+
+    # Decision variables: Captaincy (binary)
+    captain_vars = {p['id']: LpVariable(f"captain_{p['id']}", cat=LpBinary) 
+                    for p in valid_predictions}
     
-    # Objective: Maximize total predicted points
-    prob += lpSum([p['xp'] * player_vars[p['id']] for p in valid_predictions])
+    # Objective: Maximize total predicted points + Captain points (Doubled)
+    # Total = Sum(xp * player) + Sum(xp * captain)  => Effectively 2*xp for captain, 1*xp for others
+    prob += lpSum([p['xp'] * player_vars[p['id']] for p in valid_predictions]) + \
+            lpSum([p['xp'] * captain_vars[p['id']] for p in valid_predictions])
+    
+    # Constraint: Exactly 1 Captain
+    prob += lpSum([captain_vars[p['id']] for p in valid_predictions]) == 1
+    
+    # Constraint: Captain must be selected in the squad
+    for p in valid_predictions:
+        prob += captain_vars[p['id']] <= player_vars[p['id']]
     
     # Constraint 1: Budget (£100m = 1000 in 0.1m units)
     prob += lpSum([p['cost'] * player_vars[p['id']] for p in valid_predictions]) <= 1000
@@ -211,24 +224,27 @@ class FPLManager:
         # 2. Select Captain from Starters (using ownership constraint)
         starters_sorted = sorted(starters, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
-        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 30.0]
+        # Try to find high ownership captain (safe pick)
+        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 10.0]
         
         captain_id = None
         if captain_candidates:
             captain_id = captain_candidates[0]['id']
         elif starters_sorted:
-             # Fallback: pick highest ownership player in starting XI
-            captain_id = max(starters_sorted, key=lambda x: float(x.get('selected_by_percent', 0)))['id']
+             # Fallback: pick highest xP player derived from starters_sorted order (already sorted by xP)
+             # Previous bug: we were re-sorting by ownership only, which was 0 for all in GW1
+             captain_id = starters_sorted[0]['id']
 
         # Vice-captain
-        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
+        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 10.0]
         
         vice_captain_id = None
         if vice_captain_candidates:
             vice_captain_id = vice_captain_candidates[0]['id']
         elif len(starters_sorted) > 1:
-            vice_captain_id = max([p for p in starters_sorted if p['id'] != captain_id], 
-                                 key=lambda x: float(x.get('selected_by_percent', 0)))['id']
+            # Fallback: next best xP
+            remaining_starters = [p for p in starters_sorted if p['id'] != captain_id]
+            vice_captain_id = remaining_starters[0]['id']
         else:
             vice_captain_id = captain_id
 
