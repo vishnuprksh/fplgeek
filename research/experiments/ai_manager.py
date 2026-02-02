@@ -17,8 +17,8 @@ from research.lib.utils import load_json
 from research.lib.models import build_model, clean_and_scale
 from research.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price
 
-def main():
-    print("🚀 Starting AI Manager Simulation (Refactored)...")
+def run_simulation(explosive_threshold=5.0):
+    print(f"🚀 Starting AI Manager Simulation (Threshold={explosive_threshold})...")
     os.makedirs(MODELS_DIR, exist_ok=True)
     
     # 1. Load Data
@@ -28,7 +28,7 @@ def main():
             all_data[pos] = load_json(os.path.join(DATA_DIR, f"dataset_{pos}.json"))
         except FileNotFoundError:
             print(f"❌ Data for {pos} not found. Run analysis/generate_dataset first.")
-            return
+            return 0
         
     # 2. Load Metadata
     conn = sqlite3.connect(DB_PATH)
@@ -43,7 +43,7 @@ def main():
     players_map = {p['id']: p for p in players}
     
     # 3. Build Price History Lookup (Scaled to 0.1m units)
-    print("💰 Building price history...")
+    # print("💰 Building price history...")
     price_history = {}  # {player_id: {gw: price}}
     for pos in POSITIONS:
         for record in all_data[pos]:
@@ -60,23 +60,23 @@ def main():
     sim_gws = sorted(list(set([d['gw'] for p in POSITIONS for d in all_data[p] if d.get('season') == '25/26'])))
     if not sim_gws:
         print("Error: No 25/26 data found.")
-        return
+        return 0
     sim_gws = [g for g in sim_gws if g >= 1]
     
-    print(f"📅 Simulating GWs: {sim_gws}")
+    # print(f"📅 Simulating GWs: {sim_gws}")
     
     # 4. Initialize Manager
     manager = FPLManager(players_map)
     models = {}
     
     # Initial Training
-    print("🧠 Training Base Models (Pre-25/26)...")
+    # print("🧠 Training Base Models (Pre-25/26)...")
     for pos in POSITIONS:
         raw_data = all_data[pos]
         train_samples = [d for d in raw_data if d.get('season') != '25/26'] 
         
         if not train_samples:
-            print(f"⚠️ No historical data for {pos}. Model will start random.")
+            # print(f"⚠️ No historical data for {pos}. Model will start random.")
             models[pos] = build_model()
             continue
             
@@ -91,15 +91,18 @@ def main():
         X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
         X_opp = X_opp / 1350.0
         
+        # Sample Weighting
+        weights = np.where(y > explosive_threshold, 1.0 + (y - explosive_threshold) * 0.5, 1.0)
+        
         model = build_model()
-        model.fit([X_seq, X_ctx, X_opp], y, epochs=10, batch_size=32, verbose=0)
+        model.fit([X_seq, X_ctx, X_opp], y, sample_weight=weights, epochs=10, batch_size=32, verbose=0)
         models[pos] = model
-        print(f"✅ Trained {pos} ({len(train_samples)} samples)")
+        # print(f"✅ Trained {pos} ({len(train_samples)} samples)")
         
         # Save model for inspection
         model_path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
         model.save(model_path)
-        print(f"💾 Saved {pos} model to {model_path}")
+        # print(f"💾 Saved {pos} model to {model_path}")
 
     # 5. Gameweek Loop
     results_history = []
@@ -171,7 +174,7 @@ def main():
         return preds_map
 
     for gw in sim_gws:
-        print(f"--- GW {gw} ---")
+        # print(f"--- GW {gw} ---")
         
         # A. PREDICTION PHASE (Current + Long Term)
         # 1. Current GW Predictions
@@ -326,7 +329,7 @@ def main():
             del manager.original_purchase_prices
             
         # D. TRAINING PHASE
-        print(f"📈 Updating models...")
+        # print(f"📈 Updating models...")
         for pos in POSITIONS:
             samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
             if not samples: continue
@@ -341,7 +344,13 @@ def main():
             
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
-            models[pos].fit([X_seq, X_ctx, X_opp], y, epochs=3, batch_size=32, verbose=0)
+            
+            # Sample Weighting: Prioritize Explosive Points
+            # Weight = 1.0 + (Points - 5) * 0.5 for Points > 5
+            # Example: 2pts -> 1.0, 6pts -> 1.5, 10pts -> 3.5, 20pts -> 8.5
+            weights = np.where(y > explosive_threshold, 1.0 + (y - explosive_threshold) * 0.5, 1.0)
+            
+            models[pos].fit([X_seq, X_ctx, X_opp], y, sample_weight=weights, epochs=3, batch_size=32, verbose=0)
 
     # Save
     results_history.reverse()
@@ -351,6 +360,10 @@ def main():
         print(f"✅ Simulation saved to {OUTPUT_FILE}")
     except Exception as e:
         print(f"❌ Failed to save output: {e}")
+        
+    total_net_points = sum(h['net_points'] for h in results_history)
+    print(f"🏁 DONE (Threshold={explosive_threshold}): Total Net Points = {total_net_points}")
+    return total_net_points
 
 if __name__ == "__main__":
-    main()
+    run_simulation(5.0)

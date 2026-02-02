@@ -41,13 +41,14 @@ def build_model():
     # 2. Context Input (Dense) - 9 features including all-time stats
     ctx_input = Input(shape=(9,), name="ctx_input")
     
-    # 3. Opponent Input (Embedding) - OPTIMIZED
+    # 3. Opponent Input (Float) - OPTIMIZED
     opp_input = Input(shape=(1,), name="opp_input")
-    opp_embed = Embedding(input_dim=21, output_dim=4)(opp_input) 
-    opp_flat = Flatten()(opp_embed)
+    # No embedding, just direct usage
+    # opp_embed = Embedding(input_dim=21, output_dim=4)(opp_input) 
+    # opp_flat = Flatten()(opp_embed)
     
     # Concatenate
-    concat = Concatenate()([x, ctx_input, opp_flat])
+    concat = Concatenate()([x, ctx_input, opp_input])
     
     # Dense Layers
     dense = Dense(32, activation='relu')(concat)

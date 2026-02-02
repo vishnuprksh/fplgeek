@@ -7,7 +7,7 @@ import os
 
 # Configuration
 DATA_DIR = "public/data/processed"
-MODELS_DIR = "public/models"
+MODELS_DIR = "public/models/ai_manager"
 DB_PATH = "public/data/fpl.sqlite"
 OUTPUT_FILE = "public/data/ai_predictions.json"
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]
@@ -26,29 +26,8 @@ def clean_and_scale(X_seq, X_ctx):
     scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 15, 1, 20], dtype=np.float32)
     X_seq = X_seq / scales_seq.reshape(1, 1, -1)
     
-    # Context: [Home, Diff, Price, Rest, LastSeasonAvgPts, LastSeasonTotalPts,
-    #           LastSeasonGoalsPer90, LastSeasonXGPer90, LastSeasonConsistency,
-    #           CurrentSeasonAvgPts, CurrentSeasonGames, CurrentSeasonGoalsPer90,
-    #           CurrentSeasonXGPer90, CurrentSeasonMinutesAvg]
-    scales_ctx = np.array([
-        # Original
-        1,      # home (binary)
-        5,      # difficulty (1-5)
-        15,     # price (~4-15)
-        200,    # hours_rest (~0-300)
-        # Last season (player quality baseline)
-        10,     # last_season_avg_points (~0-10)
-        300,    # last_season_total_points (~0-300)
-        1.5,    # last_season_goals_per_90 (~0-1.5)
-        1.5,    # last_season_xg_per_90 (~0-1.5)
-        5,      # last_season_consistency (std dev ~0-5)
-        # Current season (recent form)
-        10,     # current_season_avg_points (~0-10)
-        38,     # current_season_games (~0-38)
-        1.5,    # current_season_goals_per_90 (~0-1.5)
-        1.5,    # current_season_xg_per_90 (~0-1.5)
-        90      # current_season_minutes_avg (~0-90)
-    ], dtype=np.float32)
+    # Context: [Home, Diff, Price, Rest, AllTimeAvg, AllTimeTotal, AllTimeGoals90, AllTimeXG90, AllTimeGames]
+    scales_ctx = np.array([1, 5, 15, 200, 10, 400, 1.0, 1.0, 50], dtype=np.float32)
     X_ctx = X_ctx / scales_ctx.reshape(1, -1)
     
     return X_seq, X_ctx
@@ -225,25 +204,19 @@ def main():
                  # Rest: Hard to calc perfectly without previous match time. Assume 7 days (168h) for simplicity or default 100h
                  hours_rest = 100.0
                  
-                 # Extract cross-season features from sample
+                 # Extract All-Time features from sample (matching ai_manager.py)
                  ctx_list.append([
                      # Original features
                      1.0 if f['is_home'] else 0.0,
                      float(f['difficulty']),
                      current_price,
                      hours_rest,
-                     # Last season features (player quality)
-                     sample.get('ctx_last_season_avg_points', 0),
-                     sample.get('ctx_last_season_total_points', 0),
-                     sample.get('ctx_last_season_goals_per_90', 0),
-                     sample.get('ctx_last_season_xg_per_90', 0),
-                     sample.get('ctx_last_season_consistency', 0),
-                     # Current season features (recent form)
-                     sample.get('ctx_current_season_avg_points', 0),
-                     sample.get('ctx_current_season_games', 0),
-                     sample.get('ctx_current_season_goals_per_90', 0),
-                     sample.get('ctx_current_season_xg_per_90', 0),
-                     sample.get('ctx_current_season_minutes_avg', 0)
+                     # All-Time features
+                     sample.get('ctx_all_time_avg_points', 0),
+                     sample.get('ctx_all_time_total_points', 0),
+                     sample.get('ctx_all_time_goals_per_90', 0),
+                     sample.get('ctx_all_time_xg_per_90', 0),
+                     sample.get('ctx_all_time_games_played', 0)
                  ])
                  
                  # Fix: Use Team Strength not ID
