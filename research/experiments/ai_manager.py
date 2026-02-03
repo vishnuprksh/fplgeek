@@ -122,119 +122,14 @@ def run_simulation(explosive_threshold=5.0):
     # 5. Gameweek Loop
     results_history = []
     
-    # Helper for 5-GW Lookahead
-    def predict_gw(target_gw, frozen_gw=None):
-        preds_map = {}
-        for pos in POSITIONS:
-            # 1. Get Samples for TARGET gw (for Context: Opponent, Difficulty, etc.)
-            target_samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == target_gw]
-            if not target_samples: continue
-
-            # 2. Get Form Data (History Sequence)
-            if frozen_gw:
-                # Lookahead Case: Use Form from FROZEN GW
-                frozen_samples_map = {d['id']: d['history_sequence'] for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == frozen_gw}
-                
-                final_samples = []
-                final_seqs = []
-                
-                for s in target_samples:
-                    if s['id'] in frozen_samples_map:
-                        final_samples.append(s)
-                        final_seqs.append(frozen_samples_map[s['id']])
-                
-                if not final_samples: continue
-                
-                X_seq = np.array(final_seqs, dtype=np.float32)
-                # Use Target Context
-                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
-                                   d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
-                                   d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
-                                  for d in final_samples], dtype=np.float32)
-                X_opp = np.array([d['ctx_opponent'] for d in final_samples], dtype=np.float32)
-                predict_samples = final_samples
-            
-            else:
-                # Standard Case
-                X_seq = np.array([d['history_sequence'] for d in target_samples], dtype=np.float32)
-                X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
-                                   d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
-                                   d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
-                                  for d in target_samples], dtype=np.float32)
-                X_opp = np.array([d['ctx_opponent'] for d in target_samples], dtype=np.float32)
-                predict_samples = target_samples
-
-            X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
-            X_opp = X_opp / 1350.0
-            
-            # Predict Distribution (N, 16)
-            model = models.get(pos)
-            if not model: continue
-            
-            # Predict Probabilities
-            probs_dist = model.predict([X_seq, X_ctx, X_opp], verbose=0) # Shape (N, 16)
-            
-            # 1. Expected Points (Mean) -> Sum(i * p_i)
-            # Create classes array [0, 1, ..., 15]
-            classes = np.arange(16, dtype=np.float32)
-            xp_values = np.sum(probs_dist * classes, axis=1) # (N,)
-            
-            # 2. Sigma (Std Dev) -> Sqrt(Sum(p_i * (i - mean)^2))
-            variance = np.sum(probs_dist * (classes - xp_values[:, np.newaxis])**2, axis=1)
-            sigma_values = np.sqrt(variance)
-            
-            # 3. Prob >= 10 (Sum p_10 to p_15)
-            # Indices 10..15 -> Points 10, 11, ..., 15+
-            prob_ge_10_values = np.sum(probs_dist[:, 10:], axis=1)
-
-            # 4. Prob >= 6 (Sum p_6 to p_15) -> Indices 6..15
-            prob_ge_6_values = np.sum(probs_dist[:, 6:], axis=1)
-            
-            for i, s in enumerate(predict_samples):
-                xp = float(xp_values[i])
-                sigma = float(sigma_values[i])
-                prob_ge_10 = float(prob_ge_10_values[i])
-                
-                # Apply multipliers based on historical performance (Elite Player Bias)
-                all_time_avg = s.get('ctx_all_time_avg_points', 0)
-                games_played = s.get('ctx_all_time_games_played', 0)
-                
-                multiplier = 1.0
-                if all_time_avg > 5.0 and games_played > 50:
-                    multiplier = 1.5
-                elif all_time_avg > 4.5 and games_played > 38:
-                    multiplier = 1.3
-                elif all_time_avg > 4.0 and games_played > 38:
-                    multiplier = 1.15
-                
-                # Apply multiplier to Mean and Scale (Sigma scales linearly)
-                xp *= multiplier
-                sigma *= multiplier 
-                
-                # Heuristic update for Probabilities:
-                if multiplier > 1.0:
-                    prob_ge_10 = min(0.99, prob_ge_10 * multiplier)
-                    prob_ge_6 = min(0.99, float(prob_ge_6_values[i]) * multiplier)
-                else:
-                    prob_ge_6 = float(prob_ge_6_values[i])
-
-                preds_map[s['id']] = {
-                    'xp': xp,
-                    'sigma': sigma,
-                    'prob_gt_10': prob_ge_10, # Keeping key for backward compat or update? Better update. 
-                    'prob_gt_6': prob_ge_6,   # Let's keep keys 'prob_gt_...' but map them to >= logic for now to minimize frontend diffs?
-                                              # User said "scoring 6 or 10 above". 
-                                              # Actually I should rename to avoid confusion.
-                    'distribution': probs_dist[i].tolist() 
-                }
-        return preds_map
+    from research.experiments.lib.sim_utils import predict_gw
 
     for gw in sim_gws:
         # print(f"--- GW {gw} ---")
         
         # A. PREDICTION PHASE (Current + Long Term)
         # 1. Current GW Predictions
-        current_preds_map = predict_gw(gw)
+        current_preds_map = predict_gw(gw, all_data=all_data, models=models)
         
         # 2. Long Term Predictions (Avg next 5 GWs)
         long_term_xp_map = {pid: 0.0 for pid in current_preds_map}
@@ -244,7 +139,7 @@ def run_simulation(explosive_threshold=5.0):
         for offset in range(5): 
             target_gw = gw + offset
             # Use FROZEN form from current GW to prevent data leak
-            future_preds = predict_gw(target_gw, frozen_gw=gw)
+            future_preds = predict_gw(target_gw, frozen_gw=gw, all_data=all_data, models=models)
             for pid, p_data in future_preds.items():
                 if pid in long_term_xp_map:
                     long_term_xp_map[pid] += p_data['xp']
