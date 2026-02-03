@@ -271,9 +271,9 @@ def run_simulation(explosive_threshold=5.0):
         best_cap_id = captain_id
         best_prob = current_prob
         
-        # Only consider starters with >= 30% ownership as candidates (consistency)
+        # Only consider starters with >= 50% ownership as candidates (consistency)
         # or just the Vice Captain
-        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= 30.0]
+        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= 50.0]
         
         for cand in candidates_cap:
              prob = calc_team_prob_gt_60(starters, cand['id'])

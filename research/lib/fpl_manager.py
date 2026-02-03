@@ -47,7 +47,7 @@ class FPLManager:
     def optimize_lineup(self, current_gw_preds, active_chip=None):
         """
         Selects Starting XI (1 GKP, 3+ DEF, 1+ FWD) and Captain.
-        Captain must have 30%+ ownership.
+        Captain must have 50%+ ownership.
         """
         squad_preds = [p for p in current_gw_preds if p['id'] in self.squad]
         squad_preds.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
@@ -123,22 +123,22 @@ class FPLManager:
         # 2. Select Captain from Starters (using ownership constraint)
         starters_sorted = sorted(starters, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
-        # Captain must have 30%+ ownership (safe, template pick)
-        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 30.0]
+        # Captain must have 50%+ ownership (safe, template pick)
+        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 50.0]
         
         captain_id = None
         if captain_candidates:
             captain_id = captain_candidates[0]['id']
         else:
             # CRITICAL: No template players in starting XI - this should not happen with proper constraints
-            print(f"⚠️ WARNING: No 30%+ ownership players in starting XI for captain selection!")
+            print(f"⚠️ WARNING: No 50%+ ownership players in starting XI for captain selection!")
             # Emergency fallback: pick highest xP (but this indicates a constraint violation)
             if starters_sorted:
                 captain_id = starters_sorted[0]['id']
                 print(f"   Emergency captain: {starters_sorted[0]['name']} ({starters_sorted[0].get('selected_by_percent', 0):.1f}%)")
 
         # Vice-captain (also prefer 30%+ ownership)
-        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
+        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 50.0]
         
         vice_captain_id = None
         if vice_captain_candidates:
@@ -225,8 +225,14 @@ class FPLManager:
         
         # 2. Bench Boost
         if self.chips_available['bench_boost'] > 0:
-            if bb_avg_prob > 0.25:
-                print(f"🚀 GW {gw}: BENCH BOOST Triggered! Avg Bench Prob>=6 is {bb_avg_prob:.1%}")
+            # Check if ALL bench players have a probability > 0.25 of scoring > 6
+            # This ensures we don't boost a bench with a non-playing or weak player
+            if bench_probs and min(bench_probs) > 0.25:
+                # Also check average to ensure overall quality is high? 
+                # Strict condition: min > 0.25 implies avg > 0.25, so just min is enough.
+                # But let's log the min and avg
+                min_prob = min(bench_probs)
+                print(f"🚀 GW {gw}: BENCH BOOST Triggered! Min Bench Prob>=6 is {min_prob:.1%} (Avg: {bb_avg_prob:.1%})")
                 return "bench_boost", None
                 
         return None, None
@@ -427,8 +433,9 @@ class FPLManager:
         self.bank = current_bank
         self.purchase_prices = current_purchase_prices
         
-        if transfers_done == 0 and self.free_transfers < 5:
-             self.free_transfers += 1
+        if transfers_done == 0:
+             pass # Do nothing, free transfers accumulate via the daily/weekly update in ai_manager.py
+
              
         # 3. POST-TRANSFER CHIPS (Triple Captain / Bench Boost)
         # Now that the squad is final, check if we should apply an enhancement chip
