@@ -5,7 +5,7 @@ interface BacktestResult {
     gw: number;
     points: number;
     net_points: number;
-    transfer_cost: number;
+    transfer_cost?: number;
     squad: Array<{
         id: number;
         name: string;

@@ -1,10 +1,39 @@
 from .config import STARTING_BUDGET
 
+import numpy as np
+from scipy.stats import norm
+
 def is_differential(player):
     """
     Check if a player is a differential (ownership < 10%)
     """
     return float(player.get('selected_by_percent', 0)) < 10.0
+
+def calc_team_prob_gt_60(starters, captain_id):
+    """
+    Calculate Probability that Team Score > 60.
+    Using Central Limit Theorem approximation.
+    """
+    mu_total = 0.0
+    var_total = 0.0
+    
+    for p in starters:
+        mu = p.get('xp', 0)
+        sigma = p.get('sigma', 0)
+        
+        if p['id'] == captain_id:
+            mu_total += 2 * mu
+            var_total += 4 * (sigma**2)
+        else:
+            mu_total += mu
+            var_total += sigma**2
+    
+    sigma_total = np.sqrt(var_total)
+    
+    if sigma_total == 0: return 0.0
+    # Survival Function: P(X > 60)
+    z_score = (60.0 - mu_total) / sigma_total
+    return norm.sf(z_score)
 
 def should_bench_player(player):
     """
@@ -66,21 +95,38 @@ def get_best_starting_squad(predictions):
     player_vars = {p['id']: LpVariable(f"player_{p['id']}", cat=LpBinary) 
                    for p in valid_predictions}
 
+    # Decision variables: Starting XI (binary)
+    starter_vars = {p['id']: LpVariable(f"starter_{p['id']}", cat=LpBinary) 
+                    for p in valid_predictions}
+
     # Decision variables: Captaincy (binary)
     captain_vars = {p['id']: LpVariable(f"captain_{p['id']}", cat=LpBinary) 
                     for p in valid_predictions}
     
-    # Objective: Maximize total predicted points + Captain points (Doubled)
-    # Total = Sum(xp * player) + Sum(xp * captain)  => Effectively 2*xp for captain, 1*xp for others
-    prob += lpSum([p['xp'] * player_vars[p['id']] for p in valid_predictions]) + \
-            lpSum([p['xp'] * captain_vars[p['id']] for p in valid_predictions])
+    # Objective: Maximize Starting XI points (weighted heavily) + Captain bonus + Bench points (small weight)
+    # Priority: Starting XI >> Captain >> Bench
+    # Weight starting XI at 100x, bench at 1x to ensure starting XI is optimized first
+    prob += lpSum([p['xp'] * starter_vars[p['id']] * 100 for p in valid_predictions]) + \
+            lpSum([p['xp'] * captain_vars[p['id']] * 100 for p in valid_predictions]) + \
+            lpSum([p['xp'] * player_vars[p['id']] for p in valid_predictions])
+    
+    # Constraint: Exactly 11 starters
+    prob += lpSum([starter_vars[p['id']] for p in valid_predictions]) == 11
+    
+    # Constraint: Starters must be in squad
+    for p in valid_predictions:
+        prob += starter_vars[p['id']] <= player_vars[p['id']]
     
     # Constraint: Exactly 1 Captain
     prob += lpSum([captain_vars[p['id']] for p in valid_predictions]) == 1
     
-    # Constraint: Captain must be selected in the squad
+    # Constraint: Captain must be a starter
     for p in valid_predictions:
-        prob += captain_vars[p['id']] <= player_vars[p['id']]
+        prob += captain_vars[p['id']] <= starter_vars[p['id']]
+    
+    # Constraint: Captain must have 30%+ ownership
+    template_captains = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) >= 30.0]
+    prob += lpSum([captain_vars[p['id']] for p in template_captains]) >= 1
     
     # Constraint 1: Budget (£100m = 1000 in 0.1m units)
     prob += lpSum([p['cost'] * player_vars[p['id']] for p in valid_predictions]) <= 1000
@@ -88,7 +134,7 @@ def get_best_starting_squad(predictions):
     # Constraint 2: Exactly 15 players
     prob += lpSum([player_vars[p['id']] for p in valid_predictions]) == 15
     
-    # Constraint 3: Position requirements
+    # Constraint 3: Position requirements for SQUAD (15 players)
     gkps = [p for p in valid_predictions if p['type'] == 1]
     defs = [p for p in valid_predictions if p['type'] == 2]
     mids = [p for p in valid_predictions if p['type'] == 3]
@@ -99,29 +145,60 @@ def get_best_starting_squad(predictions):
     prob += lpSum([player_vars[p['id']] for p in mids]) == 5
     prob += lpSum([player_vars[p['id']] for p in fwds]) == 3
     
+    # Constraint 3b: Position requirements for STARTING XI (11 players)
+    # Valid formations: 1 GKP, 3-5 DEF, 2-5 MID, 1-3 FWD
+    prob += lpSum([starter_vars[p['id']] for p in gkps]) == 1  # Exactly 1 GKP
+    prob += lpSum([starter_vars[p['id']] for p in defs]) >= 3  # Min 3 DEF
+    prob += lpSum([starter_vars[p['id']] for p in defs]) <= 5  # Max 5 DEF
+    prob += lpSum([starter_vars[p['id']] for p in mids]) >= 2  # Min 2 MID
+    prob += lpSum([starter_vars[p['id']] for p in mids]) <= 5  # Max 5 MID
+    prob += lpSum([starter_vars[p['id']] for p in fwds]) >= 1  # Min 1 FWD
+    prob += lpSum([starter_vars[p['id']] for p in fwds]) <= 3  # Max 3 FWD
+    
     # Constraint 4: Max 3 players per team
     teams = set(p['team'] for p in valid_predictions)
     for team_id in teams:
         team_players = [p for p in valid_predictions if p['team'] == team_id]
         prob += lpSum([player_vars[p['id']] for p in team_players]) <= 3
     
-    # Constraint 5: Max 2 differential players (< 10% ownership)
+    # Constraint 5: Max 2 differential players (< 10% ownership) in squad
     differentials = [p for p in valid_predictions if is_differential(p)]
     prob += lpSum([player_vars[p['id']] for p in differentials]) <= 2
     
-    # Solve (suppress output)
-    prob.solve(PULP_CBC_CMD(msg=0))
+    # Constraint 6: Min 3 template players (>= 30% ownership) in STARTING XI
+    template_players = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) >= 30.0]
+    prob += lpSum([starter_vars[p['id']] for p in template_players]) >= 3
     
-    # Extract selected players
+    # Solve (suppress output)
+    status = prob.solve(PULP_CBC_CMD(msg=0))
+    
+    # Check solver status
+    from pulp import LpStatus
+    if LpStatus[status] != 'Optimal':
+        print(f"⚠️ LP Solver Warning: Status = {LpStatus[status]}")
+        print(f"   Template players available: {len(template_players)}")
+        print(f"   Template captains available: {len(template_captains)}")
+    
+    # Extract selected players, starters, bench, and captain
     selected_squad = []
+    starters = []
+    bench = []
+    captain_id = None
     total_cost = 0
     
     for p in valid_predictions:
         if player_vars[p['id']].varValue == 1:
             selected_squad.append(p)
             total_cost += p['cost']
+            
+            # Check if this player is a starter
+            if starter_vars[p['id']].varValue == 1:
+                starters.append(p)
+
     
-    return selected_squad, total_cost
+    return selected_squad, total_cost, starters, bench, captain_id
+    
+
 
 class FPLManager:
     def __init__(self, players_map):
@@ -168,7 +245,7 @@ class FPLManager:
         if not squad_preds:
              return [], [], None, None
 
-        # 1. Select Starting XI first (prioritize fit players)
+        # 1. Select Starting XI first (prioritize fit players AND template players)
         starters = []
         bench = []
         
@@ -182,13 +259,25 @@ class FPLManager:
         mids = [p for p in fit_players if p['type'] == 3]
         fwds = [p for p in fit_players if p['type'] == 4]
         
+        # Sort all position lists by xP, prioritizing template players
+        for pos_list in [gkps, defs, mids, fwds]:
+            pos_list.sort(key=lambda x: (
+                float(x.get('selected_by_percent', 0)) >= 30.0,  # Template players first
+                x['xp']
+            ), reverse=True)
+
+        # Mandatory positions
         if gkps: starters.append(gkps.pop(0))
         for _ in range(3): 
             if defs: starters.append(defs.pop(0))
         for _ in range(1):
             if fwds: starters.append(fwds.pop(0))
             
-        remaining = sorted(gkps + defs + mids + fwds, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
+        # Combine remaining players and sort them, prioritizing template players
+        remaining = sorted(gkps + defs + mids + fwds, key=lambda x: (
+            float(x.get('selected_by_percent', 0)) >= 30.0,  # Template players first
+            x['xp']
+        ), reverse=True)
         
         ct_def = 3
         ct_mid = 0
@@ -224,19 +313,22 @@ class FPLManager:
         # 2. Select Captain from Starters (using ownership constraint)
         starters_sorted = sorted(starters, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
-        # Try to find high ownership captain (safe pick)
-        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 10.0]
+        # Captain must have 30%+ ownership (safe, template pick)
+        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 30.0]
         
         captain_id = None
         if captain_candidates:
             captain_id = captain_candidates[0]['id']
-        elif starters_sorted:
-             # Fallback: pick highest xP player derived from starters_sorted order (already sorted by xP)
-             # Previous bug: we were re-sorting by ownership only, which was 0 for all in GW1
-             captain_id = starters_sorted[0]['id']
+        else:
+            # CRITICAL: No template players in starting XI - this should not happen with proper constraints
+            print(f"⚠️ WARNING: No 30%+ ownership players in starting XI for captain selection!")
+            # Emergency fallback: pick highest xP (but this indicates a constraint violation)
+            if starters_sorted:
+                captain_id = starters_sorted[0]['id']
+                print(f"   Emergency captain: {starters_sorted[0]['name']} ({starters_sorted[0].get('selected_by_percent', 0):.1f}%)")
 
-        # Vice-captain
-        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 10.0]
+        # Vice-captain (also prefer 30%+ ownership)
+        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
         
         vice_captain_id = None
         if vice_captain_candidates:
@@ -250,90 +342,90 @@ class FPLManager:
 
         return starters, bench, captain_id, vice_captain_id
 
-    def decide_chip(self, current_gw_preds, gw):
+    def decide_pre_transfer_chip(self, current_gw_preds, gw):
         """
-        Decide if we should play a chip this week.
+        Decide if we should play a TRANSFER chip (Wildcard/FreeHit) this week.
+        Returns: (chip_name, None) or (None, None)
         """
-        self.active_chip = None
         
-        # 1. Seasonality Check
-        is_first_half = gw <= 19
-        
-        # Check Expiry Pressure
-        weeks_left_in_half = 19 - gw
-        
-        # Calculate Potential for Chips
+        # Calculate Team Potential for Metrics
         starters, bench, captain_id, _ = self.optimize_lineup(current_gw_preds)
-        
-        if not starters: return None
+        if not starters: return None, None
 
-        team_predicted_score = sum([p['xp'] for p in starters])
-        captain_xp = next((p['xp'] for p in starters if p['id'] == captain_id), 0)
-        team_predicted_score += captain_xp
-        
-        top_scorer_xp = captain_xp
-        bench_xp = sum([p['xp'] for p in bench])
-        
+        # 1. Calc Team Prob > 60 (Crisis Metric)
+        team_prob_60 = calc_team_prob_gt_60(starters, captain_id)
+
         # --- Decision Tree ---
         
-        # --- Decision Tree ---
-        
-        # 0. FORCED USAGE (Must use all chips by GW 19)
+        # 0. FORCED USAGE (WC/FH Only) - Must use by GW 19
         if gw <= 19:
             weeks_left = 19 - gw + 1
             chips_left = sum(self.chips_available.values())
             
             if chips_left >= weeks_left:
-                # We MUST play a chip this week to clear the backlog
-                # Priority of forced play:
-                # 1. Triple Captain (Safest/Easiest to burn)
-                # 2. Bench Boost (If bench is somewhat decent)
-                # 3. Free Hit (If team needs it)
-                # 4. Wildcard (Last resort)
-                
-                if self.chips_available['triple_captain']:
-                    return "triple_captain"
-                elif self.chips_available['bench_boost']:
-                    return "bench_boost"
-                elif self.chips_available['freehit']:
-                    return "freehit"
-                elif self.chips_available['wildcard']:
-                    return "wildcard"
+                # Priority: FreeHit > Wildcard (if forced and available)
+                # But typically we prefer TC/BB for forced play, so only force if we HAVE to clear these two.
+                # Actually, if we are FORCED, we might implement a specialized "force any chip" logic in make_transfers.
+                # For now, let's keep the specific logic:
+                if self.chips_available['freehit'] and not self.chips_available['triple_captain'] and not self.chips_available['bench_boost']:
+                     return "freehit", None
+                if self.chips_available['wildcard'] and not self.chips_available['triple_captain'] and not self.chips_available['bench_boost'] and not self.chips_available['freehit']:
+                     return "wildcard", None
 
-        # 1. Wildcard (Panic Button or Refresh)
-        # WC1 Expiry: Must use by GW 19 if available (Handled by forced usage above essentially, but kept for logic)
-        if self.chips_available['wildcard'] > 0:
-            if gw == 19 and not self.wildcard_2_awarded:
-                 return "wildcard" # Should be caught by force above, but safety net
-            if team_predicted_score < 40:
-                return "wildcard"
+        # 1. Crisis Management (Wildcard / Free Hit)
+        if team_prob_60 < 0.25:
+            if self.chips_available['freehit'] > 0:
+                print(f"🚨 GW {gw}: CRISIS! Team Prob > 60 is {team_prob_60:.2%}. Triggering FREE HIT.")
+                return "freehit", None
+            
+            if self.chips_available['wildcard'] > 0:
+                print(f"🚨 GW {gw}: CRISIS! Team Prob > 60 is {team_prob_60:.2%}. Triggering WILDCARD.")
+                return "wildcard", None
+
+        return None, None
+
+    def decide_post_transfer_chip(self, current_gw_preds, gw):
+        """
+        Decide if we should play an ENHANCEMENT chip (TC/BB) AFTER transfers.
+        Returns: (chip_name, trigger_player_id) or (None, None)
+        """
+        starters, bench, captain_id, _ = self.optimize_lineup(current_gw_preds)
+        if not starters: return None, None
+        
+        captain_stats = next((p for p in starters if p['id'] == captain_id), None)
+        tc_prob = captain_stats.get('prob_gt_10', 0) if captain_stats else 0
+        
+        bench_probs = [p.get('prob_gt_6', 0) for p in bench]
+        bb_avg_prob = sum(bench_probs) / len(bench_probs) if bench_probs else 0
+        
+        # 0. FORCED USAGE (TC/BB Priority)
+        if gw <= 19:
+            weeks_left = 19 - gw + 1
+            chips_left = sum(self.chips_available.values())
+            
+            if chips_left >= weeks_left:
+                 if self.chips_available['triple_captain']: return "triple_captain", captain_id
+                 elif self.chips_available['bench_boost']: return "bench_boost", None
+        
+        # 1. Triple Captain
+        if self.chips_available['triple_captain'] > 0:
+            if tc_prob > 0.20:
+                print(f"⚡ GW {gw}: TRIPLE CAPTAIN Triggered! {captain_stats['name']} Prob>=10 is {tc_prob:.1%}")
+                return "triple_captain", captain_id
         
         # 2. Bench Boost
         if self.chips_available['bench_boost'] > 0:
-            if bench_xp > 15:
-                return "bench_boost"
+            if bb_avg_prob > 0.25:
+                print(f"🚀 GW {gw}: BENCH BOOST Triggered! Avg Bench Prob>=6 is {bb_avg_prob:.1%}")
+                return "bench_boost", None
                 
-        # 3. Triple Captain
-        if self.chips_available['triple_captain'] > 0:
-            if top_scorer_xp > 10:
-                return "triple_captain"
-        
-        # 4. Free Hit
-        if self.chips_available['freehit'] > 0:
-            zeros = [p for p in starters if p['xp'] < 0.5]
-            if len(zeros) >= 3:
-                return "freehit"
+        return None, None
 
-        return None
-
-    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None):
+    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None, underperformance_map=None):
         """
         Handle Transfers AND Chips (Wildcard/FreeHit)
-        price_lookup: {player_id: current_price} for this GW
-        priority_transfer_out_id: Player ID to prioritize selling (e.g., underperformer)
         """
         # CHECK FOR CHIP RENEWAL AT GW 20
-        # "all the four chips must be used before gw 19... after it renews"
         if gw == 20:
             print(f"🔄 GW {gw}: All Chips Renewed for Second Half!")
             self.chips_available = {
@@ -342,16 +434,16 @@ class FPLManager:
                 "bench_boost": 1,
                 "triple_captain": 1
             }
-            # We treat the second WC as just "wildcard" in the available slots
             self.wildcard_2_awarded = True
 
-        active_chip = self.decide_chip(current_gw_preds, gw)
-        self.active_chip = active_chip
+        # 1. PRE-TRANSFER CHIPS (Wildcard / Free Hit)
+        active_chip, _ = self.decide_pre_transfer_chip(current_gw_preds, gw)
+        self.active_chip = active_chip # Will be "wildcard", "freehit", or None
         
         if active_chip == "wildcard" or active_chip == "freehit":
             if active_chip == "wildcard":
                 self.chips_available['wildcard'] -= 1
-                best_squad, _ = get_best_starting_squad(all_candidates) 
+                best_squad, _, _, _, _ = get_best_starting_squad(all_candidates) 
                 self.squad = [p['id'] for p in best_squad]
                 self.bank = 0 
                 cost = sum([p['cost'] for p in best_squad])
@@ -371,24 +463,19 @@ class FPLManager:
                 self.original_bank = self.bank
                 self.original_purchase_prices = self.purchase_prices.copy()  # Preserve prices
                 
-                best_squad, _ = get_best_starting_squad(all_candidates)
+                best_squad, _, _, _, _ = get_best_starting_squad(all_candidates)
                 self.squad = [p['id'] for p in best_squad]
                 self.bank = 0
                 cost = sum([p['cost'] for p in best_squad])
                 self.bank = 1000 - cost
                 return [], active_chip
 
-        # Non-transfer chips
-        if active_chip == "bench_boost":
-            self.chips_available['bench_boost'] -= 1
-        elif active_chip == "triple_captain":
-            self.chips_available['triple_captain'] -= 1
-            
-        # Standard Transfers Logic (Greedy) with Selling Price Mechanics
+        # 2. STANDARD TRANSFERS (Greedy)
+        # Execute transfers first (selling underperformers, buying new assets)
         squad_ids = set(self.squad)
         team_counts = {}
         for pid in self.squad:
-            if pid not in self.players_map: continue # Safety
+            if pid not in self.players_map: continue
             t = self.players_map[pid]['team']
             team_counts[t] = team_counts.get(t, 0) + 1
             
@@ -410,9 +497,20 @@ class FPLManager:
             # 0. Injured/Unfit (Highest Priority)
             # 0.5. Priority Target (Underperformer)
             # 1. Available (Lowest Priority)
-            # Then by Low XP
+            # 2. Template Player (Protected if count <= 3)
+            
+            # Count current template players (30%+ ownership)
+            template_count = sum(1 for pid in current_squad_ids 
+                                if pid in self.players_map 
+                                and float(self.players_map[pid].get('selected_by_percent', 0)) >= 30.0)
+            
             def get_out_priority(p):
                 is_injured = p.get('status', 'a') != 'a' or (p.get('chance_of_playing_this_round') is not None and p.get('chance_of_playing_this_round') < 100)
+                is_template = float(p.get('selected_by_percent', 0)) >= 30.0
+                
+                # PROTECTED: Template player when at or below minimum
+                if is_template and template_count <= 3:
+                    return (2, p['xp'])  # Lowest priority (protected)
                 
                 if is_injured:
                     return (0, p['xp'])
@@ -435,13 +533,29 @@ class FPLManager:
                 selling_price = calculate_selling_price(purchase_price, current_price)
                 
                 budget = current_bank + selling_price  # Use selling price, not current
+                
+                # Filter candidates by position, budget, ownership, and NOT in current squad
                 pos_candidates = [c for c in all_candidates 
                                   if c['type'] == p_out['type'] 
                                   and c['cost'] <= budget
                                   and c['id'] not in current_squad_ids
-                                  and float(c.get('selected_by_percent', 0)) > 5.0] # Constraint ownership
+                                  and float(c.get('selected_by_percent', 0)) > 5.0]  # Constraint ownership
                 
-                top_targets = sorted(pos_candidates, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)[:5]
+                # EXCLUDE UNDERPERFORMING PLAYERS
+                # Filter out players who are underperforming (actual < predicted by significant margin)
+                # Use underperformance_map from ai_manager (last 3 GWs of data)
+                filtered_candidates = []
+                for c in pos_candidates:
+                    # Check if player is underperforming based on recent history
+                    if underperformance_map and c['id'] in underperformance_map:
+                        underperf_score = underperformance_map[c['id']]
+                        # Exclude if underperforming by more than 3 points over last 3 GWs
+                        if underperf_score > 3.0:
+                            continue  # Skip this underperforming player
+                    
+                    filtered_candidates.append(c)
+                
+                top_targets = sorted(filtered_candidates, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)[:5]
                 
                 for p_in in top_targets:
                     team_id = p_in['team']
@@ -461,64 +575,61 @@ class FPLManager:
                         if current_differential_count >= 2 and not is_differential(p_out):
                             continue
                     
-                    cost_pts = 4 if self.free_transfers <= 0 else 0
-                    gain = (p_in['xp'] - p_out['xp']) - cost_pts
+                    gain = p_in['xp'] - p_out['xp']
                     
-                    # Boost gain for priority target to ensure they are selected
-                    if p_out['id'] == priority_transfer_out_id:
-                        gain += 1000.0
-                        
-                    if gain > best_gain:
-                        best_gain = gain
-                        best_move = (p_out, p_in, cost_pts, selling_price)
-            
-            
-            # Accept transfer if:
-            # 1. Gain > 1.0 (normal case)
-            # 2. Selling injured player and gain > 0 (any improvement)
-            # 3. Selling priority target (Force sell, has boosted gain)
-            if best_move:
-                p_out, p_in, cost_pts, selling_price = best_move
-                is_injured = p_out.get('status', 'a') != 'a' or (p_out.get('chance_of_playing_this_round') is not None and p_out.get('chance_of_playing_this_round') < 100)
-                is_priority = (priority_transfer_out_id and p_out['id'] == priority_transfer_out_id)
-                
-                threshold = 1.0
-                if is_injured: 
-                    threshold = 0.0
-                if is_priority:
-                     threshold = 500.0 # Expecting boosted gain > 900
-                
-                if p_out['id'] == priority_transfer_out_id:
-                    if best_move:
-                         pass
+                    # Applying Hit Penalty
+                    if self.free_transfers == 0:
+                        gain -= 4.0 # Hit cost
+                    
+                    if gain > best_gain and gain > 0.5: # Threshold to trade
+                         best_gain = gain
+                         best_move = (p_out, p_in, selling_price)
 
-                if best_gain > threshold:
-                    current_squad_ids.remove(p_out['id'])
-                    current_squad_ids.append(p_in['id'])
-                    
-                    # Update bank using selling price
-                    current_bank = current_bank + selling_price - p_in['cost']
-                    
-                    # Update purchase prices
-                    del current_purchase_prices[p_out['id']]
-                    purchase_price_in = price_lookup.get(p_in['id'], p_in['cost']) if price_lookup else p_in['cost']
-                    current_purchase_prices[p_in['id']] = purchase_price_in
-                    
-                    current_team_counts[self.players_map[p_out['id']]['team']] -= 1
-                    current_team_counts[p_in['team']] = current_team_counts.get(p_in['team'], 0) + 1
-                    self.free_transfers -= 1
-                    transfers_done += 1
-                    transfers_log.append({
-                        "in": p_in,
-                        "out": p_out,
-                        "cost": cost_pts
-                    })
-                else:
-                    break
+            if best_move:
+                p_out, p_in, sell_price = best_move
+                
+                current_squad_ids.remove(p_out['id'])
+                current_squad_ids.append(p_in['id'])
+                
+                current_team_counts[self.players_map[p_out['id']]['team']] -= 1
+                current_team_counts[p_in['team']] = current_team_counts.get(p_in['team'], 0) + 1
+                
+                current_bank += sell_price
+                current_bank -= p_in['cost']
+                
+                # Update Purchase Price for new player
+                current_purchase_prices.pop(p_out['id'], None)
+                current_purchase_prices[p_in['id']] = p_in['cost']
+                
+                if self.free_transfers > 0:
+                     self.free_transfers -= 1
+                
+                transfers_done += 1
+                transfers_log.append({
+                    "out": p_out['name'],
+                    "in": p_in['name']
+                })
             else:
                 break
         
+        # Commit Transfers
         self.squad = current_squad_ids
         self.bank = current_bank
         self.purchase_prices = current_purchase_prices
-        return transfers_log, active_chip
+        
+        if transfers_done == 0 and self.free_transfers < 5:
+             self.free_transfers += 1
+             
+        # 3. POST-TRANSFER CHIPS (Triple Captain / Bench Boost)
+        # Now that the squad is final, check if we should apply an enhancement chip
+        # But only if we haven't already used one (WC/FH)
+        if not self.active_chip:
+            post_chip, _ = self.decide_post_transfer_chip(current_gw_preds, gw)
+            if post_chip:
+                self.active_chip = post_chip
+                if post_chip == "triple_captain":
+                    self.chips_available['triple_captain'] -= 1
+                elif post_chip == "bench_boost":
+                    self.chips_available['bench_boost'] -= 1
+             
+        return transfers_log, self.active_chip

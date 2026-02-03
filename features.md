@@ -30,6 +30,10 @@
     - [x] Differential Card Restriction (Max 2 players with <10% ownership)
     - [x] Captain Ownership Restriction (Captain must have 30%+ ownership)
     - [x] Injury-Based Auto-Benching (Avoids players with <100% chance of playing)
+- [x] Probabilistic Points Modeling <!-- id: 9 -->
+    - [x] Predict probability distribution of points (e.g. Prob > 10)
+    - [x] Optimize for probability of team score > Threshold (Chance Constraint)
+    - [x] Visualize probability stats in History
 - [ ] League Ownership Analysis <!-- id: 8 -->
     - [ ] Fetch all teams in a classic league
     - [ ] Historical ownership visualization

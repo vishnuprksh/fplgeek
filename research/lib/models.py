@@ -45,9 +45,11 @@ def build_model(output_activation='linear', loss='mse', metrics=['mae']):
     # Dense Layers
     dense = Dense(32, activation='relu')(concat)
     dense = Dense(16, activation='relu')(dense)
-    output = Dense(1, activation=output_activation)(dense) 
+    
+    # Output: Probability distribution over 16 classes (0, 1, ..., 14, 15+)
+    output = Dense(16, activation='softmax')(dense)
     
     model = Model(inputs=[seq_input, ctx_input, opp_input], outputs=output)
-    model.compile(optimizer=Adam(learning_rate=0.001), loss=loss, metrics=metrics)
+    model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
 

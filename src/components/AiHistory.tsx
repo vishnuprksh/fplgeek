@@ -22,6 +22,8 @@ interface SquadPlayer {
     name: string;
     points: number;
     xp: number;
+    prob_gt_10?: number;
+    prob_gt_6?: number;
     role: 'C' | 'V' | 'S' | 'B';
     purchase_price?: number;
     current_price?: number;
@@ -33,13 +35,16 @@ interface BacktestResult {
     gw: number;
     points: number;
     net_points: number;
-    transfer_cost: number;
+    transfer_cost?: number;
+    event_transfers_cost?: number;
     active_chip?: string | null;
     total_xp?: number;
-    bank: number;
+    team_prob_gt_60?: number;
+    bank?: number;
     free_transfers?: number;
     transfers: Transfer[];
     squad: SquadPlayer[];
+    season?: string;
 }
 
 export function AiHistory({ elements, teams }: AiHistoryProps) {
@@ -66,15 +71,14 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     useEffect(() => {
         const loadHistory = async () => {
             try {
-                // We fetch the new JSON file. Assuming data provider sends the raw JSON.
-                // In a real app we might need a specific API endpoint but here we reused the mechanism.
-                // Or we can fetch 'ai_manager_history.json' directly if public?
-                // The getDataProvider().getBacktestHistory() reads 'backtest_results.json'.
-                // I need to change the DataProvider usage OR ensure 'ai_manager_history.json' is read.
-                // For now, let's assume I should fetch the new file.
-
                 const response = await fetch('/data/ai_manager_history.json');
-                const results: BacktestResult[] = await response.json();
+                const allResults: BacktestResult[] = await response.json();
+
+                // Filter for current season (assuming the first entry has the latest season)
+                // The user specifically requested "this season"
+                const currentSeason = allResults.length > 0 ? allResults[0].season : "25/26";
+                const results = allResults.filter(r => r.season === currentSeason);
+
                 setHistory(results);
 
                 if (results.length > 0) {
@@ -171,7 +175,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                 </div>
                 <div className="stat-card">
                     <h3>Current Bank</h3>
-                    <div className="stat-value">£{(history.length > 0 ? history[history.length - 1].bank : 0).toFixed(1)}m</div>
+                    <div className="stat-value">£{(history.length > 0 ? (history[history.length - 1].bank ?? 0) : 0).toFixed(1)}m</div>
                 </div>
                 <div className="stat-card">
                     <h3>Current FTs</h3>
@@ -202,6 +206,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
 
             <div className="gameweek-list">
                 {history.map(h => {
+                    const cost = h.transfer_cost ?? h.event_transfers_cost ?? 0;
                     return (
                         <div key={h.gw} className="gw-card">
                             <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
@@ -221,12 +226,21 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
                                             (xP: {h.total_xp ? h.total_xp.toFixed(1) : '0.0'})
                                         </span>
+                                        {h.team_prob_gt_60 !== undefined && (
+                                            <span style={{
+                                                fontSize: '0.8em',
+                                                marginLeft: '8px',
+                                                color: (h.team_prob_gt_60 > 0.5 ? '#4ade80' : '#94a3b8')
+                                            }}>
+                                                Prob&gt;60: {(h.team_prob_gt_60 * 100).toFixed(0)}%
+                                            </span>
+                                        )}
                                     </span>
-                                    {h.transfer_cost > 0 && <span className="gw-hits">(-{h.transfer_cost} hit)</span>}
+                                    {cost > 0 && <span className="gw-hits">(-{cost} hit)</span>}
                                     <span className="gw-transfers-badge">
                                         {h.transfers.length > 0 ? `${h.transfers.length} Tx` : 'No Tx'}
                                         <span style={{ fontSize: '0.8em', marginLeft: '6px', opacity: 0.8 }}>
-                                            (£{h.bank.toFixed(1)}m, {h.free_transfers ?? 1} FT)
+                                            (£{(h.bank ?? 0).toFixed(1)}m, {h.free_transfers ?? 1} FT)
                                         </span>
                                     </span>
                                     {h.active_chip && (
@@ -275,17 +289,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         }), {})}
                                     />
 
-                                    {/* Bench Section */}
-                                    <div className="bench-section">
-                                        <h4>Bench</h4>
-                                        <div className="bench-list">
-                                            {h.squad.filter(p => p.role === 'B').map(p => (
-                                                <div key={p.id} className="bench-player">
-                                                    {p.name} ({p.points}pts) - £{(p.selling_price || 0).toFixed(1)}m
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
+
 
                                     {/* Detailed Stats */}
                                     <div className="squad-list-text" style={{ marginTop: '1rem' }}>
@@ -314,7 +318,19 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                             )}
                                                         </span>
                                                         <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
-                                                        <span className="player-xp">xP: {p.xp.toFixed(1)}</span>
+                                                        <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
+                                                            {/* <span>xP: {p.xp.toFixed(1)}</span> */}
+                                                            {p.prob_gt_6 !== undefined && (
+                                                                <span style={{ fontSize: '0.8em', color: '#94a3b8' }}>
+                                                                    &#8805;6: {(p.prob_gt_6 * 100).toFixed(0)}%
+                                                                </span>
+                                                            )}
+                                                            {p.prob_gt_10 !== undefined && (
+                                                                <span style={{ fontSize: '0.8em', color: '#94a3b8' }}>
+                                                                    &#8805;10: {(p.prob_gt_10 * 100).toFixed(0)}%
+                                                                </span>
+                                                            )}
+                                                        </span>
                                                         <span className="player-actual">
                                                             {isCap ? `${p.points * 2}` : p.points} pts
                                                         </span>

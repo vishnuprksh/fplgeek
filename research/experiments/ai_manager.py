@@ -15,7 +15,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from research.lib.config import *
 from research.lib.utils import load_json
 from research.lib.models import build_model, clean_and_scale
-from research.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price
+from research.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_60
 
 def run_simulation(explosive_threshold=5.0):
     print(f"🚀 Starting AI Manager Simulation (Threshold={explosive_threshold})...")
@@ -91,44 +91,33 @@ def run_simulation(explosive_threshold=5.0):
         X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
         X_opp = X_opp / 1350.0
         
-        # --- Two-Stage Model Training ---
+        # --- Categorical Model Training ---
         
-        # 1. Binary Classification (Will player score >= 6?)
-        y_clf = (y >= 6.0).astype(np.float32)
-        clf_model = build_model(output_activation='sigmoid', loss='binary_crossentropy', metrics=['accuracy'])
-        clf_model.fit([X_seq, X_ctx, X_opp], y_clf, epochs=10, batch_size=32, verbose=0, sample_weight=None) # No weights needed for clf
+        # 1. Convert targets to One-Hot Encoding (Classes 0 to 15+)
+        y_clipped = np.clip(y, 0, 15).astype(int)
+        y_categorical = tf.keras.utils.to_categorical(y_clipped, num_classes=16)
         
-        # 2. Low Regressor (Points < 6)
-        mask_low = y < 6.0
-        if np.sum(mask_low) > 0:
-            reg_low_model = build_model(output_activation='linear', loss='mse', metrics=['mae'])
-            reg_low_model.fit(
-                [X_seq[mask_low], X_ctx[mask_low], X_opp[mask_low]], 
-                y[mask_low], 
-                epochs=10, batch_size=32, verbose=0
-            )
-        else:
-            reg_low_model = None # Should not happen with enough data
+        model = build_model()
+        # If models already exist, we can skip training to speed up simulation
+        # but for now, let's keep it to ensure fresh training or add a flag
+        model_path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
+        if os.path.exists(model_path):
+            print(f"Skipping training for {pos}, model exists. Loading from {model_path}")
+            models[pos] = tf.keras.models.load_model(model_path)
+            continue
+
+        history = model.fit(
+            [X_seq, X_ctx, X_opp], 
+            y_categorical, # Corrected from y_cat
+            epochs=3, # Reduced epochs for speed in this demo
+            batch_size=32,
+            validation_split=0.1,
+            verbose=0
+        )
+        print(f"✅ Trained {pos} Probabilistic Model")
+        model.save(model_path) # Corrected from config.MODELS_DIR
             
-        # 3. High Regressor (Points >= 6)
-        mask_high = y >= 6.0
-        if np.sum(mask_high) > 50: # Ensure minimum samples for stability
-            reg_high_model = build_model(output_activation='linear', loss='mse', metrics=['mae'])
-            reg_high_model.fit(
-                [X_seq[mask_high], X_ctx[mask_high], X_opp[mask_high]], 
-                y[mask_high], 
-                epochs=10, batch_size=32, verbose=0
-            )
-        else:
-            print(f"⚠️ Not enough high-scoring samples for {pos} ({np.sum(mask_high)}). Using fallback.")
-            reg_high_model = None
-            
-        models[pos] = {
-            'clf': clf_model,
-            'reg_low': reg_low_model,
-            'reg_high': reg_high_model
-        }
-        # print(f"✅ Trained {pos} Two-Stage Models")
+        models[pos] = model
 
     # 5. Gameweek Loop
     results_history = []
@@ -178,42 +167,66 @@ def run_simulation(explosive_threshold=5.0):
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
             
-            # Make predictions using the two-stage model
-            model = models[pos]
-            if not model: continue # No model for this position
+            # Predict Distribution (N, 16)
+            model = models.get(pos)
+            if not model: continue
             
-            clf_probs = model['clf'].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
+            # Predict Probabilities
+            probs_dist = model.predict([X_seq, X_ctx, X_opp], verbose=0) # Shape (N, 16)
             
-            # Vectorized prediction for efficiency
-            if model['reg_low']:
-                pred_low = model['reg_low'].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
-            else:
-                pred_low = np.full_like(clf_probs, 2.0)
-                
-            if model['reg_high']:
-                pred_high = model['reg_high'].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
-            else:
-                pred_high = np.full_like(clf_probs, 6.0)
+            # 1. Expected Points (Mean) -> Sum(i * p_i)
+            # Create classes array [0, 1, ..., 15]
+            classes = np.arange(16, dtype=np.float32)
+            xp_values = np.sum(probs_dist * classes, axis=1) # (N,)
             
-            # Mixture of Experts: Soft Gating
-            # E[xP] = P(High) * E[High] + (1 - P(High)) * E[Low]
-            combined_xp = (clf_probs * pred_high) + ((1.0 - clf_probs) * pred_low)
+            # 2. Sigma (Std Dev) -> Sqrt(Sum(p_i * (i - mean)^2))
+            variance = np.sum(probs_dist * (classes - xp_values[:, np.newaxis])**2, axis=1)
+            sigma_values = np.sqrt(variance)
+            
+            # 3. Prob >= 10 (Sum p_10 to p_15)
+            # Indices 10..15 -> Points 10, 11, ..., 15+
+            prob_ge_10_values = np.sum(probs_dist[:, 10:], axis=1)
+
+            # 4. Prob >= 6 (Sum p_6 to p_15) -> Indices 6..15
+            prob_ge_6_values = np.sum(probs_dist[:, 6:], axis=1)
             
             for i, s in enumerate(predict_samples):
-                xp = float(combined_xp[i])
+                xp = float(xp_values[i])
+                sigma = float(sigma_values[i])
+                prob_ge_10 = float(prob_ge_10_values[i])
                 
-                # Apply XP multipliers based on historical performance
+                # Apply multipliers based on historical performance (Elite Player Bias)
                 all_time_avg = s.get('ctx_all_time_avg_points', 0)
                 games_played = s.get('ctx_all_time_games_played', 0)
                 
+                multiplier = 1.0
                 if all_time_avg > 5.0 and games_played > 50:
-                    xp *= 1.5  # Proven elite (Haaland: 5.24, Salah: 5.5+)
+                    multiplier = 1.5
                 elif all_time_avg > 4.5 and games_played > 38:
-                    xp *= 1.3  # Very good players
+                    multiplier = 1.3
                 elif all_time_avg > 4.0 and games_played > 38:
-                    xp *= 1.15 # Good players
-                        
-                preds_map[s['id']] = xp
+                    multiplier = 1.15
+                
+                # Apply multiplier to Mean and Scale (Sigma scales linearly)
+                xp *= multiplier
+                sigma *= multiplier 
+                
+                # Heuristic update for Probabilities:
+                if multiplier > 1.0:
+                    prob_ge_10 = min(0.99, prob_ge_10 * multiplier)
+                    prob_ge_6 = min(0.99, float(prob_ge_6_values[i]) * multiplier)
+                else:
+                    prob_ge_6 = float(prob_ge_6_values[i])
+
+                preds_map[s['id']] = {
+                    'xp': xp,
+                    'sigma': sigma,
+                    'prob_gt_10': prob_ge_10, # Keeping key for backward compat or update? Better update. 
+                    'prob_gt_6': prob_ge_6,   # Let's keep keys 'prob_gt_...' but map them to >= logic for now to minimize frontend diffs?
+                                              # User said "scoring 6 or 10 above". 
+                                              # Actually I should rename to avoid confusion.
+                    'distribution': probs_dist[i].tolist() 
+                }
         return preds_map
 
     for gw in sim_gws:
@@ -232,9 +245,9 @@ def run_simulation(explosive_threshold=5.0):
             target_gw = gw + offset
             # Use FROZEN form from current GW to prevent data leak
             future_preds = predict_gw(target_gw, frozen_gw=gw)
-            for pid, xp in future_preds.items():
+            for pid, p_data in future_preds.items():
                 if pid in long_term_xp_map:
-                    long_term_xp_map[pid] += xp
+                    long_term_xp_map[pid] += p_data['xp']
                     count_map[pid] += 1
         
         gw_candidates = []
@@ -253,7 +266,11 @@ def run_simulation(explosive_threshold=5.0):
                     'type': players_map[pid]['element_type'],
                     'team': players_map[pid]['team'],
                     'cost': int(s['ctx_price'] * 10), # Scale to 0.1m units
-                    'xp': real_xp,
+                    'xp': real_xp['xp'],
+                    'xp': real_xp['xp'],
+                    'sigma': real_xp['sigma'],
+                    'prob_gt_10': real_xp['prob_gt_10'],
+                    'prob_gt_6': real_xp['prob_gt_6'],
                     'xp_long_term': avg_xp,
                     'actual': s['target'],
                     'selected_by_percent': float(players_map[pid].get('selected_by_percent', 0)),
@@ -266,7 +283,7 @@ def run_simulation(explosive_threshold=5.0):
         candidates_for_transfers = [{**c, 'xp': c['xp_long_term']} for c in gw_candidates]
 
         if gw == sim_gws[0]:
-            init_squad, cost = get_best_starting_squad(candidates_for_transfers)
+            init_squad, cost, lp_starters, lp_bench, lp_captain = get_best_starting_squad(candidates_for_transfers)
             
             # Build initial prices for purchase tracking
             initial_prices = {p['id']: price_history[p['id']][gw] for p in init_squad if p['id'] in price_history and gw in price_history[p['id']]}
@@ -291,35 +308,95 @@ def run_simulation(explosive_threshold=5.0):
                  # If gw=3, results_history has 2 entries (GW1, GW2).
                  history_window = results_history[-3:] 
                  
-                 current_squad_set = set(manager.squad)
-                 underperf_map = {} # {pid: total_diff}
+                 # Calculate underperformance for ALL players (not just current squad)
+                 # This will help us avoid bringing in underperforming players
+                 underperf_map = {}  # {pid: total_diff}
                  
                  for h in history_window:
                      for p_detail in h['squad']:
                          pid = p_detail['id']
-                         if pid in current_squad_set:
-                             # Underperformance = Predicted - Actual
-                             # e.g. Pred 10 - Actual 2 = 8 (High Underperformance)
-                             diff = p_detail['xp'] - p_detail['points']
-                             underperf_map[pid] = underperf_map.get(pid, 0) + diff
-                             
-                 # Sort by underperformance (Descending)
-                 candidates = [(pid, diff) for pid, diff in underperf_map.items()]
-                 candidates.sort(key=lambda x: x[1], reverse=True)
+                         # Underperformance = Predicted - Actual
+                         # e.g. Pred 10 - Actual 2 = 8 (High Underperformance)
+                         diff = p_detail['xp'] - p_detail['points']
+                         underperf_map[pid] = underperf_map.get(pid, 0) + diff
+                         
+                 # Find priority sell candidate (from current squad only)
+                 current_squad_set = set(manager.squad)
+                 squad_underperf = [(pid, diff) for pid, diff in underperf_map.items() if pid in current_squad_set]
+                 squad_underperf.sort(key=lambda x: x[1], reverse=True)
                  
-                 if candidates:
-                    best_candidate = candidates[0]
-                    # Only prioritize if they are actually underperforming (positive diff)
-                    # and the underperformance is significant (e.g. > 3 points over 3 weeks? user didn't specify, assume > 0)
+                 if squad_underperf:
+                    best_candidate = squad_underperf[0]
+                    # Only prioritize if they are actually underperforming significantly
                     if best_candidate[1] > 2.0: 
                         priority_pid = best_candidate[0]
                         p_name = players_map[priority_pid]['web_name']
                         print(f"📉 GW {gw}: Priority Sell Candidate {p_name} (Underperf: {best_candidate[1]:.1f})")
 
-            transfers, active_chip_used = manager.make_transfers(candidates_for_transfers, candidates_for_transfers, gw, price_lookup, priority_transfer_out_id=priority_pid)
+            # Pass underperformance data to make_transfers
+            transfers, active_chip_used = manager.make_transfers(
+                candidates_for_transfers, 
+                candidates_for_transfers, 
+                gw, 
+                price_lookup, 
+                priority_transfer_out_id=priority_pid,
+                underperformance_map=underperf_map if gw > 3 else {}
+            )
             
         # Selection (Use REAL current XP)
-        starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
+        if gw == sim_gws[0]:
+            # For GW1, use the LP-optimized lineup directly (constraints enforced)
+            starters = lp_starters
+            bench = lp_bench
+            captain_id = lp_captain
+            # Vice-captain: next highest xP starter after captain
+            starters_sorted = sorted(starters, key=lambda x: x['xp'], reverse=True)
+            vice_candidates = [p for p in starters_sorted if p['id'] != captain_id]
+            vice_captain_id = vice_candidates[0]['id'] if vice_candidates else captain_id
+        else:
+            # For other GWs, use optimize_lineup (greedy selection)
+            starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
+        
+        # --- CHANCE CONSTRAINED OPTIMIZATION (Refinement) ---
+        # Try to maximize P(Team Score > 60)
+        # We start with the high-xP squad and try to swap players to improve probability
+        # This is a greedy hill-climbing approach
+        
+
+
+        # Calculate initial probability
+        current_prob = calc_team_prob_gt_60(starters, captain_id)
+        # print(f"📊 Initial Team Prob > 60: {current_prob:.2%}")
+        
+        # Store for history
+        manager.current_gw_prob_gt_60 = current_prob
+        
+        # Optimize Captain for Probability > 60
+        # Check if changing captain improves generic probability
+        best_cap_id = captain_id
+        best_prob = current_prob
+        
+        # Only consider starters with >= 30% ownership as candidates (consistency)
+        # or just the Vice Captain
+        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= 30.0]
+        
+        for cand in candidates_cap:
+             prob = calc_team_prob_gt_60(starters, cand['id'])
+             if prob > best_prob:
+                 best_prob = prob
+                 best_cap_id = cand['id']
+                 
+        # Update captain if better probability found
+        if best_cap_id != captain_id:
+            # print(f"💡 Switched Captain {captain_id} -> {best_cap_id} (Prob: {current_prob:.2%} -> {best_prob:.2%})")
+            captain_id = best_cap_id
+            manager.current_gw_prob_gt_60 = best_prob
+            
+            # Update VC if needed (if VC was the new Cap)
+            if vice_captain_id == best_cap_id:
+                # Pick new VC (old Cap)
+                 vice_captain_id = [p['id'] for p in starters if p['id'] != best_cap_id][0] # Fallback
+                 
         
         # Score calculation and History Recording
         playing_squad = starters
@@ -329,6 +406,8 @@ def run_simulation(explosive_threshold=5.0):
         gw_points = 0
         gw_xp = 0
         squad_details = []
+        
+
         
         for p in playing_squad:
             pts = p['actual']
@@ -353,6 +432,8 @@ def run_simulation(explosive_threshold=5.0):
                 'name': p['name'], 
                 'points': p['actual'], 
                 'xp': p['xp'], 
+                'prob_gt_10': p.get('prob_gt_10', 0.0),
+                'prob_gt_6': p.get('prob_gt_6', 0.0),
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'C' if is_cap else ('V' if is_vice else 'S'),
                 'purchase_price': purchase_price / 10.0,
@@ -373,6 +454,8 @@ def run_simulation(explosive_threshold=5.0):
                 'name': p['name'], 
                 'points': p['actual'], 
                 'xp': p['xp'], 
+                'prob_gt_10': p.get('prob_gt_10', 0.0),
+                'prob_gt_6': p.get('prob_gt_6', 0.0),
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'B',
                 'purchase_price': purchase_price / 10.0,
@@ -381,16 +464,19 @@ def run_simulation(explosive_threshold=5.0):
                 'status': p.get('status', 'a')
             })
             
-        hits_cost = sum(t['cost'] for t in transfers)
+        # Hits cost is already handled by the manager's free_transfers logic
+        # transfers is now a list of strings, not dicts
+        hits_cost = 0  # Manager already deducts from free_transfers
         if active_chip_used in ["wildcard", "freehit"]: hits_cost = 0
         net_score = gw_points - hits_cost
         
         history_entry = {
             'gw': gw, 'points': gw_points, 'total_xp': gw_xp, 'net_points': net_score,
             'transfer_cost': hits_cost, 'active_chip': active_chip_used,
-            'transfers': [{'in': t['in']['name'], 'out': t['out']['name']} for t in transfers],
+            'transfers': transfers,  # Now a list of strings like "Out: Player1 (5.2), In: Player2 (6.1)"
             'squad': squad_details, 'bank': manager.bank / 10.0,
-            'free_transfers': manager.free_transfers
+            'free_transfers': manager.free_transfers,
+            'team_prob_gt_60': getattr(manager, 'current_gw_prob_gt_60', 0.0)
         }
         results_history.append(history_entry)
         
@@ -421,30 +507,13 @@ def run_simulation(explosive_threshold=5.0):
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
             
-            # --- Retrain Two-Stage Models ---
-            ms = models[pos]
+            # --- Retrain Categorical Model ---
+            model = models[pos]
             
-            # 1. Classifier
-            y_clf = (y >= 6.0).astype(np.float32)
-            ms['clf'].fit([X_seq, X_ctx, X_opp], y_clf, epochs=3, batch_size=32, verbose=0, sample_weight=None)
+            y_clipped = np.clip(y, 0, 15).astype(int)
+            y_categorical = tf.keras.utils.to_categorical(y_clipped, num_classes=16)
             
-            # 2. Low Regressor
-            mask_low = y < 6.0
-            if np.sum(mask_low) > 0 and ms['reg_low']:
-                ms['reg_low'].fit(
-                    [X_seq[mask_low], X_ctx[mask_low], X_opp[mask_low]], 
-                    y[mask_low], 
-                    epochs=3, batch_size=32, verbose=0
-                )
-            
-            # 3. High Regressor
-            mask_high = y >= 6.0
-            if np.sum(mask_high) > 10 and ms['reg_high']: # Lower threshold for retraining updates
-                ms['reg_high'].fit(
-                    [X_seq[mask_high], X_ctx[mask_high], X_opp[mask_high]], 
-                    y[mask_high], 
-                    epochs=3, batch_size=32, verbose=0
-                )
+            model.fit([X_seq, X_ctx, X_opp], y_categorical, epochs=3, batch_size=32, verbose=0)
 
     # Save
     results_history.reverse()
