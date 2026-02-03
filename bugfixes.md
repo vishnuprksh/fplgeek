@@ -25,3 +25,7 @@
 - **Captaincy Ownership Constraint**: Updated rule to require 50% ownership.
   - *Context*: User request to ensure safer captaincy choices.
   - *Fix*: Increased ownership threshold from 30% to 50% in `fpl_manager.py` and `ai_manager.py`.
+
+- **Revert Captaincy Threshold**: Reverted captaincy constraint back to 30%.
+  - *Context*: User requested to revert the change after testing.
+  - *Fix*: Changed 50% back to 30% in `fpl_manager.py` and `ai_manager.py`.

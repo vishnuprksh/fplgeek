@@ -13,9 +13,9 @@
 
 ## 2. Team Management
 - **Captaincy**: The captain (2x multiplier) must be a "safe" pick.
-  - Constraint: **Ownership > 50%**.
+  - Constraint: **Ownership > 30%**.
   - If no player in the starting XI meets this, the highest xP player is chosen (with a warning).
-- **Vice Captain**: Next best player also with **Ownership > 50%**.
+- **Vice Captain**: Next best player also with **Ownership > 30%**.
 - **Bench Order**: Sorted by xP.
 
 ## 3. Transfer Prioritization

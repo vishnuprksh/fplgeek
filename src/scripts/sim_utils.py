@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
-from research.lib.models import clean_and_scale
-from research.lib.config import POSITIONS
+from src.scripts.lib.models import clean_and_scale
+from src.scripts.lib.config import POSITIONS
 
 def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None):
     """

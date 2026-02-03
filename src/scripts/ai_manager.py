@@ -12,10 +12,10 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 
-from research.lib.config import *
-from research.lib.utils import load_json
-from research.lib.models import build_model, clean_and_scale
-from research.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_60
+from src.scripts.lib.config import *
+from src.scripts.lib.utils import load_json
+from src.scripts.lib.models import build_model, clean_and_scale
+from src.scripts.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_60
 
 def run_simulation(explosive_threshold=5.0):
     print(f"🚀 Starting AI Manager Simulation (Threshold={explosive_threshold})...")
@@ -122,7 +122,7 @@ def run_simulation(explosive_threshold=5.0):
     # 5. Gameweek Loop
     results_history = []
     
-    from research.experiments.lib.sim_utils import predict_gw
+    from src.scripts.sim_utils import predict_gw
 
     for gw in sim_gws:
         # print(f"--- GW {gw} ---")
@@ -271,9 +271,9 @@ def run_simulation(explosive_threshold=5.0):
         best_cap_id = captain_id
         best_prob = current_prob
         
-        # Only consider starters with >= 50% ownership as candidates (consistency)
+        # Only consider starters with >= 30% ownership as candidates (consistency)
         # or just the Vice Captain
-        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= 50.0]
+        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= 30.0]
         
         for cand in candidates_cap:
              prob = calc_team_prob_gt_60(starters, cand['id'])
