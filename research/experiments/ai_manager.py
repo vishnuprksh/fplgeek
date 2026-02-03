@@ -91,18 +91,44 @@ def run_simulation(explosive_threshold=5.0):
         X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
         X_opp = X_opp / 1350.0
         
-        # Sample Weighting
-        weights = np.where(y > explosive_threshold, 1.0 + (y - explosive_threshold) * 0.5, 1.0)
+        # --- Two-Stage Model Training ---
         
-        model = build_model()
-        model.fit([X_seq, X_ctx, X_opp], y, sample_weight=weights, epochs=10, batch_size=32, verbose=0)
-        models[pos] = model
-        # print(f"✅ Trained {pos} ({len(train_samples)} samples)")
+        # 1. Binary Classification (Will player score >= 6?)
+        y_clf = (y >= 6.0).astype(np.float32)
+        clf_model = build_model(output_activation='sigmoid', loss='binary_crossentropy', metrics=['accuracy'])
+        clf_model.fit([X_seq, X_ctx, X_opp], y_clf, epochs=10, batch_size=32, verbose=0, sample_weight=None) # No weights needed for clf
         
-        # Save model for inspection
-        model_path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
-        model.save(model_path)
-        # print(f"💾 Saved {pos} model to {model_path}")
+        # 2. Low Regressor (Points < 6)
+        mask_low = y < 6.0
+        if np.sum(mask_low) > 0:
+            reg_low_model = build_model(output_activation='linear', loss='mse', metrics=['mae'])
+            reg_low_model.fit(
+                [X_seq[mask_low], X_ctx[mask_low], X_opp[mask_low]], 
+                y[mask_low], 
+                epochs=10, batch_size=32, verbose=0
+            )
+        else:
+            reg_low_model = None # Should not happen with enough data
+            
+        # 3. High Regressor (Points >= 6)
+        mask_high = y >= 6.0
+        if np.sum(mask_high) > 50: # Ensure minimum samples for stability
+            reg_high_model = build_model(output_activation='linear', loss='mse', metrics=['mae'])
+            reg_high_model.fit(
+                [X_seq[mask_high], X_ctx[mask_high], X_opp[mask_high]], 
+                y[mask_high], 
+                epochs=10, batch_size=32, verbose=0
+            )
+        else:
+            print(f"⚠️ Not enough high-scoring samples for {pos} ({np.sum(mask_high)}). Using fallback.")
+            reg_high_model = None
+            
+        models[pos] = {
+            'clf': clf_model,
+            'reg_low': reg_low_model,
+            'reg_high': reg_high_model
+        }
+        # print(f"✅ Trained {pos} Two-Stage Models")
 
     # 5. Gameweek Loop
     results_history = []
@@ -152,23 +178,40 @@ def run_simulation(explosive_threshold=5.0):
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
             
-            p_vals = models[pos].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
-            for i, s in enumerate(predict_samples):
-                xp = float(p_vals[i])
+            # Make predictions using the two-stage model
+            model = models[pos]
+            if not model: continue # No model for this position
+            
+            clf_probs = model['clf'].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
+            
+            # Vectorized prediction for efficiency
+            if model['reg_low']:
+                pred_low = model['reg_low'].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
+            else:
+                pred_low = np.full_like(clf_probs, 2.0)
                 
-                # Manual Boost for GW 1-4 Elite Players
-                # Model underestimates elite players in early season due to lack of current season form
-                # Extend to first few GWs to ensure long-term planning sees value
-                if target_gw <= 4:
-                    all_time_avg = s.get('ctx_all_time_avg_points', 0)
-                    games_played = s.get('ctx_all_time_games_played', 0)
-                    
-                    if all_time_avg > 5.0 and games_played > 50:
-                        xp *= 1.5  # Proven elite (Haaland: 5.24, Salah: 5.5+)
-                    elif all_time_avg > 4.5 and games_played > 38:
-                        xp *= 1.3  # Very good players
-                    elif all_time_avg > 4.0 and games_played > 38:
-                        xp *= 1.15 # Good players
+            if model['reg_high']:
+                pred_high = model['reg_high'].predict([X_seq, X_ctx, X_opp], verbose=0).flatten()
+            else:
+                pred_high = np.full_like(clf_probs, 6.0)
+            
+            # Mixture of Experts: Soft Gating
+            # E[xP] = P(High) * E[High] + (1 - P(High)) * E[Low]
+            combined_xp = (clf_probs * pred_high) + ((1.0 - clf_probs) * pred_low)
+            
+            for i, s in enumerate(predict_samples):
+                xp = float(combined_xp[i])
+                
+                # Apply XP multipliers based on historical performance
+                all_time_avg = s.get('ctx_all_time_avg_points', 0)
+                games_played = s.get('ctx_all_time_games_played', 0)
+                
+                if all_time_avg > 5.0 and games_played > 50:
+                    xp *= 1.5  # Proven elite (Haaland: 5.24, Salah: 5.5+)
+                elif all_time_avg > 4.5 and games_played > 38:
+                    xp *= 1.3  # Very good players
+                elif all_time_avg > 4.0 and games_played > 38:
+                    xp *= 1.15 # Good players
                         
                 preds_map[s['id']] = xp
         return preds_map
@@ -240,7 +283,40 @@ def run_simulation(explosive_threshold=5.0):
             # Build price lookup for current GW
             price_lookup = {pid: price_history[pid][gw] for pid in price_history if gw in price_history[pid]}
             
-            transfers, active_chip_used = manager.make_transfers(candidates_for_transfers, candidates_for_transfers, gw, price_lookup)
+            # --- NEW RULE: Prioritize Underperforming Players (GW 3+) ---
+            priority_pid = None
+            if gw >= 3:
+                 # Check last 3 weeks (or available history)
+                 # results_history has [GW1, GW2...] 
+                 # If gw=3, results_history has 2 entries (GW1, GW2).
+                 history_window = results_history[-3:] 
+                 
+                 current_squad_set = set(manager.squad)
+                 underperf_map = {} # {pid: total_diff}
+                 
+                 for h in history_window:
+                     for p_detail in h['squad']:
+                         pid = p_detail['id']
+                         if pid in current_squad_set:
+                             # Underperformance = Predicted - Actual
+                             # e.g. Pred 10 - Actual 2 = 8 (High Underperformance)
+                             diff = p_detail['xp'] - p_detail['points']
+                             underperf_map[pid] = underperf_map.get(pid, 0) + diff
+                             
+                 # Sort by underperformance (Descending)
+                 candidates = [(pid, diff) for pid, diff in underperf_map.items()]
+                 candidates.sort(key=lambda x: x[1], reverse=True)
+                 
+                 if candidates:
+                    best_candidate = candidates[0]
+                    # Only prioritize if they are actually underperforming (positive diff)
+                    # and the underperformance is significant (e.g. > 3 points over 3 weeks? user didn't specify, assume > 0)
+                    if best_candidate[1] > 2.0: 
+                        priority_pid = best_candidate[0]
+                        p_name = players_map[priority_pid]['web_name']
+                        print(f"📉 GW {gw}: Priority Sell Candidate {p_name} (Underperf: {best_candidate[1]:.1f})")
+
+            transfers, active_chip_used = manager.make_transfers(candidates_for_transfers, candidates_for_transfers, gw, price_lookup, priority_transfer_out_id=priority_pid)
             
         # Selection (Use REAL current XP)
         starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
@@ -345,12 +421,30 @@ def run_simulation(explosive_threshold=5.0):
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
             
-            # Sample Weighting: Prioritize Explosive Points
-            # Weight = 1.0 + (Points - 5) * 0.5 for Points > 5
-            # Example: 2pts -> 1.0, 6pts -> 1.5, 10pts -> 3.5, 20pts -> 8.5
-            weights = np.where(y > explosive_threshold, 1.0 + (y - explosive_threshold) * 0.5, 1.0)
+            # --- Retrain Two-Stage Models ---
+            ms = models[pos]
             
-            models[pos].fit([X_seq, X_ctx, X_opp], y, sample_weight=weights, epochs=3, batch_size=32, verbose=0)
+            # 1. Classifier
+            y_clf = (y >= 6.0).astype(np.float32)
+            ms['clf'].fit([X_seq, X_ctx, X_opp], y_clf, epochs=3, batch_size=32, verbose=0, sample_weight=None)
+            
+            # 2. Low Regressor
+            mask_low = y < 6.0
+            if np.sum(mask_low) > 0 and ms['reg_low']:
+                ms['reg_low'].fit(
+                    [X_seq[mask_low], X_ctx[mask_low], X_opp[mask_low]], 
+                    y[mask_low], 
+                    epochs=3, batch_size=32, verbose=0
+                )
+            
+            # 3. High Regressor
+            mask_high = y >= 6.0
+            if np.sum(mask_high) > 10 and ms['reg_high']: # Lower threshold for retraining updates
+                ms['reg_high'].fit(
+                    [X_seq[mask_high], X_ctx[mask_high], X_opp[mask_high]], 
+                    y[mask_high], 
+                    epochs=3, batch_size=32, verbose=0
+                )
 
     # Save
     results_history.reverse()

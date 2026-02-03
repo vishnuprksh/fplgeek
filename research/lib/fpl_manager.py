@@ -326,10 +326,11 @@ class FPLManager:
 
         return None
 
-    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None):
+    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None):
         """
         Handle Transfers AND Chips (Wildcard/FreeHit)
         price_lookup: {player_id: current_price} for this GW
+        priority_transfer_out_id: Player ID to prioritize selling (e.g., underperformer)
         """
         # CHECK FOR CHIP RENEWAL AT GW 20
         # "all the four chips must be used before gw 19... after it renews"
@@ -405,12 +406,21 @@ class FPLManager:
             
             mock_squad_xp = [p for p in current_gw_preds if p['id'] in current_squad_ids]
             
-            # Sort by: 1. Availability (Injured first), 2. Low XP
-            # status != 'a' or chance < 100 -> Priority 0 (Sell first)
-            # status == 'a' -> Priority 1
+            # Sort by: 
+            # 0. Injured/Unfit (Highest Priority)
+            # 0.5. Priority Target (Underperformer)
+            # 1. Available (Lowest Priority)
+            # Then by Low XP
             def get_out_priority(p):
-                is_available = p.get('status', 'a') == 'a' and p.get('chance_of_playing_this_round', 100) == 100
-                return (1 if is_available else 0, p['xp'])
+                is_injured = p.get('status', 'a') != 'a' or (p.get('chance_of_playing_this_round') is not None and p.get('chance_of_playing_this_round') < 100)
+                
+                if is_injured:
+                    return (0, p['xp'])
+                
+                if priority_transfer_out_id and p['id'] == priority_transfer_out_id:
+                    return (0.5, p['xp'])
+                    
+                return (1, p['xp'])
                 
             mock_squad_xp.sort(key=get_out_priority)
             # Ensure we have players to sell
@@ -453,6 +463,11 @@ class FPLManager:
                     
                     cost_pts = 4 if self.free_transfers <= 0 else 0
                     gain = (p_in['xp'] - p_out['xp']) - cost_pts
+                    
+                    # Boost gain for priority target to ensure they are selected
+                    if p_out['id'] == priority_transfer_out_id:
+                        gain += 1000.0
+                        
                     if gain > best_gain:
                         best_gain = gain
                         best_move = (p_out, p_in, cost_pts, selling_price)
@@ -461,11 +476,22 @@ class FPLManager:
             # Accept transfer if:
             # 1. Gain > 1.0 (normal case)
             # 2. Selling injured player and gain > 0 (any improvement)
+            # 3. Selling priority target (Force sell, has boosted gain)
             if best_move:
                 p_out, p_in, cost_pts, selling_price = best_move
                 is_injured = p_out.get('status', 'a') != 'a' or (p_out.get('chance_of_playing_this_round') is not None and p_out.get('chance_of_playing_this_round') < 100)
-                threshold = 0.0 if is_injured else 1.0
+                is_priority = (priority_transfer_out_id and p_out['id'] == priority_transfer_out_id)
                 
+                threshold = 1.0
+                if is_injured: 
+                    threshold = 0.0
+                if is_priority:
+                     threshold = 500.0 # Expecting boosted gain > 900
+                
+                if p_out['id'] == priority_transfer_out_id:
+                    if best_move:
+                         pass
+
                 if best_gain > threshold:
                     current_squad_ids.remove(p_out['id'])
                     current_squad_ids.append(p_in['id'])

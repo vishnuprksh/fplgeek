@@ -24,14 +24,9 @@ def clean_and_scale(X_seq, X_ctx):
     
     return X_seq, X_ctx
 
-def build_model():
+def build_model(output_activation='linear', loss='mse', metrics=['mae']):
     """
-    Build Bidirectional LSTM model for FPL point prediction
-    
-    Architecture based on systematic experimentation (2026-02-01):
-    - Bidirectional LSTM achieves 0.46% average improvement over baseline
-    - Consistent performance across all positions
-    - Best balance of accuracy and maintainability
+    Build Bidirectional LSTM model for FPL point prediction or classification
     """
     # 1. Sequence Input (Bidirectional LSTM)
     seq_input = Input(shape=(SEQ_LEN, NUM_FEATURES), name="seq_input")
@@ -43,9 +38,6 @@ def build_model():
     
     # 3. Opponent Input (Float) - OPTIMIZED
     opp_input = Input(shape=(1,), name="opp_input")
-    # No embedding, just direct usage
-    # opp_embed = Embedding(input_dim=21, output_dim=4)(opp_input) 
-    # opp_flat = Flatten()(opp_embed)
     
     # Concatenate
     concat = Concatenate()([x, ctx_input, opp_input])
@@ -53,9 +45,9 @@ def build_model():
     # Dense Layers
     dense = Dense(32, activation='relu')(concat)
     dense = Dense(16, activation='relu')(dense)
-    output = Dense(1, activation='linear')(dense) # Regression
+    output = Dense(1, activation=output_activation)(dense) 
     
     model = Model(inputs=[seq_input, ctx_input, opp_input], outputs=output)
-    model.compile(optimizer=Adam(learning_rate=0.001), loss='mse', metrics=['mae'])
+    model.compile(optimizer=Adam(learning_rate=0.001), loss=loss, metrics=metrics)
     return model
 

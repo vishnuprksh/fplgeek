@@ -15,8 +15,11 @@
 - **Logic**: Processed before team selection for upcoming GW.
 - **Priority**:
   1. Remove Injured/Suspended players (Chance < 100% or Status != 'a').
-  2. Remove players with poor predicted form.
-  3. Improve squad xP within budget.
+  2. **(New)** Remove Underperforming players (GW 3+):
+     - Identify player with highest positive gap between Predicted (xP) and Actual points over last 3 GWs.
+     - Prioritize selling if gap is significant.
+  3. Remove players with poor predicted form.
+  4. Improve squad xP within budget.
 - The manager will take hits (-4 pts) if the predicted gain > 4 pts.
 
 ## 3. Chip Usage Strategy
