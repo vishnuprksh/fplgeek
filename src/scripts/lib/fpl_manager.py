@@ -12,7 +12,7 @@ from .squad_optimizer import get_best_starting_squad
 
 class FPLManager:
     def __init__(self, players_map, min_captain_ownership=50.0, team_score_target=60.0, 
-                 bench_boost_metric='prob_gt_7', triple_captain_metric='prob_gt_11'):
+                 bench_boost_metric='prob_gt_6', triple_captain_metric='prob_gt_10'):
         self.players_map = players_map
         self.min_captain_ownership = min_captain_ownership
         self.team_score_target = team_score_target

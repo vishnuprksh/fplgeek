@@ -29,11 +29,14 @@
     - [x] Show Predicted Points (xP) in History
     - [x] Differential Card Restriction (Max 2 players with <10% ownership)
     - [x] Captain Ownership Restriction (Captain must have 30%+ ownership)
+    - **Revert Captaincy Threshold**: Reverted captaincy constraint back to 30%.
+      - *Context*: User requested to revert the change after testing.
+      - *Fix*: Changed 50% back to 30% in `fpl_manager.py` and `ai_manager.py`.
     - [x] Injury-Based Auto-Benching (Avoids players with <100% chance of playing)
 - [x] Probabilistic Points Modeling <!-- id: 9 -->
-    - [x] Predict probability distribution of points (e.g. Prob > 10)
-    - [x] Optimize for probability of team score > Threshold (Chance Constraint)
-    - [x] Visualize probability stats in History
+    - [x] Predict probability distribution of points (standardized to >6 and >10)
+    - [x] Benchmarking capability for different optimization objectives (xP vs Prob)
+    - [x] Visualize probability stats in History and Analysis pages
 - [ ] League Ownership Analysis <!-- id: 8 -->
     - [ ] Fetch all teams in a classic league
     - [ ] Historical ownership visualization

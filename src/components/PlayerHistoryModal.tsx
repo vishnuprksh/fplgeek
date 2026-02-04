@@ -11,6 +11,8 @@ interface BacktestResult {
         name: string;
         points: number;
         xp: number;
+        xp_5gw?: number;
+        sum_prob_6_5gw?: number;
         selected_by_percent?: string | number;
         role: 'C' | 'V' | 'S' | 'B';
     }>;
@@ -75,6 +77,8 @@ export function PlayerHistoryModal({ player, history, onClose, teamName }: Playe
                                     <th>Role</th>
                                     <th>Selected %</th>
                                     <th>xP</th>
+                                    <th>5GW xP</th>
+                                    <th>Prob</th>
                                     <th>Points</th>
                                 </tr>
                             </thead>
@@ -87,6 +91,8 @@ export function PlayerHistoryModal({ player, history, onClose, teamName }: Playe
                                                 <td className={`role-${h.role}`}>{h.role === 'S' ? 'Start' : (h.role === 'B' ? 'Bench' : h.role)}</td>
                                                 <td>{h.selected_by_percent || '-'}%</td>
                                                 <td>{h.xp?.toFixed(1)}</td>
+                                                <td style={{ color: '#94a3b8' }}>{h.xp_5gw ? h.xp_5gw.toFixed(1) : '-'}</td>
+                                                <td style={{ color: '#facc15', fontWeight: 'bold' }}>{h.sum_prob_6_5gw ? h.sum_prob_6_5gw.toFixed(2) : '-'}</td>
                                                 <td className="points-cell">{h.points}</td>
                                             </>
                                         ) : (

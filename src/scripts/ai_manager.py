@@ -17,7 +17,7 @@ from src.scripts.lib.utils import load_json
 from src.scripts.lib.models import build_model, clean_and_scale
 from src.scripts.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_target
 
-def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ownership_threshold=50.0, end_gw=24, explosive_threshold=5.0):
+def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ownership_threshold=50.0, objective='xp', end_gw=24, explosive_threshold=5.0):
     print(f"🚀 Starting AI Manager Simulation (Thresholds={prob_thresholds}, Target={team_score_target}, CapOwn={captaincy_ownership_threshold})...")
     os.makedirs(MODELS_DIR, exist_ok=True)
     
@@ -136,14 +136,17 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
 
     for gw in sim_gws:
         # print(f"--- GW {gw} ---")
-        
+        if gw == sim_gws[0]:
+            print(f"📊 Initializing Squad...")
+            
         # A. PREDICTION PHASE (Current + Long Term)
         # 1. Current GW Predictions
-        current_preds_map = predict_gw(gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
+        current_preds_map = predict_gw(gw, frozen_gw=None, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
         
         # 2. Long Term Predictions (Avg next 5 GWs)
-        long_term_xp_map = {pid: 0.0 for pid in current_preds_map}
-        count_map = {pid: 0 for pid in current_preds_map}
+        long_term_xp_map = {}
+        long_term_prob_map = {} 
+        count_map = {}
         
         # Look ahead up to 5 GWs (including current)
         for offset in range(5): 
@@ -151,34 +154,53 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
             # Use FROZEN form from current GW to prevent data leak
             future_preds = predict_gw(target_gw, frozen_gw=gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
             for pid, p_data in future_preds.items():
-                if pid in long_term_xp_map:
-                    long_term_xp_map[pid] += p_data['xp']
-                    count_map[pid] += 1
-        
+                if pid not in long_term_xp_map: # Initialize if not present (e.g., new player appears)
+                    long_term_xp_map[pid] = 0.0
+                    long_term_prob_map[pid] = 0.0
+                    count_map[pid] = 0
+                long_term_xp_map[pid] += p_data['xp']
+                # Accumulate Prob > 6
+                if 'prob_gt_6' in p_data:
+                    long_term_prob_map[pid] += p_data['prob_gt_6']
+                count_map[pid] += 1
+                    
+        # A. BUILD CANDIDATES
         gw_candidates = []
+        # Create a map for current GW's player data for quick lookup
+        current_gw_player_data = {}
         for pos in POSITIONS:
-            samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
-            for s in samples:
-                pid = s['id']
-                if pid not in current_preds_map: continue
+            for record in all_data[pos]:
+                if record['gw'] == gw and record.get('season') == '25/26':
+                    current_gw_player_data[record['id']] = record
+
+        for s_player_meta in players: # Renamed 's' to 's_player_meta' for clarity
+             pid = s_player_meta['id']
+             # Ensure player has current GW data and predictions
+             if pid in current_gw_player_data and pid in current_preds_map and pid in long_term_xp_map:
+                s_gw_data = current_gw_player_data[pid] # Get GW-specific data for this player
                 
                 real_xp = current_preds_map[pid]
-                avg_xp = long_term_xp_map[pid] / max(1, count_map[pid])
+                total_5gw_xp = long_term_xp_map[pid]
+                avg_xp = total_5gw_xp / max(1, count_map[pid])
+                
+                sum_prob_6 = long_term_prob_map.get(pid, 0.0)
 
                 cand = {
                     'id': pid,
-                    'name': s['name'],
-                    'type': players_map[pid]['element_type'],
-                    'team': players_map[pid]['team'],
-                    'cost': int(s['ctx_price'] * 10), # Scale to 0.1m units
+                    'name': s_player_meta['web_name'], # Use web_name from player metadata
+                    'type': s_player_meta['element_type'],
+                    'team': s_player_meta['team'],
+                    'cost': int(s_gw_data['ctx_price'] * 10), # Use ctx_price from GW-specific data
                     'xp': real_xp['xp'],
                     'sigma': real_xp['sigma'],
                     # Dynamically add all probability keys
                     'xp_long_term': avg_xp,
-                    'actual': s['target'],
-                    'selected_by_percent': float(players_map[pid].get('selected_by_percent', 0)),
-                    'status': players_map[pid].get('status', 'a'),
-                    'chance_of_playing_this_round': players_map[pid].get('chance_of_playing_this_round')
+                    'total_xp_5gw': total_5gw_xp,
+                    'sum_prob_6_5gw': sum_prob_6,
+                    'actual': s_gw_data['target'], # Use target from GW-specific data
+                    'selected_by_percent': float(s_player_meta.get('selected_by_percent', 0)),
+                    'status': s_player_meta.get('status', 'a'),
+                    'chance_of_playing_this_round': s_player_meta.get('chance_of_playing_this_round')
                 }
                 
                 for key, val in real_xp.items():
@@ -188,8 +210,12 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
                 gw_candidates.append(cand)
         
         # B. MANAGER DECISIONS
-        # Use Long-Term XP for Transfers/Init
-        candidates_for_transfers = [{**c, 'xp': c['xp_long_term']} for c in gw_candidates]
+        if objective == 'prob_6':
+            # Use Sum Prob > 6 (scaled by 10) for Transfers/Init
+            candidates_for_transfers = [{**c, 'xp': c['sum_prob_6_5gw'] * 10} for c in gw_candidates]
+        else:
+            # Use Standard Long-Term XP
+            candidates_for_transfers = [{**c, 'xp': c['xp_long_term']} for c in gw_candidates]
 
         if gw == sim_gws[0]:
             init_squad, cost, lp_starters, lp_bench, lp_captain = get_best_starting_squad(candidates_for_transfers)
@@ -235,17 +261,48 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
                     if best_candidate[1] > 2.0: 
                         priority_pid = best_candidate[0]
                         p_name = players_map[priority_pid]['web_name']
-                        # print(f"📉 GW {gw}: Priority Sell Candidate {p_name} (Underperf: {best_candidate[1]:.1f})")
 
             # --- Calculate Recent Form (Avg Points last 3 Matches) ---
             recent_form_map = {}
             if gw >= 4:
-                for pid, p_data_list in all_data.items():
-                    # Get last 3 GWs (gw-1, gw-2, gw-3)
-                    # p_data_list is sorted by GW? Assuming yes or we find by GW.
-                    # Actually p_data_list is a list of dicts.
-                    # Let's filter.
-                    past_matches = [d for d in p_data_list if d['season'] == '25/26' and gw - 3 <= d['gw'] < gw]
+                # Map element_type to position string
+                type_to_pos = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'}
+                for pid_key, p_data_list in all_data.items(): # Iterate through positions, then players
+                    for p_record in p_data_list:
+                        pid = p_record['id']
+                        if p_record['season'] == '25/26':
+                            # Get last 3 GWs
+                            pos_key = type_to_pos.get(players_map[pid]['element_type'], 'GKP') 
+                            # Wait, p_data_list IS all_data[pid_key]. So we can just use p_data_list if we iterate properly.
+                            # But the outer loop iterates `all_data.items()`. So `p_data_list` IS the list of records for that position.
+                            # The problem is `past_matches` line was trying to look up `all_data` again using `players_map`.
+                            
+                            # Optimized approach:
+                            # We are already iterating through `p_data_list` which contains the data we need?
+                            # No, `p_data_list` contains one record per gameweek per player.
+                            pass
+
+                # Re-do the loop cleanly
+                for pos, data_list in all_data.items():
+                    # Group by player id first to avoid O(N^2)
+                     # Actually we just want to look up past matches for the current player.
+                     # Let's build a quick index if needed, or just filter carefully.
+                     pass
+                
+                # Let's fix the specific line based on the traceback, but doing it more efficiently
+                type_to_pos = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'}
+                
+                # Pre-calculate recent form for all players in map
+                for pid, p_info in players_map.items():
+                    pos_str = type_to_pos.get(p_info['element_type'])
+                    if not pos_str or pos_str not in all_data: continue
+                    
+                    # Get all samples for this player
+                    player_samples = [d for d in all_data[pos_str] if d['id'] == pid and d['season'] == '25/26']
+                    
+                    # Filter for last 3 GWs
+                    past_matches = [d for d in player_samples if gw - 3 <= d['gw'] < gw]
+                    
                     if past_matches:
                         avg_points = sum(d['target'] for d in past_matches) / len(past_matches)
                         recent_form_map[pid] = avg_points
@@ -262,7 +319,7 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
                 underperformance_map=underperf_map if gw > 3 else {},
                 recent_form_map=recent_form_map
             )
-            
+
         # Selection (Use REAL current XP)
         if gw == sim_gws[0]:
             # For GW1, use the LP-optimized lineup directly (constraints enforced)
@@ -307,8 +364,7 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
             # Update VC if needed
             if vice_captain_id == best_cap_id:
                  vice_captain_id = [p['id'] for p in starters if p['id'] != best_cap_id][0] # Fallback
-                 
-        
+
         # Score calculation and History Recording
         playing_squad = starters
         if active_chip_used == "bench_boost":
@@ -321,6 +377,9 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
         for p in playing_squad:
             pts = p['actual']
             xp = p['xp']
+            xp_5gw = p.get('total_xp_5gw', p['xp'] * 5)
+            sum_prob = p.get('sum_prob_6_5gw', 0.0)
+
             is_cap = (p['id'] == captain_id)
             is_vice = (p['id'] == vice_captain_id)
             
@@ -341,6 +400,8 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
                 'name': p['name'], 
                 'points': p['actual'], 
                 'xp': p['xp'], 
+                'xp_5gw': xp_5gw,
+                'sum_prob_6_5gw': sum_prob,
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'C' if is_cap else ('V' if is_vice else 'S'),
                 'purchase_price': purchase_price / 10.0,
@@ -358,6 +419,9 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
 
         bench_players_visual = bench if active_chip_used != "bench_boost" else []
         for p in bench_players_visual:
+            xp_5gw = p.get('total_xp_5gw', p['xp'] * 5) # Fallback
+            sum_prob = p.get('sum_prob_6_5gw', 0.0)
+
             purchase_price = manager.purchase_prices.get(p['id'], p['cost'])
             current_price = price_lookup.get(p['id'], p['cost'])
             selling_price = calculate_selling_price(purchase_price, current_price)
@@ -367,6 +431,8 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
                 'name': p['name'], 
                 'points': p['actual'], 
                 'xp': p['xp'], 
+                'xp_5gw': xp_5gw,
+                'sum_prob_6_5gw': sum_prob,
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'B',
                 'purchase_price': purchase_price / 10.0,
@@ -462,6 +528,7 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
         # Or we loop current -> +5.
         
         # Let's take the last simulated GW as the 'current' reference point.
+        last_simulated_gw = sim_gws[-1] if sim_gws else 1
         ref_gw = last_simulated_gw 
         
         predictions_export = []
@@ -516,9 +583,14 @@ def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ow
         print(f"❌ Failed to export predictions: {e}")
 
     total_net_points = sum(h['net_points'] for h in results_history)
-    print(f"🏁 DONE (Thresholds={prob_thresholds}, Target={team_score_target}): Total Net Points = {total_net_points}")
-    return total_net_points, results_history
+    print(f"🏁 DONE ({objective}, Thresholds={prob_thresholds}, Target={team_score_target}): Total Net Points = {total_net_points}")
+    
+    return total_net_points
 
 if __name__ == "__main__":
-    # Default behavior for manual run: Use standard settings
-    run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ownership_threshold=50.0)
+    # Settings
+    PROB_THRESHOLDS = [6, 10] # Calc Prob > 6 and Prob > 10
+    TEAM_SCORE_TARGET = 60.0 # Aim for 60 pts/week for crisis checks
+    
+    # Run
+    run_simulation(objective='xp', prob_thresholds=PROB_THRESHOLDS, team_score_target=TEAM_SCORE_TARGET, captaincy_ownership_threshold=50.0)

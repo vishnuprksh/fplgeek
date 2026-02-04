@@ -22,6 +22,8 @@ interface SquadPlayer {
     name: string;
     points: number;
     xp: number;
+    xp_5gw?: number;
+    sum_prob_6_5gw?: number;
     prob_gt_10?: number;
     prob_gt_6?: number;
     role: 'C' | 'V' | 'S' | 'B';
@@ -327,16 +329,48 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                         <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
                                                         <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
                                                             <span title="Expected Points">xP: {p.xp.toFixed(1)}</span>
-                                                            {p.prob_gt_7 !== undefined && (
-                                                                <span style={{ fontSize: '0.8em', color: '#a855f7' }}>
-                                                                    &gt;7: {(p.prob_gt_7 * 100).toFixed(0)}%
+                                                            {p.xp_5gw !== undefined && (
+                                                                <span style={{ fontSize: '0.8em', color: '#94a3b8' }} title="5 Gameweek Total XP">
+                                                                    5GW: {p.xp_5gw.toFixed(1)}
                                                                 </span>
                                                             )}
-                                                            {p.prob_gt_11 !== undefined && (
-                                                                <span style={{ fontSize: '0.8em', color: '#00ff87' }}>
-                                                                    &gt;11: {(p.prob_gt_11 * 100).toFixed(0)}%
+                                                            {p.sum_prob_6_5gw !== undefined && (
+                                                                <span style={{ fontSize: '0.8em', color: '#facc15', fontWeight: 'bold' }} title="Sum of Prob > 6 over 5 GWs">
+                                                                    Prob: {p.sum_prob_6_5gw.toFixed(2)}
                                                                 </span>
                                                             )}
+                                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                                {p.prob_gt_6 !== undefined && (
+                                                                    <span
+                                                                        style={{
+                                                                            fontSize: '0.7em',
+                                                                            padding: '1px 4px',
+                                                                            borderRadius: '4px',
+                                                                            background: p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(148, 163, 184, 0.1)',
+                                                                            color: p.prob_gt_6 > 0.4 ? '#4ade80' : '#94a3b8',
+                                                                            border: `1px solid ${p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.3)' : 'transparent'}`
+                                                                        }}
+                                                                        title="Probability of scoring > 6 points"
+                                                                    >
+                                                                        &gt;6: {(p.prob_gt_6 * 100).toFixed(0)}%
+                                                                    </span>
+                                                                )}
+                                                                {p.prob_gt_10 !== undefined && (
+                                                                    <span
+                                                                        style={{
+                                                                            fontSize: '0.7em',
+                                                                            padding: '1px 4px',
+                                                                            borderRadius: '4px',
+                                                                            background: p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.2)' : 'rgba(148, 163, 184, 0.1)',
+                                                                            color: p.prob_gt_10 > 0.15 ? '#facc15' : '#94a3b8',
+                                                                            border: `1px solid ${p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.3)' : 'transparent'}`
+                                                                        }}
+                                                                        title="Probability of scoring > 10 points"
+                                                                    >
+                                                                        &gt;10: {(p.prob_gt_10 * 100).toFixed(0)}%
+                                                                    </span>
+                                                                )}
+                                                            </div>
                                                         </span>
                                                         <span className="player-actual">
                                                             {isCap ? `${p.points * 2}` : p.points} pts
