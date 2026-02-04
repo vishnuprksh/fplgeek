@@ -569,10 +569,12 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
                 "team": players_map[pid]['team'],
                 "total5Week": sum(long_term_preds.get(pid, [])),
                 "projections": [{"gw": ref_gw + i, "xP": xp} for i, xp in enumerate(long_term_preds.get(pid, []))],
-                # Add probabilities for the CURRENT (next) gameweek
-                "prob_gt_7": p_data.get('prob_gt_7', 0),
-                "prob_gt_11": p_data.get('prob_gt_11', 0)
             }
+            
+            # Add probabilities dynamically
+            for t in prob_thresholds:
+                entry[f"prob_gt_{t}"] = p_data.get(f"prob_gt_{t}", 0)
+
             predictions_export.append(entry)
             
         with open("public/data/ai_predictions.json", "w") as f:

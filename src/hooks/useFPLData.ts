@@ -7,8 +7,8 @@ export interface PredictionMap {
     [id: number]: {
         totalForecast: number;
         next5Points: number[];
-        prob_gt_7?: number; // Added
-        prob_gt_11?: number; // Added
+        prob_gt_6?: number;
+        prob_gt_10?: number;
     };
 }
 
@@ -50,8 +50,8 @@ export const useFPLData = () => {
                         map[sp.id] = {
                             totalForecast: sp.total5Week,
                             next5Points: sp.projections.map((p: any) => p.xP),
-                            prob_gt_7: sp.prob_gt_7,
-                            prob_gt_11: sp.prob_gt_11
+                            prob_gt_6: sp.prob_gt_6,
+                            prob_gt_10: sp.prob_gt_10
                         };
                     });
                     setPredictionsMap(map);

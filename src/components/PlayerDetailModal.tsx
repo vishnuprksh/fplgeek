@@ -87,6 +87,7 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                 <thead>
                                     <tr>
                                         <th>Season</th>
+                                        <th>Pts</th>
                                         <th>GW</th>
                                         <th>Opponent</th>
                                         <th>Res</th>
@@ -100,7 +101,6 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                         <th>CS</th>
                                         <th>BPS</th>
                                         <th>ICT</th>
-                                        <th>Pts</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -123,6 +123,7 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                         return (
                                             <tr key={idx} className="match-row">
                                                 <td className="season-cell">{season}</td>
+                                                <td className="points-cell">{match.total_points ?? 0}</td>
                                                 <td>{match.round || 'All'}</td>
                                                 <td>{opponent} {match.opponent_team ? (isHome ? '(H)' : '(A)') : ''}</td>
                                                 <td>{score}</td>
@@ -136,7 +137,6 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                                 <td>{match.clean_sheets}</td>
                                                 <td>{match.bps}</td>
                                                 <td>{match.ict_index}</td>
-                                                <td className="points-cell">{match.total_points}</td>
                                             </tr>
                                         );
                                     })}

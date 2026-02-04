@@ -26,6 +26,16 @@
   - *Context*: User request to ensure safer captaincy choices.
   - *Fix*: Increased ownership threshold from 30% to 50% in `fpl_manager.py` and `ai_manager.py`.
 
-- **Revert Captaincy Threshold**: Reverted captaincy constraint back to 30%.
+
+- **Captaincy Threshold Revert**: Reverted captaincy constraint back to 30%.
   - *Context*: User requested to revert the change after testing.
   - *Fix*: Changed 50% back to 30% in `fpl_manager.py` and `ai_manager.py`.
+
+- **Missing Probability Columns**: Fixed empty `>6` and `>10` columns on the Players page.
+  - *Root Cause*: `ai_manager.py` export logic had hardcoded keys (`prob_gt_7`, `prob_gt_11`) while the frontend expected `prob_gt_6` and `prob_gt_10`.
+  - *Fix*: Updated export logic to dynamically use configured `prob_thresholds`.
+  - *Result*: Analytics columns are now correctly populated.
+
+- **Missing Points in History Modal**: Fixed cases where match points were not showing in the player detail modal.
+  - *Root Cause*: Potential missing `total_points` in some historical data records.
+  - *Fix*: Added nullish coalescing (`?? 0`) fallback to the display logic.
