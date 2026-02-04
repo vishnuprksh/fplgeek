@@ -7,9 +7,9 @@ def is_differential(player):
     """
     return float(player.get('selected_by_percent', 0)) < 10.0
 
-def calc_team_prob_gt_60(starters, captain_id):
+def calc_team_prob_gt_target(starters, captain_id, target=60.0):
     """
-    Calculate Probability that Team Score > 60.
+    Calculate Probability that Team Score > target.
     Using Central Limit Theorem approximation.
     """
     mu_total = 0.0
@@ -29,8 +29,8 @@ def calc_team_prob_gt_60(starters, captain_id):
     sigma_total = np.sqrt(var_total)
     
     if sigma_total == 0: return 0.0
-    # Survival Function: P(X > 60)
-    z_score = (60.0 - mu_total) / sigma_total
+    # Survival Function: P(X > target)
+    z_score = (float(target) - mu_total) / sigma_total
     return norm.sf(z_score)
 
 def should_bench_player(player):

@@ -35,8 +35,16 @@ function App() {
     transfersHistory,
     loading,
     error,
-    loadTeam
+    loadTeam,
+    logout: logoutValues
   } = useFPLData();
+
+  const handleLogout = () => {
+    logoutValues();
+    setTeamId(0);
+    // Force reload to clear any persistent state if needed, or just let React handle it
+    // window.location.reload(); // Optional, but let's try just state clear first
+  };
 
   // 2. Transfers & State Hook
   const {
@@ -89,7 +97,10 @@ function App() {
             <div className="logo-icon">⚽</div>
             <h1>FPL GEEK</h1>
           </div>
-          <div className="user-avatar" onClick={() => window.location.reload()}>VP</div>
+          <div className="user-avatar" onClick={handleLogout} title="Click to Logout" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.8em', opacity: 0.8 }}>Logout</span>
+            <div style={{ width: '32px', height: '32px', background: '#37003c', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>VP</div>
+          </div>
         </div>
       </header>
       <div className="app-container">

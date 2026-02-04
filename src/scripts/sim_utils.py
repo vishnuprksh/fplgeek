@@ -3,7 +3,7 @@ import tensorflow as tf
 from src.scripts.lib.models import clean_and_scale
 from src.scripts.lib.config import POSITIONS
 
-def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None):
+def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None, prob_thresholds=[7, 11]):
     """
     Predict points for a specific gameweek.
     If frozen_gw is provided, uses form data from that GW (for lookahead).
@@ -67,17 +67,19 @@ def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None):
         variance = np.sum(probs_dist * (classes - xp_values[:, np.newaxis])**2, axis=1)
         sigma_values = np.sqrt(variance)
         
-        # 3. Prob >= 10 (Sum p_10 to p_15)
-        # Indices 10..15 -> Points 10, 11, ..., 15+
-        prob_ge_10_values = np.sum(probs_dist[:, 10:], axis=1)
+        # Calculate probabilities for requested thresholds
+        # prob_thresholds is a list of integers, e.g. [6, 10]
+        prob_values_map = {}
+        for t in prob_thresholds:
+            # Indices t..15 -> Points t, t+1, ..., 15+
+            if t < 16:
+                prob_values_map[t] = np.sum(probs_dist[:, t:], axis=1)
+            else:
+                prob_values_map[t] = np.zeros(len(probs_dist))
 
-        # 4. Prob >= 6 (Sum p_6 to p_15) -> Indices 6..15
-        prob_ge_6_values = np.sum(probs_dist[:, 6:], axis=1)
-        
         for i, s in enumerate(predict_samples):
             xp = float(xp_values[i])
             sigma = float(sigma_values[i])
-            prob_ge_10 = float(prob_ge_10_values[i])
             
             # Apply multipliers based on historical performance (Elite Player Bias)
             all_time_avg = s.get('ctx_all_time_avg_points', 0)
@@ -95,18 +97,19 @@ def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None):
             xp *= multiplier
             sigma *= multiplier 
             
-            # Heuristic update for Probabilities:
-            if multiplier > 1.0:
-                prob_ge_10 = min(0.99, prob_ge_10 * multiplier)
-                prob_ge_6 = min(0.99, float(prob_ge_6_values[i]) * multiplier)
-            else:
-                prob_ge_6 = float(prob_ge_6_values[i])
-
-            preds_map[s['id']] = {
+            entry = {
                 'xp': xp,
                 'sigma': sigma,
-                'prob_gt_10': prob_ge_10,
-                'prob_gt_6': prob_ge_6,
-                'distribution': probs_dist[i].tolist() 
+                'distribution': probs_dist[i].tolist()
             }
+            
+            # Heuristic update for Probabilities and populate entry
+            for t, val_array in prob_values_map.items():
+                prob_val = float(val_array[i])
+                if multiplier > 1.0:
+                    prob_val = min(0.99, prob_val * multiplier)
+                
+                entry[f'prob_gt_{t}'] = prob_val
+
+            preds_map[s['id']] = entry
     return preds_map

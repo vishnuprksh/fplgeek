@@ -32,6 +32,8 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                 ...p,
                 predicted_points: pred ? pred.totalForecast : 0,
                 next_gw_points: pred && pred.next5Points.length > 0 ? pred.next5Points[0] : 0,
+                prob_gt_7: pred?.prob_gt_7 || 0,
+                prob_gt_11: pred?.prob_gt_11 || 0,
                 ownership: parseFloat(p.selected_by_percent || "0")
             };
         });
@@ -142,6 +144,8 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                             <th>Pos</th>
                             <th onClick={() => handleSort('predicted_points')} className="sortable">AI Pred (5GW) {sortField === 'predicted_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('next_gw_points')} className="sortable">Next GW {sortField === 'next_gw_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th className="sortable"> &gt;7 Pts %</th>
+                            <th className="sortable"> &gt;11 Pts %</th>
                             <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -162,6 +166,12 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                                 </td>
                                 <td style={{ color: player.next_gw_points > 5 ? '#00ff87' : '#fff' }}>
                                     {player.next_gw_points.toFixed(1)}
+                                </td>
+                                <td style={{ color: '#c084fc' }}>
+                                    {(player.prob_gt_7 * 100).toFixed(0)}%
+                                </td>
+                                <td style={{ color: '#4ade80' }}>
+                                    {(player.prob_gt_11 * 100).toFixed(0)}%
                                 </td>
 
                                 <td>£{(player.now_cost / 10).toFixed(1)}m</td>

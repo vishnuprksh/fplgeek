@@ -1,7 +1,7 @@
 from .config import STARTING_BUDGET
 from .fpl_utils import (
     is_differential, 
-    calc_team_prob_gt_60, 
+    calc_team_prob_gt_target, 
     should_bench_player, 
     calculate_selling_price
 )
@@ -11,8 +11,13 @@ from .squad_optimizer import get_best_starting_squad
 
 
 class FPLManager:
-    def __init__(self, players_map):
+    def __init__(self, players_map, min_captain_ownership=50.0, team_score_target=60.0, 
+                 bench_boost_metric='prob_gt_7', triple_captain_metric='prob_gt_11'):
         self.players_map = players_map
+        self.min_captain_ownership = min_captain_ownership
+        self.team_score_target = team_score_target
+        self.bench_boost_metric = bench_boost_metric
+        self.triple_captain_metric = triple_captain_metric
         self.squad = [] # List of player IDs
         self.bank = STARTING_BUDGET
         self.free_transfers = 1
@@ -30,7 +35,8 @@ class FPLManager:
         }
         self.wildcard_2_awarded = False
         self.active_chip = None
-    
+
+    # ... initialize_squad ...
     def initialize_squad(self, best_starting_squad, cost, initial_prices):
         """
         Initialize squad with purchase price tracking
@@ -44,10 +50,12 @@ class FPLManager:
         for p in best_starting_squad:
             self.purchase_prices[p['id']] = initial_prices.get(p['id'], p['cost'])
 
+    # ... optimize_lineup ...
+
     def optimize_lineup(self, current_gw_preds, active_chip=None):
         """
         Selects Starting XI (1 GKP, 3+ DEF, 1+ FWD) and Captain.
-        Captain must have 30%+ ownership.
+        Captain must have {self.min_captain_ownership}%+ ownership.
         """
         squad_preds = [p for p in current_gw_preds if p['id'] in self.squad]
         squad_preds.sort(key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
@@ -72,7 +80,7 @@ class FPLManager:
         # Sort all position lists by xP, prioritizing template players
         for pos_list in [gkps, defs, mids, fwds]:
             pos_list.sort(key=lambda x: (
-                float(x.get('selected_by_percent', 0)) >= 30.0,  # Template players first
+                float(x.get('selected_by_percent', 0)) >= self.min_captain_ownership,  # Template players first
                 x['xp']
             ), reverse=True)
 
@@ -85,7 +93,7 @@ class FPLManager:
             
         # Combine remaining players and sort them, prioritizing template players
         remaining = sorted(gkps + defs + mids + fwds, key=lambda x: (
-            float(x.get('selected_by_percent', 0)) >= 30.0,  # Template players first
+            float(x.get('selected_by_percent', 0)) >= self.min_captain_ownership,  # Template players first
             x['xp']
         ), reverse=True)
         
@@ -124,21 +132,21 @@ class FPLManager:
         starters_sorted = sorted(starters, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
         # Captain must have 30%+ ownership (safe, template pick)
-        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= 30.0]
+        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= self.min_captain_ownership]
         
         captain_id = None
         if captain_candidates:
             captain_id = captain_candidates[0]['id']
         else:
             # CRITICAL: No template players in starting XI - this should not happen with proper constraints
-            print(f"⚠️ WARNING: No 30%+ ownership players in starting XI for captain selection!")
+            print(f"⚠️ WARNING: No {self.min_captain_ownership}%+ ownership players in starting XI for captain selection!")
             # Emergency fallback: pick highest xP (but this indicates a constraint violation)
             if starters_sorted:
                 captain_id = starters_sorted[0]['id']
                 print(f"   Emergency captain: {starters_sorted[0]['name']} ({starters_sorted[0].get('selected_by_percent', 0):.1f}%)")
 
         # Vice-captain (also prefer 30%+ ownership)
-        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= 30.0]
+        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= self.min_captain_ownership]
         
         vice_captain_id = None
         if vice_captain_candidates:
@@ -152,6 +160,7 @@ class FPLManager:
 
         return starters, bench, captain_id, vice_captain_id
 
+    # ... decide_pre_transfer_chip ...
     def decide_pre_transfer_chip(self, current_gw_preds, gw):
         """
         Decide if we should play a TRANSFER chip (Wildcard/FreeHit) this week.
@@ -162,8 +171,8 @@ class FPLManager:
         starters, bench, captain_id, _ = self.optimize_lineup(current_gw_preds)
         if not starters: return None, None
 
-        # 1. Calc Team Prob > 60 (Crisis Metric)
-        team_prob_60 = calc_team_prob_gt_60(starters, captain_id)
+        # 1. Calc Team Prob > target (Crisis Metric)
+        team_prob_target = calc_team_prob_gt_target(starters, captain_id, target=self.team_score_target)
 
         # --- Decision Tree ---
         
@@ -183,13 +192,13 @@ class FPLManager:
                      return "wildcard", None
 
         # 1. Crisis Management (Wildcard / Free Hit)
-        if team_prob_60 < 0.25:
+        if team_prob_target < 0.25:
             if self.chips_available['freehit'] > 0:
-                print(f"🚨 GW {gw}: CRISIS! Team Prob > 60 is {team_prob_60:.2%}. Triggering FREE HIT.")
+                print(f"🚨 GW {gw}: CRISIS! Team Prob > {self.team_score_target} is {team_prob_target:.2%}. Triggering FREE HIT.")
                 return "freehit", None
             
             if self.chips_available['wildcard'] > 0:
-                print(f"🚨 GW {gw}: CRISIS! Team Prob > 60 is {team_prob_60:.2%}. Triggering WILDCARD.")
+                print(f"🚨 GW {gw}: CRISIS! Team Prob > {self.team_score_target} is {team_prob_target:.2%}. Triggering WILDCARD.")
                 return "wildcard", None
 
         return None, None
@@ -203,9 +212,11 @@ class FPLManager:
         if not starters: return None, None
         
         captain_stats = next((p for p in starters if p['id'] == captain_id), None)
-        tc_prob = captain_stats.get('prob_gt_10', 0) if captain_stats else 0
+        # Use PARAMETERIZED metric key
+        tc_prob = captain_stats.get(self.triple_captain_metric, 0) if captain_stats else 0
         
-        bench_probs = [p.get('prob_gt_6', 0) for p in bench]
+        # Use PARAMETERIZED metric key for bench
+        bench_probs = [p.get(self.bench_boost_metric, 0) for p in bench]
         bb_avg_prob = sum(bench_probs) / len(bench_probs) if bench_probs else 0
         
         # 0. FORCED USAGE (TC/BB Priority)
@@ -220,24 +231,24 @@ class FPLManager:
         # 1. Triple Captain
         if self.chips_available['triple_captain'] > 0:
             if tc_prob > 0.20:
-                print(f"⚡ GW {gw}: TRIPLE CAPTAIN Triggered! {captain_stats['name']} Prob>=10 is {tc_prob:.1%}")
+                print(f"⚡ GW {gw}: TRIPLE CAPTAIN Triggered! {captain_stats['name']} {self.triple_captain_metric} is {tc_prob:.1%}")
                 return "triple_captain", captain_id
         
         # 2. Bench Boost
         if self.chips_available['bench_boost'] > 0:
-            # Check if ALL bench players have a probability > 0.25 of scoring > 6
+            # Check if ALL bench players have a probability > 0.25 of scoring > X
             # This ensures we don't boost a bench with a non-playing or weak player
             if bench_probs and min(bench_probs) > 0.25:
                 # Also check average to ensure overall quality is high? 
                 # Strict condition: min > 0.25 implies avg > 0.25, so just min is enough.
                 # But let's log the min and avg
                 min_prob = min(bench_probs)
-                print(f"🚀 GW {gw}: BENCH BOOST Triggered! Min Bench Prob>=6 is {min_prob:.1%} (Avg: {bb_avg_prob:.1%})")
+                print(f"🚀 GW {gw}: BENCH BOOST Triggered! Min Bench {self.bench_boost_metric} is {min_prob:.1%} (Avg: {bb_avg_prob:.1%})")
                 return "bench_boost", None
                 
         return None, None
 
-    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None, underperformance_map=None):
+    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None, underperformance_map=None, recent_form_map=None):
         """
         Handle Transfers AND Chips (Wildcard/FreeHit)
         """
@@ -318,23 +329,37 @@ class FPLManager:
             # Count current template players (30%+ ownership)
             template_count = sum(1 for pid in current_squad_ids 
                                 if pid in self.players_map 
-                                and float(self.players_map[pid].get('selected_by_percent', 0)) >= 30.0)
+                                and float(self.players_map[pid].get('selected_by_percent', 0)) >= self.min_captain_ownership)
             
             def get_out_priority(p):
-                is_injured = p.get('status', 'a') != 'a' or (p.get('chance_of_playing_this_round') is not None and p.get('chance_of_playing_this_round') < 100)
-                is_template = float(p.get('selected_by_percent', 0)) >= 30.0
-                
-                # PROTECTED: Template player when at or below minimum
-                if is_template and template_count <= 3:
-                    return (2, p['xp'])  # Lowest priority (protected)
-                
-                if is_injured:
-                    return (0, p['xp'])
-                
+                # PRIORITY ORDER (Lower number = Higher Priority to Sell)
+                # 0. Serious Injury (0% Chance) - CRITICAL
+                # 1. Priority Target (Underperformer from ai_manager > 3.0 diff)
+                # 2. Minor Injury / Doubtful (< 100% or not 'a')
+                # 3. Standard Low XP (Regular rotation)
+                # 4. Protected Template (Last resort)
+
+                is_template = float(p.get('selected_by_percent', 0)) >= self.min_captain_ownership
+
+                # Check 0: Serious Injury
+                if p.get('chance_of_playing_this_round') == 0:
+                     return (0, p['xp'])
+
+                # Check 1: Underperformer (Explicitly passed from ai_manager logic)
                 if priority_transfer_out_id and p['id'] == priority_transfer_out_id:
-                    return (0.5, p['xp'])
-                    
-                return (1, p['xp'])
+                    return (1, p['xp'])
+
+                # Check 2: Minor Injury / Doubtful
+                is_injured = p.get('status', 'a') != 'a' or (p.get('chance_of_playing_this_round') is not None and p.get('chance_of_playing_this_round') < 100)
+                if is_injured:
+                    return (2, p['xp'])
+
+                # Check 4: Protected Template
+                if is_template and template_count <= 3:
+                    return (4, p['xp'])  # Lowest priority
+                
+                # Check 3: Standard
+                return (3, p['xp'])
                 
             mock_squad_xp.sort(key=get_out_priority)
             # Ensure we have players to sell
@@ -368,6 +393,25 @@ class FPLManager:
                         # Exclude if underperforming by more than 3 points over last 3 GWs
                         if underperf_score > 3.0:
                             continue  # Skip this underperforming player
+
+                    # BUY CONSTRAINT 1: Must be FIT (100% chance, status 'a')
+                    # User requirement: "replacements are not injured"
+                    buy_chance = c.get('chance_of_playing_this_round')
+                    buy_status = c.get('status', 'a')
+                    if buy_status != 'a' or (buy_chance is not None and buy_chance < 100):
+                        continue
+                    
+                    # BUY CONSTRAINT 2: Recent Form (performing well last 3 matches)
+                    # User requirement: "performing well for the last 3 matches"
+                    # We use recent_form_map. Threshold: avg > 3.0?
+                    if recent_form_map and c['id'] in recent_form_map:
+                         # If avg points < 3.0, skip? 
+                         # Let's say 3.0 is a reasonable "okay" form (approx 3 * 38 = 114 pts pace)
+                         if recent_form_map[c['id']] < 3.0:
+                             continue
+                    # REMOVED strict else block: if player has no history (e.g. new), give benefit of doubt if xP is high.
+                    # elif recent_form_map:
+                    #      continue
                     
                     filtered_candidates.append(c)
                 

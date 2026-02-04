@@ -7,6 +7,8 @@ export interface PredictionMap {
     [id: number]: {
         totalForecast: number;
         next5Points: number[];
+        prob_gt_7?: number; // Added
+        prob_gt_11?: number; // Added
     };
 }
 
@@ -47,7 +49,9 @@ export const useFPLData = () => {
                     storedPreds.forEach((sp: any) => {
                         map[sp.id] = {
                             totalForecast: sp.total5Week,
-                            next5Points: sp.projections.map((p: any) => p.xP)
+                            next5Points: sp.projections.map((p: any) => p.xP),
+                            prob_gt_7: sp.prob_gt_7,
+                            prob_gt_11: sp.prob_gt_11
                         };
                     });
                     setPredictionsMap(map);
@@ -91,6 +95,13 @@ export const useFPLData = () => {
         }
     }, [staticData]);
 
+    const logout = useCallback(() => {
+        setTeamData(null);
+        setPicksData(null);
+        setTransfersHistory([]);
+        // Optional: clear local storage if used
+    }, []);
+
     return {
         staticData,
         fixtures,
@@ -100,6 +111,7 @@ export const useFPLData = () => {
         transfersHistory,
         loading,
         error,
-        loadTeam
+        loadTeam,
+        logout
     };
 };

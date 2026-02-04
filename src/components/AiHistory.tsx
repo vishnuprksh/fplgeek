@@ -29,6 +29,9 @@ interface SquadPlayer {
     current_price?: number;
     selling_price?: number;
     status?: string;
+    injury_chance?: number;
+    prob_gt_7?: number;
+    prob_gt_11?: number;
 }
 
 interface BacktestResult {
@@ -39,7 +42,7 @@ interface BacktestResult {
     event_transfers_cost?: number;
     active_chip?: string | null;
     total_xp?: number;
-    team_prob_gt_60?: number;
+    team_prob_gt_target?: number;
     bank?: number;
     free_transfers?: number;
     transfers: Transfer[];
@@ -226,13 +229,13 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
                                             (xP: {h.total_xp ? h.total_xp.toFixed(1) : '0.0'})
                                         </span>
-                                        {h.team_prob_gt_60 !== undefined && (
+                                        {h.team_prob_gt_target !== undefined && (
                                             <span style={{
                                                 fontSize: '0.8em',
                                                 marginLeft: '8px',
-                                                color: (h.team_prob_gt_60 > 0.5 ? '#4ade80' : '#94a3b8')
+                                                color: (h.team_prob_gt_target > 0.5 ? '#4ade80' : '#94a3b8')
                                             }}>
-                                                Prob&gt;60: {(h.team_prob_gt_60 * 100).toFixed(0)}%
+                                                Win Prob: {(h.team_prob_gt_target * 100).toFixed(0)}%
                                             </span>
                                         )}
                                     </span>
@@ -287,6 +290,10 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                             ...acc,
                                             [p.id]: p.status || 'a'
                                         }), {})}
+                                        injuryChances={h.squad.reduce((acc, p) => ({
+                                            ...acc,
+                                            [p.id]: p.injury_chance // Pass the newly added field
+                                        }), {})}
                                     />
 
 
@@ -309,25 +316,25 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                             {p.name} ({teamName})
                                                             {isCap && <span className="c-badge">C</span>}
                                                             {p.role === 'V' && <span className="v-badge">V</span>}
-                                                            {p.status && p.status !== 'a' && (
-                                                                <span title="Injured/Unavailable" style={{
+                                                            {((p.status && p.status !== 'a') || p.injury_chance === 0) && (
+                                                                <span title={p.injury_chance === 0 ? "Serious Injury (0% Chance)" : "Injured/Unavailable"} style={{
                                                                     marginLeft: '4px',
-                                                                    color: '#eab308',
+                                                                    color: p.injury_chance === 0 ? '#ef4444' : '#eab308',
                                                                     fontSize: '0.9em'
-                                                                }}>⚠️</span>
+                                                                }}>{p.injury_chance === 0 ? '🚑' : '⚠️'}</span>
                                                             )}
                                                         </span>
                                                         <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
                                                         <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
-                                                            {/* <span>xP: {p.xp.toFixed(1)}</span> */}
-                                                            {p.prob_gt_6 !== undefined && (
-                                                                <span style={{ fontSize: '0.8em', color: '#94a3b8' }}>
-                                                                    &#8805;6: {(p.prob_gt_6 * 100).toFixed(0)}%
+                                                            <span title="Expected Points">xP: {p.xp.toFixed(1)}</span>
+                                                            {p.prob_gt_7 !== undefined && (
+                                                                <span style={{ fontSize: '0.8em', color: '#a855f7' }}>
+                                                                    &gt;7: {(p.prob_gt_7 * 100).toFixed(0)}%
                                                                 </span>
                                                             )}
-                                                            {p.prob_gt_10 !== undefined && (
-                                                                <span style={{ fontSize: '0.8em', color: '#94a3b8' }}>
-                                                                    &#8805;10: {(p.prob_gt_10 * 100).toFixed(0)}%
+                                                            {p.prob_gt_11 !== undefined && (
+                                                                <span style={{ fontSize: '0.8em', color: '#00ff87' }}>
+                                                                    &gt;11: {(p.prob_gt_11 * 100).toFixed(0)}%
                                                                 </span>
                                                             )}
                                                         </span>

@@ -15,12 +15,16 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')
 from src.scripts.lib.config import *
 from src.scripts.lib.utils import load_json
 from src.scripts.lib.models import build_model, clean_and_scale
-from src.scripts.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_60
+from src.scripts.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_target
 
-def run_simulation(explosive_threshold=5.0):
-    print(f"🚀 Starting AI Manager Simulation (Threshold={explosive_threshold})...")
+def run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ownership_threshold=50.0, end_gw=24, explosive_threshold=5.0):
+    print(f"🚀 Starting AI Manager Simulation (Thresholds={prob_thresholds}, Target={team_score_target}, CapOwn={captaincy_ownership_threshold})...")
     os.makedirs(MODELS_DIR, exist_ok=True)
     
+    # Derby Keys
+    bench_boost_metric = f'prob_gt_{prob_thresholds[0]}'
+    triple_captain_metric = f'prob_gt_{prob_thresholds[1]}'
+
     # 1. Load Data
     all_data = {}
     for pos in POSITIONS:
@@ -28,7 +32,7 @@ def run_simulation(explosive_threshold=5.0):
             all_data[pos] = load_json(os.path.join(DATA_DIR, f"dataset_{pos}.json"))
         except FileNotFoundError:
             print(f"❌ Data for {pos} not found. Run analysis/generate_dataset first.")
-            return 0
+            return 0, []
         
     # 2. Load Metadata
     conn = sqlite3.connect(DB_PATH)
@@ -60,13 +64,19 @@ def run_simulation(explosive_threshold=5.0):
     sim_gws = sorted(list(set([d['gw'] for p in POSITIONS for d in all_data[p] if d.get('season') == '25/26'])))
     if not sim_gws:
         print("Error: No 25/26 data found.")
-        return 0
-    sim_gws = [g for g in sim_gws if g >= 1]
+        return 0, []
+    
+    # Filter GWs up to end_gw
+    sim_gws = [g for g in sim_gws if g >= 1 and g <= end_gw]
     
     # print(f"📅 Simulating GWs: {sim_gws}")
     
     # 4. Initialize Manager
-    manager = FPLManager(players_map)
+    manager = FPLManager(players_map, 
+                         min_captain_ownership=captaincy_ownership_threshold, 
+                         team_score_target=team_score_target,
+                         bench_boost_metric=bench_boost_metric,
+                         triple_captain_metric=triple_captain_metric)
     models = {}
     
     # Initial Training
@@ -102,7 +112,7 @@ def run_simulation(explosive_threshold=5.0):
         # but for now, let's keep it to ensure fresh training or add a flag
         model_path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
         if os.path.exists(model_path):
-            print(f"Skipping training for {pos}, model exists. Loading from {model_path}")
+            # print(f"Skipping training for {pos}, model exists. Loading from {model_path}")
             models[pos] = tf.keras.models.load_model(model_path)
             continue
 
@@ -129,7 +139,7 @@ def run_simulation(explosive_threshold=5.0):
         
         # A. PREDICTION PHASE (Current + Long Term)
         # 1. Current GW Predictions
-        current_preds_map = predict_gw(gw, all_data=all_data, models=models)
+        current_preds_map = predict_gw(gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
         
         # 2. Long Term Predictions (Avg next 5 GWs)
         long_term_xp_map = {pid: 0.0 for pid in current_preds_map}
@@ -139,7 +149,7 @@ def run_simulation(explosive_threshold=5.0):
         for offset in range(5): 
             target_gw = gw + offset
             # Use FROZEN form from current GW to prevent data leak
-            future_preds = predict_gw(target_gw, frozen_gw=gw, all_data=all_data, models=models)
+            future_preds = predict_gw(target_gw, frozen_gw=gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
             for pid, p_data in future_preds.items():
                 if pid in long_term_xp_map:
                     long_term_xp_map[pid] += p_data['xp']
@@ -155,23 +165,27 @@ def run_simulation(explosive_threshold=5.0):
                 real_xp = current_preds_map[pid]
                 avg_xp = long_term_xp_map[pid] / max(1, count_map[pid])
 
-                gw_candidates.append({
+                cand = {
                     'id': pid,
                     'name': s['name'],
                     'type': players_map[pid]['element_type'],
                     'team': players_map[pid]['team'],
                     'cost': int(s['ctx_price'] * 10), # Scale to 0.1m units
                     'xp': real_xp['xp'],
-                    'xp': real_xp['xp'],
                     'sigma': real_xp['sigma'],
-                    'prob_gt_10': real_xp['prob_gt_10'],
-                    'prob_gt_6': real_xp['prob_gt_6'],
+                    # Dynamically add all probability keys
                     'xp_long_term': avg_xp,
                     'actual': s['target'],
                     'selected_by_percent': float(players_map[pid].get('selected_by_percent', 0)),
                     'status': players_map[pid].get('status', 'a'),
                     'chance_of_playing_this_round': players_map[pid].get('chance_of_playing_this_round')
-                })
+                }
+                
+                for key, val in real_xp.items():
+                    if key.startswith('prob_gt_'):
+                        cand[key] = val
+                        
+                gw_candidates.append(cand)
         
         # B. MANAGER DECISIONS
         # Use Long-Term XP for Transfers/Init
@@ -197,21 +211,16 @@ def run_simulation(explosive_threshold=5.0):
             
             # --- NEW RULE: Prioritize Underperforming Players (GW 3+) ---
             priority_pid = None
-            if gw >= 3:
+            if gw >= 3 and len(results_history) >= 2:
                  # Check last 3 weeks (or available history)
-                 # results_history has [GW1, GW2...] 
-                 # If gw=3, results_history has 2 entries (GW1, GW2).
                  history_window = results_history[-3:] 
                  
                  # Calculate underperformance for ALL players (not just current squad)
-                 # This will help us avoid bringing in underperforming players
                  underperf_map = {}  # {pid: total_diff}
                  
                  for h in history_window:
                      for p_detail in h['squad']:
                          pid = p_detail['id']
-                         # Underperformance = Predicted - Actual
-                         # e.g. Pred 10 - Actual 2 = 8 (High Underperformance)
                          diff = p_detail['xp'] - p_detail['points']
                          underperf_map[pid] = underperf_map.get(pid, 0) + diff
                          
@@ -226,16 +235,32 @@ def run_simulation(explosive_threshold=5.0):
                     if best_candidate[1] > 2.0: 
                         priority_pid = best_candidate[0]
                         p_name = players_map[priority_pid]['web_name']
-                        print(f"📉 GW {gw}: Priority Sell Candidate {p_name} (Underperf: {best_candidate[1]:.1f})")
+                        # print(f"📉 GW {gw}: Priority Sell Candidate {p_name} (Underperf: {best_candidate[1]:.1f})")
 
-            # Pass underperformance data to make_transfers
+            # --- Calculate Recent Form (Avg Points last 3 Matches) ---
+            recent_form_map = {}
+            if gw >= 4:
+                for pid, p_data_list in all_data.items():
+                    # Get last 3 GWs (gw-1, gw-2, gw-3)
+                    # p_data_list is sorted by GW? Assuming yes or we find by GW.
+                    # Actually p_data_list is a list of dicts.
+                    # Let's filter.
+                    past_matches = [d for d in p_data_list if d['season'] == '25/26' and gw - 3 <= d['gw'] < gw]
+                    if past_matches:
+                        avg_points = sum(d['target'] for d in past_matches) / len(past_matches)
+                        recent_form_map[pid] = avg_points
+                    else:
+                        recent_form_map[pid] = 0.0
+
+            # Pass underperformance data AND recent form to make_transfers
             transfers, active_chip_used = manager.make_transfers(
                 candidates_for_transfers, 
                 candidates_for_transfers, 
                 gw, 
                 price_lookup, 
                 priority_transfer_out_id=priority_pid,
-                underperformance_map=underperf_map if gw > 3 else {}
+                underperformance_map=underperf_map if gw > 3 else {},
+                recent_form_map=recent_form_map
             )
             
         # Selection (Use REAL current XP)
@@ -253,43 +278,34 @@ def run_simulation(explosive_threshold=5.0):
             starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
         
         # --- CHANCE CONSTRAINED OPTIMIZATION (Refinement) ---
-        # Try to maximize P(Team Score > 60)
-        # We start with the high-xP squad and try to swap players to improve probability
-        # This is a greedy hill-climbing approach
+        # Try to maximize P(Team Score > target)
         
-
-
         # Calculate initial probability
-        current_prob = calc_team_prob_gt_60(starters, captain_id)
-        # print(f"📊 Initial Team Prob > 60: {current_prob:.2%}")
+        current_prob = calc_team_prob_gt_target(starters, captain_id, target=team_score_target)
         
         # Store for history
-        manager.current_gw_prob_gt_60 = current_prob
+        manager.current_gw_prob_gt_target = current_prob
         
-        # Optimize Captain for Probability > 60
-        # Check if changing captain improves generic probability
+        # Optimize Captain for Probability > target
         best_cap_id = captain_id
         best_prob = current_prob
         
-        # Only consider starters with >= 30% ownership as candidates (consistency)
-        # or just the Vice Captain
-        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= 30.0]
+        # Only consider starters with >= X ownership as candidates (consistency)
+        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= captaincy_ownership_threshold]
         
         for cand in candidates_cap:
-             prob = calc_team_prob_gt_60(starters, cand['id'])
+             prob = calc_team_prob_gt_target(starters, cand['id'], target=team_score_target)
              if prob > best_prob:
                  best_prob = prob
                  best_cap_id = cand['id']
                  
         # Update captain if better probability found
         if best_cap_id != captain_id:
-            # print(f"💡 Switched Captain {captain_id} -> {best_cap_id} (Prob: {current_prob:.2%} -> {best_prob:.2%})")
             captain_id = best_cap_id
-            manager.current_gw_prob_gt_60 = best_prob
+            manager.current_gw_prob_gt_target = best_prob
             
-            # Update VC if needed (if VC was the new Cap)
+            # Update VC if needed
             if vice_captain_id == best_cap_id:
-                # Pick new VC (old Cap)
                  vice_captain_id = [p['id'] for p in starters if p['id'] != best_cap_id][0] # Fallback
                  
         
@@ -301,8 +317,6 @@ def run_simulation(explosive_threshold=5.0):
         gw_points = 0
         gw_xp = 0
         squad_details = []
-        
-
         
         for p in playing_squad:
             pts = p['actual']
@@ -322,56 +336,62 @@ def run_simulation(explosive_threshold=5.0):
             current_price = price_lookup.get(p['id'], p['cost'])
             selling_price = calculate_selling_price(purchase_price, current_price)
             
-            squad_details.append({
+            detail = {
                 'id': p['id'], 
                 'name': p['name'], 
                 'points': p['actual'], 
                 'xp': p['xp'], 
-                'prob_gt_10': p.get('prob_gt_10', 0.0),
-                'prob_gt_6': p.get('prob_gt_6', 0.0),
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'C' if is_cap else ('V' if is_vice else 'S'),
                 'purchase_price': purchase_price / 10.0,
                 'current_price': current_price / 10.0,
                 'selling_price': selling_price / 10.0,
-                'status': p.get('status', 'a')
-            })
+                'status': p.get('status', 'a'),
+                'injury_chance': p.get('chance_of_playing_this_round')
+            }
+            # Add dynamic probs
+            for key, val in p.items():
+                if key.startswith('prob_gt_'):
+                    detail[key] = val
+                    
+            squad_details.append(detail)
 
         bench_players_visual = bench if active_chip_used != "bench_boost" else []
         for p in bench_players_visual:
-            # Get purchase price and calculate selling price
             purchase_price = manager.purchase_prices.get(p['id'], p['cost'])
             current_price = price_lookup.get(p['id'], p['cost'])
             selling_price = calculate_selling_price(purchase_price, current_price)
             
-            squad_details.append({
+            detail = {
                 'id': p['id'], 
                 'name': p['name'], 
                 'points': p['actual'], 
                 'xp': p['xp'], 
-                'prob_gt_10': p.get('prob_gt_10', 0.0),
-                'prob_gt_6': p.get('prob_gt_6', 0.0),
                 'selected_by_percent': p.get('selected_by_percent', '0.0'), 
                 'role': 'B',
                 'purchase_price': purchase_price / 10.0,
                 'current_price': current_price / 10.0,
                 'selling_price': selling_price / 10.0,
-                'status': p.get('status', 'a')
-            })
+                'status': p.get('status', 'a'),
+                'injury_chance': p.get('chance_of_playing_this_round')
+            }
+            # Add dynamic probs
+            for key, val in p.items():
+                if key.startswith('prob_gt_'):
+                    detail[key] = val
+            squad_details.append(detail)
             
-        # Hits cost is already handled by the manager's free_transfers logic
-        # transfers is now a list of strings, not dicts
-        hits_cost = 0  # Manager already deducts from free_transfers
+        hits_cost = 0  
         if active_chip_used in ["wildcard", "freehit"]: hits_cost = 0
         net_score = gw_points - hits_cost
         
         history_entry = {
             'gw': gw, 'points': gw_points, 'total_xp': gw_xp, 'net_points': net_score,
             'transfer_cost': hits_cost, 'active_chip': active_chip_used,
-            'transfers': transfers,  # Now a list of strings like "Out: Player1 (5.2), In: Player2 (6.1)"
+            'transfers': transfers, 
             'squad': squad_details, 'bank': manager.bank / 10.0,
             'free_transfers': manager.free_transfers,
-            'team_prob_gt_60': getattr(manager, 'current_gw_prob_gt_60', 0.0)
+            'team_prob_gt_target': getattr(manager, 'current_gw_prob_gt_target', 0.0)
         }
         results_history.append(history_entry)
         
@@ -386,6 +406,7 @@ def run_simulation(explosive_threshold=5.0):
             del manager.original_purchase_prices
             
         # D. TRAINING PHASE
+        # ... (Same as before) ...
         # print(f"📈 Updating models...")
         for pos in POSITIONS:
             samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
@@ -412,16 +433,92 @@ def run_simulation(explosive_threshold=5.0):
 
     # Save
     results_history.reverse()
+    # Save
+    results_history.reverse()
     try:
         with open(OUTPUT_FILE, "w") as f:
             json.dump(results_history, f)
-        print(f"✅ Simulation saved to {OUTPUT_FILE}")
+        # print(f"✅ Simulation saved to {OUTPUT_FILE}")
     except Exception as e:
         print(f"❌ Failed to save output: {e}")
+
+    # Export Predictions for Frontend
+    try:
+        # We export predictions for the *next* gameweek after the simulation ends
+        # Or if we want to show predictions for the LAST simulated GW (if we are simulating past)
+        # Assuming we want adjacent future predictions starting from end_gw (or current real world GW)
+        # For simplicity, let's export predictions for the last simulated GW + 1 (future)
+        # Wait, if we run backtest, last GW is current.
         
+        last_simulated_gw = sim_gws[-1] if sim_gws else 1
+        export_gw = last_simulated_gw  # Or +1? Usually we want next GW. 
+        # But if we simulated GW 24, we already have results for it. The predictions for it were made BEFORE it.
+        # The frontend usually wants predictions for UPCOMING games.
+        # If sim_gws ends at 24, and 24 is 'finished', we want preds for 25.
+        # But our dataset might not have '25' data if it's strictly historical?
+        # Let's trust predict_gw handles it if data exists.
+        
+        # NOTE: For this specific request, we export the LAST simulated gameweek's predictions if we treat it as "current"
+        # Or we loop current -> +5.
+        
+        # Let's take the last simulated GW as the 'current' reference point.
+        ref_gw = last_simulated_gw 
+        
+        predictions_export = []
+        
+        # 1. Get predictions for ref_gw (including probabilities)
+        current_preds = predict_gw(ref_gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
+        
+        # 2. Get projections for next 5 GWs (ref_gw to ref_gw+4)
+        # We need to loop. Be careful about efficiency.
+        
+        long_term_preds = {} # {pid: [xp1, xp2, ...]}
+        for offset in range(5):
+            target = ref_gw + offset
+            # Just predict xP for efficiency, or predict_gw if fast enough. 
+            # predict_gw calculates probabilities too, which is expensive but we want it for the first week at least.
+            if offset == 0:
+                # We already have current_preds
+                for pid, p in current_preds.items():
+                    if pid not in long_term_preds: long_term_preds[pid] = []
+                    long_term_preds[pid].append(p['xp'])
+            else:
+                 # Future GWs
+                 future_preds = predict_gw(target, frozen_gw=ref_gw, all_data=all_data, models=models, prob_thresholds=[]) # Empty list to skip prob calc if not needed?
+                 # Actually predict_gw might fail if we pass empty list but models expect something?
+                 # Let's pass prob_thresholds but ignore output
+                 for pid, p in future_preds.items():
+                     if pid not in long_term_preds: long_term_preds[pid] = []
+                     long_term_preds[pid].append(p['xp'])
+        
+        # 3. Assemble
+        for pid, p_data in current_preds.items():
+            if pid not in players_map: continue
+            
+            # Basic info
+            entry = {
+                "id": pid,
+                "name": players_map[pid]['web_name'],
+                "team": players_map[pid]['team'],
+                "total5Week": sum(long_term_preds.get(pid, [])),
+                "projections": [{"gw": ref_gw + i, "xP": xp} for i, xp in enumerate(long_term_preds.get(pid, []))],
+                # Add probabilities for the CURRENT (next) gameweek
+                "prob_gt_7": p_data.get('prob_gt_7', 0),
+                "prob_gt_11": p_data.get('prob_gt_11', 0)
+            }
+            predictions_export.append(entry)
+            
+        with open("public/data/ai_predictions.json", "w") as f:
+            json.dump(predictions_export, f)
+        print("✅ Exported ai_predictions.json with probabilities")
+
+    except Exception as e:
+        print(f"❌ Failed to export predictions: {e}")
+
     total_net_points = sum(h['net_points'] for h in results_history)
-    print(f"🏁 DONE (Threshold={explosive_threshold}): Total Net Points = {total_net_points}")
-    return total_net_points
+    print(f"🏁 DONE (Thresholds={prob_thresholds}, Target={team_score_target}): Total Net Points = {total_net_points}")
+    return total_net_points, results_history
 
 if __name__ == "__main__":
-    run_simulation(5.0)
+    # Default behavior for manual run: Use standard settings
+    run_simulation(prob_thresholds=[7, 11], team_score_target=60.0, captaincy_ownership_threshold=50.0)

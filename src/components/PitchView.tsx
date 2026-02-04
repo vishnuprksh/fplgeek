@@ -15,7 +15,9 @@ interface PitchViewProps {
     onSwap?: (id1: number, id2: number) => void;
     points?: Record<number, number>; // Historical points override
     statuses?: Record<number, string>; // Historical status override
+    injuryChances?: Record<number, number>;
 }
+
 
 const ItemTypes = {
     PLAYER: 'player'
@@ -33,7 +35,9 @@ function PitchPlayer({
     onToggleSell,
     onPlayerClick,
     onSwap,
-    points
+    points,
+    status,
+    injuryChance
 }: {
     pick: Pick;
     player: UnifiedPlayer;
@@ -46,6 +50,7 @@ function PitchPlayer({
     onSwap?: (id1: number, id2: number) => void;
     points?: number;
     status?: string;
+    injuryChance?: number;
 }) {
 
     const getImageUrl = (code: number) => `https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`;
@@ -147,13 +152,16 @@ function PitchPlayer({
                 }}>✕</div>
             )}
 
-            {!isSold && status && status !== 'a' && (
+            {!isSold && ((status && status !== 'a') || (injuryChance === 0)) && (
                 <div title="Injured/Unavailable" style={{
                     position: 'absolute', top: '-8px', left: '-8px', width: '24px', height: '24px',
-                    background: '#eab308', color: 'black', borderRadius: '50%', display: 'flex',
                     alignItems: 'center', justifyContent: 'center', fontSize: '0.9em', fontWeight: 'bold',
-                    zIndex: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.5)', border: '2px solid #1a0524'
-                }}>⚠️</div>
+                    zIndex: 20, boxShadow: '0 2px 4px rgba(0,0,0,0.5)', border: '2px solid #1a0524',
+                    backgroundColor: injuryChance === 0 ? '#ef4444' : '#eab308',
+                    color: injuryChance === 0 ? 'white' : 'black'
+                }}>
+                    {injuryChance === 0 ? '🚑' : '⚠️'}
+                </div>
             )}
 
             {prediction && !isSold && (
@@ -204,7 +212,8 @@ export function PitchView({
     onToggleSell,
     onSwap,
     points,
-    statuses
+    statuses,
+    injuryChances
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);
@@ -265,6 +274,7 @@ export function PitchView({
                 onPlayerClick={onPlayerClick}
                 points={points ? points[player.id] : undefined}
                 status={statuses ? statuses[player.id] : player.status}
+                injuryChance={injuryChances ? injuryChances[player.id] : player.chance_of_playing_this_round ?? undefined}
                 onSwap={onSwap}
             />
         );
