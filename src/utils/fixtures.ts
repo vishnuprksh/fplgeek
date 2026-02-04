@@ -122,8 +122,9 @@ export interface TickerMatch {
 
 export interface TeamSchedule {
     team: TeamStats;
-    matches: (TickerMatch | null)[];
+    matches: TickerMatch[][];
     totalScore: number;
+    averageScore: number;
 }
 
 export function getFixtureTicker(
@@ -139,66 +140,75 @@ export function getFixtureTicker(
     const schedules: TeamSchedule[] = [];
 
     table.forEach(team => {
-        const teamMatches: (TickerMatch | null)[] = [];
+        const teamMatches: TickerMatch[][] = [];
         let totalScore = 0;
+        let matchCount = 0;
 
         for (let gw = startGw; gw <= endGw; gw++) {
-            const match = fixtures.find(f =>
+            // Find ALL matches for this GW involving the team
+            const matchesInGw = fixtures.filter(f =>
                 f.event === gw && (f.team_h === team.id || f.team_a === team.id)
             );
 
-            if (match) {
-                const isHome = match.team_h === team.id;
-                const opponentId = isHome ? match.team_a : match.team_h;
-                const opponent = table.find(t => t.id === opponentId);
+            const gwMatches: TickerMatch[] = [];
 
-                if (opponent) {
-                    let score = 0;
+            if (matchesInGw.length > 0) {
+                matchesInGw.forEach(match => {
+                    const isHome = match.team_h === team.id;
+                    const opponentId = isHome ? match.team_a : match.team_h;
+                    const opponent = table.find(t => t.id === opponentId);
 
-                    if (metric === 'attack') {
-                        if (isHome) {
-                            // My Home Attack + Opponent Away Defense
-                            score = team.homeGoalsScored + opponent.awayGoalsConceded;
+                    if (opponent) {
+                        let score = 0;
+
+                        if (metric === 'attack') {
+                            if (isHome) {
+                                // My Home Attack + Opponent Away Defense
+                                score = team.homeGoalsScored + opponent.awayGoalsConceded;
+                            } else {
+                                // My Away Attack + Opponent Home Defense
+                                score = team.awayGoalsScored + opponent.homeGoalsConceded;
+                            }
                         } else {
-                            // My Away Attack + Opponent Home Defense
-                            score = team.awayGoalsScored + opponent.homeGoalsConceded;
+                            // Defense Metric (Lower is Good)
+                            if (isHome) {
+                                // My Home Defense + Opponent Away Attack (How little I concede vs How little they score)
+                                score = team.homeGoalsConceded + opponent.awayGoalsScored;
+                            } else {
+                                // My Away Defense + Opponent Home Attack
+                                score = team.awayGoalsConceded + opponent.homeGoalsScored;
+                            }
                         }
-                    } else {
-                        // Defense Metric (Lower is Good)
-                        if (isHome) {
-                            // My Home Defense + Opponent Away Attack (How little I concede vs How little they score)
-                            score = team.homeGoalsConceded + opponent.awayGoalsScored;
-                        } else {
-                            // My Away Defense + Opponent Home Attack
-                            score = team.awayGoalsConceded + opponent.homeGoalsScored;
-                        }
+
+                        totalScore += score;
+                        matchCount++;
+
+                        gwMatches.push({
+                            event: gw,
+                            opponent,
+                            isHome,
+                            score,
+                            difficultyClass: 'medium' // placeholder, assigned later
+                        });
                     }
-
-                    totalScore += score;
-
-                    teamMatches.push({
-                        event: gw,
-                        opponent,
-                        isHome,
-                        score,
-                        difficultyClass: 'medium'
-                    });
-                } else {
-                    teamMatches.push(null);
-                }
-            } else {
-                teamMatches.push(null);
+                });
             }
+
+            // Push the array for this GW (empty if BGW)
+            teamMatches.push(gwMatches);
         }
 
         schedules.push({
             team,
             matches: teamMatches,
-            totalScore
+            totalScore,
+            averageScore: matchCount > 0 ? totalScore / matchCount : 0
         });
     });
 
-    const allScores = schedules.flatMap(s => s.matches).filter(m => m !== null).map(m => m!.score);
+    // Calculate Difficulty Classes based on ALL match scores across all teams/weeks
+    const allScores = schedules.flatMap(s => s.matches.flat()).map(m => m.score);
+
     if (allScores.length > 0) {
         const maxScore = Math.max(...allScores);
         const minScore = Math.min(...allScores);
@@ -206,8 +216,8 @@ export function getFixtureTicker(
         const third = range / 3;
 
         schedules.forEach(s => {
-            s.matches.forEach(m => {
-                if (m) {
+            s.matches.forEach(gw => {
+                gw.forEach(m => {
                     if (metric === 'attack') {
                         if (m.score >= minScore + (2 * third)) m.difficultyClass = 'easy';
                         else if (m.score <= minScore + third) m.difficultyClass = 'hard';
@@ -217,16 +227,16 @@ export function getFixtureTicker(
                         else if (m.score >= minScore + (2 * third)) m.difficultyClass = 'hard';
                         else m.difficultyClass = 'medium';
                     }
-                }
+                });
             });
         });
     }
 
     return schedules.sort((a, b) => {
         if (metric === 'attack') {
-            return b.totalScore - a.totalScore;
+            return b.averageScore - a.averageScore;
         } else {
-            return a.totalScore - b.totalScore;
+            return a.averageScore - b.averageScore;
         }
     });
 }

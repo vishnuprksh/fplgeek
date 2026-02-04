@@ -57,7 +57,7 @@ function TickerTable({ ticker, gameweeks, metric }: { ticker: TeamSchedule[], ga
                 <thead>
                     <tr>
                         <th className="th-team">Team</th>
-                        <th className="th-score">Score</th>
+                        <th className="th-score">Avg Score</th>
                         {gameweeks.map(gw => (
                             <th key={gw} className="th-gw">GW {gw}</th>
                         ))}
@@ -72,17 +72,20 @@ function TickerTable({ ticker, gameweeks, metric }: { ticker: TeamSchedule[], ga
                                     {metric === 'attack' ? `GS: ${row.team.goalsScored}` : `GC: ${row.team.goalsConceded}`}
                                 </div>
                             </td>
-                            <td className="td-score">{row.totalScore}</td>
-                            {row.matches.map((match, i) => (
-                                <td key={gameweeks[i]} className={`td-match ${match ? match.difficultyClass : 'blank'}`}>
-                                    {match ? (
-                                        <div className="match-cell">
-                                            <span className="opponent">{match.opponent.short_name}</span>
-                                            <span className="venue">{match.isHome ? '(H)' : '(A)'}</span>
-                                            <span className="cell-score">{match.score}</span>
+                            <td className="td-score">{row.averageScore.toFixed(1)}</td>
+                            {row.matches.map((matchesInGw, i) => (
+                                <td key={gameweeks[i]} className="td-match-container">
+                                    {matchesInGw.length > 0 ? (
+                                        <div className="match-stack">
+                                            {matchesInGw.map((match, idx) => (
+                                                <div key={idx} className={`match-cell ${match.difficultyClass}`}>
+                                                    <span className="opponent">{match.opponent.short_name}</span>
+                                                    <span className="venue">{match.isHome ? '(H)' : '(A)'}</span>
+                                                </div>
+                                            ))}
                                         </div>
                                     ) : (
-                                        <span className="blank-gw">-</span>
+                                        <div className="blank-gw">-</div>
                                     )}
                                 </td>
                             ))}

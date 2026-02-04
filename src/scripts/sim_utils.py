@@ -58,30 +58,53 @@ def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None, prob_thres
         # Predict Probabilities
         probs_dist = model.predict([X_seq, X_ctx, X_opp], verbose=0) # Shape (N, 16)
         
-        # 1. Expected Points (Mean) -> Sum(i * p_i)
-        # Create classes array [0, 1, ..., 15]
-        classes = np.arange(16, dtype=np.float32)
-        xp_values = np.sum(probs_dist * classes, axis=1) # (N,)
-        
-        # 2. Sigma (Std Dev) -> Sqrt(Sum(p_i * (i - mean)^2))
-        variance = np.sum(probs_dist * (classes - xp_values[:, np.newaxis])**2, axis=1)
-        sigma_values = np.sqrt(variance)
-        
-        # Calculate probabilities for requested thresholds
-        # prob_thresholds is a list of integers, e.g. [6, 10]
-        prob_values_map = {}
-        for t in prob_thresholds:
-            # Indices t..15 -> Points t, t+1, ..., 15+
-            if t < 16:
-                prob_values_map[t] = np.sum(probs_dist[:, t:], axis=1)
-            else:
-                prob_values_map[t] = np.zeros(len(probs_dist))
-
+        # Group by Player ID to handle DGW
+        player_indices = {}
         for i, s in enumerate(predict_samples):
-            xp = float(xp_values[i])
-            sigma = float(sigma_values[i])
+            pid = s['id']
+            if pid not in player_indices: player_indices[pid] = []
+            player_indices[pid].append(i)
             
-            # Apply multipliers based on historical performance (Elite Player Bias)
+        classes = np.arange(16, dtype=np.float32)
+
+        for pid, indices in player_indices.items():
+            # If Single Game
+            if len(indices) == 1:
+                i = indices[0]
+                dist = probs_dist[i]
+                
+                xp = np.sum(dist * classes)
+                variance = np.sum(dist * (classes - xp)**2)
+                sigma = np.sqrt(variance)
+                
+                final_dist = dist
+                
+            else:
+                # Double Gameweek (or Triple?)
+                # Convolute distributions
+                dists = [probs_dist[i] for i in indices]
+                
+                # Start with first
+                combined_dist = dists[0]
+                
+                for next_dist in dists[1:]:
+                    # Full convolution (size N+M-1)
+                    conv = np.convolve(combined_dist, next_dist)
+                    combined_dist = conv
+                    
+                # Calculate metrics on combined distribution
+                # The combined distribution indices represent scores 0, 1, 2...
+                # Length will be 16 + 15 * (num_games - 1)
+                
+                combined_classes = np.arange(len(combined_dist), dtype=np.float32)
+                xp = np.sum(combined_dist * combined_classes)
+                variance = np.sum(combined_dist * (combined_classes - xp)**2)
+                sigma = np.sqrt(variance)
+                
+                final_dist = combined_dist
+
+            # Apply Multiplier (Elite Bias) based on first sample (static stats same)
+            s = predict_samples[indices[0]]
             all_time_avg = s.get('ctx_all_time_avg_points', 0)
             games_played = s.get('ctx_all_time_games_played', 0)
             
@@ -93,23 +116,30 @@ def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None, prob_thres
             elif all_time_avg > 4.0 and games_played > 38:
                 multiplier = 1.15
             
-            # Apply multiplier to Mean and Scale (Sigma scales linearly)
             xp *= multiplier
-            sigma *= multiplier 
+            sigma *= multiplier
             
+            # Populate Entry
             entry = {
-                'xp': xp,
-                'sigma': sigma,
-                'distribution': probs_dist[i].tolist()
+                'xp': float(xp),
+                'sigma': float(sigma),
+                # Store distribution truncated or full? Frontend might not use it directly but useful.
+                # Let's keep it simple or truncated if huge.
+                'distribution': final_dist.tolist() 
             }
             
-            # Heuristic update for Probabilities and populate entry
-            for t, val_array in prob_values_map.items():
-                prob_val = float(val_array[i])
+            # Calculate Probabilities > Threshold
+            for t in prob_thresholds:
+                if t < len(final_dist):
+                    prob_val = np.sum(final_dist[t:])
+                else:
+                    prob_val = 0.0
+                
                 if multiplier > 1.0:
                     prob_val = min(0.99, prob_val * multiplier)
+                    
+                entry[f'prob_gt_{t}'] = float(prob_val)
                 
-                entry[f'prob_gt_{t}'] = prob_val
+            preds_map[pid] = entry
 
-            preds_map[s['id']] = entry
     return preds_map
