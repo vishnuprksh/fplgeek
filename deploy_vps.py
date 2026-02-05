@@ -38,6 +38,7 @@ def deploy():
         '--exclude=node_modules',
         '--exclude=dist',
         '--exclude=.git',
+        '--exclude=venv',
         '--exclude=.firebase',
         '--exclude=public/data/processed',
         '--exclude=research/results',

@@ -64,21 +64,6 @@ function parseFloatSafe(val: any): number {
     return isNaN(f) ? 0 : f;
 }
 
-function getSeason(kickoffTime: string): string {
-    const date = new Date(kickoffTime);
-    const year = date.getFullYear();
-    const month = date.getMonth();
-
-    // Season runs from August (month 7) to May (month 4)
-    // If month is Aug-Dec, season is year/year+1
-    // If month is Jan-Jul, season is year-1/year
-    if (month >= 7) {
-        return `${year % 100}/${(year + 1) % 100}`;
-    } else {
-        return `${(year - 1) % 100}/${year % 100}`;
-    }
-}
-
 interface SeasonStats {
     avg_points: number;
     total_points: number;

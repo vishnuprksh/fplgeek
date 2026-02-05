@@ -111,6 +111,39 @@
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+@media (max-width: 768px) {
+
+    .season-cell,
+    .points-cell {
+        position: sticky;
+        background: #1e1e1e;
+        z-index: 10;
+    }
+
+    .season-cell {
+        left: 0;
+    }
+
+    /* Pts is the 2nd column now */
+    .points-cell {
+        left: 60px;
+        /* Approx width of season cell */
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .history-table th:nth-child(1) {
+        position: sticky;
+        left: 0;
+        z-index: 11;
+    }
+
+    .history-table th:nth-child(2) {
+        position: sticky;
+        left: 60px;
+        z-index: 11;
+    }
+}
+
 .history-table th {
     background: #2a2a2a;
     color: #888;
