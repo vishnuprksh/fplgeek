@@ -54,6 +54,9 @@ interface ProcessedSample {
     ctx_all_time_goals_per_90: number;
     ctx_all_time_xg_per_90: number;
     ctx_all_time_games_played: number;
+    // NEW: Form and Ownership Features
+    ctx_form: number;
+    ctx_ownership: number;
     // History Sequence (Flat for now, but ordered)
     history_sequence: number[][]; // [ [min, xG, xA...], [min, xG, xA...] ]
 }
@@ -229,6 +232,14 @@ function main() {
 
                 for (let k = 1; k <= LOOKBACK; k++) {
                     const past = history[i - k];
+                    // Calculate form for this past match (avg points from previous 3 matches)
+                    let pastForm = 0;
+                    if (i - k >= 3) {
+                        const formMatches = history.slice(Math.max(0, i - k - 3), i - k);
+                        const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
+                        pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
+                    }
+
                     seqData.unshift([
                         parseFloatSafe(past.minutes),
                         parseFloatSafe(past.expected_goals),
@@ -241,13 +252,21 @@ function main() {
                         Math.log1p(parseFloatSafe(past.selected)),
                         parseFloatSafe(past.value) / 10.0,
                         past.was_home ? 1 : 0,
-                        parseFloatSafe(past.total_points)
+                        parseFloatSafe(past.total_points),
+                        pastForm  // NEW: 13th feature - form
                     ]);
                 }
 
                 // Calculate All-Time Statistics
                 const historyBeforeTarget = history.slice(0, i);
                 const allTimeStats = calculateSeasonStats(historyBeforeTarget);
+
+                // Calculate current form (avg points from last 3 matches before target)
+                const formWindow = 3;
+                const recentMatches = history.slice(Math.max(0, i - formWindow), i);
+                const currentForm = recentMatches.length > 0
+                    ? recentMatches.reduce((sum, m) => sum + m.total_points, 0) / recentMatches.length
+                    : 0;
 
                 const sample: ProcessedSample = {
                     name: player.web_name,
@@ -266,6 +285,8 @@ function main() {
                     ctx_all_time_goals_per_90: allTimeStats?.goals_per_90 || 0,
                     ctx_all_time_xg_per_90: allTimeStats?.xg_per_90 || 0,
                     ctx_all_time_games_played: allTimeStats?.games_played || 0,
+                    ctx_form: currentForm,  // NEW
+                    ctx_ownership: parseFloatSafe(targetMatch.selected_by_percent),  // NEW
                     history_sequence: seqData
                 };
 
@@ -302,6 +323,14 @@ function main() {
         if (history.length >= LOOKBACK) {
             for (let k = 0; k < LOOKBACK; k++) {
                 const past = history[history.length - 1 - k]; // Last 5 matches
+                // Calculate form for this past match
+                let pastForm = 0;
+                if (history.length - 1 - k >= 3) {
+                    const formMatches = history.slice(Math.max(0, history.length - 1 - k - 3), history.length - 1 - k);
+                    const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
+                    pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
+                }
+
                 placeholderSeq.unshift([
                     parseFloatSafe(past.minutes),
                     parseFloatSafe(past.expected_goals),
@@ -314,18 +343,26 @@ function main() {
                     Math.log1p(parseFloatSafe(past.selected)),
                     parseFloatSafe(past.value) / 10.0,
                     past.was_home ? 1 : 0,
-                    parseFloatSafe(past.total_points)
+                    parseFloatSafe(past.total_points),
+                    pastForm  // NEW: 13th feature
                 ]);
             }
         } else {
             // Fill with zeros if absolutely no history (e.g. new player who hasn't played 5 games yet)
             // Or skip? Better to fill zeros to allow predictions.
-            placeholderSeq = Array(LOOKBACK).fill([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            placeholderSeq = Array(LOOKBACK).fill([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);  // 13 features now
         }
 
         // All-Time stats as of now
         const allTimeStats = calculateSeasonStats(history);
         const lastValue = history.length > 0 ? parseFloatSafe(history[history.length - 1].value) / 10.0 : 5.0; // Fallback price
+
+        // Calculate current form for future fixtures (avg points from last 3 matches)
+        const formWindow = 3;
+        const recentMatches = history.slice(Math.max(0, history.length - formWindow), history.length);
+        const currentForm = recentMatches.length > 0
+            ? recentMatches.reduce((sum, m) => sum + m.total_points, 0) / recentMatches.length
+            : 0;
 
         let lastFixtureTime = lastMatchDate.getTime();
 
@@ -375,6 +412,8 @@ function main() {
                 ctx_all_time_goals_per_90: allTimeStats?.goals_per_90 || 0,
                 ctx_all_time_xg_per_90: allTimeStats?.xg_per_90 || 0,
                 ctx_all_time_games_played: allTimeStats?.games_played || 0,
+                ctx_form: currentForm || 0,  // NEW
+                ctx_ownership: 0,  // Unknown for future fixtures
                 history_sequence: placeholderSeq // Valid shape, but data inside is old. sim_utils MUST override this for accurate lookahead.
             };
 

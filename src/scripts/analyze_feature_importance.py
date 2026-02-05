@@ -14,13 +14,13 @@ POSITIONS = ["GKP", "DEF", "MID", "FWD"]
 
 SEQ_FEATURES = [
     "minutes", "expected_goals", "expected_assists", "threat", "creativity", "influence",
-    "goals_conceded", "saves", "log_selected", "price", "was_home", "total_points"
+    "goals_conceded", "saves", "log_selected", "price", "was_home", "total_points", "form"  # NEW: Added form
 ]
 
 CTX_FEATURES = [
     "ctx_was_home", "ctx_difficulty", "ctx_price", "ctx_hours_rest",
     "all_time_avg_pts", "all_time_total_pts", "all_time_goals_per_90", 
-    "all_time_xg_per_90", "all_time_games_played"
+    "all_time_xg_per_90", "all_time_games_played", "form", "ownership"  # NEW: Added form and ownership
 ]
 
 OPP_FEATURES = ["opponent_strength"]
@@ -128,24 +128,154 @@ def analyze_position(pos):
     return importances
 
 def main():
-    final_report = "# Feature Importance Analysis\n\n"
-    final_report += "Method: Permutation Importance (Accuracy Drop on Validation Data)\n\n"
+    print("=" * 80)
+    print("COMPREHENSIVE FEATURE IMPORTANCE ANALYSIS")
+    print("=" * 80)
+    print("\nMethod: Permutation Importance (Accuracy Drop on Validation Data)")
+    print("Metric: Classification Accuracy (16-class categorical model)")
+    print("\n" + "=" * 80 + "\n")
+    
+    final_report = "# Comprehensive Feature Importance Analysis\n\n"
+    final_report += "## Methodology\n\n"
+    final_report += "- **Method**: Permutation Importance\n"
+    final_report += "- **Metric**: Classification Accuracy Drop\n"
+    final_report += "- **Model**: 16-class Categorical (0-15+ points)\n"
+    final_report += "- **Validation Data**: 25/26 Season (unseen during training)\n\n"
+    final_report += "### How to Interpret\n\n"
+    final_report += "- **Positive values**: Feature is important (accuracy drops when shuffled)\n"
+    final_report += "- **Negative values**: Feature may be adding noise or redundancy\n"
+    final_report += "- **Zero values**: Feature has minimal impact\n\n"
+    final_report += "---\n\n"
+    
+    all_position_data = {}
     
     for pos in POSITIONS:
         imps = analyze_position(pos)
         if imps:
+            all_position_data[pos] = imps
             sorted_imps = sorted(imps.items(), key=lambda x: x[1], reverse=True)
             
-            final_report += f"## {pos} Feature Importance\n"
-            final_report += "| Rank | Feature | Importance (Acc Drop) |\n"
-            final_report += "|---|---|---|\n"
-            for i, (name, val) in enumerate(sorted_imps):
-                final_report += f"| {i+1} | {name} | {val:.4f} |\n"
+            final_report += f"## {pos} (Goalkeeper/Defender/Midfielder/Forward)\n\n"
+            
+            # Summary statistics
+            baseline_acc = sorted_imps[0][1] + 0.6335 if pos == "GKP" else (
+                sorted_imps[0][1] + 0.6677 if pos == "DEF" else (
+                sorted_imps[0][1] + 0.6335 if pos == "MID" else sorted_imps[0][1] + 0.6638
+            ))
+            
+            final_report += f"**Baseline Accuracy**: See individual position output\n\n"
+            
+            # Top 5 Most Important
+            final_report += "### Top 5 Most Important Features\n\n"
+            final_report += "| Rank | Feature | Importance | Description |\n"
+            final_report += "|------|---------|------------|-------------|\n"
+            for i, (name, val) in enumerate(sorted_imps[:5]):
+                desc = get_feature_description(name)
+                final_report += f"| {i+1} | `{name}` | {val:.4f} | {desc} |\n"
             final_report += "\n"
             
+            # Complete Feature Rankings
+            final_report += "### Complete Feature Rankings\n\n"
+            final_report += "| Rank | Feature | Importance (Acc Drop) | Category |\n"
+            final_report += "|------|---------|----------------------|----------|\n"
+            for i, (name, val) in enumerate(sorted_imps):
+                category = get_feature_category(name)
+                final_report += f"| {i+1} | `{name}` | {val:.4f} | {category} |\n"
+            final_report += "\n"
+            
+            # Category Summary
+            final_report += "### Feature Category Summary\n\n"
+            seq_features = [(n, v) for n, v in sorted_imps if n.startswith("SEQ_")]
+            ctx_features = [(n, v) for n, v in sorted_imps if n.startswith("CTX_")]
+            opp_features = [(n, v) for n, v in sorted_imps if n.startswith("OPP_")]
+            
+            avg_seq = sum(v for _, v in seq_features) / len(seq_features) if seq_features else 0
+            avg_ctx = sum(v for _, v in ctx_features) / len(ctx_features) if ctx_features else 0
+            avg_opp = sum(v for _, v in opp_features) / len(opp_features) if opp_features else 0
+            
+            final_report += f"- **Sequence Features (12)**: Avg Importance = {avg_seq:.4f}\n"
+            final_report += f"- **Context Features (9)**: Avg Importance = {avg_ctx:.4f}\n"
+            final_report += f"- **Opponent Features (1)**: Avg Importance = {avg_opp:.4f}\n\n"
+            
+            final_report += "---\n\n"
+    
+    # Cross-Position Insights
+    final_report += "## Cross-Position Insights\n\n"
+    final_report += "### Minutes Played Dominance\n\n"
+    for pos in POSITIONS:
+        if pos in all_position_data and "SEQ_minutes" in all_position_data[pos]:
+            final_report += f"- **{pos}**: {all_position_data[pos]['SEQ_minutes']:.4f}\n"
+    final_report += "\n"
+    
+    final_report += "### All-Time Stats Impact\n\n"
+    final_report += "Average importance of all-time statistical features across positions:\n\n"
+    all_time_features = ["CTX_all_time_avg_pts", "CTX_all_time_total_pts", 
+                         "CTX_all_time_goals_per_90", "CTX_all_time_xg_per_90", 
+                         "CTX_all_time_games_played"]
+    
+    for feat in all_time_features:
+        avg_imp = sum(all_position_data[pos].get(feat, 0) for pos in POSITIONS) / len(POSITIONS)
+        final_report += f"- `{feat}`: {avg_imp:.4f}\n"
+    
+    final_report += "\n---\n\n"
+    final_report += "## Input Feature Reference\n\n"
+    final_report += "### Sequence Features (Historical 5-match window)\n\n"
+    for feat in SEQ_FEATURES:
+        final_report += f"- `SEQ_{feat}`: {get_feature_description(f'SEQ_{feat}')}\n"
+    
+    final_report += "\n### Context Features (Current match context)\n\n"
+    for feat in CTX_FEATURES:
+        final_report += f"- `CTX_{feat}`: {get_feature_description(f'CTX_{feat}')}\n"
+    
+    final_report += "\n### Opponent Features\n\n"
+    final_report += f"- `OPP_strength`: {get_feature_description('OPP_strength')}\n"
+    
     with open('feature_importance_report.md', 'w') as f:
         f.write(final_report)
-    print("\nReport saved to feature_importance_report.md")
+    
+    print("\n" + "=" * 80)
+    print("✅ ANALYSIS COMPLETE")
+    print("=" * 80)
+    print(f"\n📄 Report saved to: feature_importance_report.md")
+    print("\n")
+
+def get_feature_description(name):
+    descriptions = {
+        "SEQ_minutes": "Minutes played in recent matches",
+        "SEQ_expected_goals": "Expected goals (xG) from recent matches",
+        "SEQ_expected_assists": "Expected assists (xA) from recent matches",
+        "SEQ_threat": "Threat index (attacking threat metric)",
+        "SEQ_creativity": "Creativity index (chance creation metric)",
+        "SEQ_influence": "Influence index (overall game impact)",
+        "SEQ_goals_conceded": "Goals conceded in recent matches",
+        "SEQ_saves": "Saves made (GKP-specific)",
+        "SEQ_log_selected": "Log of team selections (popularity)",
+        "SEQ_price": "Player price in recent matches",
+        "SEQ_was_home": "Home/away status in recent matches",
+        "SEQ_total_points": "Total points scored in recent matches",
+        "CTX_ctx_was_home": "Current match home/away status",
+        "CTX_ctx_difficulty": "Current opponent difficulty (1-5)",
+        "CTX_ctx_price": "Current player price",
+        "CTX_ctx_hours_rest": "Hours since last match",
+        "CTX_all_time_avg_pts": "Career average points per game",
+        "CTX_all_time_total_pts": "Career total points",
+        "CTX_all_time_goals_per_90": "Career goals per 90 minutes",
+        "CTX_all_time_xg_per_90": "Career xG per 90 minutes",
+        "CTX_all_time_games_played": "Total career games played",
+        "OPP_strength": "Opponent team strength rating"
+    }
+    return descriptions.get(name, "Unknown feature")
+
+def get_feature_category(name):
+    if name.startswith("SEQ_"):
+        return "Sequence (Recent Form)"
+    elif name.startswith("CTX_all_time"):
+        return "Context (Career Stats)"
+    elif name.startswith("CTX_"):
+        return "Context (Match Context)"
+    elif name.startswith("OPP_"):
+        return "Opponent"
+    return "Unknown"
 
 if __name__ == "__main__":
     main()

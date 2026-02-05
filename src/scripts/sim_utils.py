@@ -33,7 +33,8 @@ def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None, prob_thres
             # Use Target Context
             X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
                                d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
-                               d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
+                               d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played'],
+                               d['ctx_form'], d['ctx_ownership']]  # NEW: Added form and ownership
                               for d in final_samples], dtype=np.float32)
             X_opp = np.array([d['ctx_opponent'] for d in final_samples], dtype=np.float32)
             predict_samples = final_samples
@@ -43,7 +44,8 @@ def predict_gw(target_gw, frozen_gw=None, all_data=None, models=None, prob_thres
             X_seq = np.array([d['history_sequence'] for d in target_samples], dtype=np.float32)
             X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
                                d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
-                               d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played']]
+                               d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played'],
+                               d['ctx_form'], d['ctx_ownership']]  # NEW: Added form and ownership
                               for d in target_samples], dtype=np.float32)
             X_opp = np.array([d['ctx_opponent'] for d in target_samples], dtype=np.float32)
             predict_samples = target_samples
