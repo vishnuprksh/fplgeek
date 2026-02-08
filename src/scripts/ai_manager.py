@@ -109,24 +109,22 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
         y_categorical = tf.keras.utils.to_categorical(y_clipped, num_classes=16)
         
         model = build_model()
-        # If models already exist, we can skip training to speed up simulation
-        # but for now, let's keep it to ensure fresh training or add a flag
-        model_path = os.path.join(MODELS_DIR, f"model_{pos}.keras")
+        # Initial model for GW0 (Pre-25/26)
+        model_path = os.path.join(MODELS_DIR, f"model_{pos}_gw0.keras")
         if os.path.exists(model_path):
-            # print(f"Skipping training for {pos}, model exists. Loading from {model_path}")
             models[pos] = tf.keras.models.load_model(model_path)
             continue
 
         history = model.fit(
             [X_seq, X_ctx, X_opp], 
-            y_categorical, # Corrected from y_cat
-            epochs=3, # Reduced epochs for speed in this demo
+            y_categorical,
+            epochs=3,
             batch_size=32,
             validation_split=0.1,
             verbose=0
         )
-        print(f"✅ Trained {pos} Probabilistic Model")
-        model.save(model_path) # Corrected from config.MODELS_DIR
+        print(f"✅ Trained {pos} Base Model (GW0)")
+        model.save(model_path)
             
         models[pos] = model
 
@@ -199,7 +197,7 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
                     'total_xp_5gw': total_5gw_xp,
                     'sum_prob_6_5gw': sum_prob_6,
                     'actual': s_gw_data['target'], # Use target from GW-specific data
-                    'selected_by_percent': float(s_player_meta.get('selected_by_percent', 0)),
+                    'selected_by_percent': float(s_gw_data.get('ctx_ownership', 0)),
                     'status': s_player_meta.get('status', 'a'),
                     'chance_of_playing_this_round': s_player_meta.get('chance_of_playing_this_round')
                 }
@@ -491,13 +489,21 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
             X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
             X_opp = X_opp / 1350.0
             
-            # --- Retrain Categorical Model ---
+            # Load model from previous week if available
+            prev_gw = gw - 1
+            # Current model in 'models[pos]' is already the one from prev week or initialized.
+            # But let's be explicit and save it with the new GW suffix.
             model = models[pos]
             
             y_clipped = np.clip(y, 0, 15).astype(int)
             y_categorical = tf.keras.utils.to_categorical(y_clipped, num_classes=16)
             
             model.fit([X_seq, X_ctx, X_opp], y_categorical, epochs=3, batch_size=32, verbose=0)
+            
+            # Save the updated model for this week
+            model_path = os.path.join(MODELS_DIR, f"model_{pos}_gw{gw}.keras")
+            model.save(model_path)
+            # print(f"💾 Saved model for {pos} GW{gw}")
 
     # Save
     results_history.reverse()

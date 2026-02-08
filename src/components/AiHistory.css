@@ -384,3 +384,149 @@
     padding: 2px 8px;
     border-radius: 10px;
 }
+
+/* View Toggle Styles */
+.view-toggle {
+    display: flex;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.toggle-btn {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.toggle-btn.active {
+    background: #3b82f6;
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Table View Styles */
+.history-table-view {
+    background: var(--color-bg-card);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.table-scroll-container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.evolution-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    color: #e2e8f0;
+}
+
+.evolution-table th,
+.evolution-table td {
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    min-width: 120px;
+}
+
+.evolution-table th {
+    background: rgba(255, 255, 255, 0.02);
+    font-weight: bold;
+    color: #94a3b8;
+}
+
+.sticky-col {
+    position: sticky;
+    left: 0;
+    background: #1e293b !important;
+    z-index: 10;
+    border-right: 2px solid rgba(59, 130, 246, 0.3) !important;
+    min-width: 100px !important;
+}
+
+.slot-label {
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    color: #3b82f6;
+}
+
+.gw-col-header {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.gw-col-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.gw-col-pts {
+    font-size: 0.75rem;
+    color: #00ff87;
+}
+
+.chip-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.transfer-in {
+    background: rgba(34, 197, 94, 0.15) !important;
+}
+
+.transfer-out {
+    background: rgba(239, 68, 68, 0.15) !important;
+}
+
+.is-captain {
+    border-bottom: 2px solid #00ff87 !important;
+}
+
+.cell-player {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.cell-name {
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.cell-meta {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+.cell-pts {
+    color: #00ff87;
+}
+
+.cell-role {
+    color: #94a3b8;
+}
+
+.evolution-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}

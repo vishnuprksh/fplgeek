@@ -126,6 +126,12 @@ def get_best_starting_squad(predictions):
             # Check if this player is a starter
             if starter_vars[p['id']].varValue == 1:
                 starters.append(p)
-
+            else:
+                # Player is in squad but not a starter, so they're on the bench
+                bench.append(p)
+            
+            # Check if this player is the captain
+            if captain_vars[p['id']].varValue == 1:
+                captain_id = p['id']
     
     return selected_squad, total_cost, starters, bench, captain_id

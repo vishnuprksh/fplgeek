@@ -59,6 +59,7 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
     const [showRules, setShowRules] = useState(false);
     const [rulesContent, setRulesContent] = useState('');
+    const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
     useEffect(() => {
         const loadRules = async () => {
@@ -139,7 +140,23 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
     return (
         <div className="ai-history-container">
             <div className="history-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                <h2 style={{ margin: 0, color: '#fff' }}>AI Manager History</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+                    <h2 style={{ margin: 0, color: '#fff' }}>AI Manager History</h2>
+                    <div className="view-toggle">
+                        <button
+                            className={`toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
+                            onClick={() => setViewMode('cards')}
+                        >
+                            Pitch View
+                        </button>
+                        <button
+                            className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+                            onClick={() => setViewMode('table')}
+                        >
+                            Table View
+                        </button>
+                    </div>
+                </div>
                 <button
                     className="rules-btn"
                     onClick={() => setShowRules(true)}
@@ -209,183 +226,253 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                 })}
             </div>
 
-            <div className="gameweek-list">
-                {history.map(h => {
-                    const cost = h.transfer_cost ?? h.event_transfers_cost ?? 0;
-                    return (
-                        <div key={h.gw} className="gw-card">
-                            <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
-                                <div className="gw-info">
-                                    <span className="gw-label">
-                                        GW {h.gw}
-                                        {h.squad.some(p => p.status && p.status !== 'a') && (
-                                            <span title="Squad contains injured/unavailable players" style={{
-                                                marginLeft: '6px',
-                                                color: '#eab308',
-                                                fontSize: '0.9em'
-                                            }}>⚠️</span>
-                                        )}
-                                    </span>
-                                    <span className="gw-points">
-                                        <strong className={h.net_points >= 60 ? 'high-score' : 'med-score'}>{h.net_points}</strong> pts
-                                        <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
-                                            (xP: {h.total_xp ? h.total_xp.toFixed(1) : '0.0'})
+            {viewMode === 'cards' ? (
+                <div className="gameweek-list">
+                    {history.map(h => {
+                        const cost = h.transfer_cost ?? h.event_transfers_cost ?? 0;
+                        return (
+                            <div key={h.gw} className="gw-card">
+                                <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
+                                    <div className="gw-info">
+                                        <span className="gw-label">
+                                            GW {h.gw}
+                                            {h.squad.some(p => p.status && p.status !== 'a') && (
+                                                <span title="Squad contains injured/unavailable players" style={{
+                                                    marginLeft: '6px',
+                                                    color: '#eab308',
+                                                    fontSize: '0.9em'
+                                                }}>⚠️</span>
+                                            )}
                                         </span>
-                                        {h.team_prob_gt_target !== undefined && (
-                                            <span style={{
-                                                fontSize: '0.8em',
-                                                marginLeft: '8px',
-                                                color: (h.team_prob_gt_target > 0.5 ? '#4ade80' : '#94a3b8')
-                                            }}>
-                                                Win Prob: {(h.team_prob_gt_target * 100).toFixed(0)}%
+                                        <span className="gw-points">
+                                            <strong className={h.net_points >= 60 ? 'high-score' : 'med-score'}>{h.net_points}</strong> pts
+                                            <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
+                                                (xP: {h.total_xp ? h.total_xp.toFixed(1) : '0.0'})
+                                            </span>
+                                            {h.team_prob_gt_target !== undefined && (
+                                                <span style={{
+                                                    fontSize: '0.8em',
+                                                    marginLeft: '8px',
+                                                    color: (h.team_prob_gt_target > 0.5 ? '#4ade80' : '#94a3b8')
+                                                }}>
+                                                    Win Prob: {(h.team_prob_gt_target * 100).toFixed(0)}%
+                                                </span>
+                                            )}
+                                        </span>
+                                        {cost > 0 && <span className="gw-hits">(-{cost} hit)</span>}
+                                        <span className="gw-transfers-badge">
+                                            {h.transfers.length > 0 ? `${h.transfers.length} Tx` : 'No Tx'}
+                                            <span style={{ fontSize: '0.8em', marginLeft: '6px', opacity: 0.8 }}>
+                                                (£{(h.bank ?? 0).toFixed(1)}m, {h.free_transfers ?? 1} FT)
+                                            </span>
+                                        </span>
+                                        {h.active_chip && (
+                                            <span className={`chip-badge chip-${h.active_chip}`}>
+                                                {getChipLabel(h.active_chip)}
                                             </span>
                                         )}
-                                    </span>
-                                    {cost > 0 && <span className="gw-hits">(-{cost} hit)</span>}
-                                    <span className="gw-transfers-badge">
-                                        {h.transfers.length > 0 ? `${h.transfers.length} Tx` : 'No Tx'}
-                                        <span style={{ fontSize: '0.8em', marginLeft: '6px', opacity: 0.8 }}>
-                                            (£{(h.bank ?? 0).toFixed(1)}m, {h.free_transfers ?? 1} FT)
-                                        </span>
-                                    </span>
-                                    {h.active_chip && (
-                                        <span className={`chip-badge chip-${h.active_chip}`}>
-                                            {getChipLabel(h.active_chip)}
-                                        </span>
-                                    )}
+                                    </div>
+                                    <div className="expand-icon">{expandedGW === h.gw ? '▲' : '▼'}</div>
                                 </div>
-                                <div className="expand-icon">{expandedGW === h.gw ? '▲' : '▼'}</div>
-                            </div>
 
-                            {expandedGW === h.gw && (
-                                <div className="gw-body">
-                                    {/* Transfers Section */}
-                                    {h.transfers.length > 0 && (
-                                        <div className="transfers-section">
-                                            <h4>Transfers Made</h4>
-                                            {h.transfers.map((t, i) => (
-                                                <div key={i} className="transfer-row">
-                                                    <span className="tx-out">OUT: {t.out}</span>
-                                                    <span className="tx-arrow">➔</span>
-                                                    <span className="tx-in">IN: {t.in}</span>
-                                                </div>
-                                            ))}
+                                {expandedGW === h.gw && (
+                                    <div className="gw-body">
+                                        {/* Transfers Section */}
+                                        {h.transfers.length > 0 && (
+                                            <div className="transfers-section">
+                                                <h4>Transfers Made</h4>
+                                                {h.transfers.map((t, i) => (
+                                                    <div key={i} className="transfer-row">
+                                                        <span className="tx-out">OUT: {t.out}</span>
+                                                        <span className="tx-arrow">➔</span>
+                                                        <span className="tx-in">IN: {t.in}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+
+                                        {/* Pitch View */}
+                                        <PitchView
+                                            picks={getPicksFromSquad(h.squad)}
+                                            elements={elements as any}
+                                            teams={teams}
+                                            onPlayerClick={(p) => setSelectedPlayer(p)}
+                                            isOptimizing={false}
+                                            predictions={h.squad.reduce((acc, p) => ({
+                                                ...acc,
+                                                [p.id]: { totalForecast: p.xp * 5 }
+                                            }), {})}
+                                            points={h.squad.reduce((acc, p) => ({
+                                                ...acc,
+                                                [p.id]: p.points
+                                            }), {})}
+                                            statuses={h.squad.reduce((acc, p) => ({
+                                                ...acc,
+                                                [p.id]: p.status || 'a'
+                                            }), {})}
+                                            injuryChances={h.squad.reduce((acc, p) => ({
+                                                ...acc,
+                                                [p.id]: p.injury_chance
+                                            }), {})}
+                                        />
+
+                                        {/* Detailed Stats */}
+                                        <div className="squad-list-text" style={{ marginTop: '1rem' }}>
+                                            <h4>Detailed Score</h4>
+                                            <ul>
+                                                {h.squad.map(p => {
+                                                    const teamName = teams.find(t => {
+                                                        const playerMeta = elements.find(el => el.id === p.id);
+                                                        return t.id === playerMeta?.team;
+                                                    })?.short_name;
+
+                                                    const isCap = p.role === 'C';
+
+                                                    return (
+                                                        <li key={p.id} className={`player-row role-${p.role}`}>
+                                                            <span className="player-name">
+                                                                {p.name} ({teamName})
+                                                                {isCap && <span className="c-badge">C</span>}
+                                                                {p.role === 'V' && <span className="v-badge">V</span>}
+                                                                {((p.status && p.status !== 'a') || p.injury_chance === 0) && (
+                                                                    <span title={p.injury_chance === 0 ? "Serious Injury (0% Chance)" : "Injured/Unavailable"} style={{
+                                                                        marginLeft: '4px',
+                                                                        color: p.injury_chance === 0 ? '#ef4444' : '#eab308',
+                                                                        fontSize: '0.9em'
+                                                                    }}>{p.injury_chance === 0 ? '🚑' : '⚠️'}</span>
+                                                                )}
+                                                            </span>
+                                                            <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
+                                                            <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
+                                                                <span title="Expected Points">xP: {p.xp.toFixed(1)}</span>
+                                                                {p.xp_5gw !== undefined && (
+                                                                    <span style={{ fontSize: '0.8em', color: '#94a3b8' }} title="5 Gameweek Total XP">
+                                                                        5GW: {p.xp_5gw.toFixed(1)}
+                                                                    </span>
+                                                                )}
+                                                                {p.sum_prob_6_5gw !== undefined && (
+                                                                    <span style={{ fontSize: '0.8em', color: '#facc15', fontWeight: 'bold' }} title="Sum of Prob > 6 over 5 GWs">
+                                                                        Prob: {p.sum_prob_6_5gw.toFixed(2)}
+                                                                    </span>
+                                                                )}
+                                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                                    {p.prob_gt_6 !== undefined && (
+                                                                        <span
+                                                                            style={{
+                                                                                fontSize: '0.7em',
+                                                                                padding: '1px 4px',
+                                                                                borderRadius: '4px',
+                                                                                background: p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(148, 163, 184, 0.1)',
+                                                                                color: p.prob_gt_6 > 0.4 ? '#4ade80' : '#94a3b8',
+                                                                                border: `1px solid ${p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.3)' : 'transparent'}`
+                                                                            }}
+                                                                            title="Probability of scoring > 6 points"
+                                                                        >
+                                                                            &gt;6: {(p.prob_gt_6 * 100).toFixed(0)}%
+                                                                        </span>
+                                                                    )}
+                                                                    {p.prob_gt_10 !== undefined && (
+                                                                        <span
+                                                                            style={{
+                                                                                fontSize: '0.7em',
+                                                                                padding: '1px 4px',
+                                                                                borderRadius: '4px',
+                                                                                background: p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.2)' : 'rgba(148, 163, 184, 0.1)',
+                                                                                color: p.prob_gt_10 > 0.15 ? '#facc15' : '#94a3b8',
+                                                                                border: `1px solid ${p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.3)' : 'transparent'}`
+                                                                            }}
+                                                                            title="Probability of scoring > 10 points"
+                                                                        >
+                                                                            &gt;10: {(p.prob_gt_10 * 100).toFixed(0)}%
+                                                                        </span>
+                                                                    )}
+                                                                </div>
+                                                            </span>
+                                                            <span className="player-actual">
+                                                                {isCap ? `${p.points * 2}` : p.points} pts
+                                                            </span>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
                                         </div>
-                                    )}
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+            ) : (
+                <div className="history-table-view">
+                    <div className="table-scroll-container">
+                        <table className="evolution-table">
+                            <thead>
+                                <tr>
+                                    <th className="sticky-col">Squad Slot</th>
+                                    {history.map(h => (
+                                        <th key={h.gw}>
+                                            <div className="gw-col-header">
+                                                <span>GW {h.gw}</span>
+                                                <div className="gw-col-summary">
+                                                    <span className="gw-col-pts">{h.net_points}pts</span>
+                                                    {h.active_chip && <span className={`chip-dot chip-${h.active_chip}`} title={h.active_chip}></span>}
+                                                </div>
+                                            </div>
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[...Array(15)].map((_, slotIdx) => {
+                                    const getSlotLabel = (idx: number) => {
+                                        if (idx < 2) return `GKP ${idx + 1}`;
+                                        if (idx < 7) return `DEF ${idx - 1}`;
+                                        if (idx < 12) return `MID ${idx - 6}`;
+                                        return `FWD ${idx - 11}`;
+                                    };
 
-                                    {/* Pitch View */}
-                                    <PitchView
-                                        picks={getPicksFromSquad(h.squad)}
-                                        elements={elements as any}
-                                        teams={teams}
-                                        onPlayerClick={(p) => setSelectedPlayer(p)}
-                                        isOptimizing={false}
-                                        predictions={h.squad.reduce((acc, p) => ({
-                                            ...acc,
-                                            [p.id]: { totalForecast: p.xp * 5 }
-                                        }), {})}
-                                        points={h.squad.reduce((acc, p) => ({
-                                            ...acc,
-                                            [p.id]: p.points
-                                        }), {})}
-                                        statuses={h.squad.reduce((acc, p) => ({
-                                            ...acc,
-                                            [p.id]: p.status || 'a'
-                                        }), {})}
-                                        injuryChances={h.squad.reduce((acc, p) => ({
-                                            ...acc,
-                                            [p.id]: p.injury_chance // Pass the newly added field
-                                        }), {})}
-                                    />
+                                    return (
+                                        <tr key={slotIdx}>
+                                            <td className="sticky-col slot-label">{getSlotLabel(slotIdx)}</td>
+                                            {history.map((h, gwIdx) => {
+                                                const sortedSquad = [...h.squad].sort((a, b) => {
+                                                    const elA = elements.find(el => el.id === a.id);
+                                                    const elB = elements.find(el => el.id === b.id);
+                                                    if (elA && elB && elA.element_type !== elB.element_type) {
+                                                        return elA.element_type - elB.element_type;
+                                                    }
+                                                    return a.id - b.id;
+                                                });
 
+                                                const player = sortedSquad[slotIdx];
+                                                if (!player) return <td key={h.gw}>-</td>;
 
-
-                                    {/* Detailed Stats */}
-                                    <div className="squad-list-text" style={{ marginTop: '1rem' }}>
-                                        <h4>Detailed Score</h4>
-                                        <ul>
-                                            {h.squad.map(p => {
-                                                const teamName = teams.find(t => {
-                                                    const playerMeta = elements.find(el => el.id === p.id);
-                                                    return t.id === playerMeta?.team;
-                                                })?.short_name;
-
-                                                const isCap = p.role === 'C';
+                                                const isTransferredIn = h.transfers.some(t => t.in === player.name);
+                                                // Check if this player is transferred out in the NEXT gameweek
+                                                const nextGW = gwIdx < history.length - 1 ? history[gwIdx + 1] : null;
+                                                const isTransferredOut = nextGW ? nextGW.transfers.some(t => t.out === player.name) : false;
+                                                const isCaptain = player.role === 'C';
 
                                                 return (
-                                                    <li key={p.id} className={`player-row role-${p.role}`}>
-                                                        <span className="player-name">
-                                                            {p.name} ({teamName})
-                                                            {isCap && <span className="c-badge">C</span>}
-                                                            {p.role === 'V' && <span className="v-badge">V</span>}
-                                                            {((p.status && p.status !== 'a') || p.injury_chance === 0) && (
-                                                                <span title={p.injury_chance === 0 ? "Serious Injury (0% Chance)" : "Injured/Unavailable"} style={{
-                                                                    marginLeft: '4px',
-                                                                    color: p.injury_chance === 0 ? '#ef4444' : '#eab308',
-                                                                    fontSize: '0.9em'
-                                                                }}>{p.injury_chance === 0 ? '🚑' : '⚠️'}</span>
-                                                            )}
-                                                        </span>
-                                                        <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
-                                                        <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
-                                                            <span title="Expected Points">xP: {p.xp.toFixed(1)}</span>
-                                                            {p.xp_5gw !== undefined && (
-                                                                <span style={{ fontSize: '0.8em', color: '#94a3b8' }} title="5 Gameweek Total XP">
-                                                                    5GW: {p.xp_5gw.toFixed(1)}
-                                                                </span>
-                                                            )}
-                                                            {p.sum_prob_6_5gw !== undefined && (
-                                                                <span style={{ fontSize: '0.8em', color: '#facc15', fontWeight: 'bold' }} title="Sum of Prob > 6 over 5 GWs">
-                                                                    Prob: {p.sum_prob_6_5gw.toFixed(2)}
-                                                                </span>
-                                                            )}
-                                                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                                                {p.prob_gt_6 !== undefined && (
-                                                                    <span
-                                                                        style={{
-                                                                            fontSize: '0.7em',
-                                                                            padding: '1px 4px',
-                                                                            borderRadius: '4px',
-                                                                            background: p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(148, 163, 184, 0.1)',
-                                                                            color: p.prob_gt_6 > 0.4 ? '#4ade80' : '#94a3b8',
-                                                                            border: `1px solid ${p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.3)' : 'transparent'}`
-                                                                        }}
-                                                                        title="Probability of scoring > 6 points"
-                                                                    >
-                                                                        &gt;6: {(p.prob_gt_6 * 100).toFixed(0)}%
-                                                                    </span>
-                                                                )}
-                                                                {p.prob_gt_10 !== undefined && (
-                                                                    <span
-                                                                        style={{
-                                                                            fontSize: '0.7em',
-                                                                            padding: '1px 4px',
-                                                                            borderRadius: '4px',
-                                                                            background: p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.2)' : 'rgba(148, 163, 184, 0.1)',
-                                                                            color: p.prob_gt_10 > 0.15 ? '#facc15' : '#94a3b8',
-                                                                            border: `1px solid ${p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.3)' : 'transparent'}`
-                                                                        }}
-                                                                        title="Probability of scoring > 10 points"
-                                                                    >
-                                                                        &gt;10: {(p.prob_gt_10 * 100).toFixed(0)}%
-                                                                    </span>
-                                                                )}
+                                                    <td key={h.gw} className={`${isTransferredIn ? 'transfer-in' : ''} ${isTransferredOut ? 'transfer-out' : ''} ${isCaptain ? 'is-captain' : ''}`}>
+                                                        <div className="cell-player">
+                                                            <span className="cell-name">{player.name}</span>
+                                                            <div className="cell-meta">
+                                                                <span className="cell-pts">{player.points}p</span>
+                                                                <span className="cell-role">{player.role}</span>
                                                             </div>
-                                                        </span>
-                                                        <span className="player-actual">
-                                                            {isCap ? `${p.points * 2}` : p.points} pts
-                                                        </span>
-                                                    </li>
+                                                        </div>
+                                                    </td>
                                                 );
                                             })}
-                                        </ul>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    );
-                })}
-            </div>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
             {selectedPlayer && (
                 <PlayerHistoryModal
                     player={selectedPlayer}
