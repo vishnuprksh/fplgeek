@@ -1,3 +1,5 @@
+# Models
+*.keras
 
 # Logs
 logs
