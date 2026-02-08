@@ -248,7 +248,7 @@ class FPLManager:
                 
         return None, None
 
-    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None, underperformance_map=None, recent_form_map=None):
+    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None, underperformance_map=None, recent_form_map=None, min_form_benchmark=3.0):
         """
         Handle Transfers AND Chips (Wildcard/FreeHit)
         """
@@ -338,6 +338,7 @@ class FPLManager:
                 # 2. Minor Injury / Doubtful (< 100% or not 'a')
                 # 3. Standard Low XP (Regular rotation)
                 # 4. Protected Template (Last resort)
+                # 5. POOR FORM (Priority to sell if < benchmark)
 
                 is_template = float(p.get('selected_by_percent', 0)) >= self.min_captain_ownership
 
@@ -348,6 +349,11 @@ class FPLManager:
                 # Check 1: Underperformer (Explicitly passed from ai_manager logic)
                 if priority_transfer_out_id and p['id'] == priority_transfer_out_id:
                     return (1, p['xp'])
+                
+                # Check 1.5: POOR FORM (Below Benchmark)
+                if recent_form_map and p['id'] in recent_form_map:
+                    if recent_form_map[p['id']] < min_form_benchmark:
+                        return (1.5, p['xp']) # High priority to sell
 
                 # Check 2: Minor Injury / Doubtful
                 is_injured = p.get('status', 'a') != 'a' or (p.get('chance_of_playing_this_round') is not None and p.get('chance_of_playing_this_round') < 100)
@@ -401,13 +407,12 @@ class FPLManager:
                     if buy_status != 'a' or (buy_chance is not None and buy_chance < 100):
                         continue
                     
-                    # BUY CONSTRAINT 2: Recent Form (performing well last 3 matches)
+                     # BUY CONSTRAINT 2: Recent Form (performing well last 3 matches)
                     # User requirement: "performing well for the last 3 matches"
-                    # We use recent_form_map. Threshold: avg > 3.0?
+                    # We use recent_form_map. Threshold: min_form_benchmark
                     if recent_form_map and c['id'] in recent_form_map:
-                         # If avg points < 3.0, skip? 
-                         # Let's say 3.0 is a reasonable "okay" form (approx 3 * 38 = 114 pts pace)
-                         if recent_form_map[c['id']] < 3.0:
+                         # If avg points < benchmark, skip
+                         if recent_form_map[c['id']] < min_form_benchmark:
                              continue
                     # REMOVED strict else block: if player has no history (e.g. new), give benefit of doubt if xP is high.
                     # elif recent_form_map:

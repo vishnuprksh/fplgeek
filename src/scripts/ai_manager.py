@@ -17,8 +17,8 @@ from src.scripts.lib.utils import load_json
 from src.scripts.lib.models import build_model, clean_and_scale
 from src.scripts.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_target
 
-def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ownership_threshold=50.0, objective='xp', end_gw=24, explosive_threshold=5.0):
-    print(f"🚀 Starting AI Manager Simulation (Thresholds={prob_thresholds}, Target={team_score_target}, CapOwn={captaincy_ownership_threshold})...")
+def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ownership_threshold=50.0, objective='xp', end_gw=24, explosive_threshold=5.0, form_benchmark=3.0):
+    print(f"🚀 Starting AI Manager Simulation (Thresholds={prob_thresholds}, Target={team_score_target}, CapOwn={captaincy_ownership_threshold}, FormBenchmark={form_benchmark})...")
     os.makedirs(MODELS_DIR, exist_ok=True)
     
     # Derby Keys
@@ -137,6 +137,9 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
         # print(f"--- GW {gw} ---")
         if gw == sim_gws[0]:
             print(f"📊 Initializing Squad...")
+
+        # Initialize recent_form_map for this GW (will be populated if GW >= 4)
+        recent_form_map = {}
             
         # A. PREDICTION PHASE (Current + Long Term)
         # 1. Current GW Predictions
@@ -262,7 +265,7 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
                         p_name = players_map[priority_pid]['web_name']
 
             # --- Calculate Recent Form (Avg Points last 3 Matches) ---
-            recent_form_map = {}
+            # recent_form_map is already initialized above
             if gw >= 4:
                 # Map element_type to position string
                 type_to_pos = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'}
@@ -316,7 +319,8 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
                 price_lookup, 
                 priority_transfer_out_id=priority_pid,
                 underperformance_map=underperf_map if gw > 3 else {},
-                recent_form_map=recent_form_map
+                recent_form_map=recent_form_map,
+                min_form_benchmark=form_benchmark
             )
 
         # Selection (Use REAL current XP)
@@ -407,7 +411,8 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
                 'current_price': current_price / 10.0,
                 'selling_price': selling_price / 10.0,
                 'status': p.get('status', 'a'),
-                'injury_chance': p.get('chance_of_playing_this_round')
+                'injury_chance': p.get('chance_of_playing_this_round'),
+                'form': recent_form_map.get(p['id'], 0.0)
             }
             # Add dynamic probs
             for key, val in p.items():
@@ -438,7 +443,8 @@ def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ow
                 'current_price': current_price / 10.0,
                 'selling_price': selling_price / 10.0,
                 'status': p.get('status', 'a'),
-                'injury_chance': p.get('chance_of_playing_this_round')
+                'injury_chance': p.get('chance_of_playing_this_round'),
+                'form': recent_form_map.get(p['id'], 0.0)
             }
             # Add dynamic probs
             for key, val in p.items():
@@ -603,4 +609,5 @@ if __name__ == "__main__":
     TEAM_SCORE_TARGET = 60.0 # Aim for 60 pts/week for crisis checks
     
     # Run
-    run_simulation(objective='xp', prob_thresholds=PROB_THRESHOLDS, team_score_target=TEAM_SCORE_TARGET, captaincy_ownership_threshold=50.0)
+    # Run
+    run_simulation(objective='xp', prob_thresholds=PROB_THRESHOLDS, team_score_target=TEAM_SCORE_TARGET, captaincy_ownership_threshold=50.0, form_benchmark=3.0)

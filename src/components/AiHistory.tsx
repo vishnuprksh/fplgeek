@@ -34,6 +34,7 @@ interface SquadPlayer {
     injury_chance?: number;
     prob_gt_7?: number;
     prob_gt_11?: number;
+    form?: number;
 }
 
 interface BacktestResult {
@@ -341,6 +342,19 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                                         fontSize: '0.9em'
                                                                     }}>{p.injury_chance === 0 ? '🚑' : '⚠️'}</span>
                                                                 )}
+                                                                {p.form !== undefined && (
+                                                                    <span title="Recent Form (Avg pts last 3 games)" style={{
+                                                                        marginLeft: '8px',
+                                                                        fontSize: '0.8em',
+                                                                        padding: '1px 4px',
+                                                                        borderRadius: '4px',
+                                                                        background: p.form < 3.0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)',
+                                                                        color: p.form < 3.0 ? '#ef4444' : '#4ade80',
+                                                                        border: `1px solid ${p.form < 3.0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`
+                                                                    }}>
+                                                                        Form: {p.form.toFixed(1)}
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                             <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
                                                             <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
@@ -460,6 +474,15 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                                             <div className="cell-meta">
                                                                 <span className="cell-pts">{player.points}p</span>
                                                                 <span className="cell-role">{player.role}</span>
+                                                                {player.form !== undefined && (
+                                                                    <span className="cell-form" style={{
+                                                                        fontSize: '0.7em',
+                                                                        marginLeft: '4px',
+                                                                        color: player.form < 3.0 ? '#ef4444' : '#4ade80'
+                                                                    }}>
+                                                                        F:{player.form.toFixed(1)}
+                                                                    </span>
+                                                                )}
                                                             </div>
                                                         </div>
                                                     </td>
