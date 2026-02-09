@@ -344,6 +344,15 @@ export function AiHistory({ elements }: AiHistoryProps) {
                                                             <div className="cell-meta">
                                                                 <span className="cell-pts">{player.points}p</span>
                                                                 <span className="cell-role">{player.role}</span>
+                                                                {player.prob_gt_6 !== undefined && (
+                                                                    <span className="cell-prob" style={{
+                                                                        fontSize: '0.7em',
+                                                                        marginLeft: '4px',
+                                                                        color: player.prob_gt_6 > 0.5 ? '#4ade80' : player.prob_gt_6 > 0.3 ? '#fbbf24' : '#ef4444'
+                                                                    }}>
+                                                                        P:{(player.prob_gt_6 * 100).toFixed(0)}%
+                                                                    </span>
+                                                                )}
                                                                 {player.form !== undefined && (
                                                                     <span className="cell-form" style={{
                                                                         fontSize: '0.7em',

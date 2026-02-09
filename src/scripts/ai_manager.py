@@ -370,15 +370,25 @@ class Backtester:
 
     def manage_squad(self, gw):
         preds = list(self.current_preds.values())
-        preds.sort(key=lambda x: x['xp'], reverse=True)
+        preds.sort(key=lambda x: x['prob_gt_6'], reverse=True)
         
         if not self.squad:
+            # Initial squad selection based on prob_gt_6
             gkps = [p for p in preds if p['pos']=="GKP"]
             defs = [p for p in preds if p['pos']=="DEF"]
             mids = [p for p in preds if p['pos']=="MID"]
             fwds = [p for p in preds if p['pos']=="FWD"]
+            
+            # Sort each position by prob_gt_6
+            gkps.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+            defs.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+            mids.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+            fwds.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+            
+            # Build squad: 2 GKP, 5 DEF, 5 MID, 3 FWD
             self.squad = gkps[:2] + defs[:5] + mids[:5] + fwds[:3]
             
+            # Adjust for budget constraints
             cost = sum(p['price'] for p in self.squad)
             while cost > self.bank:
                 self.squad.sort(key=lambda x: x['price'], reverse=True)
@@ -392,14 +402,13 @@ class Backtester:
             self.transfers = []
         else:
             self.transfers = []
-            self.squad.sort(key=lambda x: x['xp'])
+            self.squad.sort(key=lambda x: x['prob_gt_6'])
             worst = self.squad[0]
             
-            # Refresh squad data with new preds (XP changes)
+            # Refresh squad data with new preds (prob_gt_6 changes)
             new_squad = []
             for p in self.squad:
-                # Find current pred for this player name
-                # (Assuming name unique)
+                # Find current pred for this player
                 # BETTER: Match by ID if available, else name
                 cp = None
                 if 'id' in p:
@@ -412,14 +421,15 @@ class Backtester:
                 else:
                     new_squad.append(p) # Keep old if missing (shouldn't happen)
             self.squad = new_squad
-            self.squad.sort(key=lambda x: x['xp'])
+            self.squad.sort(key=lambda x: x['prob_gt_6'])
             worst = self.squad[0]
             
             market = [p for p in preds if p not in self.squad]
-            market.sort(key=lambda x: x['xp'], reverse=True)
+            market.sort(key=lambda x: x['prob_gt_6'], reverse=True)
             best = next((p for p in market if p['pos'] == worst['pos']), None)
             
-            if best and best['xp'] > worst['xp'] + 2.0:
+            # Transfer if best player has significantly higher probability
+            if best and best['prob_gt_6'] > worst['prob_gt_6'] + 0.15:  # 15% higher probability
                 current_cost = sum(p['price'] for p in self.squad)
                 if current_cost - worst['price'] + best['price'] <= self.bank:
                     self.transfers.append({"in": best['name'], "out": worst['name']})
@@ -429,19 +439,45 @@ class Backtester:
     def score_gw(self, gw):
         gw_points = 0
         squad_details = []
-        self.squad.sort(key=lambda x: x['xp'], reverse=True)
+        
+        # Sort by prob_gt_6 for captain/vice selection
+        self.squad.sort(key=lambda x: x['prob_gt_6'], reverse=True)
         captain = self.squad[0]
         vice = self.squad[1] if len(self.squad) > 1 else self.squad[0]
         
-        for i, p in enumerate(self.squad):
-            points = p['actual_points']
-            role = 'S' if i < 11 else 'B'
-            if p == captain: 
-                role = 'C'
-                points *= 2
-            elif p == vice:
-                role = 'V'
-            if role != 'B': gw_points += points
+        # Select starting 11 with valid formation
+        # Sort players by position and prob_gt_6
+        gkps = [p for p in self.squad if p['pos']=="GKP"]
+        defs = [p for p in self.squad if p['pos']=="DEF"]
+        mids = [p for p in self.squad if p['pos']=="MID"]
+        fwds = [p for p in self.squad if p['pos']=="FWD"]
+        
+        gkps.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+        defs.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+        mids.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+        fwds.sort(key=lambda x: x['prob_gt_6'], reverse=True)
+        
+        # Starting 11: 1 GKP, 3-5 DEF, 2-5 MID, 1-3 FWD
+        # Strategy: Pick best players while maintaining valid formation
+        # Use 1 GKP, top 4 DEF, top 4 MID, top 2 FWD (4-4-2 formation)
+        starting = gkps[:1] + defs[:4] + mids[:4] + fwds[:2]
+        bench = [p for p in self.squad if p not in starting]
+        
+        # Assign roles
+        for p in self.squad:
+            if p in starting:
+                points = p['actual_points']
+                if p == captain:
+                    role = 'C'
+                    points *= 2
+                elif p == vice:
+                    role = 'V'
+                else:
+                    role = 'S'
+                gw_points += points
+            else:
+                role = 'B'
+                points = p['actual_points']
                 
             squad_details.append({
                 "id": p.get('id', 0), "name": p['name'], "points": int(p['actual_points']),
