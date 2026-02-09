@@ -357,6 +357,7 @@ class Backtester:
                 prob_gt_10 = 0.0
             
             self.current_preds[pid] = {
+                "id": pid,
                 "name": m.get('web_name', str(pid)),
                 "xp": float(xp),
                 "prob_gt_6": float(prob_gt_6),
@@ -399,7 +400,13 @@ class Backtester:
             for p in self.squad:
                 # Find current pred for this player name
                 # (Assuming name unique)
-                cp = next((x for x in preds if x['name'] == p['name']), None)
+                # BETTER: Match by ID if available, else name
+                cp = None
+                if 'id' in p:
+                     cp = next((x for x in preds if x['id'] == p['id']), None)
+                if not cp:
+                     cp = next((x for x in preds if x['name'] == p['name']), None)
+                
                 if cp:
                     new_squad.append(cp)
                 else:
@@ -437,7 +444,7 @@ class Backtester:
             if role != 'B': gw_points += points
                 
             squad_details.append({
-                "id": 0, "name": p['name'], "points": int(p['actual_points']),
+                "id": p.get('id', 0), "name": p['name'], "points": int(p['actual_points']),
                 "xp": p['xp'], "role": role, "selling_price": p['price'] / 10.0,
                 "prob_gt_6": p['prob_gt_6'], "prob_gt_10": p['prob_gt_10'], "form": 5.0
             })

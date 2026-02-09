@@ -1,9 +1,8 @@
 
 import { useState, useEffect } from 'react';
-import type { Player, Team, Pick } from '../types/fpl';
+import type { Player, Team } from '../types/fpl';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { PitchView } from './PitchView';
 import { PlayerHistoryModal } from './PlayerHistoryModal';
 import './AiHistory.css';
 
@@ -53,14 +52,12 @@ interface BacktestResult {
     season?: string;
 }
 
-export function AiHistory({ elements, teams }: AiHistoryProps) {
+export function AiHistory({ elements }: AiHistoryProps) {
     const [history, setHistory] = useState<BacktestResult[]>([]);
-    const [expandedGW, setExpandedGW] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
     const [showRules, setShowRules] = useState(false);
     const [rulesContent, setRulesContent] = useState('');
-    const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
     useEffect(() => {
         const loadRules = async () => {
@@ -87,10 +84,6 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                 const results = allResults.filter(r => r.season === currentSeason);
 
                 setHistory(results);
-
-                if (results.length > 0) {
-                    setExpandedGW(results[0].gw);
-                }
             } catch (e) {
                 console.error("Failed to load history", e);
             } finally {
@@ -100,26 +93,6 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
         loadHistory();
     }, []);
 
-    const toggleExpand = (gw: number) => {
-        setExpandedGW(expandedGW === gw ? null : gw);
-    };
-
-    const getPicksFromSquad = (squad: SquadPlayer[]): Pick[] => {
-        // Filter starters for pitch view
-        const starters = squad.filter(p => p.role !== 'B');
-
-        // PitchView expects specific positions usually, but we can just map 1-11
-        // We need to map `element` id.
-        return starters.map((p, idx) => ({
-            element: p.id,
-            position: idx + 1,
-            multiplier: p.role === 'C' ? 2 : 1,
-            is_captain: p.role === 'C',
-            is_vice_captain: p.role === 'V',
-            selling_price: p.selling_price || 0,
-            purchase_price: p.purchase_price || 0
-        }));
-    };
 
     const totalNetPoints = history.reduce((sum, h) => sum + h.net_points, 0);
     const avgNetPoints = history.length > 0 ? totalNetPoints / history.length : 0;
@@ -143,20 +116,6 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
             <div className="history-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                     <h2 style={{ margin: 0, color: '#fff' }}>AI Manager History</h2>
-                    <div className="view-toggle">
-                        <button
-                            className={`toggle-btn ${viewMode === 'cards' ? 'active' : ''}`}
-                            onClick={() => setViewMode('cards')}
-                        >
-                            Pitch View
-                        </button>
-                        <button
-                            className={`toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
-                            onClick={() => setViewMode('table')}
-                        >
-                            Table View
-                        </button>
-                    </div>
                 </div>
                 <button
                     className="rules-btn"
@@ -227,217 +186,112 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                 })}
             </div>
 
-            {viewMode === 'cards' ? (
-                <div className="gameweek-list">
-                    {history.map(h => {
-                        const cost = h.transfer_cost ?? h.event_transfers_cost ?? 0;
-                        return (
-                            <div key={h.gw} className="gw-card">
-                                <div className="gw-header" onClick={() => toggleExpand(h.gw)}>
-                                    <div className="gw-info">
-                                        <span className="gw-label">
-                                            GW {h.gw}
-                                            {h.squad.some(p => p.status && p.status !== 'a') && (
-                                                <span title="Squad contains injured/unavailable players" style={{
-                                                    marginLeft: '6px',
-                                                    color: '#eab308',
-                                                    fontSize: '0.9em'
-                                                }}>⚠️</span>
-                                            )}
-                                        </span>
-                                        <span className="gw-points">
-                                            <strong className={h.net_points >= 60 ? 'high-score' : 'med-score'}>{h.net_points}</strong> pts
-                                            <span style={{ fontSize: '0.8em', opacity: 0.7, marginLeft: '8px' }}>
-                                                (xP: {h.total_xp ? h.total_xp.toFixed(1) : '0.0'})
-                                            </span>
-                                            {h.team_prob_gt_target !== undefined && (
-                                                <span style={{
-                                                    fontSize: '0.8em',
-                                                    marginLeft: '8px',
-                                                    color: (h.team_prob_gt_target > 0.5 ? '#4ade80' : '#94a3b8')
-                                                }}>
-                                                    Win Prob: {(h.team_prob_gt_target * 100).toFixed(0)}%
-                                                </span>
-                                            )}
-                                        </span>
-                                        {cost > 0 && <span className="gw-hits">(-{cost} hit)</span>}
-                                        <span className="gw-transfers-badge">
-                                            {h.transfers.length > 0 ? `${h.transfers.length} Tx` : 'No Tx'}
-                                            <span style={{ fontSize: '0.8em', marginLeft: '6px', opacity: 0.8 }}>
-                                                (£{(h.bank ?? 0).toFixed(1)}m, {h.free_transfers ?? 1} FT)
-                                            </span>
-                                        </span>
-                                        {h.active_chip && (
-                                            <span className={`chip-badge chip-${h.active_chip}`}>
-                                                {getChipLabel(h.active_chip)}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <div className="expand-icon">{expandedGW === h.gw ? '▲' : '▼'}</div>
-                                </div>
-
-                                {expandedGW === h.gw && (
-                                    <div className="gw-body">
-                                        {/* Transfers Section */}
-                                        {h.transfers.length > 0 && (
-                                            <div className="transfers-section">
-                                                <h4>Transfers Made</h4>
-                                                {h.transfers.map((t, i) => (
-                                                    <div key={i} className="transfer-row">
-                                                        <span className="tx-out">OUT: {t.out}</span>
-                                                        <span className="tx-arrow">➔</span>
-                                                        <span className="tx-in">IN: {t.in}</span>
-                                                    </div>
-                                                ))}
+            <div className="history-table-view">
+                <div className="table-scroll-container">
+                    <table className="evolution-table">
+                        <thead>
+                            <tr>
+                                <th className="sticky-col">Squad Slot</th>
+                                {history.map(h => (
+                                    <th key={h.gw}>
+                                        <div className="gw-col-header">
+                                            <span>GW {h.gw}</span>
+                                            <div className="gw-col-summary">
+                                                <span className="gw-col-pts">{h.net_points}pts</span>
+                                                {h.active_chip && <span className={`chip-dot chip-${h.active_chip}`} title={h.active_chip}></span>}
                                             </div>
-                                        )}
-
-                                        {/* Pitch View */}
-                                        <PitchView
-                                            picks={getPicksFromSquad(h.squad)}
-                                            elements={elements as any}
-                                            teams={teams}
-                                            onPlayerClick={(p) => setSelectedPlayer(p)}
-                                            isOptimizing={false}
-                                            predictions={h.squad.reduce((acc, p) => ({
-                                                ...acc,
-                                                [p.id]: { totalForecast: p.xp * 5 }
-                                            }), {})}
-                                            points={h.squad.reduce((acc, p) => ({
-                                                ...acc,
-                                                [p.id]: p.points
-                                            }), {})}
-                                            statuses={h.squad.reduce((acc, p) => ({
-                                                ...acc,
-                                                [p.id]: p.status || 'a'
-                                            }), {})}
-                                            injuryChances={h.squad.reduce((acc, p) => ({
-                                                ...acc,
-                                                [p.id]: p.injury_chance
-                                            }), {})}
-                                        />
-
-                                        {/* Detailed Stats */}
-                                        <div className="squad-list-text" style={{ marginTop: '1rem' }}>
-                                            <h4>Detailed Score</h4>
-                                            <ul>
-                                                {h.squad.map(p => {
-                                                    const teamName = teams.find(t => {
-                                                        const playerMeta = elements.find(el => el.id === p.id);
-                                                        return t.id === playerMeta?.team;
-                                                    })?.short_name;
-
-                                                    const isCap = p.role === 'C';
-
-                                                    return (
-                                                        <li key={p.id} className={`player-row role-${p.role}`}>
-                                                            <span className="player-name">
-                                                                {p.name} ({teamName})
-                                                                {isCap && <span className="c-badge">C</span>}
-                                                                {p.role === 'V' && <span className="v-badge">V</span>}
-                                                                {((p.status && p.status !== 'a') || p.injury_chance === 0) && (
-                                                                    <span title={p.injury_chance === 0 ? "Serious Injury (0% Chance)" : "Injured/Unavailable"} style={{
-                                                                        marginLeft: '4px',
-                                                                        color: p.injury_chance === 0 ? '#ef4444' : '#eab308',
-                                                                        fontSize: '0.9em'
-                                                                    }}>{p.injury_chance === 0 ? '🚑' : '⚠️'}</span>
-                                                                )}
-                                                                {p.form !== undefined && (
-                                                                    <span title="Recent Form (Avg pts last 3 games)" style={{
-                                                                        marginLeft: '8px',
-                                                                        fontSize: '0.8em',
-                                                                        padding: '1px 4px',
-                                                                        borderRadius: '4px',
-                                                                        background: p.form < 3.0 ? 'rgba(239, 68, 68, 0.2)' : 'rgba(34, 197, 94, 0.2)',
-                                                                        color: p.form < 3.0 ? '#ef4444' : '#4ade80',
-                                                                        border: `1px solid ${p.form < 3.0 ? 'rgba(239, 68, 68, 0.3)' : 'rgba(34, 197, 94, 0.3)'}`
-                                                                    }}>
-                                                                        Form: {p.form.toFixed(1)}
-                                                                    </span>
-                                                                )}
-                                                            </span>
-                                                            <span className="player-price">£{(p.selling_price || 0).toFixed(1)}m</span>
-                                                            <span className="player-xp" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: '1.2' }}>
-                                                                <span title="Expected Points">xP: {p.xp.toFixed(1)}</span>
-                                                                {p.xp_5gw !== undefined && (
-                                                                    <span style={{ fontSize: '0.8em', color: '#94a3b8' }} title="5 Gameweek Total XP">
-                                                                        5GW: {p.xp_5gw.toFixed(1)}
-                                                                    </span>
-                                                                )}
-                                                                {p.sum_prob_6_5gw !== undefined && (
-                                                                    <span style={{ fontSize: '0.8em', color: '#facc15', fontWeight: 'bold' }} title="Sum of Prob > 6 over 5 GWs">
-                                                                        Prob: {p.sum_prob_6_5gw.toFixed(2)}
-                                                                    </span>
-                                                                )}
-                                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                                                                    {p.prob_gt_6 !== undefined && (
-                                                                        <span
-                                                                            style={{
-                                                                                fontSize: '0.7em',
-                                                                                padding: '1px 4px',
-                                                                                borderRadius: '4px',
-                                                                                background: p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.2)' : 'rgba(148, 163, 184, 0.1)',
-                                                                                color: p.prob_gt_6 > 0.4 ? '#4ade80' : '#94a3b8',
-                                                                                border: `1px solid ${p.prob_gt_6 > 0.4 ? 'rgba(34, 197, 94, 0.3)' : 'transparent'}`
-                                                                            }}
-                                                                            title="Probability of scoring > 6 points"
-                                                                        >
-                                                                            &gt;6: {(p.prob_gt_6 * 100).toFixed(0)}%
-                                                                        </span>
-                                                                    )}
-                                                                    {p.prob_gt_10 !== undefined && (
-                                                                        <span
-                                                                            style={{
-                                                                                fontSize: '0.7em',
-                                                                                padding: '1px 4px',
-                                                                                borderRadius: '4px',
-                                                                                background: p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.2)' : 'rgba(148, 163, 184, 0.1)',
-                                                                                color: p.prob_gt_10 > 0.15 ? '#facc15' : '#94a3b8',
-                                                                                border: `1px solid ${p.prob_gt_10 > 0.15 ? 'rgba(234, 179, 8, 0.3)' : 'transparent'}`
-                                                                            }}
-                                                                            title="Probability of scoring > 10 points"
-                                                                        >
-                                                                            &gt;10: {(p.prob_gt_10 * 100).toFixed(0)}%
-                                                                        </span>
-                                                                    )}
-                                                                </div>
-                                                            </span>
-                                                            <span className="player-actual">
-                                                                {isCap ? `${p.points * 2}` : p.points} pts
-                                                            </span>
-                                                        </li>
-                                                    );
-                                                })}
-                                            </ul>
                                         </div>
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-            ) : (
-                <div className="history-table-view">
-                    <div className="table-scroll-container">
-                        <table className="evolution-table">
-                            <thead>
-                                <tr>
-                                    <th className="sticky-col">Squad Slot</th>
-                                    {history.map(h => (
-                                        <th key={h.gw}>
-                                            <div className="gw-col-header">
-                                                <span>GW {h.gw}</span>
-                                                <div className="gw-col-summary">
-                                                    <span className="gw-col-pts">{h.net_points}pts</span>
-                                                    {h.active_chip && <span className={`chip-dot chip-${h.active_chip}`} title={h.active_chip}></span>}
-                                                </div>
-                                            </div>
-                                        </th>
-                                    ))}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[...Array(15)].map((_, slotIdx) => {
+                                    </th>
+                                ))}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {(() => {
+                                // Build slot tracking across all gameweeks
+                                const slotTracking: { [slotIdx: number]: { [gw: number]: any } } = {};
+
+                                // Initialize slots from first gameweek
+                                if (history.length > 0) {
+                                    const firstGW = history[0];
+                                    const sortedFirstSquad = [...firstGW.squad].sort((a, b) => {
+                                        const elA = elements.find(el => el.id === a.id || el.id.toString() === a.name);
+                                        const elB = elements.find(el => el.id === b.id || el.id.toString() === b.name);
+
+                                        // Sort by position first
+                                        const typeA = elA?.element_type || (a.role === 'B' ? 5 : 1);
+                                        const typeB = elB?.element_type || (b.role === 'B' ? 5 : 1);
+
+                                        if (typeA !== typeB) return typeA - typeB;
+
+                                        // Within same position, starters before bench
+                                        const roleOrderA = a.role === 'B' ? 1 : 0;
+                                        const roleOrderB = b.role === 'B' ? 1 : 0;
+                                        if (roleOrderA !== roleOrderB) return roleOrderA - roleOrderB;
+
+                                        return (a.id || 0) - (b.id || 0);
+                                    });
+
+                                    sortedFirstSquad.forEach((player, idx) => {
+                                        slotTracking[idx] = { [firstGW.gw]: player };
+                                    });
+                                }
+
+                                // Track players across gameweeks, handling transfers
+                                for (let gwIdx = 1; gwIdx < history.length; gwIdx++) {
+                                    const currentGW = history[gwIdx];
+                                    const prevGW = history[gwIdx - 1];
+
+                                    // Build a map of current squad by player identifier
+                                    const currentSquadMap = new Map();
+                                    currentGW.squad.forEach(p => {
+                                        const key = p.id || p.name;
+                                        currentSquadMap.set(key, p);
+                                    });
+
+                                    // For each slot, determine which player occupies it
+                                    Object.keys(slotTracking).forEach(slotIdxStr => {
+                                        const slotIdx = parseInt(slotIdxStr);
+                                        const prevPlayer = slotTracking[slotIdx][prevGW.gw];
+
+                                        if (!prevPlayer) return;
+
+                                        const prevKey = prevPlayer.id || prevPlayer.name;
+
+                                        // Check if this player was transferred out
+                                        const wasTransferredOut = currentGW.transfers.some(t =>
+                                            t.out === prevPlayer.name || t.out === prevKey.toString()
+                                        );
+
+                                        if (wasTransferredOut) {
+                                            // Find the replacement player (transferred in)
+                                            const transfer = currentGW.transfers.find(t =>
+                                                t.out === prevPlayer.name || t.out === prevKey.toString()
+                                            );
+
+                                            if (transfer) {
+                                                // Find the new player in current squad
+                                                const newPlayer = currentGW.squad.find(p =>
+                                                    p.name === transfer.in || p.id?.toString() === transfer.in
+                                                );
+
+                                                if (newPlayer) {
+                                                    slotTracking[slotIdx][currentGW.gw] = newPlayer;
+                                                }
+                                            }
+                                        } else {
+                                            // Player continues in same slot
+                                            const continuingPlayer = currentSquadMap.get(prevKey);
+                                            if (continuingPlayer) {
+                                                slotTracking[slotIdx][currentGW.gw] = continuingPlayer;
+                                            }
+                                        }
+                                    });
+                                }
+
+                                // Render rows based on slot tracking
+                                return Object.keys(slotTracking).sort((a, b) => parseInt(a) - parseInt(b)).map(slotIdxStr => {
+                                    const slotIdx = parseInt(slotIdxStr);
+
                                     const getSlotLabel = (idx: number) => {
                                         if (idx < 2) return `GKP ${idx + 1}`;
                                         if (idx < 7) return `DEF ${idx - 1}`;
@@ -449,28 +303,44 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                         <tr key={slotIdx}>
                                             <td className="sticky-col slot-label">{getSlotLabel(slotIdx)}</td>
                                             {history.map((h, gwIdx) => {
-                                                const sortedSquad = [...h.squad].sort((a, b) => {
-                                                    const elA = elements.find(el => el.id === a.id);
-                                                    const elB = elements.find(el => el.id === b.id);
-                                                    if (elA && elB && elA.element_type !== elB.element_type) {
-                                                        return elA.element_type - elB.element_type;
-                                                    }
-                                                    return a.id - b.id;
-                                                });
-
-                                                const player = sortedSquad[slotIdx];
+                                                const player = slotTracking[slotIdx][h.gw];
                                                 if (!player) return <td key={h.gw}>-</td>;
 
-                                                const isTransferredIn = h.transfers.some(t => t.in === player.name);
+                                                const isTransferredIn = h.transfers.some(t =>
+                                                    t.in === player.name || t.in === (player.id?.toString())
+                                                );
+
                                                 // Check if this player is transferred out in the NEXT gameweek
                                                 const nextGW = gwIdx < history.length - 1 ? history[gwIdx + 1] : null;
-                                                const isTransferredOut = nextGW ? nextGW.transfers.some(t => t.out === player.name) : false;
+                                                const isTransferredOut = nextGW ? nextGW.transfers.some(t =>
+                                                    t.out === player.name || t.out === (player.id?.toString())
+                                                ) : false;
+
                                                 const isCaptain = player.role === 'C';
+                                                const isBench = player.role === 'B';
 
                                                 return (
-                                                    <td key={h.gw} className={`${isTransferredIn ? 'transfer-in' : ''} ${isTransferredOut ? 'transfer-out' : ''} ${isCaptain ? 'is-captain' : ''}`}>
+                                                    <td
+                                                        key={h.gw}
+                                                        className={`${isTransferredIn ? 'transfer-in' : ''} ${isTransferredOut ? 'transfer-out' : ''} ${isCaptain ? 'is-captain' : ''} ${isBench ? 'bench-player-cell' : ''}`}
+                                                        onClick={() => {
+                                                            const p = elements.find(e => e.id === player.id || e.id.toString() === player.name);
+                                                            if (p) setSelectedPlayer(p);
+                                                        }}
+                                                        style={{ cursor: 'pointer' }}
+                                                    >
                                                         <div className="cell-player">
-                                                            <span className="cell-name">{player.name}</span>
+                                                            <span className="cell-name">
+                                                                {(() => {
+                                                                    // Try to resolve name if it looks like an ID
+                                                                    const nameIsId = !isNaN(Number(player.name));
+                                                                    if (nameIsId) {
+                                                                        const el = elements.find(e => e.id.toString() === player.name);
+                                                                        return el ? el.web_name : player.name;
+                                                                    }
+                                                                    return player.name;
+                                                                })()}
+                                                            </span>
                                                             <div className="cell-meta">
                                                                 <span className="cell-pts">{player.points}p</span>
                                                                 <span className="cell-role">{player.role}</span>
@@ -490,18 +360,18 @@ export function AiHistory({ elements, teams }: AiHistoryProps) {
                                             })}
                                         </tr>
                                     );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
+                                });
+                            })()}
+                        </tbody>
+                    </table>
                 </div>
-            )}
+            </div>
+
             {selectedPlayer && (
                 <PlayerHistoryModal
                     player={selectedPlayer}
                     history={history}
                     onClose={() => setSelectedPlayer(null)}
-                    teamName={teams.find(t => t.id === selectedPlayer.team)?.short_name}
                 />
             )}
 
