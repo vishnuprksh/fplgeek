@@ -1,13 +1,30 @@
 # Configuration
 DATA_DIR = "public/data/processed"
-MODELS_DIR = "public/models/ai_manager"
+MODELS_DIR = "public/models/ai_manager_mlp"
 DB_PATH = "public/data/fpl.sqlite"
 OUTPUT_FILE = "public/data/ai_manager_history.json"
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]
 
+# Model Params
+BATCH_SIZE = 32
+EPOCHS = 1000
+LEARNING_RATE = 0.001
+
 # Feature Params
-SEQ_LEN = 5
-NUM_FEATURES = 13  # Updated: Added form to sequence (was 12)
+# Static Context Features: 
+# [was_home, difficulty, price, hours_rest, all_time_avg_pts, all_time_total_pts, 
+#  all_time_goals_per_90, all_time_xg_per_90, all_time_games_played, form, ownership]
+# + Opponent Strength (1)
+NUM_CTX_FEATURES = 12 
+
+# Aggregated Features:
+# Last 5:  [min, pts, xG, xA, inf, cre, thr, gc, saves] (9 features)
+# Last 3:  [min, pts, xG, xA, inf, cre, thr, gc, saves]
+# Total Aggregated: 9 * 2 = 18
+NUM_AGG_FEATURES = 18
+
+# Total Input: 12 + 18 = 30
+INPUT_DIM = NUM_CTX_FEATURES + NUM_AGG_FEATURES
 
 # Constants
 STARTING_BUDGET = 1000

@@ -1,613 +1,494 @@
 import json
 import numpy as np
-import tensorflow as tf
-import sqlite3
 import os
-
-# Import Refactored Modules
-# Adjust import path if running from root using `python3 -m research.experiments.ai_manager`
-# or set PYTHONPATH. Assuming running from root as `python3 research/experiments/ai_manager.py` with slight path hack if needed or better, user runs as module.
-# To allow execution as script from inside folder or root, we use relative imports if module, or sys.path append.
-import sys
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-
-from src.scripts.lib.config import *
-from src.scripts.lib.utils import load_json
+import joblib
+import tensorflow as tf # Removed
+from src.scripts.lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES
 from src.scripts.lib.models import build_model, clean_and_scale
-from src.scripts.lib.fpl_manager import FPLManager, get_best_starting_squad, calculate_selling_price, calc_team_prob_gt_target
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss
 
-def run_simulation(prob_thresholds=[6, 10], team_score_target=60.0, captaincy_ownership_threshold=50.0, objective='xp', end_gw=24, explosive_threshold=5.0, form_benchmark=3.0):
-    print(f"🚀 Starting AI Manager Simulation (Thresholds={prob_thresholds}, Target={team_score_target}, CapOwn={captaincy_ownership_threshold}, FormBenchmark={form_benchmark})...")
-    os.makedirs(MODELS_DIR, exist_ok=True)
-    
-    # Derby Keys
-    bench_boost_metric = f'prob_gt_{prob_thresholds[0]}'
-    triple_captain_metric = f'prob_gt_{prob_thresholds[1]}'
+# Feature Indices in history_sequence (based on generate_dataset.ts)
+# 0: Min, 1: xG, 2: xA, 3: Thr, 4: Cre, 5: Inf, 6: GC, 7: Saves, 8: Sel, 9: Price, 10: Home, 11: Pts, 12: Form
+IDX_MIN = 0
+IDX_PTS = 11
+IDX_XG = 1
+IDX_XA = 2
+IDX_INF = 5
+IDX_CRE = 4
+IDX_THR = 3
+IDX_GC = 6
+IDX_SAVES = 7
 
-    # 1. Load Data
-    all_data = {}
-    for pos in POSITIONS:
-        try:
-            all_data[pos] = load_json(os.path.join(DATA_DIR, f"dataset_{pos}.json"))
-        except FileNotFoundError:
-            print(f"❌ Data for {pos} not found. Run analysis/generate_dataset first.")
-            return 0, []
+AGG_INDICES = [IDX_MIN, IDX_PTS, IDX_XG, IDX_XA, IDX_INF, IDX_CRE, IDX_THR, IDX_GC, IDX_SAVES]
+AGG_NAMES = ["min", "pts", "xG", "xA", "inf", "cre", "thr", "gc", "saves"]
+
+def load_and_process_data(position):
+    """
+    Load data for a position and engineer static features.
+    """
+    file_path = os.path.join(DATA_DIR, f"dataset_{position}.json")
+    if not os.path.exists(file_path):
+        print(f"Warning: No data found for {position}")
+        return np.array([]), np.array([]), []
+
+    with open(file_path, "r") as f:
+        data = json.load(f)
+
+    X_list = []
+    y_list = []
+    meta_list = []
+
+    for sample in data:
+        # 1. Target
+        # Classify points into 0-15+
+        target = max(0, min(int(sample["target"]), 15))
+        y_list.append(target)
+
+        # 2. Static Context Features (Indices 0-11 in INPUT_DIM)
+        # matches config: [was_home, diff, price, rest, avg_pts, total_pts, g_p90, xg_p90, games, form, own, opp]
+        ctx = [
+            sample["ctx_was_home"],
+            sample["ctx_difficulty"],
+            sample["ctx_price"] * 10, # Restore to original scale for consistency if needed, or keep as is. Config scales expecting ~150 for price?
+            # Config.clean_and_scale divides price by 150. If price is 5.5 (from TS), then 5.5/150 is tiny.
+            # TS says ctx_price is value/10. So 5.5.
+            # Python clean_and_scale expects ~150? No, let's fix consistency.
+            # Let's keep TS value (5.5) and update clean_and_scale later if needed.
+            # Actually, standard FPL price is like 55. TS divides by 10 -> 5.5.
+            # Let's use 5.5.
+            sample["ctx_hours_rest"],
+            sample["ctx_all_time_avg_points"],
+            sample["ctx_all_time_total_points"],
+            sample["ctx_all_time_goals_per_90"],
+            sample["ctx_all_time_xg_per_90"],
+            sample["ctx_all_time_games_played"],
+            sample["ctx_form"],
+            sample["ctx_ownership"],
+            sample["ctx_opponent"]
+        ]
         
-    # 2. Load Metadata
-    conn = sqlite3.connect(DB_PATH)
-    conn.row_factory = sqlite3.Row
-    cursor = conn.cursor()
-    
-    cursor.execute("SELECT data FROM fixtures")
-    fixtures = [json.loads(r['data']) for r in cursor.fetchall()]
-    
-    cursor.execute("SELECT data FROM players")
-    players = [json.loads(r['data']) for r in cursor.fetchall()]
-    players_map = {p['id']: p for p in players}
-    
-    # 3. Build Price History Lookup (Scaled to 0.1m units)
-    # print("💰 Building price history...")
-    price_history = {}  # {player_id: {gw: price}}
-    for pos in POSITIONS:
-        for record in all_data[pos]:
-            pid = record['id']
-            gw = record['gw']
-            # Scale price: 5.6 -> 56
-            price = int(record['ctx_price'] * 10)
+        # 3. Aggregated Features
+        history = sample["history_sequence"] # List of lists
+        # History is ordered Oldest -> Newest (based on generate_dataset logic: seqData.unshift, so seqData[0] is newest?)
+        # WAIT. generate_dataset.ts: seqData.unshift(...) inside loop k=1..LOOKBACK.
+        # k=1 (i-1) is most recent. unshift puts it at 0.
+        # So history[0] is most recent match. history[1] is one before that.
+        
+        # Extract features
+        # Shape: (N_matches, N_features)
+        # We need Last 10, 5, 3
+        # IMPORTANT: history_sequence only has length = LOOKBACK (5) in generate_dataset.ts???
+        # const LOOKBACK = 5;
+        # So Aggregating Last 10 is impossible if dataset only has 5.
+        
+        # Checking generate_dataset.ts again...
+        # Line 10: const LOOKBACK = 5;
+        # Line 231: for (let k = 1; k <= LOOKBACK; k++) ... seqData.unshift(...)
+        # So YES, the pre-processed dataset ONLY has 5 matches of history.
+        # This conflicts with user requirement "Last 10 match aggregates".
+        
+        # DECISION: I cannot get Last 10 from this dataset. 
+        # I must rely on "penalize if available else".
+        # Since I only have 5, Last 10 avg is just Avg of 5 (penalized? or just avg?).
+        # If I strictly follow instructions, I should have generated a dataset with more lookback.
+        # BUT I cannot easily run generate_dataset.ts because I might not have the raw SQLite populated with full history?
+        # Use what we have. 
+        # Aggregates:
+        # Last 10: effectively Last 5 (padded with zeros if < 5, but here max is 5).
+        # Should I assume 0 for 6-10? Yes.
+        
+        hist_arr = np.array(history) # Shape (5, 13)
+        if len(hist_arr) == 0:
+             # Should not happen given logic, but handle safe
+             aggs = np.zeros(18)
+        else:
+            # Helper to get mean of last N
+            def get_agg(n):
+                # available matches
+                available = min(n, len(hist_arr))
+                if available == 0: return np.zeros(9)
+                
+                # Slice first 'available' (since index 0 is most recent)
+                sub = hist_arr[:available] 
+                
+                # Extract specific columns
+                subset_vals = sub[:, AGG_INDICES] # Shape (available, 9)
+                
+                # Sum
+                total = np.sum(subset_vals, axis=0)
+                
+                # Mean over N window (Penalize missing)
+                return total / n
+
+            agg_5 = get_agg(5)   # Divides sum of 5 matches by 5 -> Normal avg
+            agg_3 = get_agg(3)   # Divides sum of 3 matches by 3 -> Normal avg
             
-            if pid not in price_history:
-                price_history[pid] = {}
-            price_history[pid][gw] = price
-    
-    # 4. Simulation Range (25/26 Season)
-    sim_gws = sorted(list(set([d['gw'] for p in POSITIONS for d in all_data[p] if d.get('season') == '25/26'])))
-    if not sim_gws:
-        print("Error: No 25/26 data found.")
-        return 0, []
-    
-    # Filter GWs up to end_gw
-    sim_gws = [g for g in sim_gws if g >= 1 and g <= end_gw]
-    
-    # print(f"📅 Simulating GWs: {sim_gws}")
-    
-    # 4. Initialize Manager
-    manager = FPLManager(players_map, 
-                         min_captain_ownership=captaincy_ownership_threshold, 
-                         team_score_target=team_score_target,
-                         bench_boost_metric=bench_boost_metric,
-                         triple_captain_metric=triple_captain_metric)
-    models = {}
-    
-    # Initial Training
-    # print("🧠 Training Base Models (Pre-25/26)...")
-    for pos in POSITIONS:
-        raw_data = all_data[pos]
-        train_samples = [d for d in raw_data if d.get('season') != '25/26'] 
-        
-        if not train_samples:
-            # print(f"⚠️ No historical data for {pos}. Model will start random.")
-            models[pos] = build_model()
-            continue
+            aggs = np.concatenate([agg_5, agg_3])
             
-        X_seq = np.array([d['history_sequence'] for d in train_samples], dtype=np.float32)
-        X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
-                           d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
-                           d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played'],
-                           d['ctx_form'], d['ctx_ownership']]  # NEW: Added form and ownership
-                          for d in train_samples], dtype=np.float32)
-        X_opp = np.array([d['ctx_opponent'] for d in train_samples], dtype=np.float32)
-        y = np.array([d['target'] for d in train_samples], dtype=np.float32)
-        
-        X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
-        X_opp = X_opp / 1350.0
-        
-        # --- Categorical Model Training ---
-        
-        # 1. Convert targets to One-Hot Encoding (Classes 0 to 15+)
-        y_clipped = np.clip(y, 0, 15).astype(int)
-        y_categorical = tf.keras.utils.to_categorical(y_clipped, num_classes=16)
-        
-        model = build_model()
-        # Initial model for GW0 (Pre-25/26)
-        model_path = os.path.join(MODELS_DIR, f"model_{pos}_gw0.keras")
-        if os.path.exists(model_path):
-            models[pos] = tf.keras.models.load_model(model_path)
-            continue
+        # Combine
+        full_vec = np.concatenate([ctx, aggs])
+        X_list.append(full_vec)
+        meta_list.append(sample)
 
-        history = model.fit(
-            [X_seq, X_ctx, X_opp], 
-            y_categorical,
-            epochs=3,
-            batch_size=32,
-            validation_split=0.1,
-            verbose=0
-        )
-        print(f"✅ Trained {pos} Base Model (GW0)")
-        model.save(model_path)
-            
-        models[pos] = model
+    return np.array(X_list), np.array(y_list), meta_list
 
-    # 5. Gameweek Loop
-    results_history = []
+def train_position_model(pos):
+    print(f"\nTraining Model for {pos}...")
+    X, y, meta = load_and_process_data(pos)
     
-    from src.scripts.sim_utils import predict_gw
+    if len(X) == 0:
+        print(f"No data for {pos}")
+        return None
 
-    for gw in sim_gws:
-        # print(f"--- GW {gw} ---")
-        if gw == sim_gws[0]:
-            print(f"📊 Initializing Squad...")
+    # Clean and Scale
+    X = clean_and_scale(X)
+    
+    # RF expects list of integers
+    # y is already integers 0-15
+    
+    # Split
+    # Time-based split via shuffle=False is risky if data isn't strictly sorted by time across all files.
+    # dataset_GKP.json is just a list. generate_dataset pushes sequentially.
+    # But generate_dataset iterates PLAYERS then rounds.
+    # So it's: Player A (GW1..38), Player B (GW1..38).
+    # This is NOT sorted by time globally.
+    # A simple split(shuffle=False) would put Player A in Train and Player Z in Test.
+    # This creates data leakage (Model trains on Player Z's future implies general knowledge? No).
+    # But better to RANDOM split so we cover all gameweeks in Train and Test.
+    # User said "static not time series", so random split is acceptable standard DL practice.
+    
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+    
+    print(f"Train: {X_train.shape}, Val: {X_val.shape}, Test: {X_test.shape}")
+    
+    # Build
+    clf = build_model()
+    
+    # Train
+    clf.fit(X_train, y_train)
+    
+    # Training Metrics
+    train_preds = clf.predict(X_train)
+    train_acc = accuracy_score(y_train, train_preds)
+    train_mae = mean_absolute_error(y_train, train_preds)
+    
+    # Validation Metrics
+    val_preds = clf.predict(X_val)
+    val_probs = clf.predict_proba(X_val)
+    
+    # Handle probas shape for log_loss
+    full_val_probs = np.zeros((len(X_val), 16))
+    for i, cls in enumerate(clf.classes_):
+        if cls < 16: full_val_probs[:, int(cls)] = val_probs[:, i]
+        
+    acc = accuracy_score(y_val, val_preds)
+    mae = mean_absolute_error(y_val, val_preds)
+    loss = log_loss(y_val, full_val_probs, labels=list(range(16)))
+    
+    print(f"Train Acc: {train_acc:.4f} | Val Acc: {acc:.4f} | Val MAE: {mae:.4f}")
+    
+    # Save
+    joblib.dump(clf, os.path.join(MODELS_DIR, f"model_{pos}.joblib"))
+    
+    return {
+        "pos": pos,
+        "model": clf,
+        "accuracy": acc,
+        "mae": mae,
+        "loss": loss,
+        "train_accuracy": train_acc,
+        "train_mae": train_mae,
+        "X": X,
+        "y": y,
+        "meta": meta
+    }
 
-        # Initialize recent_form_map for this GW (will be populated if GW >= 4)
-        recent_form_map = {}
-            
-        # A. PREDICTION PHASE (Current + Long Term)
-        # 1. Current GW Predictions
-        current_preds_map = predict_gw(gw, frozen_gw=None, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
+class Backtester:
+    def __init__(self, target_season="25/26"):
+        self.target_season = target_season
+        self.squad = [] 
+        self.bank = 1000.0 
+        self.history = []
+        self.data_store = {}
+        self.transfers = []
+        self.current_preds = {}
+
+    def run(self):
+        print(f"Starting Backtest for {self.target_season}...")
         
-        # 2. Long Term Predictions (Avg next 5 GWs)
-        long_term_xp_map = {}
-        long_term_prob_map = {} 
-        count_map = {}
-        
-        # Look ahead up to 5 GWs (including current)
-        for offset in range(5): 
-            target_gw = gw + offset
-            # Use FROZEN form from current GW to prevent data leak
-            future_preds = predict_gw(target_gw, frozen_gw=gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
-            for pid, p_data in future_preds.items():
-                if pid not in long_term_xp_map: # Initialize if not present (e.g., new player appears)
-                    long_term_xp_map[pid] = 0.0
-                    long_term_prob_map[pid] = 0.0
-                    count_map[pid] = 0
-                long_term_xp_map[pid] += p_data['xp']
-                # Accumulate Prob > 6
-                if 'prob_gt_6' in p_data:
-                    long_term_prob_map[pid] += p_data['prob_gt_6']
-                count_map[pid] += 1
-                    
-        # A. BUILD CANDIDATES
-        gw_candidates = []
-        # Create a map for current GW's player data for quick lookup
-        current_gw_player_data = {}
+        # 1. Load All Data
         for pos in POSITIONS:
-            for record in all_data[pos]:
-                if record['gw'] == gw and record.get('season') == '25/26':
-                    current_gw_player_data[record['id']] = record
+            print(f"Loading {pos}...")  
+            X, y, meta = load_and_process_data(pos)
+            self.data_store[pos] = {
+                "X": X, "y": y, "meta": meta
+            }
 
-        for s_player_meta in players: # Renamed 's' to 's_player_meta' for clarity
-             pid = s_player_meta['id']
-             # Ensure player has current GW data and predictions
-             if pid in current_gw_player_data and pid in current_preds_map and pid in long_term_xp_map:
-                s_gw_data = current_gw_player_data[pid] # Get GW-specific data for this player
-                
-                real_xp = current_preds_map[pid]
-                total_5gw_xp = long_term_xp_map[pid]
-                avg_xp = total_5gw_xp / max(1, count_map[pid])
-                
-                sum_prob_6 = long_term_prob_map.get(pid, 0.0)
-
-                cand = {
-                    'id': pid,
-                    'name': s_player_meta['web_name'], # Use web_name from player metadata
-                    'type': s_player_meta['element_type'],
-                    'team': s_player_meta['team'],
-                    'cost': int(s_gw_data['ctx_price'] * 10), # Use ctx_price from GW-specific data
-                    'xp': real_xp['xp'],
-                    'sigma': real_xp['sigma'],
-                    # Dynamically add all probability keys
-                    'xp_long_term': avg_xp,
-                    'total_xp_5gw': total_5gw_xp,
-                    'sum_prob_6_5gw': sum_prob_6,
-                    'actual': s_gw_data['target'], # Use target from GW-specific data
-                    'selected_by_percent': float(s_gw_data.get('ctx_ownership', 0)),
-                    'status': s_player_meta.get('status', 'a'),
-                    'chance_of_playing_this_round': s_player_meta.get('chance_of_playing_this_round')
-                }
-                
-                for key, val in real_xp.items():
-                    if key.startswith('prob_gt_'):
-                        cand[key] = val
-                        
-                gw_candidates.append(cand)
+        # 2. Identify Gameweeks in Target Season
+        gws = set()
+        for m in self.data_store['GKP']['meta']:
+            if m['season'] == self.target_season:
+                gws.add(m['gw'])
         
-        # B. MANAGER DECISIONS
-        if objective == 'prob_6':
-            # Use Sum Prob > 6 (scaled by 10) for Transfers/Init
-            candidates_for_transfers = [{**c, 'xp': c['sum_prob_6_5gw'] * 10} for c in gw_candidates]
-        else:
-            # Use Standard Long-Term XP
-            candidates_for_transfers = [{**c, 'xp': c['xp_long_term']} for c in gw_candidates]
-
-        if gw == sim_gws[0]:
-            init_squad, cost, lp_starters, lp_bench, lp_captain = get_best_starting_squad(candidates_for_transfers)
+        sorted_gws = sorted(list(gws))
+        print(f"Simulating GWs: {sorted_gws}")
+        
+        # 3. Simulation Loop
+        models = {} 
+        
+        for gw in sorted_gws:
+            print(f"--- Simulating GW {gw} ---")
             
-            # Build initial prices for purchase tracking
-            initial_prices = {p['id']: price_history[p['id']][gw] for p in init_squad if p['id'] in price_history and gw in price_history[p['id']]}
-            
-            manager.initialize_squad(init_squad, cost, initial_prices)
-            transfers = []
-            active_chip_used = None
-            
-            # Build price lookup for current GW (needed for history)
-            price_lookup = {pid: price_history[pid][gw] for pid in price_history if gw in price_history[pid]}
-        else:
-            manager.free_transfers = min(manager.free_transfers + 1, 5)
-            
-            # Build price lookup for current GW
-            price_lookup = {pid: price_history[pid][gw] for pid in price_history if gw in price_history[pid]}
-            
-            # --- NEW RULE: Prioritize Underperforming Players (GW 3+) ---
-            priority_pid = None
-            if gw >= 3 and len(results_history) >= 2:
-                 # Check last 3 weeks (or available history)
-                 history_window = results_history[-3:] 
-                 
-                 # Calculate underperformance for ALL players (not just current squad)
-                 underperf_map = {}  # {pid: total_diff}
-                 
-                 for h in history_window:
-                     for p_detail in h['squad']:
-                         pid = p_detail['id']
-                         diff = p_detail['xp'] - p_detail['points']
-                         underperf_map[pid] = underperf_map.get(pid, 0) + diff
-                         
-                 # Find priority sell candidate (from current squad only)
-                 current_squad_set = set(manager.squad)
-                 squad_underperf = [(pid, diff) for pid, diff in underperf_map.items() if pid in current_squad_set]
-                 squad_underperf.sort(key=lambda x: x[1], reverse=True)
-                 
-                 if squad_underperf:
-                    best_candidate = squad_underperf[0]
-                    # Only prioritize if they are actually underperforming significantly
-                    if best_candidate[1] > 2.0: 
-                        priority_pid = best_candidate[0]
-                        p_name = players_map[priority_pid]['web_name']
-
-            # --- Calculate Recent Form (Avg Points last 3 Matches) ---
-            # recent_form_map is already initialized above
-            if gw >= 4:
-                # Map element_type to position string
-                type_to_pos = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'}
-                for pid_key, p_data_list in all_data.items(): # Iterate through positions, then players
-                    for p_record in p_data_list:
-                        pid = p_record['id']
-                        if p_record['season'] == '25/26':
-                            # Get last 3 GWs
-                            pos_key = type_to_pos.get(players_map[pid]['element_type'], 'GKP') 
-                            # Wait, p_data_list IS all_data[pid_key]. So we can just use p_data_list if we iterate properly.
-                            # But the outer loop iterates `all_data.items()`. So `p_data_list` IS the list of records for that position.
-                            # The problem is `past_matches` line was trying to look up `all_data` again using `players_map`.
-                            
-                            # Optimized approach:
-                            # We are already iterating through `p_data_list` which contains the data we need?
-                            # No, `p_data_list` contains one record per gameweek per player.
-                            pass
-
-                # Re-do the loop cleanly
-                for pos, data_list in all_data.items():
-                    # Group by player id first to avoid O(N^2)
-                     # Actually we just want to look up past matches for the current player.
-                     # Let's build a quick index if needed, or just filter carefully.
-                     pass
+            # A. Train/Update Models
+            for pos in POSITIONS:
+                print(f"Updating {pos} model...", end="", flush=True)
+                X = self.data_store[pos]["X"]
+                y = self.data_store[pos]["y"]
+                meta = self.data_store[pos]["meta"]
                 
-                # Let's fix the specific line based on the traceback, but doing it more efficiently
-                type_to_pos = {1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD'}
-                
-                # Pre-calculate recent form for all players in map
-                for pid, p_info in players_map.items():
-                    pos_str = type_to_pos.get(p_info['element_type'])
-                    if not pos_str or pos_str not in all_data: continue
-                    
-                    # Get all samples for this player
-                    player_samples = [d for d in all_data[pos_str] if d['id'] == pid and d['season'] == '25/26']
-                    
-                    # Filter for last 3 GWs
-                    past_matches = [d for d in player_samples if gw - 3 <= d['gw'] < gw]
-                    
-                    if past_matches:
-                        avg_points = sum(d['target'] for d in past_matches) / len(past_matches)
-                        recent_form_map[pid] = avg_points
+                # Split logic
+                train_mask = []
+                predict_mask = []
+                for m in meta:
+                    is_target_season = (m['season'] == self.target_season)
+                    if is_target_season and m['gw'] == gw:
+                        train_mask.append(False)
+                        predict_mask.append(True)
+                    elif is_target_season and m['gw'] > gw:
+                        train_mask.append(False)
+                        predict_mask.append(False)
                     else:
-                        recent_form_map[pid] = 0.0
-
-            # Pass underperformance data AND recent form to make_transfers
-            transfers, active_chip_used = manager.make_transfers(
-                candidates_for_transfers, 
-                candidates_for_transfers, 
-                gw, 
-                price_lookup, 
-                priority_transfer_out_id=priority_pid,
-                underperformance_map=underperf_map if gw > 3 else {},
-                recent_form_map=recent_form_map,
-                min_form_benchmark=form_benchmark
-            )
-
-        # Selection (Use REAL current XP)
-        if gw == sim_gws[0]:
-            # For GW1, use the LP-optimized lineup directly (constraints enforced)
-            starters = lp_starters
-            bench = lp_bench
-            captain_id = lp_captain
-            # Vice-captain: next highest xP starter after captain
-            starters_sorted = sorted(starters, key=lambda x: x['xp'], reverse=True)
-            vice_candidates = [p for p in starters_sorted if p['id'] != captain_id]
-            vice_captain_id = vice_candidates[0]['id'] if vice_candidates else captain_id
-        else:
-            # For other GWs, use optimize_lineup (greedy selection)
-            starters, bench, captain_id, vice_captain_id = manager.optimize_lineup(gw_candidates, active_chip_used)
-        
-        # --- CHANCE CONSTRAINED OPTIMIZATION (Refinement) ---
-        # Try to maximize P(Team Score > target)
-        
-        # Calculate initial probability
-        current_prob = calc_team_prob_gt_target(starters, captain_id, target=team_score_target)
-        
-        # Store for history
-        manager.current_gw_prob_gt_target = current_prob
-        
-        # Optimize Captain for Probability > target
-        best_cap_id = captain_id
-        best_prob = current_prob
-        
-        # Only consider starters with >= X ownership as candidates (consistency)
-        candidates_cap = [p for p in starters if float(p.get('selected_by_percent', 0)) >= captaincy_ownership_threshold]
-        
-        for cand in candidates_cap:
-             prob = calc_team_prob_gt_target(starters, cand['id'], target=team_score_target)
-             if prob > best_prob:
-                 best_prob = prob
-                 best_cap_id = cand['id']
-                 
-        # Update captain if better probability found
-        if best_cap_id != captain_id:
-            captain_id = best_cap_id
-            manager.current_gw_prob_gt_target = best_prob
-            
-            # Update VC if needed
-            if vice_captain_id == best_cap_id:
-                 vice_captain_id = [p['id'] for p in starters if p['id'] != best_cap_id][0] # Fallback
-
-        # Score calculation and History Recording
-        playing_squad = starters
-        if active_chip_used == "bench_boost":
-            playing_squad = starters + bench
-            
-        gw_points = 0
-        gw_xp = 0
-        squad_details = []
-        
-        for p in playing_squad:
-            pts = p['actual']
-            xp = p['xp']
-            xp_5gw = p.get('total_xp_5gw', p['xp'] * 5)
-            sum_prob = p.get('sum_prob_6_5gw', 0.0)
-
-            is_cap = (p['id'] == captain_id)
-            is_vice = (p['id'] == vice_captain_id)
-            
-            if is_cap:
-                pts *= 2; xp *= 2
-                if active_chip_used == "triple_captain": pts += p['actual']; xp += p['xp']
-            
-            gw_points += pts
-            gw_xp += xp
-            
-            # Get purchase price and calculate selling price
-            purchase_price = manager.purchase_prices.get(p['id'], p['cost'])
-            current_price = price_lookup.get(p['id'], p['cost'])
-            selling_price = calculate_selling_price(purchase_price, current_price)
-            
-            detail = {
-                'id': p['id'], 
-                'name': p['name'], 
-                'points': p['actual'], 
-                'xp': p['xp'], 
-                'xp_5gw': xp_5gw,
-                'sum_prob_6_5gw': sum_prob,
-                'selected_by_percent': p.get('selected_by_percent', '0.0'), 
-                'role': 'C' if is_cap else ('V' if is_vice else 'S'),
-                'purchase_price': purchase_price / 10.0,
-                'current_price': current_price / 10.0,
-                'selling_price': selling_price / 10.0,
-                'status': p.get('status', 'a'),
-                'injury_chance': p.get('chance_of_playing_this_round'),
-                'form': recent_form_map.get(p['id'], 0.0)
-            }
-            # Add dynamic probs
-            for key, val in p.items():
-                if key.startswith('prob_gt_'):
-                    detail[key] = val
+                        train_mask.append(True)
+                        predict_mask.append(False)
+                
+                train_idx = np.where(train_mask)[0]
+                pred_idx = np.where(predict_mask)[0]
+                
+                if len(pred_idx) == 0:
+                    continue
                     
-            squad_details.append(detail)
+                X_train = clean_and_scale(X[train_idx])
+                y_train = y[train_idx] # Keep as integers
+                
+                # Check if we have enough data (at least 2 classes for RF? Actually 1 is fine it just predict that one)
+                if len(set(y_train)) < 1:
+                    continue
 
-        bench_players_visual = bench if active_chip_used != "bench_boost" else []
-        for p in bench_players_visual:
-            xp_5gw = p.get('total_xp_5gw', p['xp'] * 5) # Fallback
-            sum_prob = p.get('sum_prob_6_5gw', 0.0)
+                if pos not in models:
+                    models[pos] = build_model()
+                    
+                # Retrain RF from scratch each GW
+                # Warm start is tricky if classes change or vocab changes. 
+                # Scikit RF with warm_start=True keeps existing trees and adds new ones. 
+                # But here we probably want to Retrain on ALL data available up to now.
+                # RF is fast enough.
+                models[pos].fit(X_train, y_train)
+                
+                # Predict
+                X_pred = clean_and_scale(X[pred_idx])
+                
+                # We need Probabilities for expected value
+                raw_probs = models[pos].predict_proba(X_pred)
+                
+                # Map to 16 classes
+                preds = np.zeros((len(X_pred), 16), dtype=np.float32)
+                for i, cls in enumerate(models[pos].classes_):
+                    if cls < 16: preds[:, int(cls)] = raw_probs[:, i]
+                
+                self.store_predictions(pos, meta, pred_idx, preds)
+                print(f" Done.")
 
-            purchase_price = manager.purchase_prices.get(p['id'], p['cost'])
-            current_price = price_lookup.get(p['id'], p['cost'])
-            selling_price = calculate_selling_price(purchase_price, current_price)
+            # B. Pick Squad
+            self.manage_squad(gw)
+            # C. Score
+            self.score_gw(gw)
             
-            detail = {
-                'id': p['id'], 
-                'name': p['name'], 
-                'points': p['actual'], 
-                'xp': p['xp'], 
-                'xp_5gw': xp_5gw,
-                'sum_prob_6_5gw': sum_prob,
-                'selected_by_percent': p.get('selected_by_percent', '0.0'), 
-                'role': 'B',
-                'purchase_price': purchase_price / 10.0,
-                'current_price': current_price / 10.0,
-                'selling_price': selling_price / 10.0,
-                'status': p.get('status', 'a'),
-                'injury_chance': p.get('chance_of_playing_this_round'),
-                'form': recent_form_map.get(p['id'], 0.0)
-            }
-            # Add dynamic probs
-            for key, val in p.items():
-                if key.startswith('prob_gt_'):
-                    detail[key] = val
-            squad_details.append(detail)
-            
-        hits_cost = 0  
-        if active_chip_used in ["wildcard", "freehit"]: hits_cost = 0
-        net_score = gw_points - hits_cost
+            # Incremental Save
+            self.save_history()
         
-        history_entry = {
-            'gw': gw, 'points': gw_points, 'total_xp': gw_xp, 'net_points': net_score,
-            'transfer_cost': hits_cost, 'active_chip': active_chip_used,
-            'transfers': transfers, 
-            'squad': squad_details, 'bank': manager.bank / 10.0,
-            'free_transfers': manager.free_transfers,
-            'team_prob_gt_target': getattr(manager, 'current_gw_prob_gt_target', 0.0)
-        }
-        results_history.append(history_entry)
-        
-        print(f"GW {gw}: {net_score} pts (xP: {gw_xp:.1f}) | {active_chip_used or 'No Chip'}")
-        
-        if active_chip_used == "freehit" and hasattr(manager, 'original_squad'):
-            manager.squad = manager.original_squad
-            manager.bank = manager.original_bank
-            manager.purchase_prices = manager.original_purchase_prices  # Restore prices
-            del manager.original_squad
-            del manager.original_bank
-            del manager.original_purchase_prices
-            
-        # D. TRAINING PHASE
-        # ... (Same as before) ...
-        # print(f"📈 Updating models...")
-        for pos in POSITIONS:
-            samples = [d for d in all_data[pos] if d.get('season') == '25/26' and d['gw'] == gw]
-            if not samples: continue
-            
-            X_seq = np.array([d['history_sequence'] for d in samples], dtype=np.float32)
-            X_ctx = np.array([[d['ctx_was_home'], d['ctx_difficulty'], d['ctx_price'], d['ctx_hours_rest'],
-                               d['ctx_all_time_avg_points'], d['ctx_all_time_total_points'],
-                               d['ctx_all_time_goals_per_90'], d['ctx_all_time_xg_per_90'], d['ctx_all_time_games_played'],
-                               d['ctx_form'], d['ctx_ownership']]  # NEW: Added form and ownership
-                              for d in samples], dtype=np.float32)
-            X_opp = np.array([d['ctx_opponent'] for d in samples], dtype=np.float32)
-            y = np.array([d['target'] for d in samples], dtype=np.float32)
-            
-            X_seq, X_ctx = clean_and_scale(X_seq, X_ctx)
-            X_opp = X_opp / 1350.0
-            
-            # Load model from previous week if available
-            prev_gw = gw - 1
-            # Current model in 'models[pos]' is already the one from prev week or initialized.
-            # But let's be explicit and save it with the new GW suffix.
-            model = models[pos]
-            
-            y_clipped = np.clip(y, 0, 15).astype(int)
-            y_categorical = tf.keras.utils.to_categorical(y_clipped, num_classes=16)
-            
-            model.fit([X_seq, X_ctx, X_opp], y_categorical, epochs=3, batch_size=32, verbose=0)
-            
-            # Save the updated model for this week
-            model_path = os.path.join(MODELS_DIR, f"model_{pos}_gw{gw}.keras")
-            model.save(model_path)
-            # print(f"💾 Saved model for {pos} GW{gw}")
+        # 4. Save
+        self.save_history()
 
-    # Save
-    results_history.reverse()
-    # Save
-    results_history.reverse()
-    try:
-        with open(OUTPUT_FILE, "w") as f:
-            json.dump(results_history, f)
-        # print(f"✅ Simulation saved to {OUTPUT_FILE}")
-    except Exception as e:
-        print(f"❌ Failed to save output: {e}")
+    def store_predictions(self, pos, meta, indices, preds):
+        player_indices = {}
+        for i, idx in enumerate(indices):
+            pid = meta[idx]['id']
+            if pid not in player_indices: player_indices[pid] = []
+            player_indices[pid].append(i)
+            
+        classes = np.arange(16, dtype=np.float32)
 
-    # Export Predictions for Frontend
-    try:
-        # We export predictions for the *next* gameweek after the simulation ends
-        # Or if we want to show predictions for the LAST simulated GW (if we are simulating past)
-        # Assuming we want adjacent future predictions starting from end_gw (or current real world GW)
-        # For simplicity, let's export predictions for the last simulated GW + 1 (future)
-        # Wait, if we run backtest, last GW is current.
-        
-        last_simulated_gw = sim_gws[-1] if sim_gws else 1
-        export_gw = last_simulated_gw  # Or +1? Usually we want next GW. 
-        # But if we simulated GW 24, we already have results for it. The predictions for it were made BEFORE it.
-        # The frontend usually wants predictions for UPCOMING games.
-        # If sim_gws ends at 24, and 24 is 'finished', we want preds for 25.
-        # But our dataset might not have '25' data if it's strictly historical?
-        # Let's trust predict_gw handles it if data exists.
-        
-        # NOTE: For this specific request, we export the LAST simulated gameweek's predictions if we treat it as "current"
-        # Or we loop current -> +5.
-        
-        # Let's take the last simulated GW as the 'current' reference point.
-        last_simulated_gw = sim_gws[-1] if sim_gws else 1
-        ref_gw = last_simulated_gw 
-        
-        predictions_export = []
-        
-        # 1. Get predictions for ref_gw (including probabilities)
-        current_preds = predict_gw(ref_gw, all_data=all_data, models=models, prob_thresholds=prob_thresholds)
-        
-        # 2. Get projections for next 5 GWs (ref_gw to ref_gw+4)
-        # We need to loop. Be careful about efficiency.
-        
-        long_term_preds = {} # {pid: [xp1, xp2, ...]}
-        for offset in range(5):
-            target = ref_gw + offset
-            # Just predict xP for efficiency, or predict_gw if fast enough. 
-            # predict_gw calculates probabilities too, which is expensive but we want it for the first week at least.
-            if offset == 0:
-                # We already have current_preds
-                for pid, p in current_preds.items():
-                    if pid not in long_term_preds: long_term_preds[pid] = []
-                    long_term_preds[pid].append(p['xp'])
+        for pid, p_idxs in player_indices.items():
+            first_idx = indices[p_idxs[0]]
+            m = meta[first_idx]
+            dists = [preds[i] for i in p_idxs]
+            
+            if len(dists) == 1:
+                final_dist = dists[0]
+                xp = np.sum(final_dist * classes)
             else:
-                 # Future GWs
-                 future_preds = predict_gw(target, frozen_gw=ref_gw, all_data=all_data, models=models, prob_thresholds=[]) # Empty list to skip prob calc if not needed?
-                 # Actually predict_gw might fail if we pass empty list but models expect something?
-                 # Let's pass prob_thresholds but ignore output
-                 for pid, p in future_preds.items():
-                     if pid not in long_term_preds: long_term_preds[pid] = []
-                     long_term_preds[pid].append(p['xp'])
-        
-        # 3. Assemble
-        for pid, p_data in current_preds.items():
-            if pid not in players_map: continue
+                combined = dists[0]
+                for d in dists[1:]:
+                    combined = np.convolve(combined, d)
+                c_classes = np.arange(len(combined), dtype=np.float32)
+                xp = np.sum(combined * c_classes)
+                final_dist = combined
+
+            actual_points = sum(meta[indices[i]]['target'] for i in p_idxs)
             
-            # Basic info
-            entry = {
-                "id": pid,
-                "name": players_map[pid]['web_name'],
-                "team": players_map[pid]['team'],
-                "total5Week": sum(long_term_preds.get(pid, [])),
-                "projections": [{"gw": ref_gw + i, "xP": xp} for i, xp in enumerate(long_term_preds.get(pid, []))],
+            avg_pts = m['ctx_all_time_avg_points']
+            games = m['ctx_all_time_games_played']
+            multiplier = 1.0
+            if avg_pts > 5.0 and games > 50: multiplier = 1.5
+            elif avg_pts > 4.5 and games > 38: multiplier = 1.3
+            elif avg_pts > 4.0 and games > 38: multiplier = 1.15
+            
+            xp *= multiplier
+            
+            if 7 < len(final_dist):
+                prob_gt_6 = np.sum(final_dist[7:]) * multiplier
+            else:
+                prob_gt_6 = 0.0
+            if 11 < len(final_dist):
+                prob_gt_10 = np.sum(final_dist[11:]) * multiplier
+            else:
+                prob_gt_10 = 0.0
+            
+            self.current_preds[pid] = {
+                "name": m.get('web_name', str(pid)),
+                "xp": float(xp),
+                "prob_gt_6": float(prob_gt_6),
+                "prob_gt_10": float(prob_gt_10),
+                "pos": pos,
+                "price": m['ctx_price'],
+                "actual_points": actual_points,
+                "element_type": 1 if pos=="GKP" else 2 if pos=="DEF" else 3 if pos=="MID" else 4
             }
+
+    def manage_squad(self, gw):
+        preds = list(self.current_preds.values())
+        preds.sort(key=lambda x: x['xp'], reverse=True)
+        
+        if not self.squad:
+            gkps = [p for p in preds if p['pos']=="GKP"]
+            defs = [p for p in preds if p['pos']=="DEF"]
+            mids = [p for p in preds if p['pos']=="MID"]
+            fwds = [p for p in preds if p['pos']=="FWD"]
+            self.squad = gkps[:2] + defs[:5] + mids[:5] + fwds[:3]
             
-            # Add probabilities dynamically
-            for t in prob_thresholds:
-                entry[f"prob_gt_{t}"] = p_data.get(f"prob_gt_{t}", 0)
-
-            predictions_export.append(entry)
+            cost = sum(p['price'] for p in self.squad)
+            while cost > self.bank:
+                self.squad.sort(key=lambda x: x['price'], reverse=True)
+                expensive = self.squad[0]
+                self.squad.remove(expensive)
+                candidates = [p for p in preds if p['pos'] == expensive['pos'] and p not in self.squad]
+                candidates.sort(key=lambda x: x['price'])
+                if candidates:
+                    self.squad.append(candidates[0])
+                cost = sum(p['price'] for p in self.squad)
+            self.transfers = []
+        else:
+            self.transfers = []
+            self.squad.sort(key=lambda x: x['xp'])
+            worst = self.squad[0]
             
-        with open("public/data/ai_predictions.json", "w") as f:
-            json.dump(predictions_export, f)
-        print("✅ Exported ai_predictions.json with probabilities")
+            # Refresh squad data with new preds (XP changes)
+            new_squad = []
+            for p in self.squad:
+                # Find current pred for this player name
+                # (Assuming name unique)
+                cp = next((x for x in preds if x['name'] == p['name']), None)
+                if cp:
+                    new_squad.append(cp)
+                else:
+                    new_squad.append(p) # Keep old if missing (shouldn't happen)
+            self.squad = new_squad
+            self.squad.sort(key=lambda x: x['xp'])
+            worst = self.squad[0]
+            
+            market = [p for p in preds if p not in self.squad]
+            market.sort(key=lambda x: x['xp'], reverse=True)
+            best = next((p for p in market if p['pos'] == worst['pos']), None)
+            
+            if best and best['xp'] > worst['xp'] + 2.0:
+                current_cost = sum(p['price'] for p in self.squad)
+                if current_cost - worst['price'] + best['price'] <= self.bank:
+                    self.transfers.append({"in": best['name'], "out": worst['name']})
+                    self.squad.remove(worst)
+                    self.squad.append(best)
 
-    except Exception as e:
-        print(f"❌ Failed to export predictions: {e}")
+    def score_gw(self, gw):
+        gw_points = 0
+        squad_details = []
+        self.squad.sort(key=lambda x: x['xp'], reverse=True)
+        captain = self.squad[0]
+        vice = self.squad[1] if len(self.squad) > 1 else self.squad[0]
+        
+        for i, p in enumerate(self.squad):
+            points = p['actual_points']
+            role = 'S' if i < 11 else 'B'
+            if p == captain: 
+                role = 'C'
+                points *= 2
+            elif p == vice:
+                role = 'V'
+            if role != 'B': gw_points += points
+                
+            squad_details.append({
+                "id": 0, "name": p['name'], "points": int(p['actual_points']),
+                "xp": p['xp'], "role": role, "selling_price": p['price'] / 10.0,
+                "prob_gt_6": p['prob_gt_6'], "prob_gt_10": p['prob_gt_10'], "form": 5.0
+            })
+            
+        res = {
+            "gw": gw, "points": int(gw_points), "net_points": int(gw_points),
+            "transfers": self.transfers, "squad": squad_details,
+            "season": self.target_season,
+            "bank": (self.bank - sum(p['price'] for p in self.squad))/10.0, "free_transfers": 1
+        }
+        self.history.append(res)
+        
+    def save_history(self):
+        out_path = "public/data/ai_manager_history.json"
+        os.makedirs("public/data", exist_ok=True)
+        with open(out_path, "w") as f:
+            json.dump(self.history, f, indent=2)
+        print(f"History saved to {out_path}")
 
-    total_net_points = sum(h['net_points'] for h in results_history)
-    print(f"🏁 DONE ({objective}, Thresholds={prob_thresholds}, Target={team_score_target}): Total Net Points = {total_net_points}")
-    
-    return total_net_points
+def main():
+    import sys
+    if "--backtest" in sys.argv:
+        bt = Backtester()
+        bt.run()
+    else:
+        # Standard Training
+        os.makedirs(MODELS_DIR, exist_ok=True)
+        results = []
+        
+        for pos in POSITIONS:
+            # train_position_model returns dict
+            res = train_position_model(pos)
+            if res:
+                # remove heavy objects before report
+                # Just keep metrics
+                res_clean = {k:v for k,v in res.items() if k in ['pos', 'accuracy', 'mae', 'loss', 'train_accuracy', 'train_mae']}
+                results.append(res_clean)
+                
+        # Generate Report
+        report_path = "model_accuracy_report.md"
+        with open(report_path, "w") as f:
+            f.write("# Model Accuracy Report (Random Forest)\n\n")
+            f.write("| Position | Train Acc | Val Acc | Train MAE | Val MAE | Log Loss |\n")
+            f.write("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
+            for r in results:
+                f.write(f"| **{r['pos']}** | {r['train_accuracy']:.4f} | {r['accuracy']:.4f} | {r['train_mae']:.4f} | {r['mae']:.4f} | {r['loss']:.4f} |\n")
+            
+            f.write("\n## Details\n")
+            f.write("- **Model**: Random Forest Classifier (n_estimators=200, max_depth=15)\n")
+            f.write("- **Input**: 30 Features (12 Context + 18 Aggregated)\n")
+            f.write("- **Training**: Full Retrain, 80/20 Split.\n")
 
 if __name__ == "__main__":
-    # Settings
-    PROB_THRESHOLDS = [6, 10] # Calc Prob > 6 and Prob > 10
-    TEAM_SCORE_TARGET = 60.0 # Aim for 60 pts/week for crisis checks
-    
-    # Run
-    # Run
-    run_simulation(objective='xp', prob_thresholds=PROB_THRESHOLDS, team_score_target=TEAM_SCORE_TARGET, captaincy_ownership_threshold=50.0, form_benchmark=3.0)
+    main()

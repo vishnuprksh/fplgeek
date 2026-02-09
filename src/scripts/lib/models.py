@@ -1,57 +1,53 @@
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, LSTM, Dense, Concatenate, Dropout, Embedding, Flatten, Bidirectional
-from tensorflow.keras.optimizers import Adam
-from .config import SEQ_LEN, NUM_FEATURES
+from sklearn.ensemble import RandomForestClassifier
+from .config import INPUT_DIM
 
-def clean_and_scale(X_seq, X_ctx):
-    if len(X_seq) == 0:
-        return X_seq, X_ctx
+def clean_and_scale(X):
+    """
+    Clean NaN/Inf and scale features.
+    X shape: (N, INPUT_DIM)
+    """
+    if len(X) == 0:
+        return X
 
     # 1. Replace NaN/Inf
-    X_seq = np.nan_to_num(X_seq, nan=0.0, posinf=0.0, neginf=0.0)
-    X_ctx = np.nan_to_num(X_ctx, nan=0.0, posinf=0.0, neginf=0.0)
+    X = np.nan_to_num(X, nan=0.0, posinf=0.0, neginf=0.0)
     
     # 2. Scale (Simple Global Scaling)
-    # 13 sequence features: [min, xG, xA, threat, creativity, influence, GC, saves, log_sel, price, home, pts, form]
-    scales_seq = np.array([90, 2.0, 1.0, 100, 100, 100, 5, 5, 15, 15, 1, 20, 10], dtype=np.float32)
-    X_seq = X_seq / scales_seq.reshape(1, 1, -1)
+    # We ideally should scaler per feature column, but for simplicity/robustness:
+    # Context features (Indices 0-11):
+    # [was_home(1), diff(5), price(150), rest(200), avg_pts(10), total_pts(400), 
+    #  g_p90(1), xg_p90(1), games(50), form(10), own(100), opp(1)]
     
-    # 11 context features: [was_home, difficulty, price, hours_rest,
-    #                      all_time_avg_pts, all_time_total_pts, all_time_goals_per_90, 
-    #                      all_time_xg_per_90, all_time_games_played, form, ownership]
-    scales_ctx = np.array([1, 5, 15, 200, 10, 400, 1.0, 1.0, 50, 10, 100], dtype=np.float32)
-    X_ctx = X_ctx / scales_ctx.reshape(1, -1)
+    # Aggregated features (Indices 12-29):
+    # 9 features x 2 windows. 
+    # [min(90), pts(15), xg(1), xa(1), inf(50), cre(50), thr(50), gc(5), saves(10)]
     
-    return X_seq, X_ctx
+    # Let's create a scaling vector
+    scales = np.ones(INPUT_DIM, dtype=np.float32)
+    
+    # Context
+    scales[0:12] = [1, 5, 150, 200, 10, 400, 1.0, 1.0, 50, 10, 100, 1350] # Opponent strength usually ~1000-1350
+    
+    # Aggregated (Repeated 2 times)
+    agg_scales = [90, 15, 1.0, 1.0, 50, 50, 50, 5, 10]
+    scales[12:21] = agg_scales # Last 5
+    scales[21:30] = agg_scales # Last 3
+    
+    X = X / scales.reshape(1, -1)
+    
+    return X
 
-def build_model(output_activation='linear', loss='mse', metrics=['mae']):
+def build_model():
     """
-    Build Bidirectional LSTM model for FPL point prediction or classification
+    Build Random Forest Classifier
     """
-    # 1. Sequence Input (Bidirectional LSTM)
-    seq_input = Input(shape=(SEQ_LEN, NUM_FEATURES), name="seq_input")
-    x = Bidirectional(LSTM(32, return_sequences=False))(seq_input)
-    x = Dropout(0.2)(x)
-    
-    # 2. Context Input (Dense) - 11 features including all-time stats, form, and ownership
-    ctx_input = Input(shape=(11,), name="ctx_input")
-    
-    # 3. Opponent Input (Float) - OPTIMIZED
-    opp_input = Input(shape=(1,), name="opp_input")
-    
-    # Concatenate
-    concat = Concatenate()([x, ctx_input, opp_input])
-    
-    # Dense Layers
-    dense = Dense(32, activation='relu')(concat)
-    dense = Dense(16, activation='relu')(dense)
-    
-    # Output: Probability distribution over 16 classes (0, 1, ..., 14, 15+)
-    output = Dense(16, activation='softmax')(dense)
-    
-    model = Model(inputs=[seq_input, ctx_input, opp_input], outputs=output)
-    model.compile(optimizer=Adam(learning_rate=0.001), loss='categorical_crossentropy', metrics=['accuracy'])
-    return model
-
+    clf = RandomForestClassifier(
+        n_estimators=100,
+        max_depth=8,
+        min_samples_split=20,
+        min_samples_leaf=10,
+        random_state=42,
+        n_jobs=-1
+    )
+    return clf
