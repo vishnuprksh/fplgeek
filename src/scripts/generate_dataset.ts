@@ -266,38 +266,38 @@ function main() {
         // Use the LAST valid history sequence for placeholder
         // We need a valid sequence to feed the model, even if sim_utils will swap it.
         // It's critical for the data loader to return a valid shape.
-        let placeholderSeq: number[][] = [];
-        if (history.length >= LOOKBACK) {
-            for (let k = 0; k < LOOKBACK; k++) {
-                const past = history[history.length - 1 - k]; // Last 5 matches
-                // Calculate form for this past match
-                let pastForm = 0;
-                if (history.length - 1 - k >= 4) {
-                    const formMatches = history.slice(Math.max(0, history.length - 1 - k - 4), history.length - 1 - k);
-                    const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
-                    pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
-                }
+        // If the player lacks the 10 games of history needed for the rolling windows, drop them
+        // per user request (instead of zero-padding them).
+        if (history.length < LOOKBACK) {
+            continue;
+        }
 
-                placeholderSeq.unshift([
-                    parseFloatSafe(past.minutes),
-                    parseFloatSafe(past.expected_goals),
-                    parseFloatSafe(past.expected_assists),
-                    parseFloatSafe(past.threat),
-                    parseFloatSafe(past.creativity),
-                    parseFloatSafe(past.influence),
-                    parseFloatSafe(past.goals_conceded),
-                    parseFloatSafe(past.saves),
-                    Math.log1p(parseFloatSafe(past.selected)),
-                    parseFloatSafe(past.value) / 10.0,
-                    past.was_home ? 1 : 0,
-                    parseFloatSafe(past.total_points),
-                    pastForm  // NEW: 13th feature
-                ]);
+        let placeholderSeq: number[][] = [];
+        for (let k = 0; k < LOOKBACK; k++) {
+            const past = history[history.length - 1 - k]; // Last 10 matches
+            // Calculate form for this past match
+            let pastForm = 0;
+            if (history.length - 1 - k >= 4) {
+                const formMatches = history.slice(Math.max(0, history.length - 1 - k - 4), history.length - 1 - k);
+                const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
+                pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
             }
-        } else {
-            // Fill with zeros if absolutely no history (e.g. new player who hasn't played 5 games yet)
-            // Or skip? Better to fill zeros to allow predictions.
-            placeholderSeq = Array(LOOKBACK).fill([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);  // 13 features now
+
+            placeholderSeq.unshift([
+                parseFloatSafe(past.minutes),
+                parseFloatSafe(past.expected_goals),
+                parseFloatSafe(past.expected_assists),
+                parseFloatSafe(past.threat),
+                parseFloatSafe(past.creativity),
+                parseFloatSafe(past.influence),
+                parseFloatSafe(past.goals_conceded),
+                parseFloatSafe(past.saves),
+                Math.log1p(parseFloatSafe(past.selected)),
+                parseFloatSafe(past.value) / 10.0,
+                past.was_home ? 1 : 0,
+                parseFloatSafe(past.total_points),
+                pastForm  // NEW: 13th feature
+            ]);
         }
 
         // All-Time stats — REMOVED (replaced by rolling windows)
