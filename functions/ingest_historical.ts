@@ -16,6 +16,16 @@ interface SeasonConfig {
 
 const SEASONS: SeasonConfig[] = [
     {
+        name: '2021/22',
+        url: "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2021-22/gws/merged_gw.csv",
+        fixtureStartId: 2021000
+    },
+    {
+        name: '2022/23',
+        url: "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2022-23/gws/merged_gw.csv",
+        fixtureStartId: 2022000
+    },
+    {
         name: '2023/24',
         url: "https://raw.githubusercontent.com/vaastav/Fantasy-Premier-League/master/data/2023-24/gws/merged_gw.csv",
         fixtureStartId: 2023000

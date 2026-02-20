@@ -1,7 +1,9 @@
+/* ===========================
+   FIXTURE ANALYSIS
+   =========================== */
 .fixture-analysis {
-    padding: 1rem;
-    max-width: 1000px;
-    /* Wider for table */
+    padding: var(--space-4);
+    max-width: 1100px;
     margin: 0 auto;
 }
 
@@ -9,43 +11,56 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--space-3);
 }
 
 .analysis-header h2 {
-    color: var(--color-text-primary);
+    color: var(--text-primary);
     margin: 0;
+    font-weight: 700;
+    font-size: var(--text-xl);
 }
 
 .controls {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    color: var(--color-text-secondary);
+    gap: var(--space-2);
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
 }
 
 .controls select {
-    background: var(--color-bg-card);
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
-    padding: 0.25rem 0.5rem;
+    background: var(--color-bg-card-solid);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    padding: var(--space-1) var(--space-3);
     border-radius: var(--radius-sm);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: border-color var(--transition-base);
+}
+
+.controls select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
 }
 
 .subtitle {
     text-align: center;
-    color: var(--color-text-secondary);
-    font-size: 0.9rem;
-    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+    font-size: var(--text-sm);
+    margin-bottom: var(--space-5);
 }
 
 .ticker-container {
     overflow-x: auto;
-    background: var(--color-bg-card);
-    border-radius: var(--radius-md);
-    padding: 1rem;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
     box-shadow: var(--shadow-md);
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--glass-border);
 }
 
 .ticker-table {
@@ -56,14 +71,13 @@
 
 .ticker-table th {
     text-align: left;
-    padding: 1rem 0.75rem;
-    /* More vertical padding */
-    color: var(--color-text-secondary);
+    padding: var(--space-3);
+    color: var(--text-muted);
     font-weight: 600;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--border-default);
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
 }
 
 .th-score {
@@ -75,13 +89,12 @@
 }
 
 .ticker-table td {
-    padding: 0.75rem 0.5rem;
-    /* More breathing room */
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding: var(--space-3) var(--space-2);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 .ticker-table tbody tr {
-    transition: background-color 0.2s ease;
+    transition: background-color var(--transition-fast);
 }
 
 .ticker-table tbody tr:hover {
@@ -94,19 +107,19 @@
 
 .team-name {
     font-weight: 700;
-    color: var(--color-text-primary);
+    color: var(--text-primary);
 }
 
 .team-stats-mini {
-    font-size: 0.7rem;
-    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    color: var(--text-muted);
 }
 
 .td-score {
     text-align: center;
     font-weight: 800;
-    color: var(--color-accent-primary);
-    font-size: 1.1rem;
+    color: var(--accent-primary);
+    font-size: var(--text-lg);
 }
 
 .td-match-container {
@@ -118,7 +131,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
     padding: 2px;
 }
 
@@ -127,49 +140,46 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 0.4rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
     font-weight: 600;
     min-width: 50px;
     color: #fff;
     cursor: default;
-    transition: transform 0.1s;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .match-cell:hover {
-    transform: scale(1.05);
+    transform: scale(1.06);
 }
 
 .cell-score {
-    font-size: 0.65rem;
-    background: rgba(0, 0, 0, 0.3);
+    font-size: 0.6rem;
+    background: rgba(0, 0, 0, 0.25);
     padding: 1px 4px;
-    border-radius: 4px;
-    margin-top: 2px;
+    border-radius: 3px;
+    margin-top: 1px;
     opacity: 0.9;
 }
 
-/* Difficulty Colors */
+/* Difficulty colors */
 .match-cell.easy {
-    background: #10b981;
-    /* Green */
-    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.2);
 }
 
 .match-cell.medium {
-    background: #64748b;
-    /* Grey/Blue */
+    background: linear-gradient(135deg, #64748b, #475569);
 }
 
 .match-cell.hard {
-    background: #ef4444;
-    /* Red */
-    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.2);
 }
 
 .blank-gw {
-    color: var(--color-text-muted);
+    color: var(--text-muted);
 }
 
 .opponent {
@@ -177,6 +187,6 @@
 }
 
 .venue {
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
     opacity: 0.8;
 }

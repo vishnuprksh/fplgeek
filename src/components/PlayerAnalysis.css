@@ -1,73 +1,70 @@
+/* ===========================
+   PLAYER ANALYSIS
+   =========================== */
 .font-bold {
     font-weight: 700;
-    color: hsl(var(--color-accent-primary));
-}
-
-.font-bold {
-    font-weight: 700;
-    color: hsl(var(--color-accent-primary));
-}
-
-.font-bold {
-    font-weight: 700;
-    color: hsl(var(--color-accent-primary));
+    color: var(--accent-primary);
 }
 
 .table-footer {
-    padding: 1rem;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
+    padding: var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--text-sm);
     text-align: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid var(--border-subtle);
 }
 
 .analysis-table th,
 .analysis-table td {
-    padding: 1rem;
+    padding: var(--space-3) var(--space-4);
     text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Responsive Sticky Column for Name */
+/* Sticky Name Column (mobile) */
 @media (max-width: 768px) {
     .player-name-cell {
         position: sticky;
         left: 0;
-        background: var(--color-bg-card);
+        background: var(--color-bg-card-solid);
         z-index: 10;
         min-width: 140px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
     }
 
     .analysis-table th:first-child {
         position: sticky;
         left: 0;
         z-index: 11;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(15, 17, 23, 0.95);
     }
 }
 
-/* Markdown Content Tables */
+/* Markdown Content Tables (dark-mode compatible) */
 .markdown-content table {
     width: 100%;
     border-collapse: collapse;
-    margin: 1rem 0;
-    font-size: 0.9em;
+    margin: var(--space-4) 0;
+    font-size: var(--text-sm);
 }
 
 .markdown-content th,
 .markdown-content td {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-default);
     text-align: left;
 }
 
 .markdown-content th {
-    background-color: #f5f5f5;
-    font-weight: bold;
-    color: #333;
+    background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+    color: var(--text-secondary);
 }
 
 .markdown-content tr:nth-child(even) {
-    background-color: #f9f9f9;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.markdown-content td {
+    color: var(--text-primary);
 }

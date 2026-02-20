@@ -1,104 +1,112 @@
+/* ===========================
+   LEAGUE ANALYSIS
+   =========================== */
 .league-analysis-container {
-    padding: 20px;
+    padding: var(--space-5);
     max-width: 100%;
     margin: 0 auto;
-    color: #fff;
+    color: var(--text-primary);
     overflow-x: auto;
 }
 
-.analysis-header {
+.league-analysis-container .analysis-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 1rem;
+    margin-bottom: var(--space-6);
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: var(--space-4);
 }
 
-.analysis-header h2 {
+.league-analysis-container .analysis-header h2 {
     margin: 0;
-    font-family: 'Outfit', sans-serif;
-    color: #00ff87;
+    font-family: var(--font-header);
+    color: var(--accent-primary);
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-size: var(--text-xl);
+    font-weight: 700;
 }
 
 .league-meta {
     display: flex;
-    gap: 20px;
-    font-size: 0.9em;
-    color: #aaa;
+    gap: var(--space-5);
+    font-size: var(--text-sm);
+    color: var(--text-secondary);
 }
 
 .table-container {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
     overflow-x: auto;
 }
 
-.analysis-table {
+.league-analysis-container .analysis-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.9em;
+    font-size: var(--text-sm);
 }
 
-.analysis-table th,
-.analysis-table td {
-    padding: 10px 8px;
+.league-analysis-container .analysis-table th,
+.league-analysis-container .analysis-table td {
+    padding: var(--space-3) var(--space-2);
     text-align: center;
     white-space: nowrap;
 }
 
-.analysis-table th {
-    background: rgba(0, 0, 0, 0.5);
+.league-analysis-container .analysis-table th {
+    background: rgba(0, 0, 0, 0.3);
     position: sticky;
     top: 0;
     cursor: pointer;
     user-select: none;
     font-weight: 600;
-    color: #aaa;
-    transition: color 0.2s;
+    color: var(--text-secondary);
+    transition: color var(--transition-fast), background var(--transition-fast);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.analysis-table th:hover {
-    color: #fff;
-    background: rgba(255, 255, 255, 0.05);
+.league-analysis-container .analysis-table th:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
 }
 
-.analysis-table th.asc::after {
+.league-analysis-container .analysis-table th.asc::after {
     content: ' ▲';
-    color: #00ff87;
+    color: var(--accent-primary);
 }
 
-.analysis-table th.desc::after {
+.league-analysis-container .analysis-table th.desc::after {
     content: ' ▼';
-    color: #00ff87;
+    color: var(--accent-primary);
 }
 
-.analysis-table td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+.league-analysis-container .analysis-table td {
+    border-bottom: 1px solid var(--border-subtle);
 }
 
-.analysis-table .player-col {
+.league-analysis-container .analysis-table .player-col {
     text-align: left;
     font-weight: 500;
     position: sticky;
     left: 0;
-    background: #1f1f1f;
-    /* Needs solid bg to cover scroll */
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-bg-card-solid);
+    border-right: 1px solid var(--border-default);
     z-index: 10;
 }
 
 .loading-text,
 .error-text {
     text-align: center;
-    margin-top: 50px;
-    font-size: 1.2rem;
-    color: #aaa;
+    margin-top: var(--space-12);
+    font-size: var(--text-lg);
+    color: var(--text-secondary);
 }
 
 .error-text {
-    color: #ef4444;
+    color: var(--color-danger);
 }
