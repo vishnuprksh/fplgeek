@@ -380,7 +380,7 @@ class FPLManager:
                 # Calculate selling price using FPL mechanics
                 # type: ignore[attr-defined, index]
                 current_price = price_lookup.get(p_out['id'], p_out['cost']) if price_lookup is not None else p_out['cost']
-                purchase_price = current_purchase_prices.get(p_out['id'], current_price)
+                purchase_price = current_purchase_prices.get(p_out['id'], current_price)  # type: ignore[attr-defined]
                 selling_price = calculate_selling_price(purchase_price, current_price)
                 
                 budget = current_bank + selling_price  # Use selling price, not current
@@ -446,7 +446,7 @@ class FPLManager:
                         if current_differential_count >= 2 and not is_differential(p_out):
                             continue
                     
-                    gain = p_in['xp'] - p_out['xp']
+                    gain = p_in['xp'] - p_out['xp']  # type: ignore[misc]
                     
                     # Applying Hit Penalty
                     if self.free_transfers == 0:
@@ -457,7 +457,7 @@ class FPLManager:
                          best_move = (p_out, p_in, selling_price)
 
             if best_move:
-                p_out, p_in, sell_price = best_move
+                p_out, p_in, sell_price = best_move  # type: ignore[misc]
                 
                 # type: ignore[attr-defined, call, index, operator]
                 current_squad_ids.remove(p_out['id'])
