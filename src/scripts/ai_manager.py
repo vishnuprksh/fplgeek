@@ -57,7 +57,6 @@ def load_and_process_data(position):
             sample["ctx_all_time_goals_per_90"],
             sample["ctx_all_time_xg_per_90"],
             sample["ctx_all_time_games_played"],
-            sample["ctx_form"],
             sample["ctx_ownership"],
             sample["ctx_opponent"],
             sample.get("ctx_chance_of_playing", 100)
