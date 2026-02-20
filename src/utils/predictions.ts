@@ -44,31 +44,10 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
 
         const predictedPointsList: number[] = [];
 
-        // Base expected points from FPL (this round)
-        const baseEp = parseFloat(p.ep_next) || 0;
-
         next5.forEach((_match, index) => {
-            // Simple decay/variation for future fixtures or just use baseEp
-            // For now, let's just use baseEp as a starting point and adjust slightly for difficulty if we wanted,
-            // but keeping it simple is safer.
-            // We'll just use baseEp for the immediate next one, and maybe 'form' for others?
-            // Actually, simplest is to just project 'form' or 'ep_next' for all 5.
-            let predPoints = baseEp;
-
-            // Decay for future rounds (uncertainty)
-            if (index > 0) {
-                predPoints = parseFloat(p.form) || 0;
-            }
-
-            // Decay/Adjustment for availability (simple chance_of_playing check)
-            const chance = p.chance_of_playing_next_round;
-            if (chance !== null && chance !== undefined) {
-                predPoints = predPoints * (chance / 100);
-            }
-
-            if (isNaN(predPoints)) predPoints = 0;
-
-            predictedPointsList.push(Math.max(0, predPoints));
+            // Replaced fallback predictor with 0 points
+            let predPoints = 0;
+            predictedPointsList.push(predPoints);
         });
 
         // Fill remaining if < 5 fixtures (e.g. end of season)

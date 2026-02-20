@@ -11,19 +11,18 @@ EPOCHS = 1000
 LEARNING_RATE = 0.001
 
 # Feature Params
-# Static Context Features: 
-# [was_home, difficulty, price, hours_rest, all_time_avg_pts, all_time_total_pts, 
-#  all_time_goals_per_90, all_time_xg_per_90, all_time_games_played, form, ownership]
-# + Opponent Strength (1)
-NUM_CTX_FEATURES = 12 
+# Static Context Features:
+# [was_home, difficulty, price, hours_rest, all_time_avg_pts,
+#  all_time_goals_per_90, all_time_xg_per_90, all_time_games_played,
+#  form, ownership, opponent_strength, chance_of_playing]
+NUM_CTX_FEATURES = 12
 
 # Aggregated Features:
-# Last 5:  [min, pts, xG, xA, inf, cre, thr, gc, saves] (9 features)
-# Last 3:  [min, pts, xG, xA, inf, cre, thr, gc, saves]
-# Total Aggregated: 9 * 2 = 18
-NUM_AGG_FEATURES = 18
+# Last 4:  [min, pts, xG, xA, inf, cre, thr, gc, saves] (9 features)
+# Total Aggregated: 9 * 1 = 9
+NUM_AGG_FEATURES = 9
 
-# Total Input: 12 + 18 = 30
+# Total Input: 12 + 9 = 21
 INPUT_DIM = NUM_CTX_FEATURES + NUM_AGG_FEATURES
 
 # Constants

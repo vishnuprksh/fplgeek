@@ -4,7 +4,7 @@ import os
 import joblib
 import tensorflow as tf # Removed
 from src.scripts.lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES
-from src.scripts.lib.models import build_model, clean_and_scale
+from src.scripts.lib.models import build_model, clean_and_scale, fit_scaler, load_scaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss
 
@@ -22,6 +22,7 @@ IDX_SAVES = 7
 
 AGG_INDICES = [IDX_MIN, IDX_PTS, IDX_XG, IDX_XA, IDX_INF, IDX_CRE, IDX_THR, IDX_GC, IDX_SAVES]
 AGG_NAMES = ["min", "pts", "xG", "xA", "inf", "cre", "thr", "gc", "saves"]
+AGG_WINDOW = 4  # Number of recent matches to aggregate
 
 def load_and_process_data(position):
     """
@@ -46,26 +47,20 @@ def load_and_process_data(position):
         y_list.append(target)
 
         # 2. Static Context Features (Indices 0-11 in INPUT_DIM)
-        # matches config: [was_home, diff, price, rest, avg_pts, total_pts, g_p90, xg_p90, games, form, own, opp]
+        # [was_home, diff, price, rest, avg_pts, g_p90, xg_p90, games, form, own, opp, chance_of_playing]
         ctx = [
             sample["ctx_was_home"],
             sample["ctx_difficulty"],
-            sample["ctx_price"] * 10, # Restore to original scale for consistency if needed, or keep as is. Config scales expecting ~150 for price?
-            # Config.clean_and_scale divides price by 150. If price is 5.5 (from TS), then 5.5/150 is tiny.
-            # TS says ctx_price is value/10. So 5.5.
-            # Python clean_and_scale expects ~150? No, let's fix consistency.
-            # Let's keep TS value (5.5) and update clean_and_scale later if needed.
-            # Actually, standard FPL price is like 55. TS divides by 10 -> 5.5.
-            # Let's use 5.5.
+            sample["ctx_price"],
             sample["ctx_hours_rest"],
             sample["ctx_all_time_avg_points"],
-            sample["ctx_all_time_total_points"],
             sample["ctx_all_time_goals_per_90"],
             sample["ctx_all_time_xg_per_90"],
             sample["ctx_all_time_games_played"],
             sample["ctx_form"],
             sample["ctx_ownership"],
-            sample["ctx_opponent"]
+            sample["ctx_opponent"],
+            sample.get("ctx_chance_of_playing", 100)
         ]
         
         # 3. Aggregated Features
@@ -101,31 +96,25 @@ def load_and_process_data(position):
         hist_arr = np.array(history) # Shape (5, 13)
         if len(hist_arr) == 0:
              # Should not happen given logic, but handle safe
-             aggs = np.zeros(18)
+             aggs = np.zeros(9)
         else:
-            # Helper to get mean of last N
             def get_agg(n):
                 # available matches
                 available = min(n, len(hist_arr))
                 if available == 0: return np.zeros(9)
-                
+
                 # Slice first 'available' (since index 0 is most recent)
-                sub = hist_arr[:available] 
-                
+                sub = hist_arr[:available]
+
                 # Extract specific columns
                 subset_vals = sub[:, AGG_INDICES] # Shape (available, 9)
-                
-                # Sum
+
+                # Sum then divide by window (penalizes missing data)
                 total = np.sum(subset_vals, axis=0)
-                
-                # Mean over N window (Penalize missing)
                 return total / n
 
-            agg_5 = get_agg(5)   # Divides sum of 5 matches by 5 -> Normal avg
-            agg_3 = get_agg(3)   # Divides sum of 3 matches by 3 -> Normal avg
-            
-            aggs = np.concatenate([agg_5, agg_3])
-            
+            aggs = get_agg(AGG_WINDOW)  # Single 4-match window -> 9 features
+
         # Combine
         full_vec = np.concatenate([ctx, aggs])
         X_list.append(full_vec)
@@ -141,25 +130,18 @@ def train_position_model(pos):
         print(f"No data for {pos}")
         return None
 
-    # Clean and Scale
+    # Clean NaN/Inf first (no scaling yet)
     X = clean_and_scale(X)
     
-    # RF expects list of integers
-    # y is already integers 0-15
-    
     # Split
-    # Time-based split via shuffle=False is risky if data isn't strictly sorted by time across all files.
-    # dataset_GKP.json is just a list. generate_dataset pushes sequentially.
-    # But generate_dataset iterates PLAYERS then rounds.
-    # So it's: Player A (GW1..38), Player B (GW1..38).
-    # This is NOT sorted by time globally.
-    # A simple split(shuffle=False) would put Player A in Train and Player Z in Test.
-    # This creates data leakage (Model trains on Player Z's future implies general knowledge? No).
-    # But better to RANDOM split so we cover all gameweeks in Train and Test.
-    # User said "static not time series", so random split is acceptable standard DL practice.
-    
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
     X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
+    
+    # Fit StandardScaler on training data only
+    scaler = fit_scaler(X_train, pos)
+    X_train = scaler.transform(X_train)
+    X_val = scaler.transform(X_val)
+    X_test = scaler.transform(X_test)
     
     print(f"Train: {X_train.shape}, Val: {X_val.shape}, Test: {X_test.shape}")
     
@@ -189,7 +171,7 @@ def train_position_model(pos):
     
     print(f"Train Acc: {train_acc:.4f} | Val Acc: {acc:.4f} | Val MAE: {mae:.4f}")
     
-    # Save
+    # Save model
     joblib.dump(clf, os.path.join(MODELS_DIR, f"model_{pos}.joblib"))
     
     return {
@@ -269,31 +251,33 @@ class Backtester:
                 if len(pred_idx) == 0:
                     continue
                     
-                X_train = clean_and_scale(X[train_idx])
+                X_train_raw = clean_and_scale(X[train_idx])
                 y_train = y[train_idx] # Keep as integers
                 
-                # Check if we have enough data (at least 2 classes for RF? Actually 1 is fine it just predict that one)
+                # Check if we have enough data
                 if len(set(y_train)) < 1:
                     continue
 
                 if pos not in models:
                     models[pos] = build_model()
+                
+                # Fit scaler on training data for this GW
+                from sklearn.preprocessing import StandardScaler
+                scaler = StandardScaler()
+                X_train_scaled = scaler.fit_transform(X_train_raw)
                     
                 # Retrain RF from scratch each GW
-                # Warm start is tricky if classes change or vocab changes. 
-                # Scikit RF with warm_start=True keeps existing trees and adds new ones. 
-                # But here we probably want to Retrain on ALL data available up to now.
-                # RF is fast enough.
-                models[pos].fit(X_train, y_train)
+                models[pos].fit(X_train_scaled, y_train)
                 
                 # Predict
-                X_pred = clean_and_scale(X[pred_idx])
+                X_pred_raw = clean_and_scale(X[pred_idx])
+                X_pred_scaled = scaler.transform(X_pred_raw)
                 
                 # We need Probabilities for expected value
-                raw_probs = models[pos].predict_proba(X_pred)
+                raw_probs = models[pos].predict_proba(X_pred_scaled)
                 
                 # Map to 16 classes
-                preds = np.zeros((len(X_pred), 16), dtype=np.float32)
+                preds = np.zeros((len(X_pred_scaled), 16), dtype=np.float32)
                 for i, cls in enumerate(models[pos].classes_):
                     if cls < 16: preds[:, int(cls)] = raw_probs[:, i]
                 
@@ -338,21 +322,12 @@ class Backtester:
 
             actual_points = sum(meta[indices[i]]['target'] for i in p_idxs)
             
-            avg_pts = m['ctx_all_time_avg_points']
-            games = m['ctx_all_time_games_played']
-            multiplier = 1.0
-            if avg_pts > 5.0 and games > 50: multiplier = 1.5
-            elif avg_pts > 4.5 and games > 38: multiplier = 1.3
-            elif avg_pts > 4.0 and games > 38: multiplier = 1.15
-            
-            xp *= multiplier
-            
             if 7 < len(final_dist):
-                prob_gt_6 = np.sum(final_dist[7:]) * multiplier
+                prob_gt_6 = np.sum(final_dist[7:])
             else:
                 prob_gt_6 = 0.0
             if 11 < len(final_dist):
-                prob_gt_10 = np.sum(final_dist[11:]) * multiplier
+                prob_gt_10 = np.sum(final_dist[11:])
             else:
                 prob_gt_10 = 0.0
             
@@ -529,8 +504,9 @@ def main():
                 f.write(f"| **{r['pos']}** | {r['train_accuracy']:.4f} | {r['accuracy']:.4f} | {r['train_mae']:.4f} | {r['mae']:.4f} | {r['loss']:.4f} |\n")
             
             f.write("\n## Details\n")
-            f.write("- **Model**: Random Forest Classifier (n_estimators=200, max_depth=15)\n")
-            f.write("- **Input**: 30 Features (12 Context + 18 Aggregated)\n")
+            f.write("- **Model**: Random Forest Classifier (n_estimators=100, max_depth=8)\n")
+            f.write("- **Input**: 21 Features (12 Context + 9 Aggregated, single 4-match window)\n")
+            f.write("- **Scaling**: StandardScaler (per-position, fitted on training data only)\n")
             f.write("- **Training**: Full Retrain, 80/20 Split.\n")
 
 if __name__ == "__main__":
