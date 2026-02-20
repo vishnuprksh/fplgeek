@@ -9,7 +9,7 @@ import { PlayerDetailModal } from './PlayerDetailModal';
 interface PlayerAnalysisProps {
     elements: Player[];
     teams: Team[];
-    predictions?: Record<number, { totalForecast: number, next5Points: number[] }>;
+    predictions?: Record<number, any>;
 }
 
 type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr';

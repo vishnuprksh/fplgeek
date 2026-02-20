@@ -8,7 +8,7 @@ interface PitchViewProps {
     elements: UnifiedPlayer[];
     teams: Team[];
     onPlayerClick: (player: UnifiedPlayer) => void;
-    predictions: Record<number, { totalForecast: number }>;
+    predictions: Record<number, { totalForecast: number; prob_gt_6?: number }>;
     isOptimizing?: boolean;
     selectedToSell?: Set<number>;
     onToggleSell?: (id: number) => void;
@@ -164,14 +164,14 @@ function PitchPlayer({
                 </div>
             )}
 
-            {prediction && !isSold && (
+            {prediction && prediction.prob_gt_6 !== undefined && !isSold && (
                 <div className="ai-badge" style={{
                     position: 'absolute', top: '-8px', right: '-10px', background: 'rgba(55, 0, 60, 0.9)',
                     backdropFilter: 'blur(4px)', color: '#00ff87', fontSize: '0.7em', padding: '2px 6px',
                     borderRadius: '12px', border: '1px solid #00ff87', fontWeight: 'bold', zIndex: 10,
                     boxShadow: '0 0 8px rgba(0, 255, 135, 0.3)', minWidth: '35px', textAlign: 'center'
                 }}>
-                    {(prediction.totalForecast / 5).toFixed(1)}
+                    {(prediction.prob_gt_6 * 100).toFixed(0)}%
                 </div>
             )}
 
@@ -193,6 +193,9 @@ function PitchPlayer({
                 </div>
                 <div className="player-points" style={{ fontSize: '0.8em' }}>
                     {points !== undefined ? points : player.event_points} (GW)
+                </div>
+                <div className="player-form" style={{ fontSize: '0.75em', color: '#fbbf24', marginTop: '2px', fontWeight: 500 }}>
+                    Form: {player.form}
                 </div>
             </div>
             {pick.is_captain && <div className="captain-badge">C</div>}
@@ -234,9 +237,9 @@ export function PitchView({
 
         if (!player1 || !player2) return 0;
 
-        // 1. Predicted Points (Descending)
-        const xp1 = predictions && predictions[player1.id] ? predictions[player1.id].totalForecast : 0;
-        const xp2 = predictions && predictions[player2.id] ? predictions[player2.id].totalForecast : 0;
+        // 1. Predicted Haul Probability (Descending)
+        const xp1 = predictions && predictions[player1.id] ? (predictions[player1.id].prob_gt_6 || 0) : 0;
+        const xp2 = predictions && predictions[player2.id] ? (predictions[player2.id].prob_gt_6 || 0) : 0;
 
         if (xp1 !== xp2) {
             return xp2 - xp1;

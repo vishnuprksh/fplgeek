@@ -13,7 +13,7 @@ interface TransferModalProps {
     predictions?: Record<number, any>;
 }
 
-type SortField = 'total_points' | 'haul_next' | 'haul_3gw' | 'now_cost' | 'diff';
+type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff';
 type SortDirection = 'asc' | 'desc';
 
 export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, predictions }: TransferModalProps) {
@@ -73,7 +73,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
             const pred = predictions ? predictions[e.id] : null;
             return {
                 ...e,
-                haul_next: pred?.prob_gt_6_next || 0,
                 haul_3gw: pred?.prob_gt_6 || 0
             };
         })
@@ -86,9 +85,9 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                     valA = a.total_points || 0;
                     valB = b.total_points || 0;
                     break;
-                case 'haul_next':
-                    valA = a.haul_next;
-                    valB = b.haul_next;
+                case 'form':
+                    valA = parseFloat(a.form) || 0;
+                    valB = parseFloat(b.form) || 0;
                     break;
                 case 'haul_3gw':
                     valA = a.haul_3gw;
@@ -151,7 +150,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                     <tr>
                                         <th onClick={() => handleSort('total_points')} className="sortable">Name {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th>Team</th>
-                                        <th onClick={() => handleSort('haul_next')} className="sortable">Next GW Haul {sortField === 'haul_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                        <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('haul_3gw')} className="sortable">3GW Haul {sortField === 'haul_3gw' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('now_cost')} className="sortable">Cost {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('diff')} className="sortable">Diff {sortField === 'diff' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -170,8 +169,8 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                     <div style={{ fontSize: '0.8em', color: '#888' }}>{rec.total_points} pts</div>
                                                 </td>
                                                 <td>{getTeamName(rec.team)}</td>
-                                                <td style={{ color: '#d8b4fe' }}>
-                                                    {(rec.haul_next * 100).toFixed(0)}%
+                                                <td style={{ color: '#fbbf24', fontWeight: 500 }}>
+                                                    {rec.form}
                                                 </td>
                                                 <td style={{ color: '#c084fc', fontWeight: 'bold' }}>
                                                     {(rec.haul_3gw * 100).toFixed(0)}%

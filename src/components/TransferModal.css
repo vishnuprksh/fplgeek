@@ -19,8 +19,8 @@
 
 .modal-content {
     background: var(--color-bg-card-solid);
-    width: 92%;
-    max-width: 820px;
+    width: 95%;
+    max-width: 1000px;
     max-height: 90vh;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-xl);
@@ -148,10 +148,12 @@
     background: rgba(0, 0, 0, 0.2);
     color: var(--text-secondary);
     font-weight: 600;
-    white-space: nowrap;
+    white-space: normal;
+    word-wrap: break-word;
     text-transform: uppercase;
     font-size: var(--text-xs);
     letter-spacing: 0.5px;
+    line-height: 1.2;
 }
 
 .transfer-table tr:last-child td {
