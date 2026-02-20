@@ -8,6 +8,12 @@ export interface PredictionMap {
         totalForecast: number;
         prob_gt_6?: number;
         prob_gt_10?: number;
+        prob_gt_6_next?: number;
+        prob_gt_10_next?: number;
+        r10_min?: number;
+        r10_pts?: number;
+        r10_inf?: number;
+        r10_thr?: number;
     };
 }
 
@@ -49,7 +55,13 @@ export const useFPLData = () => {
                         map[sp.id] = {
                             totalForecast: sp.total5Week,
                             prob_gt_6: sp.prob_gt_6,
-                            prob_gt_10: sp.prob_gt_10
+                            prob_gt_10: sp.prob_gt_10,
+                            prob_gt_6_next: sp.prob_gt_6_next,
+                            prob_gt_10_next: sp.prob_gt_10_next,
+                            r10_min: sp.r10_min,
+                            r10_pts: sp.r10_pts,
+                            r10_inf: sp.r10_inf,
+                            r10_thr: sp.r10_thr
                         };
                     });
                     setPredictionsMap(map);

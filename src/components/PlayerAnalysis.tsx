@@ -12,7 +12,7 @@ interface PlayerAnalysisProps {
     predictions?: Record<number, { totalForecast: number, next5Points: number[] }>;
 }
 
-type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_10';
+type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_10' | 'prob_gt_6_next' | 'prob_gt_10_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr';
 type SortDirection = 'asc' | 'desc';
 
 export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisProps) {
@@ -32,6 +32,12 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                 ...p,
                 prob_gt_6: (pred as any)?.prob_gt_6 || 0,
                 prob_gt_10: (pred as any)?.prob_gt_10 || 0,
+                prob_gt_6_next: (pred as any)?.prob_gt_6_next || 0,
+                prob_gt_10_next: (pred as any)?.prob_gt_10_next || 0,
+                r10_min: (pred as any)?.r10_min || 0,
+                r10_pts: (pred as any)?.r10_pts || 0,
+                r10_inf: (pred as any)?.r10_inf || 0,
+                r10_thr: (pred as any)?.r10_thr || 0,
                 ownership: parseFloat(p.selected_by_percent || "0")
             };
         });
@@ -129,8 +135,14 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                             <th>Name</th>
                             <th>Team</th>
                             <th>Pos</th>
-                            <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul Chance (5GW Avg) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                            <th onClick={() => handleSort('prob_gt_10')} className="sortable">Mega Haul (5GW Avg) {sortField === 'prob_gt_10' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('prob_gt_6_next')} className="sortable">Next GW Haul {sortField === 'prob_gt_6_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('prob_gt_10_next')} className="sortable">Next GW Mega {sortField === 'prob_gt_10_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul (5GW Avg) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('prob_gt_10')} className="sortable">Mega (5GW Avg) {sortField === 'prob_gt_10' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_pts')} className="sortable">R10 Pts {sortField === 'r10_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_inf')} className="sortable">R10 Inf {sortField === 'r10_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_thr')} className="sortable">R10 Thr {sortField === 'r10_thr' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_min')} className="sortable">R10 Min {sortField === 'r10_min' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -146,12 +158,22 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                                 </td>
                                 <td>{getTeamName(player.team)}</td>
                                 <td>{getPosition(player.element_type)}</td>
+                                <td style={{ color: '#d8b4fe' }}>
+                                    {((player as any).prob_gt_6_next * 100).toFixed(0)}%
+                                </td>
+                                <td style={{ color: '#86efac' }}>
+                                    {((player as any).prob_gt_10_next * 100).toFixed(0)}%
+                                </td>
                                 <td style={{ color: '#c084fc', fontWeight: 'bold' }}>
                                     {((player as any).prob_gt_6 * 100).toFixed(0)}%
                                 </td>
                                 <td style={{ color: '#4ade80', fontWeight: 'bold' }}>
                                     {((player as any).prob_gt_10 * 100).toFixed(0)}%
                                 </td>
+                                <td>{((player as any).r10_pts || 0).toFixed(1)}</td>
+                                <td>{((player as any).r10_inf || 0).toFixed(1)}</td>
+                                <td>{((player as any).r10_thr || 0).toFixed(1)}</td>
+                                <td>{((player as any).r10_min || 0).toFixed(0)}</td>
                                 <td>£{(player.now_cost / 10).toFixed(1)}m</td>
                                 <td className="font-bold">{player.total_points}</td>
                                 <td>{player.form}</td>

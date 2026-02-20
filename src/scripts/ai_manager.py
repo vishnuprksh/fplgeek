@@ -531,6 +531,8 @@ def predict_future():
             
             # Extract r10 features from original X
             original_x = X[fidx]
+            r10_min = float(original_x[16]) if len(original_x) == 25 else 0.0
+            r10_pts = float(original_x[17]) if len(original_x) == 25 else 0.0
             r10_inf = float(original_x[20]) if len(original_x) == 25 else 0.0
             r10_thr = float(original_x[22]) if len(original_x) == 25 else 0.0
             
@@ -543,6 +545,12 @@ def predict_future():
                     "projections": [],
                     "prob_gt_6": 0.0,
                     "prob_gt_10": 0.0,
+                    "prob_gt_6_next": 0.0,
+                    "prob_gt_10_next": 0.0,
+                    "r10_min": r10_min,
+                    "r10_pts": r10_pts,
+                    "r10_inf": r10_inf,
+                    "r10_thr": r10_thr,
                 }
             
             entry = all_predictions[pid]
@@ -552,6 +560,11 @@ def predict_future():
                 "prob_gt_6": prob_gt_6,
                 "prob_gt_10": prob_gt_10
             })
+            
+            # Store 'next' probabilities for the first projection
+            if len(entry["projections"]) == 1:
+                entry["prob_gt_6_next"] = prob_gt_6
+                entry["prob_gt_10_next"] = prob_gt_10
     
     # Finalize: compute total5Week, trim to 5 projections
     results = []
