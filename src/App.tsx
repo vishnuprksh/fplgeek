@@ -176,7 +176,7 @@ function App() {
                                 onClick={toggleOptimizationMode}
                                 className="optimize-btn"
                               >
-                                ⚡ Optimize (5 GWs)
+                                ⚡ Optimize (3 GWs)
                               </button>
                             ) : (
                               <div style={{ display: 'flex', gap: '10px' }}>
@@ -218,10 +218,10 @@ function App() {
                           {!isOptimizing && (
                             <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.9em', display: 'flex', gap: '15px' }}>
                               <span>
-                                <b>XI:</b> {(activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 5).toFixed(1)}
+                                <b>XI:</b> {(activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 3).toFixed(1)}
                               </span>
                               <span style={{ color: '#ccc' }}>
-                                <b>Bench:</b> {(activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 5).toFixed(1)}
+                                <b>Bench:</b> {(activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.totalForecast || 0), 0) / 3).toFixed(1)}
                               </span>
                               <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg/gw)</span>
                             </div>
@@ -306,6 +306,7 @@ function App() {
             bank={bank}
             onClose={() => setSelectedTransferPlayer(null)}
             onTransfer={onTransferWrapper}
+            predictions={predictionsMap}
           />
         )}
       </div >

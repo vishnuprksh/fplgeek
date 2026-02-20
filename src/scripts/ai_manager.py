@@ -547,7 +547,7 @@ def predict_future():
                     "id": pid,
                     "name": m.get('name', str(pid)),
                     "team": m.get('team', 0),
-                    "total5Week": 0.0,
+                    "total3Week": 0.0,
                     "projections": [],
                     "prob_gt_6": 0.0,
                     "prob_gt_10": 0.0,
@@ -580,13 +580,13 @@ def predict_future():
                 entry["prob_gt_6_next"] = prob_gt_6
                 entry["prob_gt_10_next"] = prob_gt_10
     
-    # Finalize: compute total5Week, trim to 5 projections
+    # Finalize: compute total3Week, trim to 3 projections
     results = []
     for pid, entry in all_predictions.items():
         # Sort projections by GW
         entry["projections"].sort(key=lambda x: x["gw"])
-        entry["projections"] = entry["projections"][:5]
-        entry["total5Week"] = sum(p["xP"] for p in entry["projections"])
+        entry["projections"] = entry["projections"][:3]
+        entry["total3Week"] = sum(p["xP"] for p in entry["projections"])
         
         if len(entry["projections"]) > 0:
             entry["prob_gt_6"] = sum(p["prob_gt_6"] for p in entry["projections"]) / len(entry["projections"])
@@ -597,8 +597,8 @@ def predict_future():
             
         results.append(entry)
     
-    # Sort by total5Week descending
-    results.sort(key=lambda x: x["total5Week"], reverse=True)
+    # Sort by total3Week descending
+    results.sort(key=lambda x: x["total3Week"], reverse=True)
     
     out_path = "public/data/ai_predictions.json"
     with open(out_path, "w") as f:
@@ -607,7 +607,7 @@ def predict_future():
     print(f"\nSaved {len(results)} player predictions to {out_path}")
     # Show top 10
     for r in results[:10]:
-        print(f"  {r['name']}: {r['total5Week']:.1f} pts (Haul: {r['prob_gt_6']*100:.0f}%, Mega: {r['prob_gt_10']*100:.0f}%)")
+        print(f"  {r['name']}: {r['total3Week']:.1f} pts (Haul: {r['prob_gt_6']*100:.0f}%, Mega: {r['prob_gt_10']*100:.0f}%)")
 
 def main():
     import sys

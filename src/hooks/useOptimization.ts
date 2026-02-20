@@ -46,7 +46,7 @@ export const useOptimization = (
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
-                    predictedPoints: (pred?.totalForecast || 0) / 5,
+                    predictedPoints: (pred?.totalForecast || 0) / 3,
                     totalForecast: pred?.totalForecast || 0,
                     smartValue: 0,
                     next5Points: []
@@ -57,7 +57,7 @@ export const useOptimization = (
             const allCandidates: PredictionResult[] = staticData.elements.map(e => ({
                 player: e,
                 cost: e.now_cost,
-                predictedPoints: (predictionsMap[e.id]?.totalForecast || 0) / 5,
+                predictedPoints: (predictionsMap[e.id]?.totalForecast || 0) / 3,
                 totalForecast: predictionsMap[e.id]?.totalForecast || 0,
                 smartValue: 0,
                 next5Points: []
