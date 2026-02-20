@@ -24,7 +24,7 @@ IDX_SAVES = 7
 
 AGG_INDICES = [IDX_MIN, IDX_PTS, IDX_XG, IDX_XA, IDX_INF, IDX_CRE, IDX_THR, IDX_GC, IDX_SAVES]
 AGG_NAMES = ["min", "pts", "xG", "xA", "inf", "cre", "thr", "gc", "saves"]
-AGG_WINDOW = 4  # Number of recent matches to aggregate
+AGG_WINDOWS = [4, 10]  # Dual rolling windows: short-term form + medium-term trend
 
 def load_and_process_data(position):
     """
@@ -48,75 +48,39 @@ def load_and_process_data(position):
         target = max(0, min(int(sample["target"]), 15))
         y_list.append(target)
 
-        # 2. Static Context Features (Indices 0-11 in INPUT_DIM)
-        # [was_home, diff, price, rest, avg_pts, g_p90, xg_p90, games, form, own, opp, chance_of_playing]
+        # 2. Context Features (7 features — no all-time career stats)
+        # [was_home, diff, price, rest, own, opp, chance_of_playing]
         ctx = [
             sample["ctx_was_home"],
             sample["ctx_difficulty"],
             sample["ctx_price"],
             sample["ctx_hours_rest"],
-            sample["ctx_all_time_avg_points"],
-            sample["ctx_all_time_goals_per_90"],
-            sample["ctx_all_time_xg_per_90"],
-            sample["ctx_all_time_games_played"],
             sample["ctx_ownership"],
             sample["ctx_opponent"],
             sample.get("ctx_chance_of_playing", 100)
         ]
         
-        # 3. Aggregated Features
-        history = sample["history_sequence"] # List of lists
-        # History is ordered Oldest -> Newest (based on generate_dataset logic: seqData.unshift, so seqData[0] is newest?)
-        # WAIT. generate_dataset.ts: seqData.unshift(...) inside loop k=1..LOOKBACK.
-        # k=1 (i-1) is most recent. unshift puts it at 0.
-        # So history[0] is most recent match. history[1] is one before that.
+        # 3. Dual Rolling-Window Aggregated Features (9 × 2 = 18 features)
+        history = sample["history_sequence"]  # List of lists
+        # history[0] is most recent match (due to unshift in generate_dataset.ts)
         
-        # Extract features
-        # Shape: (N_matches, N_features)
-        # We need Last 10, 5, 3
-        # IMPORTANT: history_sequence only has length = LOOKBACK (5) in generate_dataset.ts???
-        # const LOOKBACK = 5;
-        # So Aggregating Last 10 is impossible if dataset only has 5.
-        
-        # Checking generate_dataset.ts again...
-        # Line 10: const LOOKBACK = 5;
-        # Line 231: for (let k = 1; k <= LOOKBACK; k++) ... seqData.unshift(...)
-        # So YES, the pre-processed dataset ONLY has 5 matches of history.
-        # This conflicts with user requirement "Last 10 match aggregates".
-        
-        # DECISION: I cannot get Last 10 from this dataset. 
-        # I must rely on "penalize if available else".
-        # Since I only have 5, Last 10 avg is just Avg of 5 (penalized? or just avg?).
-        # If I strictly follow instructions, I should have generated a dataset with more lookback.
-        # BUT I cannot easily run generate_dataset.ts because I might not have the raw SQLite populated with full history?
-        # Use what we have. 
-        # Aggregates:
-        # Last 10: effectively Last 5 (padded with zeros if < 5, but here max is 5).
-        # Should I assume 0 for 6-10? Yes.
-        
-        hist_arr = np.array(history) # Shape (5, 13)
+        hist_arr = np.array(history)  # Shape (10, 13) with LOOKBACK=10
         if len(hist_arr) == 0:
-             # Should not happen given logic, but handle safe
-             aggs = np.zeros(9)
+            aggs = np.zeros(len(AGG_INDICES) * len(AGG_WINDOWS))
         else:
-            def get_agg(n):
-                # available matches
+            def get_agg(n: int) -> np.ndarray:
                 available = min(n, len(hist_arr))
-                if available == 0: return np.zeros(9)
-
-                # Slice first 'available' (since index 0 is most recent)
+                if available == 0:
+                    return np.zeros(len(AGG_INDICES))
                 sub = hist_arr[:available]
-
-                # Extract specific columns
-                subset_vals = sub[:, AGG_INDICES] # Shape (available, 9)
-
-                # Sum then divide by window (penalizes missing data)
+                subset_vals = sub[:, AGG_INDICES]
                 total = np.sum(subset_vals, axis=0)
                 return total / n
 
-            aggs = get_agg(AGG_WINDOW)  # Single 4-match window -> 9 features
+            agg_parts = [get_agg(w) for w in AGG_WINDOWS]
+            aggs = np.concatenate(agg_parts)  # 9 + 9 = 18 features
 
-        # Combine
+        # Combine: 7 ctx + 18 agg = 25
         full_vec = np.concatenate([ctx, aggs])
         X_list.append(full_vec)
         meta_list.append(sample)

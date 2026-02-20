@@ -7,7 +7,7 @@ import fs from 'fs';
 // --- Configuration ---
 const DB_PATH = path.resolve(process.cwd(), "public/data/fpl.sqlite");
 const OUTPUT_DIR = path.resolve(process.cwd(), "public/data/processed");
-const LOOKBACK = 5; // Length of history sequence
+const LOOKBACK = 10; // Length of history sequence (supports 10-match rolling window)
 
 console.log(`Starting Feature Engineering...`);
 console.log(`DB: ${DB_PATH}`);
@@ -48,12 +48,6 @@ interface ProcessedSample {
     ctx_difficulty: number;
     ctx_price: number;
     ctx_hours_rest: number;
-    // All-Time Features (Player Quality Baseline)
-    ctx_all_time_avg_points: number;
-    ctx_all_time_goals_per_90: number;
-    ctx_all_time_xg_per_90: number;
-    ctx_all_time_games_played: number;
-    // Form, Ownership, Availability
     // Form, Ownership, Availability
     ctx_ownership: number;
     ctx_chance_of_playing: number;
@@ -67,40 +61,7 @@ function parseFloatSafe(val: any): number {
     return isNaN(f) ? 0 : f;
 }
 
-interface SeasonStats {
-    avg_points: number;
-    total_points: number;
-    goals_per_90: number;
-    xg_per_90: number;
-    consistency: number;
-    avg_minutes: number;
-    games_played: number;
-}
 
-function calculateSeasonStats(matches: RawMatch[]): SeasonStats | null {
-    if (matches.length === 0) {
-        return null;
-    }
-
-    const totalMinutes = matches.reduce((sum, m) => sum + m.minutes, 0);
-    const totalPoints = matches.reduce((sum, m) => sum + m.total_points, 0);
-    const totalGoals = matches.reduce((sum, m) => sum + parseFloatSafe((m as any).goals_scored || 0), 0);
-    const totalXG = matches.reduce((sum, m) => sum + parseFloatSafe(m.expected_goals), 0);
-
-    const avgPoints = totalPoints / matches.length;
-    const pointsVariance = matches.reduce((sum, m) => sum + Math.pow(m.total_points - avgPoints, 2), 0) / matches.length;
-    const consistency = Math.sqrt(pointsVariance);
-
-    return {
-        avg_points: avgPoints,
-        total_points: totalPoints,
-        goals_per_90: totalMinutes > 0 ? (totalGoals / totalMinutes) * 90 : 0,
-        xg_per_90: totalMinutes > 0 ? (totalXG / totalMinutes) * 90 : 0,
-        consistency: consistency,
-        avg_minutes: totalMinutes / matches.length,
-        games_played: matches.length
-    };
-}
 
 // --- Main ---
 function main() {
@@ -257,9 +218,7 @@ function main() {
                     ]);
                 }
 
-                // Calculate All-Time Statistics
-                const historyBeforeTarget = history.slice(0, i);
-                const allTimeStats = calculateSeasonStats(historyBeforeTarget);
+                // Calculate All-Time Statistics — REMOVED (replaced by rolling windows in ai_manager.py)
 
                 const sample: ProcessedSample = {
                     name: player.web_name,
@@ -273,14 +232,124 @@ function main() {
                     ctx_difficulty: difficulty,
                     ctx_price: targetMatch.value / 10.0,
                     ctx_hours_rest: Math.min(hoursRest, 300),
-                    ctx_all_time_avg_points: allTimeStats?.avg_points || 0,
-                    ctx_all_time_goals_per_90: allTimeStats?.goals_per_90 || 0,
-                    ctx_all_time_xg_per_90: allTimeStats?.xg_per_90 || 0,
-                    ctx_all_time_games_played: allTimeStats?.games_played || 0,
                     ctx_ownership: parseFloatSafe(targetMatch.selected_by_percent),
                     ctx_chance_of_playing: 100, // Historical matches: player played, so 100%
                     history_sequence: seqData
                 };
+
+                // Route to bucket
+                if (player.element_type === 1) datasets["GKP"].push(sample);
+                else if (player.element_type === 2) datasets["DEF"].push(sample);
+                else if (player.element_type === 3) datasets["MID"].push(sample);
+                else if (player.element_type === 4) datasets["FWD"].push(sample);
+
+                totalSamples++;
+            }
+        }
+
+        // --- PART B: Process Future Fixtures ---
+        // Find all fixtures for this player's team that are AFTER the last processed match
+        // Or simplified: Find all fixtures for this player's team in the current season that haven't been processed.
+        // Actually, safer to just check against the 'fixtures' table for dates > lastMatchDate
+
+        const myTeamFixtures = teamFixturesMap[player.team] || [];
+
+        // Filter for future fixtures
+        const futureFixtures = myTeamFixtures.filter((f: any) => {
+            const fDate = new Date(f.kickoff_time);
+            return fDate > lastMatchDate;
+        });
+
+        // Sort future fixtures
+        futureFixtures.sort((a: any, b: any) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
+
+        // Use the LAST valid history sequence for placeholder
+        // We need a valid sequence to feed the model, even if sim_utils will swap it.
+        // It's critical for the data loader to return a valid shape.
+        let placeholderSeq: number[][] = [];
+        if (history.length >= LOOKBACK) {
+            for (let k = 0; k < LOOKBACK; k++) {
+                const past = history[history.length - 1 - k]; // Last 5 matches
+                // Calculate form for this past match
+                let pastForm = 0;
+                if (history.length - 1 - k >= 4) {
+                    const formMatches = history.slice(Math.max(0, history.length - 1 - k - 4), history.length - 1 - k);
+                    const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
+                    pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
+                }
+
+                placeholderSeq.unshift([
+                    parseFloatSafe(past.minutes),
+                    parseFloatSafe(past.expected_goals),
+                    parseFloatSafe(past.expected_assists),
+                    parseFloatSafe(past.threat),
+                    parseFloatSafe(past.creativity),
+                    parseFloatSafe(past.influence),
+                    parseFloatSafe(past.goals_conceded),
+                    parseFloatSafe(past.saves),
+                    Math.log1p(parseFloatSafe(past.selected)),
+                    parseFloatSafe(past.value) / 10.0,
+                    past.was_home ? 1 : 0,
+                    parseFloatSafe(past.total_points),
+                    pastForm  // NEW: 13th feature
+                ]);
+            }
+        } else {
+            // Fill with zeros if absolutely no history (e.g. new player who hasn't played 5 games yet)
+            // Or skip? Better to fill zeros to allow predictions.
+            placeholderSeq = Array(LOOKBACK).fill([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);  // 13 features now
+        }
+
+        // All-Time stats — REMOVED (replaced by rolling windows)
+        const lastValue = history.length > 0 ? parseFloatSafe(history[history.length - 1].value) / 10.0 : 5.0; // Fallback price
+
+        let lastFixtureTime = lastMatchDate.getTime();
+
+        for (const f of futureFixtures) {
+            const gw = f.event;
+            if (!gw) continue;
+
+            const season = "25/26"; // Assume future fixtures are current season
+
+            const isHome = f.team_h === player.team;
+            const opponentId = isHome ? f.team_a : f.team_h;
+            const difficulty = isHome ? f.team_h_difficulty : f.team_a_difficulty;
+
+            const opponent = teamsMap[opponentId];
+            let opponentStrength = 1100;
+            if (opponent) {
+                if (isHome) {
+                    // We are Home, Opponent is Away
+                    opponentStrength = opponent.strength_overall_away || opponent.strength || 1100;
+                } else {
+                    // We are Away, Opponent is Home
+                    opponentStrength = opponent.strength_overall_home || opponent.strength || 1100;
+                }
+                if (opponentStrength < 100) {
+                    opponentStrength = 1000 + (opponentStrength - 3) * 100;
+                }
+            }
+
+            const currTime = new Date(f.kickoff_time).getTime();
+            const hoursRest = (currTime - lastFixtureTime) / (1000 * 60 * 60);
+            lastFixtureTime = currTime; // Update for next iteration in loop
+
+            const sample: ProcessedSample = {
+                name: player.web_name,
+                id: player.id,
+                gw: gw,
+                season: season,
+                target: 0, // Future target unknown
+                selected_by_percent: 0, // Unknown
+                ctx_was_home: isHome ? 1 : 0,
+                ctx_opponent: opponentStrength,
+                ctx_difficulty: difficulty,
+                ctx_price: lastValue, // Use last known price
+                ctx_hours_rest: Math.min(hoursRest, 300),
+                ctx_ownership: 0, // Unknown for future fixtures
+                ctx_chance_of_playing: player.chance_of_playing_next_round ?? 100, // From player static data
+                history_sequence: placeholderSeq
+            };
 
             // Route to bucket
             if (player.element_type === 1) datasets["GKP"].push(sample);
@@ -292,139 +361,13 @@ function main() {
         }
     }
 
-    // --- PART B: Process Future Fixtures ---
-    // Find all fixtures for this player's team that are AFTER the last processed match
-    // Or simplified: Find all fixtures for this player's team in the current season that haven't been processed.
-    // Actually, safer to just check against the 'fixtures' table for dates > lastMatchDate
+    console.log(`\nProcessing Complete. Total Samples: ${totalSamples}`);
 
-    const myTeamFixtures = teamFixturesMap[player.team] || [];
-
-    // Filter for future fixtures
-    const futureFixtures = myTeamFixtures.filter((f: any) => {
-        const fDate = new Date(f.kickoff_time);
-        return fDate > lastMatchDate;
-    });
-
-    // Sort future fixtures
-    futureFixtures.sort((a: any, b: any) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
-
-    // Use the LAST valid history sequence for placeholder
-    // We need a valid sequence to feed the model, even if sim_utils will swap it.
-    // It's critical for the data loader to return a valid shape.
-    let placeholderSeq: number[][] = [];
-    if (history.length >= LOOKBACK) {
-        for (let k = 0; k < LOOKBACK; k++) {
-            const past = history[history.length - 1 - k]; // Last 5 matches
-            // Calculate form for this past match
-            let pastForm = 0;
-            if (history.length - 1 - k >= 4) {
-                const formMatches = history.slice(Math.max(0, history.length - 1 - k - 4), history.length - 1 - k);
-                const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
-                pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
-            }
-
-            placeholderSeq.unshift([
-                parseFloatSafe(past.minutes),
-                parseFloatSafe(past.expected_goals),
-                parseFloatSafe(past.expected_assists),
-                parseFloatSafe(past.threat),
-                parseFloatSafe(past.creativity),
-                parseFloatSafe(past.influence),
-                parseFloatSafe(past.goals_conceded),
-                parseFloatSafe(past.saves),
-                Math.log1p(parseFloatSafe(past.selected)),
-                parseFloatSafe(past.value) / 10.0,
-                past.was_home ? 1 : 0,
-                parseFloatSafe(past.total_points),
-                pastForm  // NEW: 13th feature
-            ]);
-        }
-    } else {
-        // Fill with zeros if absolutely no history (e.g. new player who hasn't played 5 games yet)
-        // Or skip? Better to fill zeros to allow predictions.
-        placeholderSeq = Array(LOOKBACK).fill([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);  // 13 features now
+    for (const [pos, data] of Object.entries(datasets)) {
+        const p = path.join(OUTPUT_DIR, `dataset_${pos}.json`);
+        fs.writeFileSync(p, JSON.stringify(data, null, 2));
+        console.log(`Saved ${pos}: ${data.length} samples -> ${p}`);
     }
-
-    // All-Time stats as of now
-    const allTimeStats = calculateSeasonStats(history);
-    const lastValue = history.length > 0 ? parseFloatSafe(history[history.length - 1].value) / 10.0 : 5.0; // Fallback price
-
-    // Calculate current form for future fixtures (avg points from last 4 matches)
-    const formWindow = 4;
-    const recentMatches = history.slice(Math.max(0, history.length - formWindow), history.length);
-    const currentForm = recentMatches.length > 0
-        ? recentMatches.reduce((sum, m) => sum + m.total_points, 0) / recentMatches.length
-        : 0;
-
-    let lastFixtureTime = lastMatchDate.getTime();
-
-    for (const f of futureFixtures) {
-        const gw = f.event;
-        if (!gw) continue;
-
-        const season = "25/26"; // Assume future fixtures are current season
-
-        const isHome = f.team_h === player.team;
-        const opponentId = isHome ? f.team_a : f.team_h;
-        const difficulty = isHome ? f.team_h_difficulty : f.team_a_difficulty;
-
-        const opponent = teamsMap[opponentId];
-        let opponentStrength = 1100;
-        if (opponent) {
-            if (isHome) {
-                // We are Home, Opponent is Away
-                opponentStrength = opponent.strength_overall_away || opponent.strength || 1100;
-            } else {
-                // We are Away, Opponent is Home
-                opponentStrength = opponent.strength_overall_home || opponent.strength || 1100;
-            }
-            if (opponentStrength < 100) {
-                opponentStrength = 1000 + (opponentStrength - 3) * 100;
-            }
-        }
-
-        const currTime = new Date(f.kickoff_time).getTime();
-        const hoursRest = (currTime - lastFixtureTime) / (1000 * 60 * 60);
-        lastFixtureTime = currTime; // Update for next iteration in loop
-
-        const sample: ProcessedSample = {
-            name: player.web_name,
-            id: player.id,
-            gw: gw,
-            season: season,
-            target: 0, // Future target unknown
-            selected_by_percent: 0, // Unknown
-            ctx_was_home: isHome ? 1 : 0,
-            ctx_opponent: opponentStrength,
-            ctx_difficulty: difficulty,
-            ctx_price: lastValue, // Use last known price
-            ctx_hours_rest: Math.min(hoursRest, 300),
-            ctx_all_time_avg_points: allTimeStats?.avg_points || 0,
-            ctx_all_time_goals_per_90: allTimeStats?.goals_per_90 || 0,
-            ctx_all_time_xg_per_90: allTimeStats?.xg_per_90 || 0,
-            ctx_all_time_games_played: allTimeStats?.games_played || 0,
-            ctx_ownership: 0, // Unknown for future fixtures
-            ctx_chance_of_playing: player.chance_of_playing_next_round ?? 100, // From player static data
-            history_sequence: placeholderSeq
-        };
-
-    // Route to bucket
-    if (player.element_type === 1) datasets["GKP"].push(sample);
-    else if (player.element_type === 2) datasets["DEF"].push(sample);
-    else if (player.element_type === 3) datasets["MID"].push(sample);
-    else if (player.element_type === 4) datasets["FWD"].push(sample);
-
-    totalSamples++;
-}
-    }
-
-console.log(`\nProcessing Complete. Total Samples: ${totalSamples}`);
-
-for (const [pos, data] of Object.entries(datasets)) {
-    const p = path.join(OUTPUT_DIR, `dataset_${pos}.json`);
-    fs.writeFileSync(p, JSON.stringify(data, null, 2));
-    console.log(`Saved ${pos}: ${data.length} samples -> ${p}`);
-}
 }
 
 main();
