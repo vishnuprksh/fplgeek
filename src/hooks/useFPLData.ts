@@ -9,6 +9,8 @@ export interface PredictionMap {
         next5Points: number[];
         prob_gt_6?: number;
         prob_gt_10?: number;
+        r10_inf?: number;
+        r10_thr?: number;
     };
 }
 
@@ -51,7 +53,9 @@ export const useFPLData = () => {
                             totalForecast: sp.total5Week,
                             next5Points: sp.projections.map((p: any) => p.xP),
                             prob_gt_6: sp.prob_gt_6,
-                            prob_gt_10: sp.prob_gt_10
+                            prob_gt_10: sp.prob_gt_10,
+                            r10_inf: sp.r10_inf,
+                            r10_thr: sp.r10_thr
                         };
                     });
                     setPredictionsMap(map);

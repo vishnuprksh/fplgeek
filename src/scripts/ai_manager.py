@@ -295,6 +295,18 @@ class Backtester:
                 prob_gt_10 = np.sum(final_dist[11:])
             else:
                 prob_gt_10 = 0.0
+            # Extract r10_inf (index 20) and r10_thr (index 22) from the input vector X for the first match
+            # Context (0-6), r4 (7-15), r10 (16-24)
+            # r10_inf is index 16 + 4 = 20
+            # r10_thr is index 16 + 6 = 22
+            r10_inf = 0.0
+            r10_thr = 0.0
+            # We need to retrieve the original X_pred row. The caller didn't pass X_pred, so we'll 
+            # retrieve it from self.data_store[pos]["X"][first_idx]
+            original_x_row = self.data_store[pos]["X"][first_idx]
+            if len(original_x_row) == 25:
+                r10_inf = float(original_x_row[20])
+                r10_thr = float(original_x_row[22])
             
             self.current_preds[pid] = {
                 "id": pid,
@@ -302,6 +314,8 @@ class Backtester:
                 "xp": float(xp),
                 "prob_gt_6": float(prob_gt_6),
                 "prob_gt_10": float(prob_gt_10),
+                "r10_inf": r10_inf,
+                "r10_thr": r10_thr,
                 "pos": pos,
                 "price": float(m['ctx_price']),
                 "actual_points": float(actual_points),
@@ -442,11 +456,133 @@ class Backtester:
             json.dump(self.history, f, indent=2)
         print(f"History saved to {out_path}")
 
+def predict_future():
+    """
+    Load trained models & scalers, process future fixture samples (target == 0),
+    and output ai_predictions.json for the frontend Players page.
+    """
+    from sklearn.preprocessing import StandardScaler  # type: ignore[import]
+    
+    print("=== Generating Future Predictions ===")
+    
+    all_predictions: Dict[int, Dict[str, Any]] = {}  # player_id -> prediction
+    
+    for pos in POSITIONS:
+        model_path = os.path.join(MODELS_DIR, f"model_{pos}.joblib")
+        if not os.path.exists(model_path):
+            print(f"Warning: No model found for {pos}, skipping")
+            continue
+            
+        clf = joblib.load(model_path)
+        
+        # Load dataset and split into train (for scaler fitting) and future samples
+        X, y, meta = load_and_process_data(pos)
+        if len(X) == 0:
+            continue
+            
+        # Separate: training data (target != 0 or has a real season/gw) vs future (target == 0)
+        train_mask = []
+        future_mask = []
+        for i, m in enumerate(meta):
+            if int(m.get('target', 0)) == 0 and m.get('season') == '25/26':
+                train_mask.append(False)
+                future_mask.append(True)
+            else:
+                train_mask.append(True)
+                future_mask.append(False)
+        
+        train_idx = np.where(train_mask)[0]
+        future_idx = np.where(future_mask)[0]
+        
+        if len(future_idx) == 0:
+            print(f"{pos}: No future samples found, skipping")
+            continue
+            
+        print(f"{pos}: {len(train_idx)} train, {len(future_idx)} future samples")
+        
+        # Fit scaler on training data
+        X_train = clean_and_scale(X[train_idx])
+        scaler = StandardScaler()
+        scaler.fit(X_train)
+        
+        # Process future samples
+        X_future = clean_and_scale(X[future_idx])
+        X_future_scaled = scaler.transform(X_future)
+        
+        raw_probs = clf.predict_proba(X_future_scaled)
+        
+        # Map to 16 classes
+        preds_proba = np.zeros((len(X_future_scaled), 16), dtype=np.float32)
+        for i, cls in enumerate(clf.classes_):
+            if cls < 16:
+                preds_proba[:, int(cls)] = raw_probs[:, i]
+        
+        classes = np.arange(16, dtype=np.float32)
+        
+        for i, fidx in enumerate(future_idx):
+            m = meta[fidx]
+            pid = m['id']
+            gw = m['gw']
+            dist = preds_proba[i]
+            xp = float(np.sum(dist * classes))
+            
+            prob_gt_6 = float(np.sum(dist[7:])) if len(dist) > 7 else 0.0
+            prob_gt_10 = float(np.sum(dist[11:])) if len(dist) > 11 else 0.0
+            
+            # Extract r10 features from original X
+            original_x = X[fidx]
+            r10_inf = float(original_x[20]) if len(original_x) == 25 else 0.0
+            r10_thr = float(original_x[22]) if len(original_x) == 25 else 0.0
+            
+            if pid not in all_predictions:
+                all_predictions[pid] = {
+                    "id": pid,
+                    "name": m.get('web_name', str(pid)),
+                    "team": m.get('team', 0),
+                    "total5Week": 0.0,
+                    "projections": [],
+                    "prob_gt_6": 0.0,
+                    "prob_gt_10": 0.0,
+                    "r10_inf": r10_inf,
+                    "r10_thr": r10_thr,
+                }
+            
+            entry = all_predictions[pid]
+            entry["projections"].append({"gw": gw, "xP": xp})
+            
+            # Update prob_gt_6 / prob_gt_10 with the FIRST (next) fixture's probability
+            if len(entry["projections"]) == 1:
+                entry["prob_gt_6"] = prob_gt_6
+                entry["prob_gt_10"] = prob_gt_10
+    
+    # Finalize: compute total5Week, trim to 5 projections
+    results = []
+    for pid, entry in all_predictions.items():
+        # Sort projections by GW
+        entry["projections"].sort(key=lambda x: x["gw"])
+        entry["projections"] = entry["projections"][:5]
+        entry["total5Week"] = sum(p["xP"] for p in entry["projections"])
+        results.append(entry)
+    
+    # Sort by total5Week descending
+    results.sort(key=lambda x: x["total5Week"], reverse=True)
+    
+    out_path = "public/data/ai_predictions.json"
+    with open(out_path, "w") as f:
+        json.dump(results, f, indent=2)
+    
+    print(f"\nSaved {len(results)} player predictions to {out_path}")
+    # Show top 10
+    for r in results[:10]:
+        print(f"  {r['name']}: {r['total5Week']:.1f} pts (Haul: {r['prob_gt_6']*100:.0f}%, Mega: {r['prob_gt_10']*100:.0f}%)")
+
 def main():
     import sys
     if "--backtest" in sys.argv:
         bt = Backtester()
         bt.run()
+    elif "--predict" in sys.argv:
+        predict_future()
     else:
         # Standard Training
         os.makedirs(MODELS_DIR, exist_ok=True)
