@@ -41,6 +41,7 @@ interface ProcessedSample {
     gw: number;
     season: string;
     target: number;
+    is_future: boolean;
     selected_by_percent: number;
     // Context
     ctx_was_home: number;
@@ -226,6 +227,7 @@ function main() {
                     gw: gw,
                     season: season,
                     target: targetMatch.total_points,
+                    is_future: false,
                     selected_by_percent: parseFloatSafe(targetMatch.selected_by_percent),
                     ctx_was_home: targetMatch.was_home ? 1 : 0,
                     ctx_opponent: opponentStrength,
@@ -340,6 +342,7 @@ function main() {
                 gw: gw,
                 season: season,
                 target: 0, // Future target unknown
+                is_future: true,
                 selected_by_percent: 0, // Unknown
                 ctx_was_home: isHome ? 1 : 0,
                 ctx_opponent: opponentStrength,

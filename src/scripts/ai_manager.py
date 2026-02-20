@@ -310,7 +310,7 @@ class Backtester:
             
             self.current_preds[pid] = {
                 "id": pid,
-                "name": m.get('web_name', str(pid)),
+                "name": m.get('name', str(pid)),
                 "xp": float(xp),
                 "prob_gt_6": float(prob_gt_6),
                 "prob_gt_10": float(prob_gt_10),
@@ -480,11 +480,17 @@ def predict_future():
         if len(X) == 0:
             continue
             
-        # Separate: training data (target != 0 or has a real season/gw) vs future (target == 0)
+        # Separate: training data vs future samples
+        # Use 'is_future' flag if available (new datasets), else fall back to target==0 heuristic
         train_mask = []
         future_mask = []
         for i, m in enumerate(meta):
-            if int(m.get('target', 0)) == 0 and m.get('season') == '25/26':
+            if 'is_future' in m:
+                is_future = bool(m['is_future'])
+            else:
+                # Legacy fallback: target==0 in current season (may misclassify 0-point matches)
+                is_future = (int(m.get('target', 0)) == 0 and m.get('season') == '25/26')
+            if is_future:
                 train_mask.append(False)
                 future_mask.append(True)
             else:
@@ -539,7 +545,7 @@ def predict_future():
             if pid not in all_predictions:
                 all_predictions[pid] = {
                     "id": pid,
-                    "name": m.get('web_name', str(pid)),
+                    "name": m.get('name', str(pid)),
                     "team": m.get('team', 0),
                     "total5Week": 0.0,
                     "projections": [],
@@ -552,6 +558,14 @@ def predict_future():
                     "r10_inf": r10_inf,
                     "r10_thr": r10_thr,
                 }
+            
+            # Always update R10 to use the latest (highest GW) sample's values,
+            # so R10 reflects the player's most recent form, not stale history.
+            entry_ref = all_predictions[pid]
+            entry_ref["r10_min"] = r10_min
+            entry_ref["r10_pts"] = r10_pts
+            entry_ref["r10_inf"] = r10_inf
+            entry_ref["r10_thr"] = r10_thr
             
             entry = all_predictions[pid]
             entry["projections"].append({
