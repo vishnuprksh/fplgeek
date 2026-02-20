@@ -465,7 +465,7 @@ def predict_future():
     
     print("=== Generating Future Predictions ===")
     
-    all_predictions: Dict[int, Dict[str, Any]] = {}  # player_id -> prediction
+    all_predictions = {}  # player_id -> prediction
     
     for pos in POSITIONS:
         model_path = os.path.join(MODELS_DIR, f"model_{pos}.joblib")
@@ -543,17 +543,15 @@ def predict_future():
                     "projections": [],
                     "prob_gt_6": 0.0,
                     "prob_gt_10": 0.0,
-                    "r10_inf": r10_inf,
-                    "r10_thr": r10_thr,
                 }
             
             entry = all_predictions[pid]
-            entry["projections"].append({"gw": gw, "xP": xp})
-            
-            # Update prob_gt_6 / prob_gt_10 with the FIRST (next) fixture's probability
-            if len(entry["projections"]) == 1:
-                entry["prob_gt_6"] = prob_gt_6
-                entry["prob_gt_10"] = prob_gt_10
+            entry["projections"].append({
+                "gw": gw, 
+                "xP": xp,
+                "prob_gt_6": prob_gt_6,
+                "prob_gt_10": prob_gt_10
+            })
     
     # Finalize: compute total5Week, trim to 5 projections
     results = []
@@ -562,6 +560,14 @@ def predict_future():
         entry["projections"].sort(key=lambda x: x["gw"])
         entry["projections"] = entry["projections"][:5]
         entry["total5Week"] = sum(p["xP"] for p in entry["projections"])
+        
+        if len(entry["projections"]) > 0:
+            entry["prob_gt_6"] = sum(p["prob_gt_6"] for p in entry["projections"]) / len(entry["projections"])
+            entry["prob_gt_10"] = sum(p["prob_gt_10"] for p in entry["projections"]) / len(entry["projections"])
+        else:
+            entry["prob_gt_6"] = 0.0
+            entry["prob_gt_10"] = 0.0
+            
         results.append(entry)
     
     # Sort by total5Week descending
