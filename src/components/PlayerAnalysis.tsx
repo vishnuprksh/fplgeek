@@ -135,10 +135,10 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                             <th>Pos</th>
                             <th onClick={() => handleSort('prob_gt_6_next')} className="sortable">Next GW Haul {sortField === 'prob_gt_6_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul (3GW Avg) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                            <th onClick={() => handleSort('r10_pts')} className="sortable">R10 Pts {sortField === 'r10_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                            <th onClick={() => handleSort('r10_inf')} className="sortable">R10 Inf {sortField === 'r10_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                            <th onClick={() => handleSort('r10_thr')} className="sortable">R10 Thr {sortField === 'r10_thr' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                            <th onClick={() => handleSort('r10_min')} className="sortable">R10 Min {sortField === 'r10_min' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_pts')} className="sortable">L10 Pts {sortField === 'r10_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_inf')} className="sortable">L10 Inf {sortField === 'r10_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_thr')} className="sortable">L10 Thr {sortField === 'r10_thr' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('r10_min')} className="sortable">L10 Min {sortField === 'r10_min' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>

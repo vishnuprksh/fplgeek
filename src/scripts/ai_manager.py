@@ -64,7 +64,7 @@ def load_and_process_data(position):
         history = sample["history_sequence"]  # List of lists
         # history[0] is most recent match (due to unshift in generate_dataset.ts)
         
-        hist_arr = np.array(history)  # Shape (10, 13) with LOOKBACK=10
+        hist_arr = np.array(history)  # Shape (20, 13) with LOOKBACK=20
         if len(hist_arr) == 0:
             aggs = np.zeros(len(AGG_INDICES) * len(AGG_WINDOWS))
         else:
@@ -79,7 +79,7 @@ def load_and_process_data(position):
                 sub = played_arr[:available]
                 subset_vals = sub[:, AGG_INDICES]
                 total = np.sum(subset_vals, axis=0)
-                return total / n
+                return total / available
 
             agg_parts = [get_agg(w) for w in AGG_WINDOWS]
             aggs = np.concatenate(agg_parts)  # 9 + 9 = 18 features

@@ -7,7 +7,7 @@ import fs from 'fs';
 // --- Configuration ---
 const DB_PATH = path.resolve(process.cwd(), "public/data/fpl.sqlite");
 const OUTPUT_DIR = path.resolve(process.cwd(), "public/data/processed");
-const LOOKBACK = 10; // Length of history sequence (supports 10-match rolling window)
+const LOOKBACK = 20; // Store 20 matches to ensure we can find 10 valid (minutes>0) games
 
 console.log(`Starting Feature Engineering...`);
 console.log(`DB: ${DB_PATH}`);
