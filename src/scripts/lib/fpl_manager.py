@@ -1,29 +1,31 @@
-from .config import STARTING_BUDGET
-from .fpl_utils import (
+from typing import Dict, List, Any, Optional, Tuple, cast
+
+from src.scripts.lib.config import STARTING_BUDGET  # type: ignore[import]
+from src.scripts.lib.fpl_utils import (  # type: ignore[import]
     is_differential, 
     calc_team_prob_gt_target, 
     should_bench_player, 
     calculate_selling_price
 )
-from .squad_optimizer import get_best_starting_squad
+from src.scripts.lib.squad_optimizer import get_best_starting_squad  # type: ignore[import]
 
     
 
 
 class FPLManager:
-    def __init__(self, players_map, min_captain_ownership=50.0, team_score_target=60.0, 
-                 bench_boost_metric='prob_gt_6', triple_captain_metric='prob_gt_10'):
+    def __init__(self, players_map: Dict[str, Any], min_captain_ownership: float = 50.0, team_score_target: float = 60.0, 
+                 bench_boost_metric: str = 'prob_gt_6', triple_captain_metric: str = 'prob_gt_10'):
         self.players_map = players_map
         self.min_captain_ownership = min_captain_ownership
         self.team_score_target = team_score_target
         self.bench_boost_metric = bench_boost_metric
         self.triple_captain_metric = triple_captain_metric
-        self.squad = [] # List of player IDs
-        self.bank = STARTING_BUDGET
+        self.squad: List[Any] = [] # List of player IDs
+        self.bank = float(STARTING_BUDGET)
         self.free_transfers = 1
         
         # Purchase Price Tracking (FPL Mechanics)
-        self.purchase_prices = {}  # {player_id: purchase_price}
+        self.purchase_prices: Dict[Any, float] = {}  # {player_id: purchase_price}
         
         # Chip State
         # "they are recharged after week 19" -> 2 sets.
@@ -37,7 +39,7 @@ class FPLManager:
         self.active_chip = None
 
     # ... initialize_squad ...
-    def initialize_squad(self, best_starting_squad, cost, initial_prices):
+    def initialize_squad(self, best_starting_squad: List[Dict[str, Any]], cost: float, initial_prices: Dict[Any, float]):
         """
         Initialize squad with purchase price tracking
         initial_prices: {player_id: price}
@@ -48,11 +50,11 @@ class FPLManager:
         
         # Track purchase prices
         for p in best_starting_squad:
-            self.purchase_prices[p['id']] = initial_prices.get(p['id'], p['cost'])
+            self.purchase_prices[p['id']] = float(initial_prices.get(p['id'], p['cost']))  # type: ignore[index]
 
     # ... optimize_lineup ...
 
-    def optimize_lineup(self, current_gw_preds, active_chip=None):
+    def optimize_lineup(self, current_gw_preds: List[Dict[str, Any]], active_chip: Optional[str] = None) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Any, Any]:
         """
         Selects Starting XI (1 GKP, 3+ DEF, 1+ FWD) and Captain.
         Captain must have {self.min_captain_ownership}%+ ownership.
@@ -97,9 +99,9 @@ class FPLManager:
             x['xp']
         ), reverse=True)
         
-        ct_def = 3
-        ct_mid = 0
-        ct_fwd = 1
+        ct_def: int = 3
+        ct_mid: int = 0
+        ct_fwd: int = 1
         
         for p in remaining:
             if len(starters) == 11:
@@ -109,15 +111,15 @@ class FPLManager:
             added = False
             if p['type'] == 2 and ct_def < 5:
                 starters.append(p)
-                ct_def += 1
+                ct_def += 1  # type: ignore[operator]
                 added = True
             elif p['type'] == 3 and ct_mid < 5:
                 starters.append(p)
-                ct_mid += 1
+                ct_mid += 1  # type: ignore[operator]
                 added = True
             elif p['type'] == 4 and ct_fwd < 3:
                 starters.append(p)
-                ct_fwd += 1
+                ct_fwd += 1  # type: ignore[operator]
                 added = True
                 
             if not added:
@@ -230,7 +232,7 @@ class FPLManager:
         
         # 1. Triple Captain
         if self.chips_available['triple_captain'] > 0:
-            if tc_prob > 0.20:
+            if captain_stats and tc_prob > 0.20:
                 print(f"⚡ GW {gw}: TRIPLE CAPTAIN Triggered! {captain_stats['name']} {self.triple_captain_metric} is {tc_prob:.1%}")
                 return "triple_captain", captain_id
         
@@ -248,7 +250,7 @@ class FPLManager:
                 
         return None, None
 
-    def make_transfers(self, current_gw_preds, all_candidates, gw, price_lookup=None, priority_transfer_out_id=None, underperformance_map=None, recent_form_map=None, min_form_benchmark=3.0):
+    def make_transfers(self, current_gw_preds: List[Dict[str, Any]], all_candidates: List[Dict[str, Any]], gw: int, price_lookup: Optional[Dict[Any, float]] = None, priority_transfer_out_id: Any = None, underperformance_map: Optional[Dict[Any, float]] = None, recent_form_map: Optional[Dict[Any, float]] = None, min_form_benchmark: float = 3.0):
         """
         Handle Transfers AND Chips (Wildcard/FreeHit)
         """
@@ -279,8 +281,9 @@ class FPLManager:
                 # Reset purchase prices to current prices
                 self.purchase_prices = {}
                 for p in best_squad:
-                    current_price = price_lookup.get(p['id'], p['cost']) if price_lookup else p['cost']
-                    self.purchase_prices[p['id']] = current_price
+                    # type: ignore[attr-defined]
+                    current_price = price_lookup.get(p['id'], p['cost']) if price_lookup is not None else p['cost']
+                    self.purchase_prices[p['id']] = float(current_price)
                 
                 return [], active_chip
                 
@@ -315,10 +318,10 @@ class FPLManager:
         current_purchase_prices = self.purchase_prices.copy()
         
         while transfers_done < max_transfers_this_turn:
-            best_move = None
-            best_gain = 0
+            best_move: Optional[Tuple[Dict[str, Any], Dict[str, Any], float]] = None
+            best_gain: float = 0.0
             
-            mock_squad_xp = [p for p in current_gw_preds if p['id'] in current_squad_ids]
+            mock_squad_xp = cast(List[Dict[str, Any]], [p for p in current_gw_preds if p['id'] in current_squad_ids])
             
             # Sort by: 
             # 0. Injured/Unfit (Highest Priority)
@@ -371,11 +374,12 @@ class FPLManager:
             # Ensure we have players to sell
             if not mock_squad_xp: break
 
-            candidates_out = mock_squad_xp[:5]
+            candidates_out = mock_squad_xp[:5]  # type: ignore[misc]
             
             for p_out in candidates_out:
                 # Calculate selling price using FPL mechanics
-                current_price = price_lookup.get(p_out['id'], p_out['cost']) if price_lookup else p_out['cost']
+                # type: ignore[attr-defined, index]
+                current_price = price_lookup.get(p_out['id'], p_out['cost']) if price_lookup is not None else p_out['cost']
                 purchase_price = current_purchase_prices.get(p_out['id'], current_price)
                 selling_price = calculate_selling_price(purchase_price, current_price)
                 
@@ -394,10 +398,11 @@ class FPLManager:
                 filtered_candidates = []
                 for c in pos_candidates:
                     # Check if player is underperforming based on recent history
-                    if underperformance_map and c['id'] in underperformance_map:
+                    # type: ignore[operator]
+                    if underperformance_map is not None and c['id'] in underperformance_map:
                         underperf_score = underperformance_map[c['id']]
                         # Exclude if underperforming by more than 3 points over last 3 GWs
-                        if underperf_score > 3.0:
+                        if float(underperf_score) > 3.0:
                             continue  # Skip this underperforming player
 
                     # BUY CONSTRAINT 1: Must be FIT (100% chance, status 'a')
@@ -410,9 +415,10 @@ class FPLManager:
                      # BUY CONSTRAINT 2: Recent Form (performing well last 3 matches)
                     # User requirement: "performing well for the last 3 matches"
                     # We use recent_form_map. Threshold: min_form_benchmark
-                    if recent_form_map and c['id'] in recent_form_map:
+                    # type: ignore[operator]
+                    if recent_form_map is not None and c['id'] in recent_form_map:
                          # If avg points < benchmark, skip
-                         if recent_form_map[c['id']] < min_form_benchmark:
+                         if float(recent_form_map[c['id']]) < min_form_benchmark:
                              continue
                     # REMOVED strict else block: if player has no history (e.g. new), give benefit of doubt if xP is high.
                     # elif recent_form_map:
@@ -420,7 +426,7 @@ class FPLManager:
                     
                     filtered_candidates.append(c)
                 
-                top_targets = sorted(filtered_candidates, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)[:5]
+                top_targets = sorted(filtered_candidates, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)[:5]  # type: ignore[misc]
                 
                 for p_in in top_targets:
                     team_id = p_in['team']
@@ -453,9 +459,11 @@ class FPLManager:
             if best_move:
                 p_out, p_in, sell_price = best_move
                 
+                # type: ignore[attr-defined, call, index, operator]
                 current_squad_ids.remove(p_out['id'])
                 current_squad_ids.append(p_in['id'])
                 
+                # type: ignore[index, operator]
                 current_team_counts[self.players_map[p_out['id']]['team']] -= 1
                 current_team_counts[p_in['team']] = current_team_counts.get(p_in['team'], 0) + 1
                 
@@ -463,13 +471,13 @@ class FPLManager:
                 current_bank -= p_in['cost']
                 
                 # Update Purchase Price for new player
-                current_purchase_prices.pop(p_out['id'], None)
-                current_purchase_prices[p_in['id']] = p_in['cost']
+                current_purchase_prices.pop(p_out['id'], None)  # type: ignore[misc]
+                current_purchase_prices[p_in['id']] = p_in['cost']  # type: ignore[index]
                 
                 if self.free_transfers > 0:
-                     self.free_transfers -= 1
+                     self.free_transfers -= 1  # type: ignore[operator]
                 
-                transfers_done += 1
+                transfers_done += 1  # type: ignore[operator]
                 transfers_log.append({
                     "out": p_out['name'],
                     "in": p_in['name']

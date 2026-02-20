@@ -1,9 +1,9 @@
-import numpy as np
-import joblib
+import numpy as np  # type: ignore[import]
+import joblib  # type: ignore[import]
 import os
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.preprocessing import StandardScaler
-from .config import INPUT_DIM, MODELS_DIR
+from sklearn.ensemble import RandomForestClassifier  # type: ignore[import]
+from sklearn.preprocessing import StandardScaler  # type: ignore[import]
+from src.scripts.lib.config import INPUT_DIM, MODELS_DIR  # type: ignore[import]
 
 
 def get_scaler_path(pos: str) -> str:

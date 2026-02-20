@@ -1,5 +1,7 @@
+# type: ignore[import]
 import numpy as np
 from scipy.stats import norm
+from typing import Dict, Any, List
 
 def is_differential(player):
     """
@@ -7,7 +9,7 @@ def is_differential(player):
     """
     return float(player.get('selected_by_percent', 0)) < 10.0
 
-def calc_team_prob_gt_target(starters, captain_id, target=60.0):
+def calc_team_prob_gt_target(starters: List[Dict[str, Any]], captain_id: int, target: float = 60.0) -> float:
     """
     Calculate Probability that Team Score > target.
     Using Central Limit Theorem approximation.

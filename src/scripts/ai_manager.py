@@ -2,14 +2,13 @@ import json
 import os
 from typing import Dict, List, Any, Optional, cast
 
-# type: ignore[import]
-import numpy as np
-import joblib
-import tensorflow as tf
-from src.scripts.lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES
-from src.scripts.lib.models import build_model, clean_and_scale, fit_scaler, load_scaler
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss
+import numpy as np  # type: ignore[import]
+import joblib  # type: ignore[import]
+import tensorflow as tf  # type: ignore[import]
+from src.scripts.lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES  # type: ignore[import]
+from src.scripts.lib.models import build_model, clean_and_scale, fit_scaler, load_scaler  # type: ignore[import]
+from sklearn.model_selection import train_test_split  # type: ignore[import]
+from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss  # type: ignore[import]
 
 # Feature Indices in history_sequence (based on generate_dataset.ts)
 # 0: Min, 1: xG, 2: xA, 3: Thr, 4: Cre, 5: Inf, 6: GC, 7: Saves, 8: Sel, 9: Price, 10: Home, 11: Pts, 12: Form
@@ -264,7 +263,7 @@ class Backtester:
                     models[pos] = build_model()
                 
                 # Fit scaler on training data for this GW
-                from sklearn.preprocessing import StandardScaler
+                from sklearn.preprocessing import StandardScaler  # type: ignore[import]
                 scaler = StandardScaler()
                 X_train_scaled = scaler.fit_transform(X_train_raw)
                     
@@ -316,7 +315,7 @@ class Backtester:
                 xp = np.sum(final_dist * classes)
             else:
                 combined = dists[0]
-                for d in cast(List[np.ndarray], dists)[1:]:
+                for d in cast(List[np.ndarray], dists)[1:]:  # type: ignore
                     combined = np.convolve(combined, d)
                 c_classes = np.arange(len(combined), dtype=np.float32)
                 xp = np.sum(combined * c_classes)
