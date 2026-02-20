@@ -303,7 +303,7 @@ class FPLManager:
         # 2. STANDARD TRANSFERS (Greedy)
         # Execute transfers first (selling underperformers, buying new assets)
         squad_ids = set(self.squad)
-        team_counts = {}
+        team_counts: Dict[Any, int] = {}
         for pid in self.squad:
             if pid not in self.players_map: continue
             t = self.players_map[pid]['team']

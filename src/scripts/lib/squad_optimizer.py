@@ -1,4 +1,4 @@
-from pulp import LpMaximize, LpProblem, LpVariable, lpSum, LpBinary, PULP_CBC_CMD, LpStatus
+from pulp import LpMaximize, LpProblem, LpVariable, lpSum, LpBinary, PULP_CBC_CMD, LpStatus  # type: ignore[import-untyped]
 from .fpl_utils import is_differential, should_bench_player
 
 def get_best_starting_squad(predictions):
