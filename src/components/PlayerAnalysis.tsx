@@ -12,7 +12,7 @@ interface PlayerAnalysisProps {
     predictions?: Record<number, { totalForecast: number, next5Points: number[] }>;
 }
 
-type SortField = keyof Player | 'predicted_points' | 'next_gw_points';
+type SortField = keyof Player | 'predicted_points' | 'next_gw_points' | 'prob_gt_6' | 'prob_gt_10';
 type SortDirection = 'asc' | 'desc';
 
 export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisProps) {
@@ -144,8 +144,8 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                             <th>Pos</th>
                             <th onClick={() => handleSort('predicted_points')} className="sortable">AI Pred (5GW) {sortField === 'predicted_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('next_gw_points')} className="sortable">Next GW {sortField === 'next_gw_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                            <th className="sortable"> &gt;6 Pts %</th>
-                            <th className="sortable"> &gt;10 Pts %</th>
+                            <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul Chance (&gt;6) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('prob_gt_10')} className="sortable">Mega Haul (&gt;10) {sortField === 'prob_gt_10' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
