@@ -1,6 +1,5 @@
-# type: ignore[import]
-import numpy as np
-from scipy.stats import norm
+import numpy as np  # type: ignore[import]
+from scipy.stats import norm  # type: ignore[import]
 from typing import Dict, Any, List
 
 def is_differential(player):
