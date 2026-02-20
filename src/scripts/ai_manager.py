@@ -1,8 +1,11 @@
 import json
-import numpy as np
 import os
+from typing import Dict, List, Any, Optional, cast
+
+# type: ignore[import]
+import numpy as np
 import joblib
-import tensorflow as tf # Removed
+import tensorflow as tf
 from src.scripts.lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES
 from src.scripts.lib.models import build_model, clean_and_scale, fit_scaler, load_scaler
 from sklearn.model_selection import train_test_split
@@ -217,7 +220,7 @@ class Backtester:
         print(f"Simulating GWs: {sorted_gws}")
         
         # 3. Simulation Loop
-        models = {} 
+        models: Dict[str, Any] = {} 
         
         for gw in sorted_gws:
             print(f"--- Simulating GW {gw} ---")
@@ -266,18 +269,18 @@ class Backtester:
                 X_train_scaled = scaler.fit_transform(X_train_raw)
                     
                 # Retrain RF from scratch each GW
-                models[pos].fit(X_train_scaled, y_train)
+                cast(Any, models[pos]).fit(X_train_scaled, y_train)
                 
                 # Predict
                 X_pred_raw = clean_and_scale(X[pred_idx])
                 X_pred_scaled = scaler.transform(X_pred_raw)
                 
                 # We need Probabilities for expected value
-                raw_probs = models[pos].predict_proba(X_pred_scaled)
+                raw_probs = cast(Any, models[pos]).predict_proba(X_pred_scaled)
                 
                 # Map to 16 classes
                 preds = np.zeros((len(X_pred_scaled), 16), dtype=np.float32)
-                for i, cls in enumerate(models[pos].classes_):
+                for i, cls in enumerate(cast(Any, models[pos]).classes_):
                     if cls < 16: preds[:, int(cls)] = raw_probs[:, i]
                 
                 self.store_predictions(pos, meta, pred_idx, preds)
@@ -306,20 +309,20 @@ class Backtester:
         for pid, p_idxs in player_indices.items():
             first_idx = indices[p_idxs[0]]
             m = meta[first_idx]
-            dists = [preds[i] for i in p_idxs]
+            dists: List[np.ndarray] = [preds[i] for i in p_idxs]
             
             if len(dists) == 1:
                 final_dist = dists[0]
                 xp = np.sum(final_dist * classes)
             else:
                 combined = dists[0]
-                for d in dists[1:]:
+                for d in cast(List[np.ndarray], dists)[1:]:
                     combined = np.convolve(combined, d)
                 c_classes = np.arange(len(combined), dtype=np.float32)
                 xp = np.sum(combined * c_classes)
                 final_dist = combined
 
-            actual_points = sum(meta[indices[i]]['target'] for i in p_idxs)
+            actual_points = sum(float(meta[indices[i]]['target']) for i in p_idxs)
             
             if 7 < len(final_dist):
                 prob_gt_6 = np.sum(final_dist[7:])
@@ -337,8 +340,8 @@ class Backtester:
                 "prob_gt_6": float(prob_gt_6),
                 "prob_gt_10": float(prob_gt_10),
                 "pos": pos,
-                "price": m['ctx_price'],
-                "actual_points": actual_points,
+                "price": float(m['ctx_price']),
+                "actual_points": float(actual_points),
                 "element_type": 1 if pos=="GKP" else 2 if pos=="DEF" else 3 if pos=="MID" else 4
             }
 
@@ -360,7 +363,8 @@ class Backtester:
             fwds.sort(key=lambda x: x['prob_gt_6'], reverse=True)
             
             # Build squad: 2 GKP, 5 DEF, 5 MID, 3 FWD
-            self.squad = gkps[:2] + defs[:5] + mids[:5] + fwds[:3]
+            # type: ignore[operator]
+            self.squad = cast(List[Dict[str, Any]], gkps)[:2] + cast(List[Dict[str, Any]], defs)[:5] + cast(List[Dict[str, Any]], mids)[:5] + cast(List[Dict[str, Any]], fwds)[:3]
             
             # Adjust for budget constraints
             cost = sum(p['price'] for p in self.squad)
@@ -404,8 +408,8 @@ class Backtester:
             
             # Transfer if best player has significantly higher probability
             if best and best['prob_gt_6'] > worst['prob_gt_6'] + 0.15:  # 15% higher probability
-                current_cost = sum(p['price'] for p in self.squad)
-                if current_cost - worst['price'] + best['price'] <= self.bank:
+                current_cost = sum(float(p['price']) for p in self.squad)
+                if current_cost - float(worst['price']) + float(best['price']) <= float(self.bank):
                     self.transfers.append({"in": best['name'], "out": worst['name']})
                     self.squad.remove(worst)
                     self.squad.append(best)
@@ -434,7 +438,8 @@ class Backtester:
         # Starting 11: 1 GKP, 3-5 DEF, 2-5 MID, 1-3 FWD
         # Strategy: Pick best players while maintaining valid formation
         # Use 1 GKP, top 4 DEF, top 4 MID, top 2 FWD (4-4-2 formation)
-        starting = gkps[:1] + defs[:4] + mids[:4] + fwds[:2]
+        # type: ignore[operator]
+        starting: List[Dict[str, Any]] = cast(List[Dict[str, Any]], gkps)[:1] + cast(List[Dict[str, Any]], defs)[:4] + cast(List[Dict[str, Any]], mids)[:4] + cast(List[Dict[str, Any]], fwds)[:2]
         bench = [p for p in self.squad if p not in starting]
         
         # Assign roles
