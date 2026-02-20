@@ -68,11 +68,15 @@ def load_and_process_data(position):
         if len(hist_arr) == 0:
             aggs = np.zeros(len(AGG_INDICES) * len(AGG_WINDOWS))
         else:
+            # Filter to only games where the player actually played (minutes > 0)
+            played_mask = hist_arr[:, IDX_MIN] > 0
+            played_arr = hist_arr[played_mask]
+
             def get_agg(n: int) -> np.ndarray:
-                available = min(n, len(hist_arr))
+                available = min(n, len(played_arr))
                 if available == 0:
                     return np.zeros(len(AGG_INDICES))
-                sub = hist_arr[:available]
+                sub = played_arr[:available]
                 subset_vals = sub[:, AGG_INDICES]
                 total = np.sum(subset_vals, axis=0)
                 return total / n
