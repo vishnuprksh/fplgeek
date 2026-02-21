@@ -161,7 +161,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                         <th onClick={() => handleSort('t100_ownership')} className="sortable">T100% {sortField === 't100_ownership' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('now_cost')} className="sortable">Cost {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('diff')} className="sortable">Diff {sortField === 'diff' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                        <th>Action</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -170,9 +169,17 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                         const status = getTransferStatus(rec);
 
                                         return (
-                                            <tr key={rec.id} className={!status.valid ? "row-disabled" : ""}>
+                                            <tr
+                                                key={rec.id}
+                                                className={!status.valid ? "row-disabled" : ""}
+                                                onClick={() => status.valid && onTransfer(player, rec)}
+                                                style={{ cursor: status.valid ? 'pointer' : 'default' }}
+                                            >
                                                 <td>
-                                                    <div style={{ fontWeight: 'bold' }}>{rec.web_name}</div>
+                                                    <div style={{ fontWeight: 'bold' }}>
+                                                        {rec.web_name}
+                                                        {!status.valid && <span className="status-error" style={{ marginLeft: '8px', fontSize: '0.8em', fontWeight: 'normal' }}>({status.reason})</span>}
+                                                    </div>
                                                     <div style={{ fontSize: '0.8em', color: '#888' }}>{rec.total_points} pts</div>
                                                 </td>
                                                 <td>{getTeamName(rec.team)}</td>
@@ -189,18 +196,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                 <td className={balanceChange >= 0 ? "positive-diff" : "negative-diff"}>
                                                     {balanceChange > 0 ? `+£${(balanceChange / 10).toFixed(1)}` : balanceChange < 0 ? `-£${(Math.abs(balanceChange) / 10).toFixed(1)}` : `£0.0`}
                                                 </td>
-                                                <td>
-                                                    {status.valid ? (
-                                                        <button
-                                                            className="transfer-btn"
-                                                            onClick={() => onTransfer(player, rec)}
-                                                        >
-                                                            Select
-                                                        </button>
-                                                    ) : (
-                                                        <span className="status-error">{status.reason}</span>
-                                                    )}
-                                                </td>
                                             </tr>
                                         );
                                     })}
@@ -210,6 +205,6 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                     </div>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
