@@ -7,6 +7,7 @@ import { TeamCard } from './components/TeamCard';
 import { PitchView } from './components/PitchView';
 import { FixtureAnalysis } from './components/FixtureAnalysis';
 import { PlayerAnalysis } from './components/PlayerAnalysis';
+import { OptimizationReport } from './components/OptimizationReport';
 
 import { ChatWindow } from './components/ChatWindow';
 import { TransferModal } from './components/TransferModal';
@@ -61,6 +62,8 @@ function App() {
     isProcessing: isProcessingOpt,
     optimizationResult,
     selectedToSell,
+    transferAllowance,
+    setTransferAllowance,
     toggleOptimizationMode,
     handleToggleSell,
     runOptimization
@@ -81,8 +84,13 @@ function App() {
       optimizationResult.transfers.map((t: any) => ({ in: t.in.player, out: t.out.player })),
       [...optimizationResult.lineup.starting11, ...optimizationResult.lineup.bench]
     );
-    toggleOptimizationMode(); // Turn off optimization mode after applying
+    toggleOptimizationMode();
   };
+
+  const ALLOWANCE_OPTIONS = Array.from({ length: 16 }, (_, i) => ({
+    value: i,
+    label: String(i)
+  }));
 
   const onTransferWrapper = (playerOut: Player, playerIn: Player) => {
     handleTransfer(playerOut, playerIn);
@@ -167,63 +175,72 @@ function App() {
                       />
 
                       {activePicks.length > 0 && (
-                        <div style={{ padding: '0 20px', marginBottom: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '40px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                            <h3 style={{ margin: 0 }}>👤 My Team</h3>
+                        <div style={{ padding: '0 20px', marginBottom: '10px' }}>
+                          {/* Row 1: Team title + action buttons */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '40px', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                              <h3 style={{ margin: 0 }}>👤 My Team</h3>
 
-                            {!isOptimizing ? (
-                              <button
-                                onClick={toggleOptimizationMode}
-                                className="optimize-btn"
-                              >
-                                ⚡ Optimize (3 GWs)
-                              </button>
-                            ) : (
-                              <div style={{ display: 'flex', gap: '10px' }}>
-                                <button
-                                  onClick={runOptimization}
-                                  disabled={isProcessingOpt}
-                                  className="optimize-btn active"
-                                >
-                                  {isProcessingOpt ? 'Thinking...' : '▶ Run Auto-Pick'}
+                              {!isOptimizing ? (
+                                <button onClick={toggleOptimizationMode} className="optimize-btn">
+                                  ⚡ Optimize
                                 </button>
-
-                                {optimizationResult && (
+                              ) : (
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                   <button
-                                    onClick={applyOptimization}
-                                    className="optimize-btn apply"
+                                    onClick={runOptimization}
+                                    disabled={isProcessingOpt}
+                                    className="optimize-btn active"
                                   >
-                                    Apply Changes
+                                    {isProcessingOpt ? '⏳ Thinking...' : '▶ Run Auto-Pick'}
                                   </button>
-                                )}
 
-                                <button
-                                  onClick={toggleOptimizationMode}
-                                  className="optimize-btn"
-                                  style={{ border: '1px solid #ef4444', color: '#ef4444' }}
-                                >
-                                  ✕ Cancel
-                                </button>
+                                  {optimizationResult && (
+                                    <button onClick={applyOptimization} className="optimize-btn apply">
+                                      ✓ Apply Changes
+                                    </button>
+                                  )}
 
+                                  <button
+                                    onClick={toggleOptimizationMode}
+                                    className="optimize-btn"
+                                    style={{ border: '1px solid #ef4444', color: '#ef4444' }}
+                                  >
+                                    ✕ Cancel
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Haul summary pill (non-optimize mode) */}
+                            {!isOptimizing && (
+                              <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.85em', display: 'flex', gap: '14px' }}>
+                                <span>
+                                  <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
+                                </span>
+                                <span style={{ color: '#ccc' }}>
+                                  <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
+                                </span>
+                                <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg / GW)</span>
                               </div>
                             )}
                           </div>
 
-                          {optimizationResult && (
-                            <div style={{ fontSize: '0.8em', color: '#00ff87' }}>
-                              Gain: +{((optimizationResult.lineup.totalPredictedPoints - activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}% Haul / GW
-                            </div>
-                          )}
-
-                          {!isOptimizing && (
-                            <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.9em', display: 'flex', gap: '15px' }}>
-                              <span>
-                                <b>XI Hauls:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
-                              </span>
-                              <span style={{ color: '#ccc' }}>
-                                <b>Bench Hauls:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
-                              </span>
-                              <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(/ GW)</span>
+                          {/* Row 2: Transfer Allowance Selector (only in optimize mode) */}
+                          {isOptimizing && (
+                            <div className="transfer-allowance-selector">
+                              <span className="allowance-label">Transfers:</span>
+                              <div className="allowance-pills">
+                                {ALLOWANCE_OPTIONS.map(opt => (
+                                  <button
+                                    key={opt.value}
+                                    className={`allowance-pill${transferAllowance === opt.value ? ' active' : ''}`}
+                                    onClick={() => { setTransferAllowance(opt.value); }}
+                                  >
+                                    {opt.label}
+                                  </button>
+                                ))}
+                              </div>
                             </div>
                           )}
                         </div>
@@ -241,6 +258,13 @@ function App() {
                           onToggleSell={handleToggleSell}
                           onSwap={handleSwap}
                         />
+                      )}
+
+                      {/* Optimization Report — shown below pitch when result is ready */}
+                      {optimizationResult && (
+                        <div style={{ padding: '0 20px 20px' }}>
+                          <OptimizationReport result={optimizationResult} />
+                        </div>
                       )}
                     </div>
 
