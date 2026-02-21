@@ -528,6 +528,29 @@
   margin-bottom: var(--space-2);
 }
 
+.message-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: var(--space-3);
+  font-size: var(--text-xs);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.message-content th,
+.message-content td {
+  padding: var(--space-2);
+  border: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+.message-content th {
+  background: rgba(255, 255, 255, 0.1);
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
 /* ---- Chat Input ---- */
 .chat-input-area {
   padding: var(--space-3);

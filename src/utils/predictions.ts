@@ -44,7 +44,7 @@ export function generatePredictions(elements: Player[], _teams: Team[], fixtures
 
         const predictedPointsList: number[] = [];
 
-        next5.forEach((_match, index) => {
+        next5.forEach((_match) => {
             // Replaced fallback predictor with 0 points
             let predPoints = 0;
             predictedPointsList.push(predPoints);

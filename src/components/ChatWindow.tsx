@@ -1,12 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { openRouterService } from '../services/openRouterService';
 import type { TeamEntry, Pick, Player } from '../types/fpl';
 
-interface ChatSession {
-    sendMessage: (message: string) => Promise<string>;
-    getMessages: () => Array<{ role: string, content: string }>;
-}
 
 interface ChatWindowProps {
     teamData: TeamEntry | null;
@@ -127,7 +124,7 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
                 {messages.map((msg, idx) => (
                     <div key={idx} className={`message-bubble ${msg.role}`}>
                         <div className="message-content">
-                            <ReactMarkdown>{msg.text}</ReactMarkdown>
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.text}</ReactMarkdown>
                         </div>
                     </div>
                 ))}

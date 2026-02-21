@@ -24,7 +24,6 @@ export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league'>('dashboard');
-  const [teamIdInput, setTeamIdInput] = useState('');
   const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 

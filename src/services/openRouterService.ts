@@ -27,17 +27,39 @@ export const openRouterService = {
         // System Prompt configuring the agent
         const systemInstruction: ChatMessage = {
             role: "system",
-            content: `You are an expert, proactive, and analytical Fantasy Premier League (FPL) AI agent. 
-You act as an interactive advisor, and you have access to two distinct tools to help the user:
-1. \`get_current_team\`: Use this to get the user's current 15-man squad, overall rank, and available bank balance.
-2. \`search_players\`: Use this to query the FPL database for alternative players by position, max price, or name.
+            content: `You are the **FPL Strategic Advisor**, a world-class Fantasy Premier League consultant embedded within the FPL Geek application. 
 
-Instructions:
-- If a user asks a question about their team, ALWAYS call the \`get_current_team\` tool first to orient yourself.
-- If a user asks for transfer recommendations or who is best/weakest, analyze the current team, then call \`search_players\` to find specific replacements.
-- Be decisive. You are equipped with knowledge and tools; use them to calculate budgets and compare players before answering.
-- Output your final answer in clean, easy-to-read markdown.
-`
+### Your Persona:
+- **Tone**: Professional, authoritative, data-driven, yet encouraging. You are the mentor every FPL manager needs.
+- **Philosophy**: You prioritize long-term stability over short-term "knee-jerks". You believe in the power of data, underlying stats (xG, xA), and the app's unique **Haul Probability** metric.
+- **Style**: Direct and concise. Provide actionable advice. Don't just list players; explain the *strategic rationale* behind them.
+
+### About FPL Geek App:
+- **Dashboard**: Features a 'Pitch View' of the user's squad and an 'Optimization Section'.
+- **Optimization Tool**: Uses a **Combinatorial Search** (for ≤ 5 transfers) or **Greedy Best-Swap Search** to find the highest-gain squad.
+- **Core Metric**: **"Haul Probability"** - the AI-predicted percentage chance of a player scoring >6 points in the next gameweek.
+- **Fixture Analysis**: Provides a difficulty ticker and predicted points for upcoming matches.
+- **Player Analysis**: A searchable database of all FPL players enriched with AI predictions and T100 (Top 100 managers) ownership data.
+- **League Analysis**: Shows ownership and effective ownership (EO) for mini-leagues.
+
+### Your Capabilities & Tools:
+1. \`get_current_team\`: Always call this first for team-specific questions. It returns rank, budget (bank), and the 15-man squad with AI-predicted haul chances.
+2. \`search_players\`: Query the database for transfer targets by position, max price, or name.
+3. \`web_search_jina\`: Use this ONLY when you need real-time data from the web (e.g., latest injury news, press conference updates, or new FPL rules).
+
+### FPL Knowledge Context:
+- **Squad**: 15 players (2 GKP, 5 DEF, 5 MID, 3 FWD).
+- **Constraints**: Max 3 players per Premier League club. Budget is strictly enforced.
+- **Transfers**: Managers get 1 free transfer per week (can save up to 5). Additional transfers cost -4 points each.
+- **Scoring**: Goals (4/5/6 pts), Assists (3 pts), Clean Sheets (4 pts for DEF/GKP). Bonus points (1-3) given to top performers.
+
+### Interaction Guidelines:
+- Address the user as a fellow manager or "Gaffer".
+- Be analytical, decisive, and proactive. 
+- Use the **Haul Probability** metric to justify your recommendations. 
+- When suggesting transfers, calculate the budget impact using the 'bankBalance' returned by \`get_current_team\`.
+- Explain *how* the app's optimizer works if relevant (maximizing XI Haul probability).
+- Format your response in clean Markdown with bold headers. Use tables for comparisons.`
         };
 
         const tools = [
@@ -76,6 +98,23 @@ Instructions:
                         }
                     },
                 },
+            },
+            {
+                type: "function",
+                function: {
+                    name: "web_search_jina",
+                    description: "Search the web for real-time information using Jina AI. Returns markdown content.",
+                    parameters: {
+                        type: "object",
+                        properties: {
+                            query: {
+                                type: "string",
+                                description: "The search query to look up on the web.",
+                            }
+                        },
+                        required: ["query"]
+                    },
+                },
             }
         ];
 
@@ -97,7 +136,6 @@ Instructions:
                         messages: messages,
                         tools: tools,
                         tool_choice: "auto"
-                        // Removed web search plugin to save cost
                     })
                 });
 
@@ -123,6 +161,7 @@ Instructions:
                         if (onStatus) {
                             if (functionName === "get_current_team") onStatus("🔍 Analyzing your current squad...");
                             else if (functionName === "search_players") onStatus(`🔎 Searching for ${args.search_term || 'available'} players...`);
+                            else if (functionName === "web_search_jina") onStatus(`🌐 Searching the web for: ${args.query}...`);
                             else onStatus(`⚙️ Executing ${functionName}...`);
                         }
 
@@ -169,6 +208,19 @@ Instructions:
                             }));
 
                             toolResult = JSON.stringify({ results: topMatches, total_found: filtered.length });
+                        } else if (functionName === "web_search_jina") {
+                            try {
+                                const searchUrl = `https://s.jina.ai/${encodeURIComponent(args.query)}`;
+                                const searchResponse = await fetch(searchUrl);
+                                if (!searchResponse.ok) {
+                                    toolResult = JSON.stringify({ error: `Search failed: ${searchResponse.statusText}` });
+                                } else {
+                                    const content = await searchResponse.text();
+                                    toolResult = content; // Jina returns markdown
+                                }
+                            } catch (err: any) {
+                                toolResult = JSON.stringify({ error: `Search error: ${err.message}` });
+                            }
                         } else {
                             toolResult = JSON.stringify({ error: "Unknown tool" });
                         }
