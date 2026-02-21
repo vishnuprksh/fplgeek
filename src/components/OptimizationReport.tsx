@@ -64,7 +64,6 @@ export function OptimizationReport({ result }: OptimizationReportProps) {
                                     </div>
                                     <div className="opt-transfer-arrow">
                                         <span className="arrow-icon">⇒</span>
-                                        <span className="gain-badge">+{t.gainPercent}%</span>
                                     </div>
                                     <div className="opt-transfer-in">
                                         <span className="opt-player-name in">{t.in.player.web_name}</span>
@@ -76,6 +75,10 @@ export function OptimizationReport({ result }: OptimizationReportProps) {
                                 </div>
                             );
                         })}
+                    </div>
+
+                    <div className="opt-transfers-note" style={{ fontSize: '0.8em', color: '#888', marginTop: '12px', fontStyle: 'italic', textAlign: 'center' }}>
+                        Note: Total XI Haul Gain may differ from the sum of individual transfer differences due to optimal bench rotation and formation changes.
                     </div>
                 </div>
             ) : (
