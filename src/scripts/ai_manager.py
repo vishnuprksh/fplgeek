@@ -470,7 +470,7 @@ def predict_future():
     
     print("=== Generating Future Predictions ===")
     
-    all_predictions = {}  # player_id -> prediction
+    all_predictions: Dict[int, Dict[str, Any]] = {}  # player_id -> prediction
     
     for pos in POSITIONS:
         model_path = os.path.join(MODELS_DIR, f"model_{pos}.joblib")
@@ -566,13 +566,13 @@ def predict_future():
             
             # Always update R10 to use the latest (highest GW) sample's values,
             # so R10 reflects the player's most recent form, not stale history.
-            entry_ref = all_predictions[pid]
+            entry_ref = all_predictions[pid]  # type: ignore
             entry_ref["r10_min"] = r10_min
             entry_ref["r10_pts"] = r10_pts
             entry_ref["r10_inf"] = r10_inf
             entry_ref["r10_thr"] = r10_thr
             
-            entry = all_predictions[pid]
+            entry = all_predictions[pid]  # type: ignore
             entry["projections"].append({
                 "gw": gw, 
                 "xP": xp,
@@ -586,11 +586,12 @@ def predict_future():
                 entry["prob_gt_10_next"] = prob_gt_10
     
     # Finalize: compute total3Week, trim to 3 projections
-    results = []
+    results: List[Dict[str, Any]] = []
     for pid, entry in all_predictions.items():
         # Sort projections by GW
-        entry["projections"].sort(key=lambda x: x["gw"])
-        entry["projections"] = entry["projections"][:3]
+        projs: List[Dict[str, Any]] = entry["projections"]
+        projs.sort(key=lambda x: x["gw"])
+        entry["projections"] = projs[:3]
         entry["total3Week"] = sum(p["xP"] for p in entry["projections"])
         
         if len(entry["projections"]) > 0:
@@ -611,7 +612,7 @@ def predict_future():
     
     print(f"\nSaved {len(results)} player predictions to {out_path}")
     # Show top 10
-    for r in results[:10]:
+    for r in results[:10]:  # type: ignore
         print(f"  {r['name']}: {r['total3Week']:.1f} pts (Haul: {r['prob_gt_6']*100:.0f}%, Mega: {r['prob_gt_10']*100:.0f}%)")
 
 def main():
