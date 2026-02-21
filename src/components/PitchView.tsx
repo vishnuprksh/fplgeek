@@ -16,6 +16,7 @@ interface PitchViewProps {
     points?: Record<number, number>; // Historical points override
     statuses?: Record<number, string>; // Historical status override
     injuryChances?: Record<number, number>;
+    t100Ownership?: Record<number, number>;
 }
 
 
@@ -37,7 +38,8 @@ function PitchPlayer({
     onSwap,
     points,
     status,
-    injuryChance
+    injuryChance,
+    t100Ownership
 }: {
     pick: Pick;
     player: UnifiedPlayer;
@@ -51,6 +53,7 @@ function PitchPlayer({
     points?: number;
     status?: string;
     injuryChance?: number;
+    t100Ownership?: number;
 }) {
 
     const getImageUrl = (code: number) => `https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`;
@@ -188,8 +191,8 @@ function PitchPlayer({
                             : ((pick.selling_price ?? player.now_cost) / 10).toFixed(1)
                     }</span>
                 </div>
-                <div className="player-ownership" style={{ fontSize: '0.7em', color: '#00d2ff', marginTop: '2px' }}>
-                    {parseFloat(player.selected_by_percent).toFixed(1)}% owned
+                <div className="player-ownership" style={{ fontSize: '0.7em', color: t100Ownership !== undefined ? '#fbbf24' : '#00d2ff', marginTop: '2px' }}>
+                    {t100Ownership !== undefined ? `T100: ${t100Ownership.toFixed(0)}%` : `${parseFloat(player.selected_by_percent).toFixed(1)}% owned`}
                 </div>
                 <div className="player-points" style={{ fontSize: '0.8em' }}>
                     {points !== undefined ? points : player.event_points} (GW)
@@ -216,7 +219,8 @@ export function PitchView({
     onSwap,
     points,
     statuses,
-    injuryChances
+    injuryChances,
+    t100Ownership
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);
@@ -279,6 +283,7 @@ export function PitchView({
                 status={statuses ? statuses[player.id] : player.status}
                 injuryChance={injuryChances ? injuryChances[player.id] : player.chance_of_playing_this_round ?? undefined}
                 onSwap={onSwap}
+                t100Ownership={t100Ownership ? t100Ownership[player.id] : undefined}
             />
         );
     };

@@ -10,12 +10,13 @@ interface PlayerAnalysisProps {
     elements: Player[];
     teams: Team[];
     predictions?: Record<number, any>;
+    t100Ownership?: Record<number, number>;
 }
 
-type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr';
+type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr' | 't100_ownership';
 type SortDirection = 'asc' | 'desc';
 
-export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisProps) {
+export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: PlayerAnalysisProps) {
     const [search, setSearch] = useState('');
     const [positionFilter, setPositionFilter] = useState<number | 'all'>('all');
     const [teamFilter, setTeamFilter] = useState<number | 'all'>('all');
@@ -36,10 +37,11 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                 r10_pts: (pred as any)?.r10_pts || 0,
                 r10_inf: (pred as any)?.r10_inf || 0,
                 r10_thr: (pred as any)?.r10_thr || 0,
-                ownership: parseFloat(p.selected_by_percent || "0")
+                ownership: parseFloat(p.selected_by_percent || "0"),
+                t100_ownership: t100Ownership ? (t100Ownership[p.id] || 0) : 0
             };
         });
-    }, [elements, predictions]);
+    }, [elements, predictions, t100Ownership]);
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -142,6 +144,7 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                             <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                            <th onClick={() => handleSort('t100_ownership')} className="sortable">T100% {sortField === 't100_ownership' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                             <th onClick={() => handleSort('selected_by_percent')} className="sortable">Selected % {sortField === 'selected_by_percent' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                         </tr>
                     </thead>
@@ -167,6 +170,9 @@ export function PlayerAnalysis({ elements, teams, predictions }: PlayerAnalysisP
                                 <td>£{(player.now_cost / 10).toFixed(1)}m</td>
                                 <td className="font-bold">{player.total_points}</td>
                                 <td>{player.form}</td>
+                                <td style={{ color: (player as any).t100_ownership > 40 ? '#fbbf24' : (player as any).t100_ownership > 0 ? '#888' : '#444' }}>
+                                    {(player as any).t100_ownership > 0 ? `${(player as any).t100_ownership.toFixed(0)}%` : '-'}
+                                </td>
                                 <td>{player.selected_by_percent}%</td>
                             </tr>
                         ))}

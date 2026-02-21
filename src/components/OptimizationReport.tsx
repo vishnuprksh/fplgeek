@@ -6,7 +6,7 @@ interface OptimizationReportProps {
 }
 
 export function OptimizationReport({ result }: OptimizationReportProps) {
-    const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines } = result;
+    const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines, warnings } = result;
 
     const gainColor = netGainPercent > 0 ? '#00ff87' : netGainPercent < 0 ? '#ef4444' : '#888';
 
@@ -110,6 +110,26 @@ export function OptimizationReport({ result }: OptimizationReportProps) {
                     </div>
                 </div>
             </details>
+
+            {/* T100 Ownership Warnings */}
+            {warnings && warnings.length > 0 && (
+                <div className="opt-warnings">
+                    <h4 style={{ color: '#f59e0b', marginBottom: '8px' }}>⚠️ T100 Ownership Warnings</h4>
+                    {warnings.map((w, i) => (
+                        <div key={i} className="opt-warning-item" style={{
+                            background: 'rgba(245, 158, 11, 0.1)',
+                            border: '1px solid rgba(245, 158, 11, 0.3)',
+                            borderRadius: '6px',
+                            padding: '8px 12px',
+                            marginBottom: '6px',
+                            fontSize: '0.85em',
+                            color: '#fbbf24'
+                        }}>
+                            {w}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }

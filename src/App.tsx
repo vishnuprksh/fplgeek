@@ -31,6 +31,7 @@ function App() {
     staticData,
     fixtures,
     predictionsMap,
+    t100OwnershipMap,
     teamData,
     picksData,
     transfersHistory,
@@ -67,7 +68,7 @@ function App() {
     toggleOptimizationMode,
     handleToggleSell,
     runOptimization
-  } = useOptimization(activePicks, staticData, predictionsMap, bank);
+  } = useOptimization(activePicks, staticData, predictionsMap, bank, t100OwnershipMap);
 
 
   // Load default team when static data is ready (and no team data yet)
@@ -257,6 +258,7 @@ function App() {
                           selectedToSell={selectedToSell}
                           onToggleSell={handleToggleSell}
                           onSwap={handleSwap}
+                          t100Ownership={t100OwnershipMap}
                         />
                       )}
 
@@ -301,6 +303,7 @@ function App() {
                 elements={staticData.elements}
                 teams={staticData.teams}
                 predictions={predictionsMap}
+                t100Ownership={t100OwnershipMap}
               />
             </div>
           )}
@@ -331,6 +334,7 @@ function App() {
             onClose={() => setSelectedTransferPlayer(null)}
             onTransfer={onTransferWrapper}
             predictions={predictionsMap}
+            t100Ownership={t100OwnershipMap}
           />
         )}
       </div >

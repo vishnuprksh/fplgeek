@@ -11,12 +11,13 @@ interface TransferModalProps {
     onClose: () => void;
     onTransfer: (playerOut: Player, playerIn: Player) => void;
     predictions?: Record<number, any>;
+    t100Ownership?: Record<number, number>;
 }
 
-type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff';
+type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff' | 't100_ownership';
 type SortDirection = 'asc' | 'desc';
 
-export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, predictions }: TransferModalProps) {
+export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, predictions, t100Ownership }: TransferModalProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortField, setSortField] = useState<SortField>('total_points');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -73,7 +74,8 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
             const pred = predictions ? predictions[e.id] : null;
             return {
                 ...e,
-                haul_3gw: pred?.prob_gt_6 || 0
+                haul_3gw: pred?.prob_gt_6 || 0,
+                t100_ownership: t100Ownership ? (t100Ownership[e.id] || 0) : 0
             };
         })
         .sort((a, b) => {
@@ -100,6 +102,10 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                 case 'diff':
                     valA = sellingPrice - a.now_cost;
                     valB = sellingPrice - b.now_cost;
+                    break;
+                case 't100_ownership':
+                    valA = a.t100_ownership;
+                    valB = b.t100_ownership;
                     break;
             }
 
@@ -152,6 +158,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                         <th>Team</th>
                                         <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('haul_3gw')} className="sortable">3GW Haul {sortField === 'haul_3gw' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                        <th onClick={() => handleSort('t100_ownership')} className="sortable">T100% {sortField === 't100_ownership' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('now_cost')} className="sortable">Cost {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('diff')} className="sortable">Diff {sortField === 'diff' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th>Action</th>
@@ -174,6 +181,9 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                 </td>
                                                 <td style={{ color: '#c084fc', fontWeight: 'bold' }}>
                                                     {(rec.haul_3gw * 100).toFixed(0)}%
+                                                </td>
+                                                <td style={{ color: rec.t100_ownership > 40 ? '#fbbf24' : rec.t100_ownership > 0 ? '#888' : '#444' }}>
+                                                    {rec.t100_ownership > 0 ? `${rec.t100_ownership.toFixed(0)}%` : '-'}
                                                 </td>
                                                 <td>£{(rec.now_cost / 10).toFixed(1)}</td>
                                                 <td className={balanceChange >= 0 ? "positive-diff" : "negative-diff"}>

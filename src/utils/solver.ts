@@ -26,6 +26,7 @@ export interface OptimizationResult {
     netGainPercent: number;
     formationSelected: string;
     logLines: string[];  // human-readable explanation
+    warnings?: string[];
 }
 
 const MAX_PER_TEAM = 3;
@@ -39,6 +40,23 @@ function squadXIHaul(squad: PredictionResult[]): number {
 // ─── Helper: format percentage ──────────────────────────────────────────────
 function pct(v: number) { return +(v * 100).toFixed(1); }
 
+// ─── Helper: format formation string ────────────────────────────────────────
+function formatFormation(squad: PredictionResult[]): string {
+    const d = squad.filter(p => p.player.element_type === 2).length;
+    const m = squad.filter(p => p.player.element_type === 3).length;
+    const f = squad.filter(p => p.player.element_type === 4).length;
+    return `1-${d}-${m}-${f}`;
+}
+
+/** Binomial coefficient C(n, k) — for logging only */
+function comb(n: number, k: number): number {
+    if (k > n) return 0;
+    if (k === 0 || k === n) return 1;
+    let result = 1;
+    for (let i = 0; i < k; i++) { result = result * (n - i) / (i + 1); }
+    return Math.round(result);
+}
+
 // ─── optimizeLineup ─────────────────────────────────────────────────────────
 export function optimizeLineup(predictions: PredictionResult[], budget: number = 1000): Lineup {
     const sorted = [...predictions].sort((a, b) => b.totalForecast - a.totalForecast);
@@ -51,10 +69,10 @@ export function optimizeLineup(predictions: PredictionResult[], budget: number =
         teamCounts.set(p.player.team, (teamCounts.get(p.player.team) || 0) + 1);
     };
 
-    let gks = sorted.filter(p => p.player.element_type === 1);
-    let defs = sorted.filter(p => p.player.element_type === 2);
-    let mids = sorted.filter(p => p.player.element_type === 3);
-    let fwds = sorted.filter(p => p.player.element_type === 4);
+    const gks = sorted.filter(p => p.player.element_type === 1);
+    const defs = sorted.filter(p => p.player.element_type === 2);
+    const mids = sorted.filter(p => p.player.element_type === 3);
+    const fwds = sorted.filter(p => p.player.element_type === 4);
 
     for (const p of gks) { if (canAdd(p)) { addPlayer(p); break; } }
 
@@ -254,7 +272,7 @@ export function pickBestXI(squad: PredictionResult[], totalSquadCost: number = 0
     return bestLineup;
 }
 
-// ─── optimizeTransfers (legacy — still works for manual sell mode) ──────────
+// ─── optimizeTransfers (legacy — for manual sell mode) ──────────────────────
 export function optimizeTransfers(
     currentSquad: PredictionResult[],
     excludedIds: Set<number>,
@@ -265,81 +283,119 @@ export function optimizeTransfers(
     const validSquad = currentSquad.filter(p => !excludedIds.has(p.player.id));
     const playersToRemove = currentSquad.filter(p => excludedIds.has(p.player.id));
 
-    let currentBudget = bank + playersToRemove.reduce((sum, p) => sum + p.cost, 0);
+    const pooledBudget = bank + playersToRemove.reduce((sum, p) => sum + p.cost, 0);
 
-    const teamCounts = new Map<number, number>();
-    validSquad.forEach(p => {
-        teamCounts.set(p.player.team, (teamCounts.get(p.player.team) || 0) + 1);
-    });
+    // Use the same simultaneous slot-filling as the main optimizer
+    const slots = playersToRemove.map(p => ({ type: p.player.element_type }));
+    const { filled, success } = fillSlots(validSquad, slots, pooledBudget, allCandidates);
 
     const newTransfers: { in: PredictionResult, out: PredictionResult }[] = [];
-    const newSquad = [...validSquad];
+    let newSquad: PredictionResult[];
 
-    const minCosts: Record<number, number> = { 1: 40, 2: 40, 3: 45, 4: 45 };
-    let remainingBudget = currentBudget;
-    const pendingSlots = [...playersToRemove];
-
-    for (const pOut of playersToRemove) {
-        const type = pOut.player.element_type;
-        const otherSlots = pendingSlots.filter(s => s !== pOut);
-        const reservedForOthers = otherSlots.reduce((sum, s) => sum + (minCosts[s.player.element_type] || 40), 0);
-        const maxBudgetForThisSlot = remainingBudget - reservedForOthers;
-
-        const candidates = allCandidates
-            .filter(c =>
-                c.player.element_type === type &&
-                !newSquad.some(s => s.player.id === c.player.id) &&
-                !newTransfers.some(t => t.in.player.id === c.player.id) &&
-                c.cost <= maxBudgetForThisSlot
-            )
-            .sort((a, b) => b.totalForecast - a.totalForecast);
-
-        let bestFit: PredictionResult | null = null;
-        for (const cand of candidates) {
-            const tCount = teamCounts.get(cand.player.team) || 0;
-            if (tCount < MAX_PER_TEAM) { bestFit = cand; break; }
-        }
-
-        if (bestFit) {
-            newTransfers.push({ in: bestFit, out: pOut });
-            newSquad.push(bestFit);
-            teamCounts.set(bestFit.player.team, (teamCounts.get(bestFit.player.team) || 0) + 1);
-            remainingBudget -= bestFit.cost;
-            const idx = pendingSlots.indexOf(pOut);
-            if (idx > -1) pendingSlots.splice(idx, 1);
-        } else {
-            const fodder = allCandidates
-                .filter(c =>
-                    c.player.element_type === type &&
-                    !newSquad.some(s => s.player.id === c.player.id) &&
-                    c.cost <= maxBudgetForThisSlot
-                )
-                .sort((a, b) => a.cost - b.cost)[0];
-
-            if (fodder) {
-                newTransfers.push({ in: fodder, out: pOut });
-                newSquad.push(fodder);
-                remainingBudget -= fodder.cost;
-            } else {
-                newSquad.push(pOut);
-            }
-        }
+    if (success) {
+        newSquad = [...validSquad, ...filled];
+        playersToRemove.forEach((pOut, i) => {
+            newTransfers.push({ in: filled[i], out: pOut });
+        });
+    } else {
+        // Fallback: keep original squad
+        newSquad = [...currentSquad];
     }
 
     const finalLineup = pickBestXI(newSquad, newSquad.reduce((s, p) => s + p.cost, 0));
     return { lineup: finalLineup, transfers: newTransfers };
 }
 
-// ─── optimizeWithAllowance ── MAIN NEW FUNCTION ───────────────────────────────
+// ─── Combinatorial helpers ────────────────────────────────────────────────────
+
+/** Generate all k-size index combinations from [0..n-1] */
+function* combinations(n: number, k: number): Generator<number[]> {
+    const c = Array.from({ length: k }, (_, i) => i);
+    while (true) {
+        yield [...c];
+        let i = k - 1;
+        while (i >= 0 && c[i] === n - k + i) i--;
+        if (i < 0) return;
+        c[i]++;
+        for (let j = i + 1; j < k; j++) c[j] = c[j - 1] + 1;
+    }
+}
+
 /**
- * Greedy best-swap optimizer.
- * For each allowance slot it:
- *  1. Computes baseline XI haul
- *  2. Tries replacing every player in the squad with every affordable same-position candidate
- *  3. Picks the swap with the highest haul gain
- *  4. Repeats for remaining allowances
+ * Given retained squad + N empty position slots to fill,
+ * find the best N candidates using a pooled budget.
  *
- * Returns a rich OptimizationResult with per-transfer details and log lines.
+ * All slots are filled simultaneously with a shared budget pool.
+ * Slots are sorted expensive-first so budget is allocated optimally.
+ */
+function fillSlots(
+    retained: PredictionResult[],
+    slots: { type: number }[],
+    pooledBudget: number,
+    allCandidates: PredictionResult[]
+): { filled: PredictionResult[]; success: boolean } {
+    const minCosts: Record<number, number> = { 1: 40, 2: 40, 3: 45, 4: 45 };
+
+    // Sort slots by highest min-cost first → expensive positions get first pick
+    const indexedSlots = slots.map((s, origIdx) => ({ ...s, origIdx }));
+    indexedSlots.sort((a, b) => (minCosts[b.type] || 40) - (minCosts[a.type] || 40));
+
+    const retainedIds = new Set(retained.map(p => p.player.id));
+    const teamCounts = new Map<number, number>();
+    retained.forEach(p => teamCounts.set(p.player.team, (teamCounts.get(p.player.team) || 0) + 1));
+
+    const filledByOrig: (PredictionResult | null)[] = new Array(slots.length).fill(null);
+    const pickedIds = new Set<number>();
+    let budget = pooledBudget;
+
+    for (let i = 0; i < indexedSlots.length; i++) {
+        const slot = indexedSlots[i];
+        // Reserve minimum cost for remaining unfilled slots
+        const remaining = indexedSlots.slice(i + 1);
+        const reserved = remaining.reduce((s, sl) => s + (minCosts[sl.type] || 40), 0);
+        const maxForThisSlot = budget - reserved;
+
+        const candidates = allCandidates
+            .filter(c =>
+                c.player.element_type === slot.type &&
+                !retainedIds.has(c.player.id) &&
+                !pickedIds.has(c.player.id) &&
+                c.cost <= maxForThisSlot &&
+                ((teamCounts.get(c.player.team) || 0) < MAX_PER_TEAM)
+            )
+            .sort((a, b) => b.totalForecast - a.totalForecast);
+
+        if (candidates.length === 0) return { filled: [], success: false };
+
+        const pick = candidates[0];
+        filledByOrig[slot.origIdx] = pick;
+        pickedIds.add(pick.player.id);
+        teamCounts.set(pick.player.team, (teamCounts.get(pick.player.team) || 0) + 1);
+        budget -= pick.cost;
+    }
+
+    // Check all slots were filled
+    const filled = filledByOrig.filter(Boolean) as PredictionResult[];
+    if (filled.length !== slots.length) return { filled: [], success: false };
+
+    return { filled, success: true };
+}
+
+// ─── optimizeWithAllowance ── COMBINATORIAL SEARCH ────────────────────────────
+/**
+ * Combinatorial optimizer.
+ *
+ * For N transfers:
+ *  1. Generates all C(15, N) combinations of N players to remove
+ *  2. For each combo, pools the freed budget (bank + all sell prices)
+ *  3. Fills all N positional slots simultaneously with best available candidates
+ *  4. Picks the combo with the highest resulting XI haul
+ *
+ * This avoids the sequential greedy problem where an early expensive transfer
+ * prevents a globally better allocation of budget.
+ *
+ * For N > 5, uses a pruned search (only considers removing players with
+ * below-median haul) to keep runtime reasonable.
  */
 export function optimizeWithAllowance(
     currentSquad: PredictionResult[],
@@ -348,26 +404,17 @@ export function optimizeWithAllowance(
     allowance: number
 ): OptimizationResult {
     const logLines: string[] = [];
-    const transfers: TransferDetail[] = [];
-
-    let squad = [...currentSquad];
-    const haulBefore = squadXIHaul(squad);
+    const haulBefore = squadXIHaul(currentSquad);
     logLines.push(`📊 Starting XI Haul: ${pct(haulBefore)}% across all starters`);
 
     if (allowance === 0) {
-        // Just optimise lineup / formation
-        const lineup = pickBestXI(squad, squad.reduce((s, p) => s + p.cost, 0));
-        const formations = lineup.starting11;
-        const defCount = formations.filter(p => p.player.element_type === 2).length;
-        const midCount = formations.filter(p => p.player.element_type === 3).length;
-        const fwdCount = formations.filter(p => p.player.element_type === 4).length;
-        const formStr = `1-${defCount}-${midCount}-${fwdCount}`;
+        const lineup = pickBestXI(currentSquad, currentSquad.reduce((s, p) => s + p.cost, 0));
+        const formStr = formatFormation(lineup.starting11);
         logLines.push(`🔄 No transfers allowed — optimising formation only`);
         logLines.push(`✅ Best formation: ${formStr}`);
-
-        const haulAfter = squadXIHaul(squad);
+        const haulAfter = squadXIHaul(currentSquad);
         return {
-            lineup, squadAfter: squad, transfers: [],
+            lineup, squadAfter: [...currentSquad], transfers: [],
             haulBefore, haulAfter,
             netGainPercent: pct(haulAfter - haulBefore),
             formationSelected: formStr,
@@ -375,90 +422,98 @@ export function optimizeWithAllowance(
         };
     }
 
-    for (let round = 1; round <= allowance; round++) {
-        const baselineHaul = squadXIHaul(squad);
-        let bestGain = -Infinity;
-        let bestSwap: { outIdx: number; candidate: PredictionResult } | null = null;
+    // For large N, prune: only consider removing players with below-median haul
+    let eligibleIndices: number[];
+    if (allowance <= 5) {
+        eligibleIndices = currentSquad.map((_, i) => i);
+    } else {
+        // Prune: sort by haul ascending, take bottom 10 as removal candidates
+        const sorted = currentSquad.map((p, i) => ({ haul: p.totalForecast, idx: i }))
+            .sort((a, b) => a.haul - b.haul);
+        const topN = Math.min(10, currentSquad.length);
+        eligibleIndices = sorted.slice(0, topN).map(s => s.idx).sort((a, b) => a - b);
+    }
 
-        // Build team usage counts from current squad
-        const teamCounts = new Map<number, number>();
-        squad.forEach(p => teamCounts.set(p.player.team, (teamCounts.get(p.player.team) || 0) + 1));
+    const effectiveAllowance = Math.min(allowance, eligibleIndices.length);
+    const comboCount = comb(eligibleIndices.length, effectiveAllowance);
+    logLines.push(`🔍 Searching ${comboCount} removal combinations (C(${eligibleIndices.length}, ${effectiveAllowance}))`);
 
-        // Try each player in squad as a potential sell
-        for (let i = 0; i < squad.length; i++) {
-            const pOut = squad[i];
-            const sellPrice = pOut.cost;
-            const budgetForSlot = bank + sellPrice; // bank + sell proceeds
+    let bestHaul = -Infinity;
+    let bestTransfers: TransferDetail[] = [];
+    let bestSquad: PredictionResult[] = [...currentSquad];
+    let combosEvaluated = 0;
 
-            // Candidates: same position, not already in squad, within budget, team limit OK
-            const squadIds = new Set(squad.map(p => p.player.id));
-            const candidates = allCandidates.filter(c =>
-                c.player.element_type === pOut.player.element_type &&
-                !squadIds.has(c.player.id) &&
-                c.cost <= budgetForSlot
-            );
+    for (const combo of combinations(eligibleIndices.length, effectiveAllowance)) {
+        // Map combo indices back to actual squad indices
+        const removeIndices = combo.map(ci => eligibleIndices[ci]);
+        const removedPlayers = removeIndices.map(i => currentSquad[i]);
 
-            for (const cand of candidates) {
-                // Team limit check: if adding cand, does it violate max 3 per team?
-                const candTeamCount = teamCounts.get(cand.player.team) || 0;
-                // pOut's team count will decrease by 1, so allow if team differs or cand team still has room
-                const effectiveCount = cand.player.team === pOut.player.team
-                    ? candTeamCount - 1   // pOut leaves, we slot one back in
-                    : candTeamCount;
-                if (effectiveCount >= MAX_PER_TEAM) continue;
+        // Pool budget: bank + all sell prices
+        const pooled = bank + removedPlayers.reduce((s, p) => s + p.cost, 0);
 
-                // Simulate swap
-                const trialSquad = [...squad];
-                trialSquad[i] = { ...cand };
+        // Retained squad = everyone not removed
+        const removeSet = new Set(removeIndices);
+        const retained = currentSquad.filter((_, i) => !removeSet.has(i));
 
-                const newHaul = squadXIHaul(trialSquad);
-                const gain = newHaul - baselineHaul;
+        // Slots to fill (one per removed player, same position type)
+        const slots = removedPlayers.map(p => ({ type: p.player.element_type }));
 
-                if (gain > bestGain) {
-                    bestGain = gain;
-                    bestSwap = { outIdx: i, candidate: cand };
-                }
-            }
+        // Fill all slots simultaneously with shared budget
+        const { filled, success } = fillSlots(retained, slots, pooled, allCandidates);
+        if (!success) continue;
+
+        // Build trial squad and score it
+        const trialSquad = [...retained, ...filled];
+        const haul = squadXIHaul(trialSquad);
+
+        if (haul > bestHaul) {
+            bestHaul = haul;
+            bestSquad = trialSquad;
+
+            // Build transfer details (preserving original order)
+            bestTransfers = removedPlayers.map((pOut, j) => {
+                const pIn = filled[j];
+                return {
+                    out: pOut,
+                    in: pIn,
+                    haulBefore: pOut.totalForecast,
+                    haulAfter: pIn.totalForecast,
+                    gainPercent: pct(pIn.totalForecast - pOut.totalForecast),
+                    costDiff: pIn.cost - pOut.cost
+                };
+            });
         }
 
-        if (!bestSwap || bestGain <= 0) {
-            logLines.push(`🔁 Round ${round}: No beneficial swap found — stopping early`);
-            break;
-        }
+        combosEvaluated++;
+    }
 
-        // Apply the swap
-        const pOut = squad[bestSwap.outIdx];
-        const pIn = bestSwap.candidate;
-        const costDiff = pIn.cost - pOut.cost;
+    logLines.push(`📦 Evaluated ${combosEvaluated} valid combinations`);
 
-        squad[bestSwap.outIdx] = { ...pIn };
-        bank = bank - costDiff; // update running bank
-
-        const detail: TransferDetail = {
-            out: pOut,
-            in: pIn,
-            haulBefore: pOut.totalForecast,
-            haulAfter: pIn.totalForecast,
-            gainPercent: pct(bestGain),
-            costDiff
+    if (bestTransfers.length === 0 || bestHaul <= haulBefore) {
+        logLines.push(`✅ No beneficial transfers found — current squad is optimal`);
+        const lineup = pickBestXI(currentSquad, currentSquad.reduce((s, p) => s + p.cost, 0));
+        const formStr = formatFormation(lineup.starting11);
+        return {
+            lineup, squadAfter: [...currentSquad], transfers: [],
+            haulBefore, haulAfter: haulBefore,
+            netGainPercent: 0,
+            formationSelected: formStr,
+            logLines
         };
-        transfers.push(detail);
+    }
 
-        const sign = costDiff >= 0 ? `-£${(costDiff / 10).toFixed(1)}m` : `+£${(Math.abs(costDiff) / 10).toFixed(1)}m`;
+    // Log each transfer
+    for (let i = 0; i < bestTransfers.length; i++) {
+        const t = bestTransfers[i];
+        const sign = t.costDiff >= 0 ? `-£${(t.costDiff / 10).toFixed(1)}m` : `+£${(Math.abs(t.costDiff) / 10).toFixed(1)}m`;
         logLines.push(
-            `🔄 Transfer ${round}: ${pOut.player.web_name} (${pct(pOut.totalForecast)}%) → ${pIn.player.web_name} (${pct(pIn.totalForecast)}%)  [gain: +${pct(bestGain)}%  cost: ${sign}]`
+            `🔄 Transfer ${i + 1}: ${t.out.player.web_name} (${pct(t.haulBefore)}%) → ${t.in.player.web_name} (${pct(t.haulAfter)}%)  [cost: ${sign}]`
         );
     }
 
-    // Final lineup optimisation
-    const finalLineup = pickBestXI(squad, squad.reduce((s, p) => s + p.cost, 0));
-    const formations = finalLineup.starting11;
-    const defCount = formations.filter(p => p.player.element_type === 2).length;
-    const midCount = formations.filter(p => p.player.element_type === 3).length;
-    const fwdCount = formations.filter(p => p.player.element_type === 4).length;
-    const formStr = `1-${defCount}-${midCount}-${fwdCount}`;
-
-    const haulAfter = squadXIHaul(squad);
+    const finalLineup = pickBestXI(bestSquad, bestSquad.reduce((s, p) => s + p.cost, 0));
+    const formStr = formatFormation(finalLineup.starting11);
+    const haulAfter = bestHaul;
     const netGainPercent = pct(haulAfter - haulBefore);
 
     logLines.push(`✅ Best formation: ${formStr}`);
@@ -466,8 +521,8 @@ export function optimizeWithAllowance(
 
     return {
         lineup: finalLineup,
-        squadAfter: squad,
-        transfers,
+        squadAfter: bestSquad,
+        transfers: bestTransfers,
         haulBefore,
         haulAfter,
         netGainPercent,
@@ -475,10 +530,3 @@ export function optimizeWithAllowance(
         logLines
     };
 }
-
-function selectedCost(squad: PredictionResult[]) {
-    return squad.reduce((sum, p) => sum + p.cost, 0);
-}
-
-// suppress unused warning
-void selectedCost;

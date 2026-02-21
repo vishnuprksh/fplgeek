@@ -3,13 +3,14 @@ import { optimizeTransfers, optimizeWithAllowance, pickBestXI } from '../utils/s
 import type { Pick, UnifiedPlayer } from '../types/fpl';
 import type { PredictionResult } from '../utils/predictions';
 import type { OptimizationResult } from '../utils/solver';
-import type { PredictionMap } from './useFPLData';
+import type { PredictionMap, T100OwnershipMap } from './useFPLData';
 
 export const useOptimization = (
     activePicks: Pick[],
     staticData: { elements: UnifiedPlayer[] } | null,
     predictionsMap: PredictionMap,
-    bank: number
+    bank: number,
+    t100OwnershipMap: T100OwnershipMap = {}
 ) => {
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [selectedToSell, setSelectedToSell] = useState<Set<number>>(new Set());
@@ -103,7 +104,7 @@ export const useOptimization = (
                     `📈 Final XI Haul: ${pct(haulAfter)}%  (was ${pct(haulBefore)}%, net gain: +${pct(haulAfter - haulBefore)}%)`
                 ];
 
-                setOptimizationResult({
+                const manualResult: OptimizationResult = {
                     lineup: legacyRes.lineup,
                     squadAfter: [],
                     transfers: legacyRes.transfers.map((t: any) => ({
@@ -119,15 +120,41 @@ export const useOptimization = (
                     netGainPercent: pct(haulAfter - haulBefore),
                     formationSelected: formStr,
                     logLines
-                });
+                };
+                manualResult.warnings = computeT100Warnings(manualResult);
+                setOptimizationResult(manualResult);
             } else {
                 // Smart allowance-based optimization (greedy search)
                 const res = optimizeWithAllowance(currentSquad, bank, allCandidates, transferAllowance);
+                res.warnings = computeT100Warnings(res);
                 setOptimizationResult(res);
             }
 
             setIsProcessing(false);
         }, 100);
+    };
+
+    // Compute T100 ownership warnings for an optimization result
+    const computeT100Warnings = (result: OptimizationResult): string[] => {
+        const warnings: string[] = [];
+        const allPlayers = [...result.lineup.starting11, ...result.lineup.bench];
+
+        const over40 = allPlayers.filter(p => (t100OwnershipMap[p.player.id] || 0) > 40).length;
+        const over20 = allPlayers.filter(p => (t100OwnershipMap[p.player.id] || 0) > 20).length;
+        const below10 = allPlayers.filter(p => (t100OwnershipMap[p.player.id] || 0) < 10);
+
+        if (over40 < 8) {
+            warnings.push(`⚠️ Only ${over40}/8 players have >40% T100 ownership (target: at least 8)`);
+        }
+        if (over20 < 12) {
+            warnings.push(`⚠️ Only ${over20}/12 players have >20% T100 ownership (target: at least 12)`);
+        }
+        if (below10.length > 0) {
+            const names = below10.map(p => `${p.player.web_name} (${(t100OwnershipMap[p.player.id] || 0).toFixed(0)}%)`);
+            warnings.push(`⚠️ ${below10.length} player(s) below 10% T100 ownership: ${names.join(', ')}`);
+        }
+
+        return warnings;
     };
 
     return {

@@ -6,6 +6,7 @@ interface OwnedPlayer {
     name: string;
     count: number;
     percent: number;
+    effective_ownership: number;
 }
 
 interface GWData {
@@ -30,6 +31,7 @@ export function LeagueAnalysis() {
     const [data, setData] = useState<LeagueData | null>(null);
     const [loading, setLoading] = useState(true);
     const [sortConfig, setSortConfig] = useState<SortConfig | null>(null);
+    const [metric, setMetric] = useState<'percent' | 'effective_ownership'>('percent');
 
     useEffect(() => {
         fetch('/data/league_analysis.json')
@@ -72,7 +74,7 @@ export function LeagueAnalysis() {
                     playerMap.set(p.name, { name: p.name });
                 }
                 const row = playerMap.get(p.name)!;
-                row[`gw${h.gw}`] = p.percent;
+                row[`gw${h.gw}`] = p[metric] || 0;
             });
         });
 
@@ -89,7 +91,7 @@ export function LeagueAnalysis() {
         const columns = gws.sort((a, b) => b - a); // Descending order: Latest first
 
         return { rows, columns };
-    }, [data]);
+    }, [data, metric]);
 
     const sortedRows = useMemo(() => {
         let sortableItems = [...tableData.rows];
@@ -129,6 +131,20 @@ export function LeagueAnalysis() {
                     <span>League ID: {data.league_id}</span>
                     <span>Sample Size: {data.total_teams_analyzed} Teams</span>
                 </div>
+                <div className="metric-toggle">
+                    <button
+                        className={`toggle-btn ${metric === 'percent' ? 'active' : ''}`}
+                        onClick={() => setMetric('percent')}
+                    >
+                        Ownership
+                    </button>
+                    <button
+                        className={`toggle-btn ${metric === 'effective_ownership' ? 'active' : ''}`}
+                        onClick={() => setMetric('effective_ownership')}
+                    >
+                        Effective Ownership (EO)
+                    </button>
+                </div>
             </div>
 
             <div className="table-container">
@@ -158,9 +174,9 @@ export function LeagueAnalysis() {
                                 <td className="player-col">{row.name}</td>
                                 {tableData.columns.map(gw => {
                                     const val = row[`gw${gw}`] as number;
-                                    // Color scaling for heat map effect? Simple opacity for now.
-                                    // Max is 100.
-                                    const intensity = val / 100;
+                                    // Max percent is usually ~100%, EO max is ~300%
+                                    const maxExpected = metric === 'percent' ? 100 : 200;
+                                    const intensity = Math.min(val / maxExpected, 1);
                                     const color = `rgba(0, 255, 135, ${0.1 + (intensity * 0.9)})`;
                                     const textColor = intensity > 0.5 ? '#000' : '#fff'; // Contrast text
 

@@ -3,6 +3,8 @@ import { fplService } from '../services/fpl';
 import { getDataProvider } from '../services/dataFactory';
 import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl';
 
+export type T100OwnershipMap = Record<number, number>;
+
 export interface PredictionMap {
     [id: number]: {
         totalForecast: number;
@@ -21,6 +23,7 @@ export const useFPLData = () => {
     const [staticData, setStaticData] = useState<BootstrapStatic | null>(null);
     const [fixtures, setFixtures] = useState<Match[]>([]);
     const [predictionsMap, setPredictionsMap] = useState<PredictionMap>({});
+    const [t100OwnershipMap, setT100OwnershipMap] = useState<T100OwnershipMap>({});
 
     const [teamData, setTeamData] = useState<TeamEntry | null>(null);
     const [picksData, setPicksData] = useState<TeamPicks | null>(null);
@@ -65,6 +68,25 @@ export const useFPLData = () => {
                         };
                     });
                     setPredictionsMap(map);
+                }
+
+                // Load T100 ownership from league analysis
+                try {
+                    const leagueRes = await fetch('/data/league_analysis.json');
+                    const contentType = leagueRes.headers.get('content-type');
+                    if (leagueRes.ok && contentType && contentType.includes('application/json')) {
+                        const leagueData = await leagueRes.json();
+                        if (leagueData.history && leagueData.history.length > 0) {
+                            const latestGw = leagueData.history[leagueData.history.length - 1];
+                            const ownershipMap: T100OwnershipMap = {};
+                            latestGw.top_owned.forEach((p: any) => {
+                                ownershipMap[p.id] = p.percent;
+                            });
+                            setT100OwnershipMap(ownershipMap);
+                        }
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Could not load league analysis for T100 ownership', e);
                 }
 
             } catch (e) {
@@ -116,6 +138,7 @@ export const useFPLData = () => {
         staticData,
         fixtures,
         predictionsMap,
+        t100OwnershipMap,
         teamData,
         picksData,
         transfersHistory,
