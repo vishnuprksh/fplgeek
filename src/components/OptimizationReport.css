@@ -292,3 +292,67 @@
     color: #00ff87;
     box-shadow: 0 0 10px rgba(0, 255, 135, 0.15);
 }
+
+/* ─── Mobile Responsive ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+    .opt-report {
+        padding: 14px;
+    }
+
+    .opt-summary-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .opt-arrow {
+        transform: rotate(90deg);
+        margin: -4px 0;
+        align-self: center;
+    }
+
+    .opt-metric[style*="margin-left: auto"] {
+        margin-left: 0 !important;
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+    }
+
+    .opt-transfer-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .opt-transfer-number {
+        align-self: flex-start;
+        margin-bottom: 2px;
+    }
+
+    .opt-transfer-out,
+    .opt-transfer-in {
+        width: 100%;
+    }
+
+    .opt-transfer-arrow {
+        align-self: center;
+        transform: rotate(90deg);
+    }
+
+    .opt-transfer-cost {
+        margin-left: 0;
+        width: 100%;
+        text-align: right;
+        margin-top: 4px;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .transfer-allowance-selector {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+}

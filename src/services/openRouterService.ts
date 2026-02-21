@@ -13,10 +13,15 @@ export interface ChatMessage {
     tool_call_id?: string; // when providing tool response
 }
 
+interface ChatSession {
+    getMessages: () => ChatMessage[];
+    sendMessage: (message: string, onStatus?: (status: string) => void) => Promise<string>;
+}
+
 export const openRouterService = {
-    async startChat(teamData: TeamEntry, picks: Pick[], elements: Player[]) {
+    async startChat(teamData: TeamEntry, picks: Pick[], elements: Player[]): Promise<ChatSession> {
         // Prepare context data
-        const bank = teamData.last_deadline_bank || teamData.current_event_squad_total_value; // Fallback if bank not available
+        const bank = teamData.last_deadline_bank || teamData.current_event_squad_total_value;
         const activePlayers = picks.map(p => elements.find(e => e.id === p.element)).filter(Boolean) as Player[];
 
         // System Prompt configuring the agent
@@ -31,7 +36,6 @@ Instructions:
 - If a user asks a question about their team, ALWAYS call the \`get_current_team\` tool first to orient yourself.
 - If a user asks for transfer recommendations or who is best/weakest, analyze the current team, then call \`search_players\` to find specific replacements.
 - Be decisive. You are equipped with knowledge and tools; use them to calculate budgets and compare players before answering.
-- Use the online web search capability automatically integrated into your model to read recent news (injuries, manager press conferences) if a player's status is in doubt.
 - Output your final answer in clean, easy-to-read markdown.
 `
         };
@@ -78,32 +82,22 @@ Instructions:
         // The stateful history of the conversation
         let messages: ChatMessage[] = [systemInstruction];
 
-        const chatSession = {
-            getMessages: () => messages.filter(m => m.role !== 'system'),
-
-            sendMessage: async (userMessage: string): Promise<string> => {
-                messages.push({ role: "user", content: userMessage });
-
-                return await executeChatLoop();
-            }
-        };
-
-        const executeChatLoop = async (): Promise<string> => {
+        const executeChatLoop = async (onStatus?: (status: string) => void): Promise<string> => {
             try {
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: {
                         "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
-                        "HTTP-Referer": "http://localhost:5173", // Optional, for OpenRouter tracking
-                        "X-Title": "FPL Geek", // Optional, for OpenRouter tracking
+                        "HTTP-Referer": "http://localhost:5173",
+                        "X-Title": "FPL Geek",
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         model: MODEL_NAME,
                         messages: messages,
                         tools: tools,
-                        tool_choice: "auto",
-                        plugins: [{ id: "web", max_results: 3 }] // Enable OpenRouter native web search plugin
+                        tool_choice: "auto"
+                        // Removed web search plugin to save cost
                     })
                 });
 
@@ -124,6 +118,13 @@ Instructions:
                         let toolResult = "";
 
                         console.log(`Agent invoking tool: ${functionName}`, args);
+
+                        // Notify UI about the action
+                        if (onStatus) {
+                            if (functionName === "get_current_team") onStatus("🔍 Analyzing your current squad...");
+                            else if (functionName === "search_players") onStatus(`🔎 Searching for ${args.search_term || 'available'} players...`);
+                            else onStatus(`⚙️ Executing ${functionName}...`);
+                        }
 
                         if (functionName === "get_current_team") {
                             const squadStr = activePlayers.map(p =>
@@ -155,10 +156,8 @@ Instructions:
                                 );
                             }
 
-                            // Sort by total points to return the best ones first
                             filtered = filtered.sort((a, b) => (b.total_points || 0) - (a.total_points || 0));
 
-                            // Return top 15 matches to save tokens
                             const topMatches = filtered.slice(0, 15).map(p => ({
                                 name: p.web_name,
                                 pos: p.element_type,
@@ -174,7 +173,6 @@ Instructions:
                             toolResult = JSON.stringify({ error: "Unknown tool" });
                         }
 
-                        // Append tool response
                         messages.push({
                             role: "tool",
                             content: toolResult,
@@ -184,14 +182,22 @@ Instructions:
                     }
 
                     // Loop back to the model with the tool results
-                    return executeChatLoop();
+                    return executeChatLoop(onStatus);
                 } else {
-                    // No tool calls, return final text
                     return assistantMessage.content || "";
                 }
             } catch (error) {
                 console.error("OpenRouter Agent error:", error);
                 throw error;
+            }
+        };
+
+        const chatSession = {
+            getMessages: () => messages.filter(m => m.role !== 'system'),
+
+            sendMessage: async (userMessage: string, onStatus?: (status: string) => void): Promise<string> => {
+                messages.push({ role: "user", content: userMessage });
+                return await executeChatLoop(onStatus);
             }
         };
 

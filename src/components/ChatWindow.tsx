@@ -24,7 +24,8 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const [chatSession, setChatSession] = useState<ChatSession | null>(null);
+    const [statusUpdates, setStatusUpdates] = useState<string[]>([]);
+    const [chatSession, setChatSession] = useState<any | null>(null);
     const [error, setError] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +35,7 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
 
     useEffect(() => {
         scrollToBottom();
-    }, [messages]);
+    }, [messages, statusUpdates]);
 
     // Automatically start the chat session once data is available
     useEffect(() => {
@@ -53,7 +54,10 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
             setChatSession(chat);
 
             // Optional: Send an initial invisible prompt to get the agent to introduce itself
-            const responseText = await chat.sendMessage("Hi! Please introduce yourself to the user and briefly mention what tools you have available. Keep it under 2 sentences.");
+            const responseText = await chat.sendMessage(
+                "Hi! Please introduce yourself to the user and briefly mention what tools you have available. Keep it under 2 sentences.",
+                (status: string) => setStatusUpdates(prev => [...prev, status])
+            );
 
             setMessages([{ role: 'model', text: responseText }]);
         } catch (err: any) {
@@ -61,6 +65,7 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
             setError(err.message || "Failed to start chat. Please try again.");
         } finally {
             setLoading(false);
+            setStatusUpdates([]);
         }
     };
 
@@ -72,15 +77,20 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
         setInput('');
         setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
         setLoading(true);
+        setStatusUpdates([]);
 
         try {
-            const responseText = await chatSession.sendMessage(userMsg);
+            const responseText = await chatSession.sendMessage(
+                userMsg,
+                (status: string) => setStatusUpdates(prev => [...prev, status])
+            );
             setMessages(prev => [...prev, { role: 'model', text: responseText }]);
         } catch (err: any) {
             console.error(err);
             setError("Failed to send message.");
         } finally {
             setLoading(false);
+            setStatusUpdates([]);
         }
     };
 
@@ -93,14 +103,18 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
         <div className="chat-window">
             <div className="chat-header">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <h3>💬 AI Assistant (GLM-4.7-Flash Agent)</h3>
+                    <h3>💬 AI Assistant</h3>
                     {onClose && (
                         <button className="close-chat-btn" onClick={onClose} aria-label="Close Assistant">
                             ✖
                         </button>
                     )}
                 </div>
-                {loading && <span className="loading-indicator">Thinking...</span>}
+                {loading && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="loading-indicator">Thinking...</span>
+                    </div>
+                )}
             </div>
 
             <div className="chat-messages">
@@ -117,6 +131,16 @@ export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowPro
                         </div>
                     </div>
                 ))}
+
+                {/* Status Updates (Thinking process) */}
+                {statusUpdates.length > 0 && (
+                    <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.03)', padding: '8px 12px', borderRadius: '8px', borderLeft: '3px solid #00ff87', fontSize: '0.8rem', color: '#888', fontStyle: 'italic', display: 'flex', flexDirection: 'column', gap: '4px', maxWidth: '85%' }}>
+                        {statusUpdates.map((s, i) => (
+                            <div key={i} className="fade-in">{s}</div>
+                        ))}
+                    </div>
+                )}
+
                 <div ref={messagesEndRef} />
             </div>
 
