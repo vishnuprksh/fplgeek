@@ -52,13 +52,16 @@ for pos in POSITIONS:
         if len(hist_arr) == 0:
             aggs = np.zeros(len(AGG_INDICES) * len(AGG_WINDOWS))
         else:
+            played_mask = hist_arr[:, 0] > 0  # 0 is IDX_MIN
+            played_arr = hist_arr[played_mask]
+            
             def get_agg(n: int) -> np.ndarray:
-                available = min(n, len(hist_arr))
+                available = min(n, len(played_arr))
                 if available == 0:
                     return np.zeros(len(AGG_INDICES))
-                sub = hist_arr[:available]
+                sub = played_arr[-available:]
                 subset_vals = sub[:, AGG_INDICES]
-                return np.sum(subset_vals, axis=0) / n
+                return np.sum(subset_vals, axis=0) / available
 
             agg_parts = [get_agg(w) for w in AGG_WINDOWS]
             aggs = np.concatenate(agg_parts)
