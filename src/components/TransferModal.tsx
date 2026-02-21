@@ -14,7 +14,7 @@ interface TransferModalProps {
     t100Ownership?: Record<number, number>;
 }
 
-type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff' | 't100_ownership';
+type SortField = 'total_points' | 'form' | 'haul_gain' | 'now_cost' | 'diff' | 't100_ownership';
 type SortDirection = 'asc' | 'desc';
 
 export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, predictions, t100Ownership }: TransferModalProps) {
@@ -24,9 +24,11 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
 
     const getTeamName = (id: number) => teams.find(t => t.id === id)?.short_name;
 
-    // Get outgoing player's actual selling price
+    // Get outgoing player's actual selling price and haul
     const currentPick = currentPicks.find(p => p.element === player.id);
     const sellingPrice = currentPick?.selling_price ?? player.now_cost;
+    const currentPred = predictions ? predictions[player.id] : null;
+    const currentHaul = currentPred?.prob_gt_6 || 0;
 
     // Helper: Check if player can be transferred in
     const getTransferStatus = (target: Player) => {
@@ -74,7 +76,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
             const pred = predictions ? predictions[e.id] : null;
             return {
                 ...e,
-                haul_3gw: pred?.prob_gt_6 || 0,
+                haul_gain: (pred?.prob_gt_6 || 0) - currentHaul,
                 t100_ownership: t100Ownership ? (t100Ownership[e.id] || 0) : 0
             };
         })
@@ -91,9 +93,9 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                     valA = parseFloat(a.form) || 0;
                     valB = parseFloat(b.form) || 0;
                     break;
-                case 'haul_3gw':
-                    valA = a.haul_3gw;
-                    valB = b.haul_3gw;
+                case 'haul_gain':
+                    valA = a.haul_gain;
+                    valB = b.haul_gain;
                     break;
                 case 'now_cost':
                     valA = a.now_cost;
@@ -157,7 +159,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                         <th onClick={() => handleSort('total_points')} className="sortable">Name {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th>Team</th>
                                         <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                        <th onClick={() => handleSort('haul_3gw')} className="sortable">3GW Haul {sortField === 'haul_3gw' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                        <th onClick={() => handleSort('haul_gain')} className="sortable">Haul Gain {sortField === 'haul_gain' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('t100_ownership')} className="sortable">T100% {sortField === 't100_ownership' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('now_cost')} className="sortable">Cost {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('diff')} className="sortable">Diff {sortField === 'diff' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -186,8 +188,8 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                 <td style={{ color: '#fbbf24', fontWeight: 500 }}>
                                                     {rec.form}
                                                 </td>
-                                                <td style={{ color: '#c084fc', fontWeight: 'bold' }}>
-                                                    {(rec.haul_3gw * 100).toFixed(0)}%
+                                                <td style={{ color: rec.haul_gain > 0 ? '#00ff87' : rec.haul_gain < 0 ? '#ef4444' : '#888', fontWeight: 'bold' }}>
+                                                    {rec.haul_gain > 0 ? '+' : ''}{(rec.haul_gain * 100).toFixed(1)}%
                                                 </td>
                                                 <td style={{ color: rec.t100_ownership > 40 ? '#fbbf24' : rec.t100_ownership > 0 ? '#888' : '#444' }}>
                                                     {rec.t100_ownership > 0 ? `${rec.t100_ownership.toFixed(0)}%` : '-'}
