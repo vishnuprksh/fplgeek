@@ -76,7 +76,8 @@ def load_and_process_data(position):
                 available = min(n, len(played_arr))
                 if available == 0:
                     return np.zeros(len(AGG_INDICES))
-                sub = played_arr[:available]
+                # history_sequence is oldest-first, so the most recent games are at the end
+                sub = played_arr[-available:]
                 subset_vals = sub[:, AGG_INDICES]
                 total = np.sum(subset_vals, axis=0)
                 return total / available

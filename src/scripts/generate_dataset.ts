@@ -192,7 +192,7 @@ function main() {
                 // Construct History Sequence
                 const seqData: number[][] = [];
 
-                for (let k = 1; k <= LOOKBACK; k++) {
+                for (let k = LOOKBACK; k >= 1; k--) {
                     const past = history[i - k];
                     // Calculate form for this past match (avg points from previous 4 matches)
                     let pastForm = 0;
@@ -202,7 +202,7 @@ function main() {
                         pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
                     }
 
-                    seqData.unshift([
+                    seqData.push([
                         parseFloatSafe(past.minutes),
                         parseFloatSafe(past.expected_goals),
                         parseFloatSafe(past.expected_assists),
@@ -275,17 +275,17 @@ function main() {
         }
 
         let placeholderSeq: number[][] = [];
-        for (let k = 0; k < LOOKBACK; k++) {
-            const past = history[history.length - 1 - k]; // Last 10 matches
+        for (let k = LOOKBACK; k >= 1; k--) {
+            const past = history[history.length - k]; // Oldest to newest in the Lookback window
             // Calculate form for this past match
             let pastForm = 0;
-            if (history.length - 1 - k >= 4) {
-                const formMatches = history.slice(Math.max(0, history.length - 1 - k - 4), history.length - 1 - k);
+            if (history.length - k >= 4) {
+                const formMatches = history.slice(Math.max(0, history.length - k - 4), history.length - k);
                 const formSum = formMatches.reduce((sum, m) => sum + m.total_points, 0);
                 pastForm = formMatches.length > 0 ? formSum / formMatches.length : 0;
             }
 
-            placeholderSeq.unshift([
+            placeholderSeq.push([
                 parseFloatSafe(past.minutes),
                 parseFloatSafe(past.expected_goals),
                 parseFloatSafe(past.expected_assists),
