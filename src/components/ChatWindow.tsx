@@ -12,6 +12,7 @@ interface ChatWindowProps {
     teamData: TeamEntry | null;
     picks?: Pick[];
     elements?: Player[];
+    onClose?: () => void;
 }
 
 interface Message {
@@ -19,7 +20,7 @@ interface Message {
     text: string;
 }
 
-export function ChatWindow({ teamData, picks, elements }: ChatWindowProps) {
+export function ChatWindow({ teamData, picks, elements, onClose }: ChatWindowProps) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -92,7 +93,12 @@ export function ChatWindow({ teamData, picks, elements }: ChatWindowProps) {
         <div className="chat-window">
             <div className="chat-header">
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-                    <h3>AI Assistant (GLM-4.7-Flash Agent)</h3>
+                    <h3>💬 AI Assistant (GLM-4.7-Flash Agent)</h3>
+                    {onClose && (
+                        <button className="close-chat-btn" onClick={onClose} aria-label="Close Assistant">
+                            ✖
+                        </button>
+                    )}
                 </div>
                 {loading && <span className="loading-indicator">Thinking...</span>}
             </div>

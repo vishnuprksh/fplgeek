@@ -20,10 +20,12 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import type { Player } from './types/fpl';
 
-function App() {
+export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league'>('dashboard');
+  const [teamIdInput, setTeamIdInput] = useState('');
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 
   // 1. Data Fetching Hook
@@ -165,122 +167,107 @@ function App() {
               )}
 
               {teamData && !loading && (
-                <div className="fade-in">
-                  <div className="dashboard-grid">
-                    {/* LEFT COLUMN: My Team */}
-                    <div className="dashboard-left-col dashboard-panel">
-                      <TeamCard
-                        team={teamData}
-                        totalValue={picksData?.entry_history.value}
-                        bank={bank}
-                      />
+                <div className="dashboard-grid fade-in">
+                  <div className="dashboard-main">
+                    <TeamCard
+                      team={teamData}
+                      totalValue={picksData?.entry_history.value}
+                      bank={bank}
+                    />
 
-                      {activePicks.length > 0 && (
-                        <div style={{ padding: '0 20px', marginBottom: '10px' }}>
-                          {/* Row 1: Team title + action buttons */}
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '40px', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                              <h3 style={{ margin: 0 }}>👤 My Team</h3>
+                    {activePicks.length > 0 && (
+                      <div style={{ padding: '0 20px', marginBottom: '10px' }}>
+                        {/* Row 1: Team title + action buttons */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '40px', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <h3 style={{ margin: 0 }}>👤 My Team</h3>
 
-                              {!isOptimizing ? (
-                                <button onClick={toggleOptimizationMode} className="optimize-btn">
-                                  ⚡ Optimize
+                            {!isOptimizing ? (
+                              <button onClick={toggleOptimizationMode} className="optimize-btn">
+                                ⚡ Optimize
+                              </button>
+                            ) : (
+                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                <button
+                                  onClick={runOptimization}
+                                  disabled={isProcessingOpt}
+                                  className="optimize-btn active"
+                                >
+                                  {isProcessingOpt ? '⏳ Thinking...' : '▶ Run Auto-Pick'}
                                 </button>
-                              ) : (
-                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                  <button
-                                    onClick={runOptimization}
-                                    disabled={isProcessingOpt}
-                                    className="optimize-btn active"
-                                  >
-                                    {isProcessingOpt ? '⏳ Thinking...' : '▶ Run Auto-Pick'}
+
+                                {optimizationResult && (
+                                  <button onClick={applyOptimization} className="optimize-btn apply">
+                                    ✓ Apply Changes
                                   </button>
+                                )}
 
-                                  {optimizationResult && (
-                                    <button onClick={applyOptimization} className="optimize-btn apply">
-                                      ✓ Apply Changes
-                                    </button>
-                                  )}
-
-                                  <button
-                                    onClick={toggleOptimizationMode}
-                                    className="optimize-btn"
-                                    style={{ border: '1px solid #ef4444', color: '#ef4444' }}
-                                  >
-                                    ✕ Cancel
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Haul summary pill (non-optimize mode) */}
-                            {!isOptimizing && (
-                              <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.85em', display: 'flex', gap: '14px' }}>
-                                <span>
-                                  <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
-                                </span>
-                                <span style={{ color: '#ccc' }}>
-                                  <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
-                                </span>
-                                <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg / GW)</span>
+                                <button
+                                  onClick={toggleOptimizationMode}
+                                  className="optimize-btn"
+                                  style={{ border: '1px solid #ef4444', color: '#ef4444' }}
+                                >
+                                  ✕ Cancel
+                                </button>
                               </div>
                             )}
                           </div>
 
-                          {/* Row 2: Transfer Allowance Selector (only in optimize mode) */}
-                          {isOptimizing && (
-                            <div className="transfer-allowance-selector">
-                              <span className="allowance-label">Transfers:</span>
-                              <div className="allowance-pills">
-                                {ALLOWANCE_OPTIONS.map(opt => (
-                                  <button
-                                    key={opt.value}
-                                    className={`allowance-pill${transferAllowance === opt.value ? ' active' : ''}`}
-                                    onClick={() => { setTransferAllowance(opt.value); }}
-                                  >
-                                    {opt.label}
-                                  </button>
-                                ))}
-                              </div>
+                          {/* Haul summary pill (non-optimize mode) */}
+                          {!isOptimizing && (
+                            <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.85em', display: 'flex', gap: '14px' }}>
+                              <span>
+                                <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
+                              </span>
+                              <span style={{ color: '#ccc' }}>
+                                <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
+                              </span>
+                              <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg / GW)</span>
                             </div>
                           )}
                         </div>
-                      )}
 
-                      {activePicks.length > 0 && staticData && (
-                        <PitchView
-                          picks={activePicks}
-                          elements={staticData.elements}
-                          teams={staticData.teams}
-                          onPlayerClick={setSelectedTransferPlayer}
-                          predictions={predictionsMap}
-                          isOptimizing={isOptimizing}
-                          selectedToSell={selectedToSell}
-                          onToggleSell={handleToggleSell}
-                          onSwap={handleSwap}
-                          t100Ownership={t100OwnershipMap}
-                        />
-                      )}
-
-                      {/* Optimization Report — shown below pitch when result is ready */}
-                      {optimizationResult && (
-                        <div style={{ padding: '0 20px 20px' }}>
-                          <OptimizationReport result={optimizationResult} />
-                        </div>
-                      )}
-                    </div>
-
-                    {/* RIGHT COLUMN: AI Assistant */}
-                    <div className="dashboard-right-col dashboard-panel">
-                      <div style={{ padding: '15px', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(0,0,0,0.2)' }}>
-                        <h3 style={{ margin: 0 }}>💬 AI Assistant</h3>
+                        {/* Row 2: Transfer Allowance Selector (only in optimize mode) */}
+                        {isOptimizing && (
+                          <div className="transfer-allowance-selector">
+                            <span className="allowance-label">Transfers:</span>
+                            <div className="allowance-pills">
+                              {ALLOWANCE_OPTIONS.map(opt => (
+                                <button
+                                  key={opt.value}
+                                  className={`allowance-pill${transferAllowance === opt.value ? ' active' : ''}`}
+                                  onClick={() => { setTransferAllowance(opt.value); }}
+                                >
+                                  {opt.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                      <ChatWindow
-                        teamData={teamData}
+                    )}
+
+                    {activePicks.length > 0 && staticData && (
+                      <PitchView
                         picks={activePicks}
-                        elements={staticData?.elements}
+                        elements={staticData.elements}
+                        teams={staticData.teams}
+                        onPlayerClick={setSelectedTransferPlayer}
+                        predictions={predictionsMap}
+                        isOptimizing={isOptimizing}
+                        selectedToSell={selectedToSell}
+                        onToggleSell={handleToggleSell}
+                        onSwap={handleSwap}
+                        t100Ownership={t100OwnershipMap}
                       />
-                    </div>
+                    )}
+
+                    {/* Optimization Report — shown below pitch when result is ready */}
+                    {optimizationResult && (
+                      <div style={{ padding: '0 20px 20px' }}>
+                        <OptimizationReport result={optimizationResult} />
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -324,6 +311,29 @@ function App() {
           )}
         </main>
 
+        {/* Floating Assistant Button */}
+        {teamData && (
+          <button
+            className="assistant-fab"
+            onClick={() => setIsAssistantOpen(!isAssistantOpen)}
+            aria-label="Toggle AI Assistant"
+          >
+            💬 <span>Assistant</span>
+          </button>
+        )}
+
+        {/* Floating Chat Window */}
+        {isAssistantOpen && (
+          <div className="floating-chat-container fade-in">
+            <ChatWindow
+              teamData={teamData}
+              picks={activePicks}
+              elements={staticData?.elements}
+              onClose={() => setIsAssistantOpen(false)}
+            />
+          </div>
+        )}
+
         {selectedTransferPlayer && staticData && (
           <TransferModal
             player={selectedTransferPlayer}
@@ -342,5 +352,3 @@ function App() {
     </DndProvider>
   );
 }
-
-export default App;
