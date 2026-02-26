@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { optimizeTransfers, optimizeWithAllowance, pickBestXI } from '../utils/solver';
-import type { Pick, UnifiedPlayer } from '../types/fpl';
+import type { Pick, UnifiedPlayer, Player } from '../types/fpl';
 import type { PredictionResult } from '../utils/predictions';
 import type { OptimizationResult } from '../utils/solver';
 import type { PredictionMap, T100OwnershipMap } from './useFPLData';
@@ -137,7 +137,7 @@ export const useOptimization = (
     };
 
     // Compute T100 ownership warnings
-    const computeT100Warnings = (players: UnifiedPlayer[]): string[] => {
+    const computeT100Warnings = (players: Player[]): string[] => {
         const warnings: string[] = [];
 
         const over40 = players.filter(p => (t100OwnershipMap[p.id] || 0) > 40).length;
