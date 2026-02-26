@@ -322,7 +322,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   gap: var(--space-6);
   width: 100%;
@@ -868,5 +868,36 @@
   .assistant-fab span {
     display: none;
     /* Hide text on mobile */
+  }
+}
+/* ---- Pitch Layout Container ---- */
+.pitch-layout-container {
+  display: flex;
+  gap: var(--space-6);
+  width: 100%;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.pitch-left-panel {
+  flex: 0 0 calc(60% - var(--space-3));
+  min-width: 400px;
+}
+
+.pitch-right-panel {
+  flex: 1;
+  min-width: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .pitch-layout-container {
+    flex-direction: column;
+  }
+  .pitch-left-panel, .pitch-right-panel {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
   }
 }

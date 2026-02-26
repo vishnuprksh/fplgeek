@@ -68,7 +68,8 @@ export default function App() {
     setTransferAllowance,
     toggleOptimizationMode,
     handleToggleSell,
-    runOptimization
+    runOptimization,
+    currentWarnings
   } = useOptimization(activePicks, staticData, predictionsMap, bank, t100OwnershipMap);
 
 
@@ -247,24 +248,59 @@ export default function App() {
                     )}
 
                     {activePicks.length > 0 && staticData && (
-                      <PitchView
-                        picks={activePicks}
-                        elements={staticData.elements}
-                        teams={staticData.teams}
-                        onPlayerClick={setSelectedTransferPlayer}
-                        predictions={predictionsMap}
-                        isOptimizing={isOptimizing}
-                        selectedToSell={selectedToSell}
-                        onToggleSell={handleToggleSell}
-                        onSwap={handleSwap}
-                        t100Ownership={t100OwnershipMap}
-                      />
-                    )}
-
-                    {/* Optimization Report — shown below pitch when result is ready */}
-                    {optimizationResult && (
-                      <div style={{ padding: '0 20px 20px' }}>
-                        <OptimizationReport result={optimizationResult} />
+                      <div className="pitch-layout-container">
+                        <div className="pitch-left-panel">
+                          <PitchView
+                            picks={activePicks}
+                            elements={staticData.elements}
+                            teams={staticData.teams}
+                            onPlayerClick={setSelectedTransferPlayer}
+                            predictions={predictionsMap}
+                            isOptimizing={isOptimizing}
+                            selectedToSell={selectedToSell}
+                            onToggleSell={handleToggleSell}
+                            onSwap={handleSwap}
+                            t100Ownership={t100OwnershipMap}
+                          />
+                        </div>
+                        <div className="pitch-right-panel">
+                          {optimizationResult ? (
+                            <OptimizationReport result={optimizationResult} />
+                          ) : isProcessingOpt ? (
+                            <div className="opt-report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', textAlign: 'center' }}>
+                              <h3 style={{ color: '#00d2ff', marginBottom: '16px' }}>🤖 AI is crunching the numbers...</h3>
+                              <p style={{ color: '#888' }}>Simulating future gameweeks and evaluating thousands of transfer combinations.</p>
+                            </div>
+                          ) : (
+                            <div className="opt-report">
+                              <div className="opt-report-header">
+                                <h3>📊 Squad Analysis</h3>
+                              </div>
+                              {currentWarnings && currentWarnings.length > 0 ? (
+                                <div className="opt-warnings" style={{ marginTop: '16px' }}>
+                                  <h4 style={{ color: '#f59e0b', marginBottom: '8px' }}>⚠️ T100 Ownership Warnings</h4>
+                                  {currentWarnings.map((w, i) => (
+                                    <div key={i} className="opt-warning-item" style={{
+                                      background: 'rgba(245, 158, 11, 0.1)',
+                                      border: '1px solid rgba(245, 158, 11, 0.3)',
+                                      borderRadius: '6px',
+                                      padding: '8px 12px',
+                                      marginBottom: '6px',
+                                      fontSize: '0.85em',
+                                      color: '#fbbf24'
+                                    }}>
+                                      {w}
+                                    </div>
+                                  ))}
+                                </div>
+                              ) : (
+                                <div style={{ color: '#00ff87', marginTop: '16px', padding: '12px', background: 'rgba(0, 255, 135, 0.1)', border: '1px solid rgba(0, 255, 135, 0.2)', borderRadius: '6px' }}>
+                                  ✅ Squad T100 ownership looks optimal!
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>

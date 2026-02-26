@@ -121,12 +121,14 @@ export const useOptimization = (
                     formationSelected: formStr,
                     logLines
                 };
-                manualResult.warnings = computeT100Warnings(manualResult);
+                const allManualResultPlayers = [...manualResult.lineup.starting11, ...manualResult.lineup.bench].map(p => p.player);
+                manualResult.warnings = computeT100Warnings(allManualResultPlayers);
                 setOptimizationResult(manualResult);
             } else {
                 // Smart allowance-based optimization (greedy search)
                 const res = optimizeWithAllowance(currentSquad, bank, allCandidates, transferAllowance);
-                res.warnings = computeT100Warnings(res);
+                const allResultPlayers = [...res.lineup.starting11, ...res.lineup.bench].map(p => p.player);
+                res.warnings = computeT100Warnings(allResultPlayers);
                 setOptimizationResult(res);
             }
 
@@ -134,14 +136,13 @@ export const useOptimization = (
         }, 100);
     };
 
-    // Compute T100 ownership warnings for an optimization result
-    const computeT100Warnings = (result: OptimizationResult): string[] => {
+    // Compute T100 ownership warnings
+    const computeT100Warnings = (players: UnifiedPlayer[]): string[] => {
         const warnings: string[] = [];
-        const allPlayers = [...result.lineup.starting11, ...result.lineup.bench];
 
-        const over40 = allPlayers.filter(p => (t100OwnershipMap[p.player.id] || 0) > 40).length;
-        const over20 = allPlayers.filter(p => (t100OwnershipMap[p.player.id] || 0) > 20).length;
-        const below10 = allPlayers.filter(p => (t100OwnershipMap[p.player.id] || 0) < 10);
+        const over40 = players.filter(p => (t100OwnershipMap[p.id] || 0) > 40).length;
+        const over20 = players.filter(p => (t100OwnershipMap[p.id] || 0) > 20).length;
+        const below10 = players.filter(p => (t100OwnershipMap[p.id] || 0) < 10);
 
         if (over40 < 8) {
             warnings.push(`⚠️ Only ${over40}/8 players have >40% T100 ownership (target: at least 8)`);
@@ -150,12 +151,15 @@ export const useOptimization = (
             warnings.push(`⚠️ Only ${over20}/12 players have >20% T100 ownership (target: at least 12)`);
         }
         if (below10.length > 0) {
-            const names = below10.map(p => `${p.player.web_name} (${(t100OwnershipMap[p.player.id] || 0).toFixed(0)}%)`);
+            const names = below10.map(p => `${p.web_name} (${(t100OwnershipMap[p.id] || 0).toFixed(0)}%)`);
             warnings.push(`⚠️ ${below10.length} player(s) below 10% T100 ownership: ${names.join(', ')}`);
         }
 
         return warnings;
     };
+
+    const currentActivePlayers = activePicks.map(p => staticData?.elements.find(e => e.id === p.element)).filter(Boolean) as UnifiedPlayer[];
+    const currentWarnings = computeT100Warnings(currentActivePlayers);
 
     return {
         isOptimizing,
@@ -167,6 +171,7 @@ export const useOptimization = (
         toggleOptimizationMode,
         handleToggleSell,
         runOptimization,
-        setOptimizationResult
+        setOptimizationResult,
+        currentWarnings
     };
 };
