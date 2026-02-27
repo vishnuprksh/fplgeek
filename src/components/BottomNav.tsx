@@ -60,8 +60,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChangeView 
         { id: 'dashboard', label: 'Team' },
         { id: 'fixtures', label: 'Fixtures' },
         { id: 'players', label: 'Players' },
-        { id: 'ai-history', label: 'History' },
         { id: 'league', label: 'League' },
+        { id: 'ai-history', label: 'History' },
     ];
 
     return (

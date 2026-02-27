@@ -1,37 +1,88 @@
-/* ===========================
-   PLAYER ANALYSIS
-   =========================== */
-.font-bold {
-    font-weight: 700;
-    color: var(--accent-primary);
-}
-
-.table-footer {
+.player-analysis {
     padding: var(--space-4);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.analysis-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.filter-select {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.filter-select:hover {
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.table-container {
+    overflow-x: auto;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.analysis-table th {
+    background: rgba(0, 0, 0, 0.1);
     color: var(--text-muted);
-    font-size: var(--text-sm);
-    text-align: center;
-    border-top: 1px solid var(--border-subtle);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
 }
 
-.analysis-table th,
-.analysis-table td {
-    padding: var(--space-3) var(--space-4);
-    text-align: left;
-    border-bottom: 1px solid var(--border-subtle);
+.analysis-table th.sortable {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
 }
 
-/* Sticky Name Column (mobile) */
+.analysis-table th.sortable:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.clickable-row {
+    transition: background-color var(--transition-fast);
+}
+
+.clickable-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.player-name-main {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.player-name-meta {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+
 @media (max-width: 768px) {
-    .player-name-cell {
-        position: sticky;
-        left: 0;
-        background: var(--color-bg-card-solid);
-        z-index: 10;
-        min-width: 140px;
-        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.25);
-    }
-
     .analysis-table th:first-child {
         position: sticky;
         left: 0;

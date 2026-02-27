@@ -19,13 +19,27 @@ export function FixtureAnalysis({ fixtures, teams, currentEvent }: FixtureAnalys
 
     const gameweeks = Array.from({ length: weeks }, (_, i) => currentEvent + i);
 
+    const topAttack = attackTicker[0];
+    const topDefense = defenseTicker[0];
+
     return (
-        <div className="fixture-analysis">
-            <div className="analysis-header">
-                <h2>Fixture Ticker</h2>
-                <div className="controls">
-                    <label>Lookahead:</label>
-                    <select value={weeks} onChange={(e) => setWeeks(Number(e.target.value))}>
+        <div className="fixture-analysis fade-in">
+            {/* Page Header */}
+            <div className="analysis-header-main" style={{ marginBottom: 'var(--space-6)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                    <span style={{ fontSize: '2rem' }}>🗓️</span>
+                    <div>
+                        <h1 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 800 }}>Fixture Ticker</h1>
+                        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: 'var(--text-sm)' }}>Strategic planning for upcoming gameweeks</p>
+                    </div>
+                </div>
+                <div className="controls-glass">
+                    <label style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-muted)', textTransform: 'uppercase' }}>Lookahead</label>
+                    <select
+                        value={weeks}
+                        onChange={(e) => setWeeks(Number(e.target.value))}
+                        className="premium-select"
+                    >
                         <option value={3}>3 Weeks</option>
                         <option value={5}>5 Weeks</option>
                         <option value={8}>8 Weeks</option>
@@ -33,18 +47,52 @@ export function FixtureAnalysis({ fixtures, teams, currentEvent }: FixtureAnalys
                 </div>
             </div>
 
-            {/* Attack Table */}
-            <div className="ticker-section">
-                <h3>Attacking Potential (Best Attack vs Weakest Defense)</h3>
-                <p className="subtitle">High Score = Good Matchup (Green)</p>
-                <TickerTable ticker={attackTicker} gameweeks={gameweeks} metric="attack" />
-            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))', gap: 'var(--space-6)' }}>
+                {/* Attack Panel */}
+                <div className="dashboard-panel premium-border">
+                    <div className="panel-inner-header" style={{ background: 'linear-gradient(90deg, rgba(0, 255, 135, 0.1) 0%, transparent 100%)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontSize: '1.4rem' }}>⚔️</span>
+                            <div>
+                                <h2 style={{ margin: 0, fontSize: 'var(--text-lg)', color: 'var(--accent-primary)' }}>Attacking Potential</h2>
+                                <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Target: Weakest Defenses</p>
+                            </div>
+                        </div>
+                        {topAttack && (
+                            <div className="top-badge attack">
+                                <span className="label">Best:</span>
+                                <span className="value">{topAttack.team.name}</span>
+                            </div>
+                        )}
+                    </div>
 
-            {/* Defense Table */}
-            <div className="ticker-section" style={{ marginTop: '2rem' }}>
-                <h3>Defensive Potential (Strong Defense vs Weakest Attack)</h3>
-                <p className="subtitle">Low Score = Good Matchup (Green)</p>
-                <TickerTable ticker={defenseTicker} gameweeks={gameweeks} metric="defense" />
+                    <div style={{ padding: 'var(--space-4)' }}>
+                        <TickerTable ticker={attackTicker} gameweeks={gameweeks} metric="attack" />
+                    </div>
+                </div>
+
+                {/* Defense Panel */}
+                <div className="dashboard-panel premium-border">
+                    <div className="panel-inner-header" style={{ background: 'linear-gradient(90deg, rgba(96, 165, 250, 0.1) 0%, transparent 100%)' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                            <span style={{ fontSize: '1.4rem' }}>🛡️</span>
+                            <div>
+                                <h2 style={{ margin: 0, fontSize: 'var(--text-lg)', color: '#60a5fa' }}>Defensive Potential</h2>
+                                <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--text-muted)' }}>Target: Weakest Attacks</p>
+                            </div>
+                        </div>
+                        {topDefense && (
+                            <div className="top-badge defense">
+                                <span className="label">Best:</span>
+                                <span className="value">{topDefense.team.name}</span>
+                            </div>
+                        )}
+                    </div>
+
+                    <div style={{ padding: 'var(--space-4)' }}>
+                        <TickerTable ticker={defenseTicker} gameweeks={gameweeks} metric="defense" />
+                    </div>
+                </div>
             </div>
         </div>
     );

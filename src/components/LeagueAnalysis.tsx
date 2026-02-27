@@ -125,74 +125,82 @@ export function LeagueAnalysis() {
 
     return (
         <div className="league-analysis-container fade-in">
-            <div className="analysis-header">
-                <h2>League Ownership Analysis</h2>
-                <div className="league-meta">
-                    <span>League ID: {data.league_id}</span>
-                    <span>Sample Size: {data.total_teams_analyzed} Teams</span>
-                </div>
-                <div className="metric-toggle">
-                    <button
-                        className={`toggle-btn ${metric === 'percent' ? 'active' : ''}`}
-                        onClick={() => setMetric('percent')}
-                    >
-                        Ownership
-                    </button>
-                    <button
-                        className={`toggle-btn ${metric === 'effective_ownership' ? 'active' : ''}`}
-                        onClick={() => setMetric('effective_ownership')}
-                    >
-                        Effective Ownership (EO)
-                    </button>
-                </div>
-            </div>
+            <div className="dashboard-panel">
+                <div className="analysis-header" style={{ padding: 'var(--space-5)', borderBottom: '1px solid var(--border-subtle)', background: 'rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)', alignItems: 'flex-start' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                        <span style={{ fontSize: '1.4rem' }}>🏆</span>
+                        <h2 style={{ margin: 0 }}>League Ownership</h2>
+                    </div>
 
-            <div className="table-container">
-                <table className="analysis-table">
-                    <thead>
-                        <tr>
-                            <th
-                                className={sortConfig?.key === 'name' ? sortConfig.direction : ''}
-                                onClick={() => requestSort('name')}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 'var(--space-4)', flexWrap: 'wrap', alignItems: 'center' }}>
+                        <div className="league-meta">
+                            <span>League ID: {data.league_id}</span>
+                            <span>Sample Size: {data.total_teams_analyzed} Teams</span>
+                        </div>
+                        <div className="metric-toggle">
+                            <button
+                                className={`toggle-btn ${metric === 'percent' ? 'active' : ''}`}
+                                onClick={() => setMetric('percent')}
                             >
-                                Player
-                            </th>
-                            {tableData.columns.map(gw => (
-                                <th
-                                    key={gw}
-                                    className={sortConfig?.key === `gw${gw}` ? sortConfig.direction : ''}
-                                    onClick={() => requestSort(`gw${gw}`)}
-                                >
-                                    GW {gw}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {sortedRows.map((row) => (
-                            <tr key={row.name as string}>
-                                <td className="player-col">{row.name}</td>
-                                {tableData.columns.map(gw => {
-                                    const val = row[`gw${gw}`] as number;
-                                    // Max percent is usually ~100%, EO max is ~300%
-                                    const maxExpected = metric === 'percent' ? 100 : 200;
-                                    const intensity = Math.min(val / maxExpected, 1);
-                                    const color = `rgba(0, 255, 135, ${0.1 + (intensity * 0.9)})`;
-                                    const textColor = intensity > 0.5 ? '#000' : '#fff'; // Contrast text
+                                Ownership
+                            </button>
+                            <button
+                                className={`toggle-btn ${metric === 'effective_ownership' ? 'active' : ''}`}
+                                onClick={() => setMetric('effective_ownership')}
+                            >
+                                Effective Ownership (EO)
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
-                                    return (
-                                        <td
-                                            key={gw}
-                                            style={{ backgroundColor: color, color: textColor }}
-                                        >
-                                            {val > 0 ? val.toFixed(1) + '%' : '-'}
-                                        </td>
-                                    );
-                                })}
+                <div className="table-container" style={{ padding: '2px', border: 'none', borderRadius: 0, background: 'transparent' }}>
+                    <table className="analysis-table">
+                        <thead>
+                            <tr>
+                                <th
+                                    className={sortConfig?.key === 'name' ? sortConfig.direction : ''}
+                                    onClick={() => requestSort('name')}
+                                >
+                                    Player
+                                </th>
+                                {tableData.columns.map(gw => (
+                                    <th
+                                        key={gw}
+                                        className={sortConfig?.key === `gw${gw}` ? sortConfig.direction : ''}
+                                        onClick={() => requestSort(`gw${gw}`)}
+                                    >
+                                        GW {gw}
+                                    </th>
+                                ))}
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            {sortedRows.map((row) => (
+                                <tr key={row.name as string}>
+                                    <td className="player-col">{row.name}</td>
+                                    {tableData.columns.map(gw => {
+                                        const val = row[`gw${gw}`] as number;
+                                        // Max percent is usually ~100%, EO max is ~300%
+                                        const maxExpected = metric === 'percent' ? 100 : 200;
+                                        const intensity = Math.min(val / maxExpected, 1);
+                                        const color = `rgba(0, 255, 135, ${0.1 + (intensity * 0.9)})`;
+                                        const textColor = intensity > 0.5 ? '#000' : '#fff'; // Contrast text
+
+                                        return (
+                                            <td
+                                                key={gw}
+                                                style={{ backgroundColor: color, color: textColor }}
+                                            >
+                                                {val > 0 ? val.toFixed(1) + '%' : '-'}
+                                            </td>
+                                        );
+                                    })}
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     );

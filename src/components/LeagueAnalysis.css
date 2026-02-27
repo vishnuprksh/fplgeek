@@ -2,30 +2,9 @@
    LEAGUE ANALYSIS
    =========================== */
 .league-analysis-container {
-    padding: var(--space-5);
-    max-width: 100%;
+    padding: var(--space-4);
+    max-width: 1200px;
     margin: 0 auto;
-    color: var(--text-primary);
-    overflow-x: auto;
-}
-
-.league-analysis-container .analysis-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--space-6);
-    border-bottom: 1px solid var(--border-subtle);
-    padding-bottom: var(--space-4);
-}
-
-.league-analysis-container .analysis-header h2 {
-    margin: 0;
-    font-family: var(--font-header);
-    color: var(--accent-primary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-size: var(--text-xl);
-    font-weight: 700;
 }
 
 .league-meta {
