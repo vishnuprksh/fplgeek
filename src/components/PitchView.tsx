@@ -191,8 +191,11 @@ function PitchPlayer({
                             : ((pick.selling_price ?? player.now_cost) / 10).toFixed(1)
                     }</span>
                 </div>
-                <div className="player-ownership" style={{ fontSize: '0.7em', color: t100Ownership !== undefined ? '#fbbf24' : '#00d2ff', marginTop: '2px' }}>
-                    {t100Ownership !== undefined ? `T100: ${t100Ownership.toFixed(0)}%` : `${parseFloat(player.selected_by_percent).toFixed(1)}% owned`}
+                <div className="player-ownership" style={{ fontSize: '0.65em', color: '#00d2ff', marginTop: '2px', display: 'flex', flexDirection: 'column', gap: '0px' }}>
+                    {t100Ownership !== undefined && (
+                        <span style={{ color: '#fbbf24', fontWeight: 'bold' }}>T100: {t100Ownership.toFixed(0)}%</span>
+                    )}
+                    <span>Own: {parseFloat(player.selected_by_percent).toFixed(1)}%</span>
                 </div>
                 <div className="player-points" style={{ fontSize: '0.8em' }}>
                     {points !== undefined ? points : player.event_points} (GW)

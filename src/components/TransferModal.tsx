@@ -159,6 +159,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                         <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('haul_3gw')} className="sortable">3GW Haul {sortField === 'haul_3gw' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('t100_ownership')} className="sortable">T100% {sortField === 't100_ownership' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                        <th>Own%</th>
                                         <th onClick={() => handleSort('now_cost')} className="sortable">Cost {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                         <th onClick={() => handleSort('diff')} className="sortable">Diff {sortField === 'diff' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                     </tr>
@@ -191,6 +192,9 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
                                                 </td>
                                                 <td style={{ color: rec.t100_ownership > 40 ? '#fbbf24' : rec.t100_ownership > 0 ? '#888' : '#444' }}>
                                                     {rec.t100_ownership > 0 ? `${rec.t100_ownership.toFixed(0)}%` : '-'}
+                                                </td>
+                                                <td style={{ fontSize: '0.9em', color: '#888' }}>
+                                                    {rec.selected_by_percent}%
                                                 </td>
                                                 <td>£{(rec.now_cost / 10).toFixed(1)}</td>
                                                 <td className={balanceChange >= 0 ? "positive-diff" : "negative-diff"}>
