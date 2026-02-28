@@ -137,106 +137,94 @@ export function getFixtureTicker(
     const startGw = currentEvent;
     const endGw = currentEvent + weeks - 1;
 
+    // FIRST PASS: Calculate RAW scores for all matches to find global MIN/MAX
+    const rawMatches: { teamId: number; gw: number; score: number }[] = [];
+    table.forEach(team => {
+        for (let gw = startGw; gw <= endGw; gw++) {
+            const matchesInGw = fixtures.filter(f =>
+                f.event === gw && (f.team_h === team.id || f.team_a === team.id)
+            );
+            matchesInGw.forEach(match => {
+                const isHome = match.team_h === team.id;
+                const opponentId = isHome ? match.team_a : match.team_h;
+                const opponent = table.find(t => t.id === opponentId);
+                if (opponent) {
+                    let score = 0;
+                    if (metric === 'attack') {
+                        score = isHome ? (team.homeGoalsScored + opponent.awayGoalsConceded) : (team.awayGoalsScored + opponent.homeGoalsConceded);
+                    } else {
+                        score = isHome ? (team.homeGoalsConceded + opponent.awayGoalsScored) : (team.awayGoalsConceded + opponent.homeGoalsScored);
+                    }
+                    rawMatches.push({ teamId: team.id, gw, score });
+                }
+            });
+        }
+    });
+
+    const allRawScores = rawMatches.map(m => m.score);
+    const minRaw = allRawScores.length > 0 ? Math.min(...allRawScores) : 0;
+    const maxRaw = allRawScores.length > 0 ? Math.max(...allRawScores) : 1;
+    const range = maxRaw - minRaw || 1;
+
+    // SECOND PASS: Build schedules with SCALED scores
     const schedules: TeamSchedule[] = [];
 
     table.forEach(team => {
         const teamMatches: TickerMatch[][] = [];
-        let totalScore = 0;
-        let matchCount = 0;
+        let totalScaledScore = 0;
 
         for (let gw = startGw; gw <= endGw; gw++) {
-            // Find ALL matches for this GW involving the team
             const matchesInGw = fixtures.filter(f =>
                 f.event === gw && (f.team_h === team.id || f.team_a === team.id)
             );
 
             const gwMatches: TickerMatch[] = [];
 
-            if (matchesInGw.length > 0) {
-                matchesInGw.forEach(match => {
-                    const isHome = match.team_h === team.id;
-                    const opponentId = isHome ? match.team_a : match.team_h;
-                    const opponent = table.find(t => t.id === opponentId);
+            matchesInGw.forEach(match => {
+                const isHome = match.team_h === team.id;
+                const opponentId = isHome ? match.team_a : match.team_h;
+                const opponent = table.find(t => t.id === opponentId);
 
-                    if (opponent) {
-                        let score = 0;
-
-                        if (metric === 'attack') {
-                            if (isHome) {
-                                // My Home Attack + Opponent Away Defense
-                                score = team.homeGoalsScored + opponent.awayGoalsConceded;
-                            } else {
-                                // My Away Attack + Opponent Home Defense
-                                score = team.awayGoalsScored + opponent.homeGoalsConceded;
-                            }
-                        } else {
-                            // Defense Metric (Lower is Good)
-                            if (isHome) {
-                                // My Home Defense + Opponent Away Attack (How little I concede vs How little they score)
-                                score = team.homeGoalsConceded + opponent.awayGoalsScored;
-                            } else {
-                                // My Away Defense + Opponent Home Attack
-                                score = team.awayGoalsConceded + opponent.homeGoalsScored;
-                            }
-                        }
-
-                        totalScore += score;
-                        matchCount++;
-
-                        gwMatches.push({
-                            event: gw,
-                            opponent,
-                            isHome,
-                            score,
-                            difficultyClass: 'medium' // placeholder, assigned later
-                        });
+                if (opponent) {
+                    let rawScore = 0;
+                    if (metric === 'attack') {
+                        rawScore = isHome ? (team.homeGoalsScored + opponent.awayGoalsConceded) : (team.awayGoalsScored + opponent.homeGoalsConceded);
+                    } else {
+                        rawScore = isHome ? (team.homeGoalsConceded + opponent.awayGoalsScored) : (team.awayGoalsConceded + opponent.homeGoalsScored);
                     }
-                });
-            }
 
-            // Push the array for this GW (empty if BGW)
+                    // Scale 0 to 1
+                    let scaledScore = 0;
+                    if (metric === 'attack') {
+                        // High is good (1), Low is bad (0)
+                        scaledScore = (rawScore - minRaw) / range;
+                    } else {
+                        // Low is good (1), High is bad (0)
+                        scaledScore = (maxRaw - rawScore) / range;
+                    }
+
+                    totalScaledScore += scaledScore;
+
+                    gwMatches.push({
+                        event: gw,
+                        opponent,
+                        isHome,
+                        score: scaledScore,
+                        difficultyClass: scaledScore >= 0.66 ? 'easy' : scaledScore <= 0.33 ? 'hard' : 'medium'
+                    });
+                }
+            });
+
             teamMatches.push(gwMatches);
         }
 
         schedules.push({
             team,
             matches: teamMatches,
-            totalScore,
-            averageScore: matchCount > 0 ? totalScore / matchCount : 0
+            totalScore: totalScaledScore,
+            averageScore: totalScaledScore / weeks // average scaled potential per GW
         });
     });
 
-    // Calculate Difficulty Classes based on ALL match scores across all teams/weeks
-    const allScores = schedules.flatMap(s => s.matches.flat()).map(m => m.score);
-
-    if (allScores.length > 0) {
-        const maxScore = Math.max(...allScores);
-        const minScore = Math.min(...allScores);
-        const range = maxScore - minScore;
-        const third = range / 3;
-
-        schedules.forEach(s => {
-            s.matches.forEach(gw => {
-                gw.forEach(m => {
-                    if (metric === 'attack') {
-                        if (m.score >= minScore + (2 * third)) m.difficultyClass = 'easy';
-                        else if (m.score <= minScore + third) m.difficultyClass = 'hard';
-                        else m.difficultyClass = 'medium';
-                    } else {
-                        if (m.score <= minScore + third) m.difficultyClass = 'easy';
-                        else if (m.score >= minScore + (2 * third)) m.difficultyClass = 'hard';
-                        else m.difficultyClass = 'medium';
-                    }
-                });
-            });
-        });
-    }
-
-    return schedules.sort((a, b) => {
-        if (metric === 'attack') {
-            return b.totalScore - a.totalScore;
-        } else {
-            return a.totalScore - b.totalScore;
-        }
-    });
+    return schedules.sort((a, b) => b.totalScore - a.totalScore);
 }

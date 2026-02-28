@@ -120,7 +120,7 @@ function TickerTable({ ticker, gameweeks, metric }: { ticker: TeamSchedule[], ga
                                     {metric === 'attack' ? `GS: ${row.team.goalsScored}` : `GC: ${row.team.goalsConceded}`}
                                 </div>
                             </td>
-                            <td className="td-score">{row.totalScore}</td>
+                            <td className="td-score">{row.totalScore.toFixed(2)}</td>
                             {row.matches.map((matchesInGw, i) => (
                                 <td key={gameweeks[i]} className="td-match-container">
                                     {matchesInGw.length > 0 ? (
