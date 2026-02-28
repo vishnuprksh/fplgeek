@@ -234,9 +234,9 @@ export function getFixtureTicker(
 
     return schedules.sort((a, b) => {
         if (metric === 'attack') {
-            return b.averageScore - a.averageScore;
+            return b.totalScore - a.totalScore;
         } else {
-            return a.averageScore - b.averageScore;
+            return a.totalScore - b.totalScore;
         }
     });
 }

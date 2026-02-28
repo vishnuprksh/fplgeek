@@ -14,6 +14,7 @@ import { TransferModal } from './components/TransferModal';
 import { AiHistory } from './components/AiHistory';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
 import { AssistantPage } from './components/AssistantPage';
+import type { ConversationEntry } from './services/multiAgentService';
 import './App.css';
 import { BottomNav } from './components/BottomNav';
 
@@ -25,6 +26,13 @@ export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league' | 'assistant'>('dashboard');
+
+  // Assistant Persistence State
+  const [assistantIsRunning, setAssistantIsRunning] = useState(false);
+  const [assistantIsDone, setAssistantIsDone] = useState(false);
+  const [assistantStatus, setAssistantStatus] = useState('');
+  const [assistantConversation, setAssistantConversation] = useState<ConversationEntry[]>([]);
+  const [assistantCurrentIteration, setAssistantCurrentIteration] = useState(0);
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 
@@ -354,6 +362,17 @@ export default function App() {
                 elements={staticData?.elements}
                 predictionsMap={predictionsMap}
                 t100OwnershipMap={t100OwnershipMap}
+                events={staticData?.events || []}
+                isRunning={assistantIsRunning}
+                setIsRunning={setAssistantIsRunning}
+                isDone={assistantIsDone}
+                setIsDone={setAssistantIsDone}
+                status={assistantStatus}
+                setStatus={setAssistantStatus}
+                conversation={assistantConversation}
+                setConversation={setAssistantConversation}
+                currentIteration={assistantCurrentIteration}
+                setCurrentIteration={setAssistantCurrentIteration}
               />
             </div>
           )}

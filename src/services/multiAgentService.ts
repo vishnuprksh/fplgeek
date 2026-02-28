@@ -9,7 +9,7 @@ const GEMINI_KEY = import.meta.env.VITE_GOOGLE_API_KEY || '';
 const MODEL_ID = 'gemini-3-flash-preview';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_ID}:generateContent?key=${GEMINI_KEY}`;
 
-export type AgentRole = 'researcher' | 'manager' | 'system';
+export type AgentRole = 'tactical_manager' | 'senior_manager' | 'system';
 
 export interface ConversationEntry {
     role: AgentRole;
@@ -24,12 +24,12 @@ export interface AgentContext {
     elements: Player[];
     predictionsMap: Record<number, any>;
     t100OwnershipMap: Record<number, any>;
+    events: any[];
 }
 
 // ── OpenRouter REST call ──────────────────────────────────────────────────────
 
 async function callLLM(systemPrompt: string, messages: Array<{ role: 'user' | 'assistant'; content: string }>): Promise<string> {
-    // Convert to Gemini format
     const geminiContents = messages.map(m => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }]
@@ -62,21 +62,22 @@ async function jinaSearch(query: string): Promise<string> {
     try {
         const url = `https://s.jina.ai/${encodeURIComponent(query)}`;
         const res = await fetch(url, { headers: { 'Accept': 'text/plain' } });
-        if (!res.ok) return ''; // silently skip on any error
+        if (!res.ok) return '';
         const text = await res.text();
-        if (text.length < 50) return ''; // skip empty/useless responses
+        if (text.length < 50) return '';
         return text.slice(0, 2500);
     } catch {
-        return ''; // silently skip
+        return '';
     }
 }
 
 // ── Build rich team context string ───────────────────────────────────────────
 
 function buildTeamContext(ctx: AgentContext): string {
-    const { teamData, picks, elements, predictionsMap, t100OwnershipMap } = ctx;
+    const { teamData, picks, elements, predictionsMap, t100OwnershipMap, events } = ctx;
     const bank = ((teamData.last_deadline_bank || 0) / 10).toFixed(1);
     const currentGW = teamData.current_event || 0;
+    const transfersMade = teamData.last_deadline_total_transfers || 0;
 
     const playerLines = picks.map(pick => {
         const el = elements.find(e => e.id === pick.element);
@@ -90,9 +91,15 @@ function buildTeamContext(ctx: AgentContext): string {
         return `  - ${el.web_name} [${pos}] £${(el.now_cost / 10).toFixed(1)}m | Form: ${el.form} | Haul%: ${haulPct} | T100%: ${t100own} | Selected%: ${el.selected_by_percent}%${isBench ? ' (BENCH)' : ''}${pick.is_captain ? ' ©' : ''}${pick.is_vice_captain ? ' (vc)' : ''}`;
     }).filter(Boolean).join('\n');
 
+    // Simple DGW/BGW detection
+    const upcomingEvents = events.filter(e => e.id >= currentGW && e.id <= currentGW + 5);
+    const scheduleContext = upcomingEvents.map(e => `GW${e.id}: ${e.name}`).join(', ');
+
     return `CURRENT GAMEWEEK: GW${currentGW}
 TEAM: ${teamData.name}
-Rank: ${teamData.summary_overall_rank?.toLocaleString()} | Points: ${teamData.summary_overall_points} | Bank: £${bank}m
+Rank: ${teamData.summary_overall_rank?.toLocaleString()} | Points: ${teamData.summary_overall_points}
+Bank: £${bank}m | Transfers Made: ${transfersMade}
+Upcoming: ${scheduleContext}
 
 SQUAD:
 ${playerLines}`;
@@ -100,50 +107,46 @@ ${playerLines}`;
 
 // ── System Prompts ────────────────────────────────────────────────────────────
 
-const RESEARCHER_SYSTEM = (teamContext: string, webContext: string) => `You are the **FPL Researcher** — the lead data-driven scout for a Fantasy Premier League team.
+const TACTICAL_MANAGER_SYSTEM = (teamContext: string, webContext: string) => `You are the **Tactical Manager** — an expert in short-term squad optimization and player form.
 
-Your job is to initiate the conversation with a comprehensive overview of the current FPL landscape and the team's status.
+Your role in this discussion is to analyze the squad's immediate needs and propose specific tactical changes.
 
-MANDATORY FIRST RESPONSE CONTENT:
-1. 🗓️ **Gameweek Briefing**: Define the **Current Gameweek** and **upcoming conditions** (fixtures, double gameweeks, season stage).
-2. 🌐 **FPL World Trends**: Summarize the latest FPL news, injuries, and popular transfer trends using the provided web research.
-3. 📊 **Team Status Report**: Analyze the team's current rank, bank balance (£${teamContext.match(/Bank: £([\d.]+)m/)?.[1] || '0.0'}m), and underperforming assets.
-4. 🔄 **Strategy Proposal**: Recommend 1-2 specific transfers based on this holistic view.
+🛡️ **Mutual Correction & Fact-Checking**: You are responsible for auditing the Senior Manager's strategy. If they suggest a move that violates FPL rules, ignores an injury, or miscalculates fixtures/bank balance, you MUST point out the mistake and suggest a correction before proceeding.
 
-CRITICAL: Always use the **CURRENT GAMEWEEK** provided in the team data. Do NOT hallucinate.
+DISCUSS THE FOLLOWING POINTS:
+1. 🛡️ **Squad Strength/Weaknesses**: Identify where the team is heavy or lacking (e.g., weak defense, underperforming attack).
+2. 🔨 **"Broken Cards" (Must-Haves)**: Identify players who are essential in the current meta that we don't have.
+3. 🗑️ **"Bad Cards" (Must-Sells)**: Identify players who are underperforming or have poor fixtures and must be removed.
+4. 🗓️ **Current GW Conditions**: Analyze the immediate fixtures and player availability (audit for injuries/suspensions).
 
-Structure subsequent responses as:
-**📊 Evidence-Based Scouting** — data-backed validation of the Manager's feedback.
-**🔄 Refined Recommendations** — OUT: [Name] → IN: [Name] £Xm | Supporting data.
-**📅 Fixture/Injury Check** — latest news for proposed moves.
+MANDATORY FIRST RESPONSE:
+- Open the discussion with the Senior Manager by providing a tactical summary of the team.
+- Propose an immediate action plan for the next 1-2 gameweeks.
 
-Be objective and concise. Max 400 words.
+If you agree with the Senior Manager's proposed strategy, you MUST include the phrase: **TACTICAL APPROVAL ✅**.
 
-Current Team Data:
+Current Team & Context:
 ${teamContext}
 
-${webContext ? `Live Web Research:\n${webContext}` : ''}`;
+${webContext ? `Latest FPL Intel:\n${webContext}` : ''}`;
 
-const MANAGER_SYSTEM = (teamContext: string) => `You are the **FPL Manager** — a ruthless, rules-strict evaluator of transfer strategies.
+const SENIOR_MANAGER_SYSTEM = (teamContext: string) => `You are the **Senior Manager** — the strategist focused on long-term planning, chip management, and financial health.
 
-Your job is to review the Researcher's proposals against FPL best practices, rules, and long-term team vision.
+Your role is to evaluate the Tactical Manager's proposals and ensure they align with the bigger picture.
 
-MANDATORY RULES:
-1. 💰 **Bank Management**: Always respect the current bank balance (£${teamContext.match(/Bank: £([\d.]+)m/)?.[1] || '0.0'}m).
-2. 📏 **FPL Rule Adherence**:
-    - Ownership: Ensure a balance of template and differential players.
-    - Captaincy: Ensure the captaincy choice is reliable.
-    - Hits: Challenge any hit (-4pt) unless clearly justified by long-term gains.
-3. 📉 **Form/Fixtures**: Avoid players with poor form or difficult near-term fixtures.
+🛡️ **Strategic Audit & Correction**: You must critically evaluate the Tactical Manager's suggestions. If they propose an injured player, mention a player for the wrong team, or suggest a move we cannot afford, you MUST correct them immediately. Accuracy is paramount.
 
-Evaluation Flow:
-- Critically review the Researcher's strategy.
-- Point out violations, suggest better alternatives, or ask for more data.
-- If the plan is solid, respond with: **MANAGER APPROVED ✅** followed by a 2-sentence summary.
+DISCUSS THE FOLLOWING POINTS:
+1. 💰 **Financial Strategy**: Managing the bank balance (£${teamContext.match(/Bank: £([\d.]+)m/)?.[1] || '0.0'}m) and squad value.
+2. 🃏 **Chip Strategy**: When to play Wildcard, Free Hit, Bench Boost, or Triple Captain based on upcoming Double/Blank Gameweeks.
+3. 🗺️ **Long-term Movements**: Planning for Double (DGW) and Blank (BGW) gameweeks over the next 4-6 weeks (verify fixtures are correct).
+4. 🔄 **Transactions**: Managing the number of transfers and potential hits.
 
-Be decisive. Max 250 words.
+Your job is to debate and refine the strategy with the Tactical Manager.
 
-Current Team Data:
+If you are satisfied with the final strategic plan, you MUST include the phrase: **SENIOR APPROVAL ✅**.
+
+Current Team & Context:
 ${teamContext}`;
 
 // ── Main agent loop ───────────────────────────────────────────────────────────
@@ -155,11 +158,10 @@ export async function runAgentLoop(
 ): Promise<ConversationEntry[]> {
     const teamContext = buildTeamContext(ctx);
     const log: ConversationEntry[] = [];
-    const MAX_ITERATIONS = 10;
+    const MAX_ITERATIONS = 12;
 
-    // Each agent maintains its own running conversation history
-    const researcherMsgs: Array<{ role: 'user' | 'assistant'; content: string }> = [];
-    const managerMsgs: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+    const tacticalMsgs: Array<{ role: 'user' | 'assistant'; content: string }> = [];
+    const seniorMsgs: Array<{ role: 'user' | 'assistant'; content: string }> = [];
 
     const addEntry = (role: AgentRole, content: string, iteration: number) => {
         const entry: ConversationEntry = { role, content, iteration, timestamp: new Date() };
@@ -168,59 +170,59 @@ export async function runAgentLoop(
         return entry;
     };
 
-    // ── Fetch web context once upfront ─────────────────────────────────────────
+    // ── Fetch web context ──────────────────────────────────────────────────────
+    onStatus('🌐 Gathering tactical intelligence...');
     let webContext = '';
-    onStatus('🌐 Searching for latest FPL news...');
     try {
-        const [news, transfers] = await Promise.all([
-            jinaSearch('FPL Fantasy Premier League injury news suspensions February 2026'),
-            jinaSearch('FPL best transfers recommended picks gameweek 2026 form players')
+        const [news, meta] = await Promise.all([
+            jinaSearch(`FPL injuries suspensions fixtures news February 2026 GW${ctx.teamData.current_event}`),
+            jinaSearch('FPL current meta players essential picks broken cards')
         ]);
-        const combined = [news, transfers].filter(s => s.length > 0).join('\n\n');
-        webContext = combined.length > 0 ? combined : '';
-    } catch {
-        webContext = '';
-    }
+        webContext = [news, meta].filter(s => s.length > 0).join('\n\n');
+    } catch { }
 
-    let managerFeedback = '';
-    const currentGW = ctx.teamData.current_event || 0;
+    let _lastTacticalReply = '';
+    let lastSeniorReply = '';
 
     for (let i = 1; i <= MAX_ITERATIONS; i++) {
+        // ── Tactical Manager turn ──────────────────────────────────────────────
+        onStatus(`🔬 Tactical Manager analyzing... (Iteration ${i}/${MAX_ITERATIONS})`);
 
-        // ── Researcher turn ──────────────────────────────────────────────────────
-        onStatus(`🔬 Researcher initiating analysis... (Iteration ${i}/${MAX_ITERATIONS})`);
+        const tacticalInput = i === 1
+            ? "Initiate the strategic transaction discussion for our team. Focus on current GW conditions, strengths, weaknesses, must-haves, and must-sells."
+            : `The Senior Manager responded:\n\n${lastSeniorReply}\n\nRefine the tactical plan or provide final approval if the strategy is optimal.`;
 
-        const researcherInput = i === 1
-            ? `State of the Game (Current Gameweek: GW${currentGW}): Provide a full report on the FPL world, team status, and propose our strategy.`
-            : `Manager's feedback on your previous proposal:\n\n${managerFeedback}\n\nRefine your recommendations based on this feedback.`;
+        tacticalMsgs.push({ role: 'user', content: tacticalInput });
+        const tacticalReply = await callLLM(TACTICAL_MANAGER_SYSTEM(teamContext, i === 1 ? webContext : ''), tacticalMsgs);
+        tacticalMsgs.push({ role: 'assistant', content: tacticalReply });
+        addEntry('tactical_manager', tacticalReply, i);
+        _lastTacticalReply = tacticalReply;
 
-        researcherMsgs.push({ role: 'user', content: researcherInput });
-        const researcherReply = await callLLM(RESEARCHER_SYSTEM(teamContext, i === 1 ? webContext : ''), researcherMsgs);
-        researcherMsgs.push({ role: 'assistant', content: researcherReply });
-        addEntry('researcher', researcherReply, i);
+        // ── Senior Manager turn ───────────────────────────────────────────────
+        onStatus(`👔 Senior Manager strategizing... (Iteration ${i}/${MAX_ITERATIONS})`);
 
-        // ── Manager turn ─────────────────────────────────────────────────────────
-        onStatus(`👔 Manager evaluating... (Iteration ${i}/${MAX_ITERATIONS})`);
+        const seniorInput = `The Tactical Manager proposed:\n\n${tacticalReply}\n\nEvaluate this against our financial state, chip strategy, and upcoming DGW/BGW movements.`;
 
-        const managerInput = `Iteration ${i} — Researcher's report and proposal:\n\n${researcherReply}\n\nEvaluate this against your rules and long-term strategy.`;
+        seniorMsgs.push({ role: 'user', content: seniorInput });
+        const seniorReply = await callLLM(SENIOR_MANAGER_SYSTEM(teamContext), seniorMsgs);
+        seniorMsgs.push({ role: 'assistant', content: seniorReply });
+        addEntry('senior_manager', seniorReply, i);
+        lastSeniorReply = seniorReply;
 
-        managerMsgs.push({ role: 'user', content: managerInput });
-        const managerReply = await callLLM(MANAGER_SYSTEM(teamContext), managerMsgs);
-        managerMsgs.push({ role: 'assistant', content: managerReply });
-        addEntry('manager', managerReply, i);
+        // Dual Approval Check
+        const tacticalApproved = tacticalReply.includes('TACTICAL APPROVAL');
+        const seniorApproved = seniorReply.includes('SENIOR APPROVAL');
 
-        // Approval check
-        if (managerReply.includes('MANAGER APPROVED') || managerReply.includes('APPROVED ✅')) {
-            addEntry('system', `✅ **Analysis complete** — Manager approved after ${i} iteration${i > 1 ? 's' : ''}. See the final approved plan above.`, i);
+        if (tacticalApproved && seniorApproved) {
+            addEntry('system', `🤝 **Strategy Finalized** — Both managers have reached an agreement. Implementation plan locked.`, i);
             break;
         }
 
-        managerFeedback = managerReply;
-
         if (i === MAX_ITERATIONS) {
-            addEntry('system', `⏹️ **Max iterations (${MAX_ITERATIONS}) reached.** Review the full debate above for the latest recommendations.`, i);
+            addEntry('system', `⏹️ **Strategic Timeout** — Reached max discussion steps. Review the debate for the best consensus.`, i);
         }
     }
 
     return log;
 }
+

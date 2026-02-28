@@ -118,13 +118,13 @@ interface EntryCardProps {
 }
 
 const AGENT_META: Record<string, { avatar: string; name: string; avatarClass: string; nameClass: string; iterClass: string; entryClass: string }> = {
-    researcher: {
-        avatar: '🔬', name: 'Researcher',
+    tactical_manager: {
+        avatar: '🔬', name: 'Tactical Manager',
         avatarClass: 'avatar-researcher', nameClass: 'name-researcher',
         iterClass: 'iter-researcher', entryClass: 'entry-researcher',
     },
-    manager: {
-        avatar: '👔', name: 'Manager',
+    senior_manager: {
+        avatar: '👔', name: 'Senior Manager',
         avatarClass: 'avatar-manager', nameClass: 'name-manager',
         iterClass: 'iter-manager', entryClass: 'entry-manager',
     },
@@ -176,16 +176,24 @@ interface AssistantPageProps {
     elements: Player[] | undefined;
     predictionsMap: Record<number, any>;
     t100OwnershipMap: Record<number, any>;
+    events: any[];
+    isRunning: boolean;
+    setIsRunning: (isRunning: boolean) => void;
+    isDone: boolean;
+    setIsDone: (isDone: boolean) => void;
+    status: string;
+    setStatus: (status: string) => void;
+    conversation: ConversationEntry[];
+    setConversation: (conversation: ConversationEntry[] | ((prev: ConversationEntry[]) => ConversationEntry[])) => void;
+    currentIteration: number;
+    setCurrentIteration: (iteration: number) => void;
 }
 
 export const AssistantPage: React.FC<AssistantPageProps> = ({
-    teamData, picks, elements, predictionsMap, t100OwnershipMap,
+    teamData, picks, elements, predictionsMap, t100OwnershipMap, events,
+    isRunning, setIsRunning, isDone, setIsDone, status, setStatus,
+    conversation, setConversation, currentIteration, setCurrentIteration
 }) => {
-    const [isRunning, setIsRunning] = useState(false);
-    const [isDone, setIsDone] = useState(false);
-    const [status, setStatus] = useState('');
-    const [conversation, setConversation] = useState<ConversationEntry[]>([]);
-    const [currentIteration, setCurrentIteration] = useState(0);
     const feedBottomRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -200,7 +208,14 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({
         setStatus('🚀 Initializing agents...');
         setCurrentIteration(0);
 
-        const ctx: AgentContext = { teamData, picks, elements, predictionsMap, t100OwnershipMap };
+        const ctx: AgentContext = {
+            teamData,
+            picks,
+            elements,
+            predictionsMap,
+            t100OwnershipMap,
+            events: events || []
+        };
 
         try {
             await runAgentLoop(
@@ -249,8 +264,8 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({
                     </p>
                     <div className="assistant-meta">
                         <span className="meta-pill green">Gemini Flash</span>
-                        <span className="meta-pill">Max 10 Iterations</span>
-                        <span className="meta-pill">Web Grounding</span>
+                        <span className="meta-pill">Strategic Debate</span>
+                        <span className="meta-pill">Dual Approval</span>
                         {teamData && <span className="meta-pill green">✓ {teamData.name}</span>}
                     </div>
                 </div>
@@ -306,8 +321,8 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({
                         Click <strong>Start Analysis</strong> to begin the multi-agent debate. The Researcher gathers FPL data and proposes transfers; the Manager evaluates them against proven rules.
                     </p>
                     <div className="agent-chips">
-                        <span className="agent-chip chip-researcher">🔬 Researcher — FPL Data + Web Search</span>
-                        <span className="agent-chip chip-manager">👔 Manager — Rules Evaluator</span>
+                        <span className="agent-chip chip-researcher">🔬 Tactical Manager — Squad & Form</span>
+                        <span className="agent-chip chip-manager">👔 Senior Manager — Strategy & Finance</span>
                     </div>
                 </div>
             )}
