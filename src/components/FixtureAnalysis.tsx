@@ -126,7 +126,7 @@ function TickerTable({ ticker, gameweeks, metric }: { ticker: TeamSchedule[], ga
                                     {matchesInGw.length > 0 ? (
                                         <div className="match-stack">
                                             {matchesInGw.map((match, idx) => (
-                                                <div key={idx} className={`match-cell ${match.difficultyClass}`}>
+                                                <div key={idx} className={`match-cell ${match.difficultyClass}`} title={`Score: ${match.score.toFixed(2)}`}>
                                                     <span className="opponent">{match.opponent.short_name}</span>
                                                     <span className="venue">{match.isHome ? '(H)' : '(A)'}</span>
                                                 </div>
