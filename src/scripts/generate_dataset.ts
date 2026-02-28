@@ -35,6 +35,79 @@ interface RawMatch {
     team_a_difficulty?: number; // Joined later
 }
 
+// --- Fixture-Based Team Strength ---
+// Mirrors calculateTable() + getFixtureTicker() logic from fixtures.ts
+interface TeamVenueStats {
+    goalsScored: number;
+    goalsConceded: number;
+    homeGoalsScored: number;
+    homeGoalsConceded: number;
+    awayGoalsScored: number;
+    awayGoalsConceded: number;
+    played: number;
+}
+
+function buildTeamVenueTable(finishedFixtures: any[]): Record<number, TeamVenueStats> {
+    const table: Record<number, TeamVenueStats> = {};
+
+    const ensure = (id: number) => {
+        if (!table[id]) {
+            table[id] = {
+                goalsScored: 0, goalsConceded: 0,
+                homeGoalsScored: 0, homeGoalsConceded: 0,
+                awayGoalsScored: 0, awayGoalsConceded: 0,
+                played: 0
+            };
+        }
+    };
+
+    for (const f of finishedFixtures) {
+        const hScore: number = f.team_h_score ?? 0;
+        const aScore: number = f.team_a_score ?? 0;
+        ensure(f.team_h);
+        ensure(f.team_a);
+
+        table[f.team_h].played++;
+        table[f.team_h].goalsScored += hScore;
+        table[f.team_h].goalsConceded += aScore;
+        table[f.team_h].homeGoalsScored += hScore;
+        table[f.team_h].homeGoalsConceded += aScore;
+
+        table[f.team_a].played++;
+        table[f.team_a].goalsScored += aScore;
+        table[f.team_a].goalsConceded += hScore;
+        table[f.team_a].awayGoalsScored += aScore;
+        table[f.team_a].awayGoalsConceded += hScore;
+    }
+
+    return table;
+}
+
+// Compute raw attack & defense scores for a given team vs opponent, given venue
+function computeFixtureScores(
+    teamId: number,
+    opponentId: number,
+    isHome: boolean,
+    venueTable: Record<number, TeamVenueStats>
+): { attackRaw: number; defenseRaw: number } {
+    const team = venueTable[teamId];
+    const opp = venueTable[opponentId];
+
+    if (!team || !opp) return { attackRaw: 0, defenseRaw: 0 };
+
+    // Attack: our offensive output + opponent's defensive weakness (same side)
+    const attackRaw = isHome
+        ? (team.homeGoalsScored + opp.awayGoalsConceded)
+        : (team.awayGoalsScored + opp.homeGoalsConceded);
+
+    // Defense: opponent's offensive threat + our defensive weakness
+    const defenseRaw = isHome
+        ? (opp.awayGoalsScored + team.homeGoalsConceded)
+        : (opp.homeGoalsScored + team.awayGoalsConceded);
+
+    return { attackRaw, defenseRaw };
+}
+
 interface ProcessedSample {
     name: string;
     id: number;
@@ -52,6 +125,11 @@ interface ProcessedSample {
     // Form, Ownership, Availability
     ctx_ownership: number;
     ctx_chance_of_playing: number;
+    // Fixture-Based Team Strength (data-driven, from goals scored/conceded)
+    ctx_fixture_attack_raw: number;    // team attack output + opp defensive weakness
+    ctx_fixture_defense_raw: number;   // opp attacking threat + our defensive weakness
+    ctx_fixture_attack_scaled: number; // [0,1] — higher = easier to score
+    ctx_fixture_defense_scaled: number;// [0,1] — higher = easier to keep sheet
     // History Sequence (Flat for now, but ordered)
     history_sequence: number[][]; // [ [min, xG, xA...], [min, xG, xA...] ]
 }
@@ -93,12 +171,19 @@ function main() {
 
     const fixturesRaw = db.prepare("SELECT data FROM fixtures").all().map((r: any) => JSON.parse(r.data));
 
-    // 3. Processing
-    const datasets: Record<string, ProcessedSample[]> = {
+    // 3. Build venue-based team stats table from finished fixtures
+    const finishedFixtures = fixturesRaw.filter((f: any) => f.finished === true || f.finished === 1);
+    const venueTable = buildTeamVenueTable(finishedFixtures);
+
+    // 4. Processing
+    let totalSamples = 0;
+
+    // Track all raw fixture scores for global scaling (two-pass approach)
+    // We'll store partial samples first, then scale in a second pass
+    type PartialSample = ProcessedSample & { _attackRaw: number; _defenseRaw: number };
+    const partialDatasets: Record<string, PartialSample[]> = {
         "GKP": [], "DEF": [], "MID": [], "FWD": []
     };
-
-    let totalSamples = 0;
 
     // Create a map of team fixtures for quick lookup: teamId -> array of fixtures
     const teamFixturesMap: Record<number, any[]> = {};
@@ -221,7 +306,13 @@ function main() {
 
                 // Calculate All-Time Statistics — REMOVED (replaced by rolling windows in ai_manager.py)
 
-                const sample: ProcessedSample = {
+                // Compute fixture-based team strength scores
+                const { attackRaw, defenseRaw } = computeFixtureScores(
+                    pTeam, targetMatch.opponent_team,
+                    !!targetMatch.was_home, venueTable
+                );
+
+                const sample = {
                     name: player.web_name,
                     id: player.id,
                     gw: gw,
@@ -235,15 +326,21 @@ function main() {
                     ctx_price: targetMatch.value / 10.0,
                     ctx_hours_rest: Math.min(hoursRest, 300),
                     ctx_ownership: parseFloatSafe(targetMatch.selected_by_percent),
-                    ctx_chance_of_playing: 100, // Historical matches: player played, so 100%
-                    history_sequence: seqData
-                };
+                    ctx_chance_of_playing: 100,
+                    ctx_fixture_attack_raw: attackRaw,
+                    ctx_fixture_defense_raw: defenseRaw,
+                    ctx_fixture_attack_scaled: 0,    // filled in second pass
+                    ctx_fixture_defense_scaled: 0,   // filled in second pass
+                    history_sequence: seqData,
+                    _attackRaw: attackRaw,
+                    _defenseRaw: defenseRaw
+                } as any;
 
                 // Route to bucket
-                if (player.element_type === 1) datasets["GKP"].push(sample);
-                else if (player.element_type === 2) datasets["DEF"].push(sample);
-                else if (player.element_type === 3) datasets["MID"].push(sample);
-                else if (player.element_type === 4) datasets["FWD"].push(sample);
+                if (player.element_type === 1) partialDatasets["GKP"].push(sample);
+                else if (player.element_type === 2) partialDatasets["DEF"].push(sample);
+                else if (player.element_type === 3) partialDatasets["MID"].push(sample);
+                else if (player.element_type === 4) partialDatasets["FWD"].push(sample);
 
                 totalSamples++;
             }
@@ -336,29 +433,41 @@ function main() {
             const hoursRest = (currTime - lastFixtureTime) / (1000 * 60 * 60);
             lastFixtureTime = currTime; // Update for next iteration in loop
 
-            const sample: ProcessedSample = {
+            // Compute fixture-based scores for this future fixture
+            const futOpponentId = isHome ? f.team_a : f.team_h;
+            const { attackRaw: futAttackRaw, defenseRaw: futDefenseRaw } = computeFixtureScores(
+                player.team, futOpponentId, isHome, venueTable
+            );
+
+            const sample = {
                 name: player.web_name,
                 id: player.id,
                 gw: gw,
                 season: season,
-                target: 0, // Future target unknown
+                target: 0,
                 is_future: true,
-                selected_by_percent: 0, // Unknown
+                selected_by_percent: 0,
                 ctx_was_home: isHome ? 1 : 0,
                 ctx_opponent: opponentStrength,
                 ctx_difficulty: difficulty,
-                ctx_price: lastValue, // Use last known price
+                ctx_price: lastValue,
                 ctx_hours_rest: Math.min(hoursRest, 300),
-                ctx_ownership: 0, // Unknown for future fixtures
-                ctx_chance_of_playing: player.chance_of_playing_next_round ?? 100, // From player static data
-                history_sequence: placeholderSeq
-            };
+                ctx_ownership: 0,
+                ctx_chance_of_playing: player.chance_of_playing_next_round ?? 100,
+                ctx_fixture_attack_raw: futAttackRaw,
+                ctx_fixture_defense_raw: futDefenseRaw,
+                ctx_fixture_attack_scaled: 0,    // filled in second pass
+                ctx_fixture_defense_scaled: 0,   // filled in second pass
+                history_sequence: placeholderSeq,
+                _attackRaw: futAttackRaw,
+                _defenseRaw: futDefenseRaw
+            } as any;
 
             // Route to bucket
-            if (player.element_type === 1) datasets["GKP"].push(sample);
-            else if (player.element_type === 2) datasets["DEF"].push(sample);
-            else if (player.element_type === 3) datasets["MID"].push(sample);
-            else if (player.element_type === 4) datasets["FWD"].push(sample);
+            if (player.element_type === 1) partialDatasets["GKP"].push(sample);
+            else if (player.element_type === 2) partialDatasets["DEF"].push(sample);
+            else if (player.element_type === 3) partialDatasets["MID"].push(sample);
+            else if (player.element_type === 4) partialDatasets["FWD"].push(sample);
 
             totalSamples++;
         }
@@ -366,10 +475,43 @@ function main() {
 
     console.log(`\nProcessing Complete. Total Samples: ${totalSamples}`);
 
-    for (const [pos, data] of Object.entries(datasets)) {
+    // --- SECOND PASS: Min-Max scale fixture scores per position bucket ---
+    // This mirrors the global normalization in getFixtureTicker() from fixtures.ts
+    for (const [pos, partials] of Object.entries(partialDatasets)) {
+        if (partials.length === 0) {
+            const p = path.join(OUTPUT_DIR, `dataset_${pos}.json`);
+            fs.writeFileSync(p, JSON.stringify([], null, 2));
+            continue;
+        }
+
+        const allAttackRaw = partials.map(s => s._attackRaw);
+        const allDefenseRaw = partials.map(s => s._defenseRaw);
+
+        const minAtk = Math.min(...allAttackRaw);
+        const maxAtk = Math.max(...allAttackRaw);
+        const rangeAtk = maxAtk - minAtk || 1;
+
+        const minDef = Math.min(...allDefenseRaw);
+        const maxDef = Math.max(...allDefenseRaw);
+        const rangeDef = maxDef - minDef || 1;
+
+        const output: ProcessedSample[] = partials.map(s => {
+            // Attack: high = good (easy to score) → scale high
+            const atkScaled = (s._attackRaw - minAtk) / rangeAtk;
+            // Defense: low raw = good (opponent is weak attacker) → invert
+            const defScaled = (maxDef - s._defenseRaw) / rangeDef;
+
+            const { _attackRaw, _defenseRaw, ...rest } = s;
+            return {
+                ...rest,
+                ctx_fixture_attack_scaled: parseFloat(atkScaled.toFixed(4)),
+                ctx_fixture_defense_scaled: parseFloat(defScaled.toFixed(4))
+            } as ProcessedSample;
+        });
+
         const p = path.join(OUTPUT_DIR, `dataset_${pos}.json`);
-        fs.writeFileSync(p, JSON.stringify(data, null, 2));
-        console.log(`Saved ${pos}: ${data.length} samples -> ${p}`);
+        fs.writeFileSync(p, JSON.stringify(output, null, 2));
+        console.log(`Saved ${pos}: ${output.length} samples -> ${p}`);
     }
 }
 

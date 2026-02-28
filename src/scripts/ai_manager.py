@@ -10,7 +10,13 @@ from src.scripts.lib.models import build_model, clean_and_scale, fit_scaler, loa
 from sklearn.model_selection import train_test_split  # type: ignore[import]
 from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss  # type: ignore[import]
 
-# Feature Indices in history_sequence (based on generate_dataset.ts)
+# Context Features in output vector (based on generate_dataset.ts + ai_manager.py ctx list):
+# 0: was_home, 1: difficulty, 2: price, 3: hours_rest, 4: ownership,
+# 5: opponent_strength, 6: chance_of_playing,
+# 7: fixture_attack_raw, 8: fixture_defense_raw,
+# 9: fixture_attack_scaled, 10: fixture_defense_scaled
+#
+# Feature Indices in history_sequence:
 # 0: Min, 1: xG, 2: xA, 3: Thr, 4: Cre, 5: Inf, 6: GC, 7: Saves, 8: Sel, 9: Price, 10: Home, 11: Pts, 12: Form
 IDX_MIN = 0
 IDX_PTS = 11
@@ -48,8 +54,9 @@ def load_and_process_data(position):
         target = max(0, min(int(sample["target"]), 15))
         y_list.append(target)
 
-        # 2. Context Features (7 features — no all-time career stats)
-        # [was_home, diff, price, rest, own, opp, chance_of_playing]
+        # 2. Context Features (11 features):
+        # [was_home, diff, price, rest, own, opp, chance_of_playing,
+        #  fixture_attack_raw, fixture_defense_raw, fixture_attack_scaled, fixture_defense_scaled]
         ctx = [
             sample["ctx_was_home"],
             sample["ctx_difficulty"],
@@ -57,7 +64,11 @@ def load_and_process_data(position):
             sample["ctx_hours_rest"],
             sample["ctx_ownership"],
             sample["ctx_opponent"],
-            sample.get("ctx_chance_of_playing", 100)
+            sample.get("ctx_chance_of_playing", 100),
+            sample.get("ctx_fixture_attack_raw", 0),
+            sample.get("ctx_fixture_defense_raw", 0),
+            sample.get("ctx_fixture_attack_scaled", 0),
+            sample.get("ctx_fixture_defense_scaled", 0),
         ]
         
         # 3. Dual Rolling-Window Aggregated Features (9 × 2 = 18 features)
@@ -235,11 +246,19 @@ def predict_future():
             prob_gt_10 = float(np.sum(dist[11:])) if len(dist) > 11 else 0.0
             
             # Extract r10 features from original X
+            # Feature vector is 29-dim: 11 ctx + 9 (r4) + 9 (r10)
+            # r10 window starts at index: 11 + 9 = 20
             original_x = X[fidx]
-            r10_min = float(original_x[16]) if len(original_x) == 25 else 0.0
-            r10_pts = float(original_x[17]) if len(original_x) == 25 else 0.0
-            r10_inf = float(original_x[20]) if len(original_x) == 25 else 0.0
-            r10_thr = float(original_x[22]) if len(original_x) == 25 else 0.0
+            r10_min = float(original_x[20]) if len(original_x) == 29 else 0.0
+            r10_pts = float(original_x[21]) if len(original_x) == 29 else 0.0
+            r10_inf = float(original_x[24]) if len(original_x) == 29 else 0.0
+            r10_thr = float(original_x[26]) if len(original_x) == 29 else 0.0
+
+            # Extract Fixture Features (Indices 7-10 in ctx block)
+            f_atk_raw = float(original_x[7]) if len(original_x) == 29 else 0.0
+            f_def_raw = float(original_x[8]) if len(original_x) == 29 else 0.0
+            f_atk_scaled = float(original_x[9]) if len(original_x) == 29 else 0.0
+            f_def_scaled = float(original_x[10]) if len(original_x) == 29 else 0.0
             
             if pid not in all_predictions:
                 all_predictions[pid] = {
@@ -256,6 +275,8 @@ def predict_future():
                     "r10_pts": r10_pts,
                     "r10_inf": r10_inf,
                     "r10_thr": r10_thr,
+                    "f_atk_next": f_atk_scaled,
+                    "f_def_next": f_def_scaled,
                 }
             
             # Always update R10 to use the latest (highest GW) sample's values
@@ -270,13 +291,17 @@ def predict_future():
                 "gw": gw, 
                 "xP": xp,
                 "prob_gt_6": prob_gt_6,
-                "prob_gt_10": prob_gt_10
+                "prob_gt_10": prob_gt_10,
+                "f_atk": f_atk_scaled,
+                "f_def": f_def_scaled
             })
             
             # Store 'next' probabilities for the first projection
             if len(entry["projections"]) == 1:
                 entry["prob_gt_6_next"] = prob_gt_6
                 entry["prob_gt_10_next"] = prob_gt_10
+                entry["f_atk_next"] = f_atk_scaled
+                entry["f_def_next"] = f_def_scaled
     
     # Finalize: compute total3Week, trim to 3 projections
     results: List[Dict[str, Any]] = []

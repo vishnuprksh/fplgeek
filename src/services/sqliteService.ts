@@ -142,7 +142,7 @@ export class SqliteProvider implements IDataProvider {
     async getPredictions(): Promise<any[]> {
         // Attempt to fetch generated JSON predictions first
         try {
-            const response = await fetch('/data/ai_predictions.json');
+            const response = await fetch(`/data/ai_predictions.json?t=${Date.now()}`);
             if (response.ok) {
                 const data = await response.json();
                 console.log("Loaded predictions from JSON file");

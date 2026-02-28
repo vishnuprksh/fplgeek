@@ -12,8 +12,9 @@ LEARNING_RATE = 0.001
 
 # Feature Params
 # Context Features (match-level, non-rolling):
-# [was_home, difficulty, price, hours_rest, ownership, opponent_strength, chance_of_playing]
-NUM_CTX_FEATURES = 7
+# [was_home, difficulty, price, hours_rest, ownership, opponent_strength, chance_of_playing,
+#  fixture_attack_raw, fixture_defense_raw, fixture_attack_scaled, fixture_defense_scaled]
+NUM_CTX_FEATURES = 11
 
 # Aggregated Features (dual rolling windows):
 # Rolling-4:  [min, pts, xG, xA, inf, cre, thr, gc, saves]  (9 features)
@@ -21,8 +22,8 @@ NUM_CTX_FEATURES = 7
 # Total Aggregated: 9 * 2 = 18
 NUM_AGG_FEATURES = 18
 
-# Total Input: 7 + 18 = 25
-INPUT_DIM = NUM_CTX_FEATURES + NUM_AGG_FEATURES
+# Total Input: 11 + 18 = 29
+INPUT_DIM = NUM_CTX_FEATURES + NUM_AGG_FEATURES  # 29
 
 # Constants
 STARTING_BUDGET = 1000

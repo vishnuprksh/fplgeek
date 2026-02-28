@@ -13,7 +13,7 @@ interface PlayerAnalysisProps {
     t100Ownership?: Record<number, number>;
 }
 
-type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr' | 't100_ownership';
+type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr' | 't100_ownership' | 'f_atk_next' | 'f_def_next';
 type SortDirection = 'asc' | 'desc';
 
 export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: PlayerAnalysisProps) {
@@ -37,6 +37,8 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                 r10_pts: (pred as any)?.r10_pts || 0,
                 r10_inf: (pred as any)?.r10_inf || 0,
                 r10_thr: (pred as any)?.r10_thr || 0,
+                f_atk_next: (pred as any)?.f_atk_next || 0,
+                f_def_next: (pred as any)?.f_def_next || 0,
                 ownership: parseFloat(p.selected_by_percent || "0"),
                 t100_ownership: t100Ownership ? (t100Ownership[p.id] || 0) : 0
             };
@@ -172,6 +174,8 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                                 <th>Team</th>
                                 <th>Pos</th>
                                 <th onClick={() => handleSort('prob_gt_6_next')} className="sortable">Next GW Haul {sortField === 'prob_gt_6_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('f_atk_next')} className="sortable">Fix Atk {sortField === 'f_atk_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('f_def_next')} className="sortable">Fix Def {sortField === 'f_def_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul (3GW Avg) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r10_pts')} className="sortable">L10 Pts {sortField === 'r10_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r10_inf')} className="sortable">L10 Inf {sortField === 'r10_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -196,6 +200,14 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                                     <td className="color-cell" style={{ fontWeight: 600 }}>
                                         <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(player.prob_gt_6_next * 0.8, 0.4)})` }}></div>
                                         {((player as any).prob_gt_6_next * 100).toFixed(0)}%
+                                    </td>
+                                    <td className="color-cell" style={{ fontWeight: 600 }}>
+                                        <div className="color-bg" style={{ backgroundColor: `rgba(0, 255, 135, ${(player as any).f_atk_next * 0.4})` }}></div>
+                                        {((player as any).f_atk_next * 100).toFixed(0)}%
+                                    </td>
+                                    <td className="color-cell" style={{ fontWeight: 600 }}>
+                                        <div className="color-bg" style={{ backgroundColor: `rgba(96, 165, 250, ${(player as any).f_def_next * 0.4})` }}></div>
+                                        {((player as any).f_def_next * 100).toFixed(0)}%
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 800 }}>
                                         <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(player.prob_gt_6 * 1.5, 0.8)})` }}></div>

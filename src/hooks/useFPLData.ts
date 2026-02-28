@@ -16,6 +16,8 @@ export interface PredictionMap {
         r10_pts?: number;
         r10_inf?: number;
         r10_thr?: number;
+        f_atk_next?: number;
+        f_def_next?: number;
     };
 }
 
@@ -56,7 +58,7 @@ export const useFPLData = () => {
                     const map: PredictionMap = {};
                     storedPreds.forEach((sp: any) => {
                         map[sp.id] = {
-                            totalForecast: sp.total5Week,
+                            totalForecast: sp.total3Week || sp.total5Week || 0,
                             prob_gt_6: sp.prob_gt_6,
                             prob_gt_10: sp.prob_gt_10,
                             prob_gt_6_next: sp.prob_gt_6_next,
@@ -64,9 +66,12 @@ export const useFPLData = () => {
                             r10_min: sp.r10_min,
                             r10_pts: sp.r10_pts,
                             r10_inf: sp.r10_inf,
-                            r10_thr: sp.r10_thr
+                            r10_thr: sp.r10_thr,
+                            f_atk_next: sp.f_atk_next,
+                            f_def_next: sp.f_def_next
                         };
                     });
+                    console.log("✅ Predictions Map updated, sample:", Object.values(map)[0]);
                     setPredictionsMap(map);
                 }
 
