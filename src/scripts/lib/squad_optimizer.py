@@ -5,14 +5,14 @@ def get_best_starting_squad(predictions):
     """
     Global optimization for initial squad selection using Linear Programming.
     Maximizes total predicted points subject to FPL constraints.
-    Enforces max 2 differential players (<10% ownership)
+    Enforces graduated ownership constraints for squad selection and captaincy.
     Excludes injured/unavailable players
     """
     
-    # Filter valid players (ownership > 5%, not injured)
+    # Filter valid players (ownership > 10%, not injured)
     valid_predictions = [
         p for p in predictions 
-        if float(p.get('selected_by_percent', 0)) > 5.0
+        if float(p.get('selected_by_percent', 0)) > 10.0 # All 15 players must be >10% ownership
         and not should_bench_player(p)
     ]
     
@@ -57,9 +57,36 @@ def get_best_starting_squad(predictions):
     for p in valid_predictions:
         prob += captain_vars[p['id']] <= starter_vars[p['id']]
     
-    # Constraint: Captain must have 30%+ ownership
-    template_captains = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) >= 30.0]
-    prob += lpSum([captain_vars[p['id']] for p in template_captains]) >= 1
+    # -------------------------------------------------------
+    # OWNERSHIP CONSTRAINTS (per-GW values — no data leakage)
+    # -------------------------------------------------------
+    
+    # Constraint A: Captain must have >60% ownership (guard: only add if feasible)
+    players_over_60_percent = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) > 60.0]
+    if players_over_60_percent:
+        prob += lpSum([captain_vars[p['id']] for p in players_over_60_percent]) >= 1
+    else:
+        print("⚠️ No players >60% ownership for captaincy — constraint relaxed to best available.")
+
+    # Constraint B: At least 8 players with >40% ownership in squad
+    players_over_40_percent = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) > 40.0]
+    if len(players_over_40_percent) >= 8:
+        prob += lpSum([player_vars[p['id']] for p in players_over_40_percent]) >= 8
+    elif players_over_40_percent:
+        # Relax: require all available >40% players to be included
+        prob += lpSum([player_vars[p['id']] for p in players_over_40_percent]) >= len(players_over_40_percent)
+        print(f"⚠️ Only {len(players_over_40_percent)} players >40% ownership — relaxed constraint applied.")
+
+    # Constraint C: At least 12 players with >20% ownership in squad
+    players_over_20_percent = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) > 20.0]
+    if len(players_over_20_percent) >= 12:
+        prob += lpSum([player_vars[p['id']] for p in players_over_20_percent]) >= 12
+    elif players_over_20_percent:
+        # Relax: require all available >20% players to be included
+        prob += lpSum([player_vars[p['id']] for p in players_over_20_percent]) >= len(players_over_20_percent)
+        print(f"⚠️ Only {len(players_over_20_percent)} players >20% ownership — relaxed constraint applied.")
+    
+    # -------------------------------------------------------
     
     # Constraint 1: Budget (£100m = 1000 in 0.1m units)
     prob += lpSum([p['cost'] * player_vars[p['id']] for p in valid_predictions]) <= 1000
@@ -94,22 +121,15 @@ def get_best_starting_squad(predictions):
         team_players = [p for p in valid_predictions if p['team'] == team_id]
         prob += lpSum([player_vars[p['id']] for p in team_players]) <= 3
     
-    # Constraint 5: Max 2 differential players (< 10% ownership) in squad
-    differentials = [p for p in valid_predictions if is_differential(p)]
-    prob += lpSum([player_vars[p['id']] for p in differentials]) <= 2
-    
-    # Constraint 6: Min 3 template players (>= 30% ownership) in STARTING XI
-    template_players = [p for p in valid_predictions if float(p.get('selected_by_percent', 0)) >= 30.0]
-    prob += lpSum([starter_vars[p['id']] for p in template_players]) >= 3
-    
     # Solve (suppress output)
     status = prob.solve(PULP_CBC_CMD(msg=0))
     
     # Check solver status
     if LpStatus[status] != 'Optimal':
         print(f"⚠️ LP Solver Warning: Status = {LpStatus[status]}")
-        print(f"   Template players available: {len(template_players)}")
-        print(f"   Template captains available: {len(template_captains)}")
+        print(f"   Players >20% ownership available: {len(players_over_20_percent)}")
+        print(f"   Players >40% ownership available: {len(players_over_40_percent)}")
+        print(f"   Players >60% ownership available for captain: {len(players_over_60_percent)}")
     
     # Extract selected players, starters, bench, and captain
     selected_squad = []

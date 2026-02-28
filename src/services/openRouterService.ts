@@ -1,6 +1,6 @@
 import type { TeamEntry, Pick, Player } from '../types/fpl';
 
-const OPENROUTER_API_KEY = "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";
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
 const MODEL_NAME = "z-ai/glm-4.7-flash";
 
 export type MessageRole = 'user' | 'model' | 'assistant' | 'system' | 'tool';

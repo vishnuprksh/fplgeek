@@ -9,10 +9,11 @@ import { FixtureAnalysis } from './components/FixtureAnalysis';
 import { PlayerAnalysis } from './components/PlayerAnalysis';
 import { OptimizationReport } from './components/OptimizationReport';
 
-import { ChatWindow } from './components/ChatWindow';
+
 import { TransferModal } from './components/TransferModal';
 import { AiHistory } from './components/AiHistory';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
+import { AssistantPage } from './components/AssistantPage';
 import './App.css';
 import { BottomNav } from './components/BottomNav';
 
@@ -23,8 +24,8 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league'>('dashboard');
-  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league' | 'assistant'>('dashboard');
+
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 
   // 1. Data Fetching Hook
@@ -344,30 +345,21 @@ export default function App() {
               <LeagueAnalysis />
             </div>
           )}
+
+          {currentView === 'assistant' && (
+            <div className="fade-in">
+              <AssistantPage
+                teamData={teamData || null}
+                picks={activePicks}
+                elements={staticData?.elements}
+                predictionsMap={predictionsMap}
+                t100OwnershipMap={t100OwnershipMap}
+              />
+            </div>
+          )}
         </main>
 
-        {/* Floating Assistant Button */}
-        {teamData && (
-          <button
-            className="assistant-fab"
-            onClick={() => setIsAssistantOpen(!isAssistantOpen)}
-            aria-label="Toggle AI Assistant"
-          >
-            💬 <span>Assistant</span>
-          </button>
-        )}
 
-        {/* Floating Chat Window */}
-        {isAssistantOpen && (
-          <div className="floating-chat-container fade-in">
-            <ChatWindow
-              teamData={teamData}
-              picks={activePicks}
-              elements={staticData?.elements}
-              onClose={() => setIsAssistantOpen(false)}
-            />
-          </div>
-        )}
 
         {selectedTransferPlayer && staticData && (
           <TransferModal

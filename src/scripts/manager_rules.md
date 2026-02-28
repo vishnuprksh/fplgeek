@@ -8,14 +8,18 @@
   - Team Size: Exactly 15 players.
   - Position Limits: 2 GKP, 5 DEF, 5 MID, 3 FWD.
   - Squad Limits: Max 3 players per Premier League team.
-  - Feature Boost: In GW 1, players with ownership > 30% get a 1.3x xP boost, > 15% get 1.15x boost (to correct for model cold start).
+  - **Ownership Rules (per-GW, no data leakage)**:
+    - All 15 players must have **selected% > 10%**
+    - At least 12 players must have **selected% > 20%**
+    - At least 8 players must have **selected% > 40%**
+  - Fallback: if not enough players meet a tier, constraint relaxes to "all available in that tier".
 - **Availability**: Players with `status != 'a'` or `chance_of_playing < 100` are excluded.
 
 ## 2. Team Management
-- **Captaincy**: The captain (2x multiplier) must be a "safe" pick.
-  - Constraint: **Ownership > 30%**.
+- **Captaincy**: The captain (2x multiplier) must be a "safe" template pick.
+  - Constraint: **Ownership > 60%** (LP-enforced in squad selection, lineup selection).
   - If no player in the starting XI meets this, the highest xP player is chosen (with a warning).
-- **Vice Captain**: Next best player also with **Ownership > 30%**.
+- **Vice Captain**: Next best player also with **Ownership > 60%**.
 - **Bench Order**: Sorted by xP.
 
 ## 3. Transfer Prioritization

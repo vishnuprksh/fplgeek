@@ -13,7 +13,7 @@ from src.scripts.lib.squad_optimizer import get_best_starting_squad  # type: ign
 
 
 class FPLManager:
-    def __init__(self, players_map: Dict[str, Any], min_captain_ownership: float = 50.0, team_score_target: float = 60.0, 
+    def __init__(self, players_map: Dict[str, Any], min_captain_ownership: float = 60.0, team_score_target: float = 60.0, 
                  bench_boost_metric: str = 'prob_gt_6', triple_captain_metric: str = 'prob_gt_10'):
         self.players_map = players_map
         self.min_captain_ownership = min_captain_ownership
@@ -133,8 +133,8 @@ class FPLManager:
         # 2. Select Captain from Starters (using ownership constraint)
         starters_sorted = sorted(starters, key=lambda x: (x['xp'], x.get('selected_by_percent', 0)), reverse=True)
         
-        # Captain must have 30%+ ownership (safe, template pick)
-        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) >= self.min_captain_ownership]
+        # Captain must have >60% ownership (safe, template pick per ownership rules)
+        captain_candidates = [p for p in starters_sorted if float(p.get('selected_by_percent', 0)) > self.min_captain_ownership]
         
         captain_id = None
         if captain_candidates:
@@ -148,7 +148,7 @@ class FPLManager:
                 print(f"   Emergency captain: {starters_sorted[0]['name']} ({starters_sorted[0].get('selected_by_percent', 0):.1f}%)")
 
         # Vice-captain (also prefer 30%+ ownership)
-        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) >= self.min_captain_ownership]
+        vice_captain_candidates = [p for p in starters_sorted if p['id'] != captain_id and float(p.get('selected_by_percent', 0)) > self.min_captain_ownership]
         
         vice_captain_id = None
         if vice_captain_candidates:
@@ -390,7 +390,7 @@ class FPLManager:
                                   if c['type'] == p_out['type'] 
                                   and c['cost'] <= budget
                                   and c['id'] not in current_squad_ids
-                                  and float(c.get('selected_by_percent', 0)) > 5.0]  # Constraint ownership
+                                  and float(c.get('selected_by_percent', 0)) > 10.0]  # Min 10% ownership (no data leakage: uses per-GW ownership)
                 
                 # EXCLUDE UNDERPERFORMING PLAYERS
                 # Filter out players who are underperforming (actual < predicted by significant margin)

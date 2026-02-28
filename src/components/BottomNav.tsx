@@ -47,17 +47,30 @@ const LeagueIcon = () => (
     </svg>
 );
 
+const AssistantIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z" />
+        <path d="M5 14v8" />
+        <path d="M19 14v8" />
+        <path d="M3 22h18" />
+        <circle cx="9" cy="11" r="1" />
+        <circle cx="15" cy="11" r="1" />
+    </svg>
+);
+
 const iconMap: Record<string, React.FC> = {
     dashboard: TeamIcon,
     fixtures: FixturesIcon,
     players: PlayersIcon,
     'ai-history': HistoryIcon,
     league: LeagueIcon,
+    assistant: AssistantIcon,
 };
 
 export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChangeView }) => {
     const navItems = [
         { id: 'dashboard', label: 'Team' },
+        { id: 'assistant', label: 'Advisor' },
         { id: 'fixtures', label: 'Fixtures' },
         { id: 'players', label: 'Players' },
         { id: 'league', label: 'League' },
