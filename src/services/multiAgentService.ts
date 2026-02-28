@@ -24,6 +24,8 @@ export interface AgentContext {
     elements: Player[];
     predictionsMap: Record<number, any>;
     t100OwnershipMap: Record<number, any>;
+    fixtures: any[];
+    teams: any[];
     events: any[];
 }
 
@@ -74,9 +76,11 @@ async function jinaSearch(query: string): Promise<string> {
 // ── Build rich team context string ───────────────────────────────────────────
 
 function buildTeamContext(ctx: AgentContext): string {
-    const { teamData, picks, elements, predictionsMap, t100OwnershipMap, events } = ctx;
+    const { teamData, picks, elements, predictionsMap, t100OwnershipMap, fixtures, teams, events } = ctx;
     const bank = ((teamData.last_deadline_bank || 0) / 10).toFixed(1);
     const currentGW = teamData.current_event || 0;
+    const nextGWObj = events.find((e: any) => e.is_next);
+    const nextGW = nextGWObj ? nextGWObj.id : currentGW + 1;
     const transfersMade = teamData.last_deadline_total_transfers || 0;
 
     const playerLines = picks.map(pick => {
@@ -92,17 +96,38 @@ function buildTeamContext(ctx: AgentContext): string {
     }).filter(Boolean).join('\n');
 
     // Simple DGW/BGW detection
-    const upcomingEvents = events.filter(e => e.id >= currentGW && e.id <= currentGW + 5);
-    const scheduleContext = upcomingEvents.map(e => `GW${e.id}: ${e.name}`).join(', ');
+    const upcomingEvents = events.filter((e: any) => e.id >= nextGW && e.id <= nextGW + 5);
+    const scheduleContext = upcomingEvents.map((e: any) => `GW${e.id}: ${e.name}`).join(', ');
 
-    return `CURRENT GAMEWEEK: GW${currentGW}
+    const getTeamName = (id: number) => teams.find(t => t.id === id)?.short_name || `T${id}`;
+
+    return `DISCUSSION FOCUS: UPCOMING GAMEWEEK GW${nextGW}
+CURRENT GAMEWEEK: GW${currentGW}
 TEAM: ${teamData.name}
 Rank: ${teamData.summary_overall_rank?.toLocaleString()} | Points: ${teamData.summary_overall_points}
 Bank: £${bank}m | Transfers Made: ${transfersMade}
-Upcoming: ${scheduleContext}
+Upcoming Roadmap: ${scheduleContext}
 
 SQUAD:
-${playerLines}`;
+${playerLines}
+
+TOP TARGETS:
+- High Form: ${elements.slice().sort((a, b) => parseFloat(b.form) - parseFloat(a.form)).slice(0, 5).map(e => `${e.web_name} (£${(e.now_cost / 10).toFixed(1)}m, Form: ${e.form})`).join(', ')}
+- Predicted Points (Next): ${elements.slice().sort((a, b) => (predictionsMap[b.id]?.predicted_points || 0) - (predictionsMap[a.id]?.predicted_points || 0)).slice(0, 5).map(e => `${e.web_name} (${predictionsMap[e.id]?.predicted_points?.toFixed(1) || 0} pts)`).join(', ')}
+
+FIXTURE ANALYSIS (Next 5 GWs):
+${[0, 1, 2, 3, 4].map(offset => {
+        const gw = nextGW + offset;
+        return teams.map(t => {
+            const teamFixtures = fixtures.filter(f => f.event === gw && (f.team_h === t.id || f.team_a === t.id));
+            if (teamFixtures.length === 0) return `${t.short_name}: BLANK ⚪`;
+            if (teamFixtures.length > 1) return `${t.short_name}: DOUBLE 🔥 (${teamFixtures.map(f => f.team_h === t.id ? getTeamName(f.team_a) : getTeamName(f.team_h)).join('+')})`;
+            const f = teamFixtures[0];
+            const opponent = f.team_h === t.id ? getTeamName(f.team_a) : getTeamName(f.team_h);
+            return `${t.short_name}: ${opponent}`;
+        }).slice(0, 10).join(', '); // Show first 10 teams per GW to avoid context bloat
+    }).join('\n')}
+`;
 }
 
 // ── System Prompts ────────────────────────────────────────────────────────────
@@ -118,6 +143,10 @@ DISCUSS THE FOLLOWING POINTS:
 2. 🔨 **"Broken Cards" (Must-Haves)**: Identify players who are essential in the current meta that we don't have.
 3. 🗑️ **"Bad Cards" (Must-Sells)**: Identify players who are underperforming or have poor fixtures and must be removed.
 4. 🗓️ **Current GW Conditions**: Analyze the immediate fixtures and player availability (audit for injuries/suspensions).
+5. 🎯 **Market Targets**: Use the "TOP TARGETS" and "FIXTURE ANALYSIS" to suggest specific players to bring in.
+
+⚠️ **STRICT FOCUS**: The discussion is for the **UPCOMING GAMEWEEK** mentioned in the context. Ensure your "Immediate Action Plan" addresses this upcoming gameweek, not the current one.
+⚠️ **TEAM NAMES**: You MUST use the **short team names** (e.g., ARS, CHE, MUN) provided in the FIXTURE ANALYSIS when discussing matchups.
 
 MANDATORY FIRST RESPONSE:
 - Open the discussion with the Senior Manager by providing a tactical summary of the team.
@@ -139,8 +168,11 @@ Your role is to evaluate the Tactical Manager's proposals and ensure they align 
 DISCUSS THE FOLLOWING POINTS:
 1. 💰 **Financial Strategy**: Managing the bank balance (£${teamContext.match(/Bank: £([\d.]+)m/)?.[1] || '0.0'}m) and squad value.
 2. 🃏 **Chip Strategy**: When to play Wildcard, Free Hit, Bench Boost, or Triple Captain based on upcoming Double/Blank Gameweeks.
-3. 🗺️ **Long-term Movements**: Planning for Double (DGW) and Blank (BGW) gameweeks over the next 4-6 weeks (verify fixtures are correct).
+3. 🗺️ **Long-term Movements**: Planning for Double (DGW) and Blank (BGW) gameweeks over the next 4-6 weeks using the FIXTURE ANALYSIS.
 4. 🔄 **Transactions**: Managing the number of transfers and potential hits.
+
+⚠️ **STRICT FOCUS**: Stay aligned with the Tactical Manager on the **UPCOMING GAMEWEEK** focus.
+⚠️ **TEAM NAMES**: You MUST use the **short team names** (e.g., ARS, CHE, MUN) provided in the FIXTURE ANALYSIS.
 
 Your job is to debate and refine the strategy with the Tactical Manager.
 
@@ -181,7 +213,6 @@ export async function runAgentLoop(
         webContext = [news, meta].filter(s => s.length > 0).join('\n\n');
     } catch { }
 
-    let _lastTacticalReply = '';
     let lastSeniorReply = '';
 
     for (let i = 1; i <= MAX_ITERATIONS; i++) {
@@ -196,7 +227,8 @@ export async function runAgentLoop(
         const tacticalReply = await callLLM(TACTICAL_MANAGER_SYSTEM(teamContext, i === 1 ? webContext : ''), tacticalMsgs);
         tacticalMsgs.push({ role: 'assistant', content: tacticalReply });
         addEntry('tactical_manager', tacticalReply, i);
-        _lastTacticalReply = tacticalReply;
+        lastSeniorReply = ''; // Reset for next turn or just rely on assignment below
+
 
         // ── Senior Manager turn ───────────────────────────────────────────────
         onStatus(`👔 Senior Manager strategizing... (Iteration ${i}/${MAX_ITERATIONS})`);

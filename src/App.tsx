@@ -362,6 +362,8 @@ export default function App() {
                 elements={staticData?.elements}
                 predictionsMap={predictionsMap}
                 t100OwnershipMap={t100OwnershipMap}
+                fixtures={fixtures}
+                teams={staticData?.teams || []}
                 events={staticData?.events || []}
                 isRunning={assistantIsRunning}
                 setIsRunning={setAssistantIsRunning}

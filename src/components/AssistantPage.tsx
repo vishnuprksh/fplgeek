@@ -176,6 +176,8 @@ interface AssistantPageProps {
     elements: Player[] | undefined;
     predictionsMap: Record<number, any>;
     t100OwnershipMap: Record<number, any>;
+    fixtures: any[];
+    teams: any[];
     events: any[];
     isRunning: boolean;
     setIsRunning: (isRunning: boolean) => void;
@@ -190,7 +192,7 @@ interface AssistantPageProps {
 }
 
 export const AssistantPage: React.FC<AssistantPageProps> = ({
-    teamData, picks, elements, predictionsMap, t100OwnershipMap, events,
+    teamData, picks, elements, predictionsMap, t100OwnershipMap, fixtures, teams, events,
     isRunning, setIsRunning, isDone, setIsDone, status, setStatus,
     conversation, setConversation, currentIteration, setCurrentIteration
 }) => {
@@ -214,6 +216,8 @@ export const AssistantPage: React.FC<AssistantPageProps> = ({
             elements,
             predictionsMap,
             t100OwnershipMap,
+            fixtures: fixtures || [],
+            teams: teams || [],
             events: events || []
         };
 
