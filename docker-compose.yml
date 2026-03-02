@@ -1,29 +1,33 @@
 services:
   web:
     build: .
+    container_name: fplgeek-web
     restart: always
-    environment:
-      - VIRTUAL_HOST=fplgeek.xyz,www.fplgeek.xyz,31.97.232.229
-      - LETSENCRYPT_HOST=fplgeek.xyz,www.fplgeek.xyz
-      - LETSENCRYPT_EMAIL=vishnuprakash1999@gmail.com
-    networks:
-      - nginx-proxy
     expose:
       - "80"
+    environment:
+      - VIRTUAL_HOST=fplgeek.xyz,www.fplgeek.xyz
+      - LETSENCRYPT_HOST=fplgeek.xyz,www.fplgeek.xyz
+      - LETSENCRYPT_EMAIL=your@email.com
     depends_on:
       - server
+    networks:
+      - proxy
 
   server:
     build: ./functions
+    container_name: fplgeek-server
     restart: always
     env_file: .env
     environment:
       - PORT=3000
-    networks:
-      - nginx-proxy
     volumes:
       - ./public/data:/app/public/data
+    expose:
+      - "3000"
+    networks:
+      - proxy
 
 networks:
-  nginx-proxy:
+  proxy:
     external: true
