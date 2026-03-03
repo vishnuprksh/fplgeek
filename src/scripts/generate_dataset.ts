@@ -49,6 +49,11 @@ interface TeamVenueStats {
 
 function buildTeamVenueTable(finishedFixtures: any[]): Record<number, TeamVenueStats> {
     const table: Record<number, TeamVenueStats> = {};
+    const teamIds = new Set<number>();
+    finishedFixtures.forEach(f => {
+        teamIds.add(f.team_h);
+        teamIds.add(f.team_a);
+    });
 
     const ensure = (id: number) => {
         if (!table[id]) {
@@ -61,33 +66,41 @@ function buildTeamVenueTable(finishedFixtures: any[]): Record<number, TeamVenueS
         }
     };
 
-    for (const f of finishedFixtures) {
-        const hScore: number = f.team_h_score ?? 0;
-        const aScore: number = f.team_a_score ?? 0;
-        ensure(f.team_h);
-        ensure(f.team_a);
+    // Sort chronologically
+    const sorted = [...finishedFixtures].sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
 
-        table[f.team_h].played++;
-        table[f.team_h].goalsScored += hScore;
-        table[f.team_h].goalsConceded += aScore;
-        table[f.team_h].homeGoalsScored += hScore;
-        table[f.team_h].homeGoalsConceded += aScore;
+    teamIds.forEach(teamId => {
+        ensure(teamId);
+        const teamMatches = sorted.filter(f => f.team_h === teamId || f.team_a === teamId);
+        const last10 = teamMatches.slice(-10);
 
-        table[f.team_a].played++;
-        table[f.team_a].goalsScored += aScore;
-        table[f.team_a].goalsConceded += hScore;
-        table[f.team_a].awayGoalsScored += aScore;
-        table[f.team_a].awayGoalsConceded += hScore;
-    }
+        last10.forEach(f => {
+            const isHome = f.team_h === teamId;
+            const hScore: number = f.team_h_score ?? 0;
+            const aScore: number = f.team_a_score ?? 0;
+
+            table[teamId].played++;
+            if (isHome) {
+                table[teamId].goalsScored += hScore;
+                table[teamId].goalsConceded += aScore;
+                table[teamId].homeGoalsScored += hScore;
+                table[teamId].homeGoalsConceded += aScore;
+            } else {
+                table[teamId].goalsScored += aScore;
+                table[teamId].goalsConceded += hScore;
+                table[teamId].awayGoalsScored += aScore;
+                table[teamId].awayGoalsConceded += hScore;
+            }
+        });
+    });
 
     return table;
 }
 
-// Compute raw attack & defense scores for a given team vs opponent, given venue
+// Compute raw attack & defense scores for a given team vs opponent (Venue Independent)
 function computeFixtureScores(
     teamId: number,
     opponentId: number,
-    isHome: boolean,
     venueTable: Record<number, TeamVenueStats>
 ): { attackRaw: number; defenseRaw: number } {
     const team = venueTable[teamId];
@@ -95,15 +108,11 @@ function computeFixtureScores(
 
     if (!team || !opp) return { attackRaw: 0, defenseRaw: 0 };
 
-    // Attack: our offensive output + opponent's defensive weakness (same side)
-    const attackRaw = isHome
-        ? (team.homeGoalsScored + opp.awayGoalsConceded)
-        : (team.awayGoalsScored + opp.homeGoalsConceded);
+    // Attack: our offensive output + opponent's defensive weakness (Total)
+    const attackRaw = team.goalsScored + opp.goalsConceded;
 
-    // Defense: opponent's offensive threat + our defensive weakness
-    const defenseRaw = isHome
-        ? (opp.awayGoalsScored + team.homeGoalsConceded)
-        : (opp.homeGoalsScored + team.awayGoalsConceded);
+    // Defense: opponent's offensive threat + our defensive weakness (Total)
+    const defenseRaw = opp.goalsScored + team.goalsConceded;
 
     return { attackRaw, defenseRaw };
 }
@@ -125,11 +134,9 @@ interface ProcessedSample {
     // Form, Ownership, Availability
     ctx_ownership: number;
     ctx_chance_of_playing: number;
-    // Fixture-Based Team Strength (data-driven, from goals scored/conceded)
-    ctx_fixture_attack_raw: number;    // team attack output + opp defensive weakness
-    ctx_fixture_defense_raw: number;   // opp attacking threat + our defensive weakness
-    ctx_fixture_attack_scaled: number; // [0,1] — higher = easier to score
-    ctx_fixture_defense_scaled: number;// [0,1] — higher = easier to keep sheet
+    // Fixture-Based Team Strength (Venue Independent, 10-match window)
+    ctx_fixture_attack: number;    // [0,1] — higher = easier to score
+    ctx_fixture_defense: number;   // [0,1] — higher = easier to keep sheet
     // History Sequence (Flat for now, but ordered)
     history_sequence: number[][]; // [ [min, xG, xA...], [min, xG, xA...] ]
 }
@@ -144,6 +151,11 @@ function parseFloatSafe(val: any): number {
 
 // --- Main ---
 function main() {
+    // Ensure output directory exists
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    }
+
     const db = new Database(DB_PATH);
 
     // 1. Fetch Raw Data
@@ -308,8 +320,7 @@ function main() {
 
                 // Compute fixture-based team strength scores
                 const { attackRaw, defenseRaw } = computeFixtureScores(
-                    pTeam, targetMatch.opponent_team,
-                    !!targetMatch.was_home, venueTable
+                    pTeam, targetMatch.opponent_team, venueTable
                 );
 
                 const sample = {
@@ -327,10 +338,8 @@ function main() {
                     ctx_hours_rest: Math.min(hoursRest, 300),
                     ctx_ownership: parseFloatSafe(targetMatch.selected_by_percent),
                     ctx_chance_of_playing: 100,
-                    ctx_fixture_attack_raw: attackRaw,
-                    ctx_fixture_defense_raw: defenseRaw,
-                    ctx_fixture_attack_scaled: 0,    // filled in second pass
-                    ctx_fixture_defense_scaled: 0,   // filled in second pass
+                    ctx_fixture_attack: 0,    // filled in second pass
+                    ctx_fixture_defense: 0,   // filled in second pass
                     history_sequence: seqData,
                     _attackRaw: attackRaw,
                     _defenseRaw: defenseRaw
@@ -436,7 +445,7 @@ function main() {
             // Compute fixture-based scores for this future fixture
             const futOpponentId = isHome ? f.team_a : f.team_h;
             const { attackRaw: futAttackRaw, defenseRaw: futDefenseRaw } = computeFixtureScores(
-                player.team, futOpponentId, isHome, venueTable
+                player.team, futOpponentId, venueTable
             );
 
             const sample = {
@@ -454,10 +463,8 @@ function main() {
                 ctx_hours_rest: Math.min(hoursRest, 300),
                 ctx_ownership: 0,
                 ctx_chance_of_playing: player.chance_of_playing_next_round ?? 100,
-                ctx_fixture_attack_raw: futAttackRaw,
-                ctx_fixture_defense_raw: futDefenseRaw,
-                ctx_fixture_attack_scaled: 0,    // filled in second pass
-                ctx_fixture_defense_scaled: 0,   // filled in second pass
+                ctx_fixture_attack: 0,    // filled in second pass
+                ctx_fixture_defense: 0,   // filled in second pass
                 history_sequence: placeholderSeq,
                 _attackRaw: futAttackRaw,
                 _defenseRaw: futDefenseRaw
@@ -504,8 +511,8 @@ function main() {
             const { _attackRaw, _defenseRaw, ...rest } = s;
             return {
                 ...rest,
-                ctx_fixture_attack_scaled: parseFloat(atkScaled.toFixed(4)),
-                ctx_fixture_defense_scaled: parseFloat(defScaled.toFixed(4))
+                ctx_fixture_attack: parseFloat(atkScaled.toFixed(4)),
+                ctx_fixture_defense: parseFloat(defScaled.toFixed(4))
             } as ProcessedSample;
         });
 

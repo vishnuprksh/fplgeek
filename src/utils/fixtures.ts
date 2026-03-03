@@ -34,28 +34,32 @@ export function calculateTable(fixtures: Match[], teams: Team[]): TeamStats[] {
     });
 
     // Process finished matches
-    fixtures.filter(m => m.finished).forEach(match => {
-        const home = table[match.team_h];
-        const away = table[match.team_a];
+    const finished = fixtures.filter(m => m.finished);
 
-        if (home && away) {
-            home.played++;
-            away.played++;
+    // Sort chronologically to get latest matches
+    finished.sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
 
-            // Total Stats
-            home.goalsScored += match.team_h_score;
-            home.goalsConceded += match.team_a_score;
+    teams.forEach(team => {
+        const teamMatches = finished.filter(m => m.team_h === team.id || m.team_a === team.id);
+        const last10 = teamMatches.slice(-10); // Take last 10
 
-            away.goalsScored += match.team_a_score;
-            away.goalsConceded += match.team_h_score;
+        const stats = table[team.id];
+        last10.forEach(match => {
+            const isHome = match.team_h === team.id;
+            stats.played++;
 
-            // Granular Stats
-            home.homeGoalsScored += match.team_h_score;
-            home.homeGoalsConceded += match.team_a_score;
-
-            away.awayGoalsScored += match.team_a_score;
-            away.awayGoalsConceded += match.team_h_score;
-        }
+            if (isHome) {
+                stats.goalsScored += match.team_h_score;
+                stats.goalsConceded += match.team_a_score;
+                stats.homeGoalsScored += match.team_h_score;
+                stats.homeGoalsConceded += match.team_a_score;
+            } else {
+                stats.goalsScored += match.team_a_score;
+                stats.goalsConceded += match.team_h_score;
+                stats.awayGoalsScored += match.team_a_score;
+                stats.awayGoalsConceded += match.team_h_score;
+            }
+        });
     });
 
     return Object.values(table);
@@ -84,11 +88,9 @@ export function getRankedFixtures(fixtures: Match[], table: TeamStats[], current
         const awayTeam = table.find(t => t.id === match.team_a);
 
         if (homeTeam && awayTeam) {
-            // Home Team Attacking (vs Away Defense)
-            const homeScore = homeTeam.homeGoalsScored + awayTeam.awayGoalsConceded;
-
-            // Away Team Attacking (vs Home Defense)
-            const awayScore = awayTeam.awayGoalsScored + homeTeam.homeGoalsConceded;
+            // Venue-Independent Attacking (vs Opponent Defense)
+            const homeScore = homeTeam.goalsScored + awayTeam.goalsConceded;
+            const awayScore = awayTeam.goalsScored + homeTeam.goalsConceded;
 
             ranked.push({
                 match,
@@ -151,9 +153,11 @@ export function getFixtureTicker(
                 if (opponent) {
                     let score = 0;
                     if (metric === 'attack') {
-                        score = isHome ? (team.homeGoalsScored + opponent.awayGoalsConceded) : (team.awayGoalsScored + opponent.homeGoalsConceded);
+                        // Venue-Independent: Our attack vs their defense
+                        score = team.goalsScored + opponent.goalsConceded;
                     } else {
-                        score = isHome ? (team.homeGoalsConceded + opponent.awayGoalsScored) : (team.awayGoalsConceded + opponent.homeGoalsScored);
+                        // Venue-Independent: Their attack vs our defense
+                        score = opponent.goalsScored + team.goalsConceded;
                     }
                     rawMatches.push({ teamId: team.id, gw, score });
                 }
@@ -188,9 +192,9 @@ export function getFixtureTicker(
                 if (opponent) {
                     let rawScore = 0;
                     if (metric === 'attack') {
-                        rawScore = isHome ? (team.homeGoalsScored + opponent.awayGoalsConceded) : (team.awayGoalsScored + opponent.homeGoalsConceded);
+                        rawScore = team.goalsScored + opponent.goalsConceded;
                     } else {
-                        rawScore = isHome ? (team.homeGoalsConceded + opponent.awayGoalsScored) : (team.awayGoalsConceded + opponent.homeGoalsScored);
+                        rawScore = opponent.goalsScored + team.goalsConceded;
                     }
 
                     // Scale 0 to 1
