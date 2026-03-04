@@ -16,6 +16,7 @@ export interface PredictionMap {
         r10_pts?: number;
         r10_inf?: number;
         r10_thr?: number;
+        r10_xg?: number;
         f_atk_next?: number;
         f_def_next?: number;
     };
@@ -67,6 +68,7 @@ export const useFPLData = () => {
                             r10_pts: sp.r10_pts,
                             r10_inf: sp.r10_inf,
                             r10_thr: sp.r10_thr,
+                            r10_xg: sp.r10_xg,
                             f_atk_next: sp.f_atk_next,
                             f_def_next: sp.f_def_next
                         };

@@ -248,12 +248,13 @@ def predict_future():
             original_x = X[fidx]
             r10_min = float(original_x[18]) if len(original_x) == 27 else 0.0
             r10_pts = float(original_x[19]) if len(original_x) == 27 else 0.0
-            r10_inf = float(original_x[22]) if len(original_x) == 27 else 0.0
-            r10_thr = float(original_x[24]) if len(original_x) == 27 else 0.0
+            r10_inf = float(original_x[22]) if len(original_x) >= 27 else 0.0
+            r10_thr = float(original_x[24]) if len(original_x) >= 27 else 0.0
+            r10_xg = float(original_x[20]) if len(original_x) >= 27 else 0.0
 
             # Extract Fixture Features (Indices 7-8 in ctx block)
-            f_atk = float(original_x[7]) if len(original_x) == 27 else 0.0
-            f_def = float(original_x[8]) if len(original_x) == 27 else 0.0
+            f_atk = float(original_x[7]) if len(original_x) >= 27 else 0.0
+            f_def = float(original_x[8]) if len(original_x) >= 27 else 0.0
             
             if pid not in all_predictions:
                 all_predictions[pid] = {
@@ -270,6 +271,7 @@ def predict_future():
                     "r10_pts": r10_pts,
                     "r10_inf": r10_inf,
                     "r10_thr": r10_thr,
+                    "r10_xg": r10_xg,
                     "f_atk_next": f_atk,
                     "f_def_next": f_def,
                 }
@@ -280,6 +282,7 @@ def predict_future():
             entry_ref["r10_pts"] = r10_pts
             entry_ref["r10_inf"] = r10_inf
             entry_ref["r10_thr"] = r10_thr
+            entry_ref["r10_xg"] = r10_xg
             
             entry = all_predictions[pid]  # type: ignore
             entry["projections"].append({
