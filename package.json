@@ -1,15 +1,16 @@
 {
-  "name": "fpl",
+  "name": "fplgeek",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "ingest:local": "tsx functions/ingest.ts",
-    "update:data": "bash scripts/update_data.sh",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "vite --root frontend",
+    "dev:backend": "tsx watch backend/server.ts",
+    "build": "tsc --build frontend && vite build --root frontend",
+    "lint": "eslint frontend/src",
+    "preview": "vite preview --root frontend",
+    "ingest:local": "tsx backend/ingest.ts",
+    "update:data": "bash scripts/update_data.sh"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",
@@ -45,3 +46,4 @@
     "vite": "^7.2.4"
   }
 }
+

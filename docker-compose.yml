@@ -1,10 +1,12 @@
 services:
   web:
-    build: .
+    build: ./frontend
     container_name: fplgeek-web
     restart: always
     expose:
       - "80"
+    volumes:
+      - ./data:/usr/share/nginx/html/data
     environment:
       - VIRTUAL_HOST=fplgeek.xyz,www.fplgeek.xyz
       - LETSENCRYPT_HOST=fplgeek.xyz,www.fplgeek.xyz
@@ -15,14 +17,16 @@ services:
       - proxy
 
   server:
-    build: ./functions
+    build: ./backend
     container_name: fplgeek-server
     restart: always
     env_file: .env
     environment:
       - PORT=3000
+      - DATA_DIR=/app/data
+      - FPL_DATA_DIR=/app/data
     volumes:
-      - ./public/data:/app/public/data
+      - ./data:/app/data
     expose:
       - "3000"
     networks:

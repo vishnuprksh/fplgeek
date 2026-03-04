@@ -1,0 +1,121 @@
+.player-analysis {
+    padding: var(--space-4);
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.analysis-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.filter-select {
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition-base);
+}
+
+.filter-select:hover {
+    border-color: var(--border-hover);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+}
+
+.table-container {
+    overflow-x: auto;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.analysis-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+}
+
+.analysis-table th {
+    background: rgba(0, 0, 0, 0.1);
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.analysis-table th.sortable {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+}
+
+.analysis-table th.sortable:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.clickable-row {
+    transition: background-color var(--transition-fast);
+}
+
+.clickable-row:hover {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.player-name-main {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.player-name-meta {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+}
+
+
+@media (max-width: 768px) {
+    .analysis-table th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 11;
+        background: rgba(15, 17, 23, 0.95);
+    }
+}
+
+/* Markdown Content Tables (dark-mode compatible) */
+.markdown-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--space-4) 0;
+    font-size: var(--text-sm);
+}
+
+.markdown-content th,
+.markdown-content td {
+    padding: var(--space-2) var(--space-3);
+    border: 1px solid var(--border-default);
+    text-align: left;
+}
+
+.markdown-content th {
+    background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.markdown-content tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.markdown-content td {
+    color: var(--text-primary);
+}

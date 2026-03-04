@@ -1,0 +1,195 @@
+/* ===========================
+   PLAYER DETAIL MODAL
+   =========================== */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+    overflow-y: auto;
+    padding: var(--space-4);
+}
+
+.modal-content {
+    background: var(--color-bg-card-solid);
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+    position: relative;
+}
+
+@media (max-width: 900px) {
+    .modal-content {
+        max-width: 95vw;
+        max-height: 90vh;
+    }
+}
+
+.modal-header {
+    padding: var(--space-5);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.03), transparent);
+}
+
+.modal-header h2 {
+    margin: 0;
+    font-size: var(--text-2xl);
+    color: var(--text-primary);
+    font-family: var(--font-header);
+    font-weight: 700;
+}
+
+.modal-subtitle {
+    font-size: var(--text-base);
+    color: var(--text-muted);
+    font-weight: normal;
+    margin-left: var(--space-2);
+}
+
+.close-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.8rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color var(--transition-fast), transform var(--transition-fast);
+}
+
+.close-btn:hover {
+    color: var(--text-primary);
+    transform: scale(1.1);
+}
+
+.modal-body {
+    padding: var(--space-5);
+    overflow-y: auto;
+}
+
+.history-section h3 {
+    margin-top: 0;
+    margin-bottom: var(--space-4);
+    color: var(--accent-primary);
+    font-size: var(--text-base);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    white-space: nowrap;
+}
+
+.history-table th,
+.history-table td {
+    padding: var(--space-3) var(--space-2);
+    text-align: center;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.history-table th {
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.history-table td {
+    color: var(--text-primary);
+}
+
+.match-row:hover td {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.season-cell {
+    color: var(--text-muted) !important;
+    font-size: var(--text-sm);
+}
+
+.points-cell {
+    font-weight: bold;
+    color: var(--accent-primary) !important;
+}
+
+.stat-dim {
+    color: var(--text-muted) !important;
+    font-size: var(--text-sm);
+}
+
+/* Sticky columns (mobile) */
+@media (max-width: 768px) {
+
+    .season-cell,
+    .points-cell {
+        position: sticky;
+        background: var(--color-bg-card-solid);
+        z-index: 10;
+    }
+
+    .season-cell {
+        left: 0;
+    }
+
+    .points-cell {
+        left: 60px;
+        box-shadow: 2px 0 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .history-table th:nth-child(1) {
+        position: sticky;
+        left: 0;
+        z-index: 11;
+    }
+
+    .history-table th:nth-child(2) {
+        position: sticky;
+        left: 60px;
+        z-index: 11;
+    }
+
+    .modal-content {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+
+    .history-table {
+        font-size: var(--text-sm);
+    }
+
+    .history-table th,
+    .history-table td {
+        padding: var(--space-2) var(--space-1);
+    }
+}

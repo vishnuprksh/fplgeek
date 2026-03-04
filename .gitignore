@@ -32,14 +32,18 @@ dist-ssr
 *.sqlite-journal
 *.sqlite-wal
 *.sqlite-shm
-public/data/*.sqlite
-public/data/*.sqlite-journal
-public/data/*.sqlite-wal
-public/data/*.sqlite-shm
+data/*.sqlite
+data/*.sqlite-journal
+data/*.sqlite-wal
+data/*.sqlite-shm
 
 # Build artifacts
-functions/lib/
-functions/node_modules/
+backend/dist/
+frontend/dist/
+
+# Legacy (can be removed)
+# functions/lib/
+# functions/node_modules/
 
 # Firebase
 .firebase/
