@@ -10,6 +10,9 @@ export default defineConfig({
         target: 'https://fantasy.premierleague.com',
         changeOrigin: true,
       }
+    },
+    watch: {
+      ignored: ['**/venv/**']
     }
   }
 })

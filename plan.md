@@ -1,0 +1,26 @@
+- [x] High-level overview
+- [x] Frontend architecture (React/Vite)
+  - [x] Component hierarchy and data flow
+  - [x] Custom hooks implementation
+  - [ ] State management patterns
+- [x] Backend API (Node.js/Express)
+  - [ ] Route structure and endpoints
+  - [ ] Database integration
+  - [ ] AI service integration
+- [x] AI/ML components (Python)
+  - [ ] FPLManager class deep dive
+  - [ ] Optimization algorithms
+  - [ ] Prediction model details
+- [x] Data management and ingestion
+  - [ ] Data pipeline architecture
+  - [ ] SQLite schema design
+  - [ ] Ingestion scripts analysis
+- [x] Deployment and Docker setup
+  - [ ] Container configuration
+  - [ ] Nginx reverse proxy
+  - [ ] VPS deployment process
+- [x] Key features explanation
+  - [ ] Transfer optimization logic
+  - [ ] AI assistant functionality
+  - [ ] Real-time data updates
+- [x] Summary
