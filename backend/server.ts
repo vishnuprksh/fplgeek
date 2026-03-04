@@ -21,6 +21,11 @@ import chatRoutes from './ai/chat.js';
 import analysisRoutes from './ai/teamAnalysis.js';
 import suggestionRoutes from './ai/suggestions.js';
 
+// Serve the shared data/ directory (SQLite DB, JSON predictions, models)
+// DATA_DIR env var defaults to ../data relative to this file (repo root data/)
+const DATA_DIR = process.env.DATA_DIR || path.resolve(__dirname, '../data');
+app.use('/data', express.static(DATA_DIR));
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', version: '1.0.0' });
