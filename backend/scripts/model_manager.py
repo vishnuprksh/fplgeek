@@ -72,7 +72,7 @@ def load_and_process_data(position):
         history = sample["history_sequence"]  # List of lists
         # history[0] is most recent match (due to unshift in preprocessing_dataset.ts)
         
-        hist_arr = np.array(history)  # Shape (20, 13) with LOOKBACK=20
+        hist_arr = np.array(history)  # Shape (10, 13) with LOOKBACK=10
         if len(hist_arr) == 0:
             aggs = np.zeros(len(AGG_INDICES) * len(AGG_WINDOWS))
         else:
@@ -93,6 +93,12 @@ def load_and_process_data(position):
                 # Avoid division by zero
                 cv = np.divide(stds, means, out=np.zeros_like(stds), where=means != 0)
                 adjusted = means * (1 - cv)
+                
+                # Apply penalty if there are no last `n` games
+                # Depends upon how many games are available (available / n)
+                penalty_factor = available / n
+                adjusted = adjusted * penalty_factor
+                
                 return adjusted
 
             agg_parts = [get_agg(w) for w in AGG_WINDOWS]

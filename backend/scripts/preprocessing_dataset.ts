@@ -12,7 +12,7 @@ const __dirname = path.dirname(__filename);
 const _dataRoot = process.env.DATA_DIR || path.resolve(__dirname, '../../data');
 const DB_PATH = path.join(_dataRoot, 'fpl.sqlite');
 const OUTPUT_DIR = path.join(_dataRoot, 'processed');
-const LOOKBACK = 20; // Store 20 matches to ensure we can find 10 valid (minutes>0) games
+const LOOKBACK = 10; // Store 10 matches to ensure we can find a cycling window of 10 played games
 
 console.log(`Starting Feature Engineering...`);
 console.log(`DB: ${DB_PATH}`);
@@ -214,7 +214,7 @@ function main() {
     for (const player of players) {
         // Filter out matches with missing data
         const historyRawData = historyByPlayer[player.id] || [];
-        const history = historyRawData.filter(m => m.kickoff_time && !isNaN(new Date(m.kickoff_time).getTime()));
+        const history = historyRawData.filter(m => m.kickoff_time && !isNaN(new Date(m.kickoff_time).getTime()) && parseFloatSafe(m.minutes) > 0);
 
         // Sort by Kickoff Time (Chronological: Oldest -> Newest)
         history.sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
@@ -223,7 +223,7 @@ function main() {
         // Iterate through rounds to create samples
         let lastMatchDate = new Date('2000-01-01');
 
-        if (history.length >= LOOKBACK) {
+        if (history.length > 0) {
             for (let i = 0; i < history.length; i++) {
                 const targetMatch = history[i];
                 const gw = parseInt(targetMatch.round as any);
@@ -236,8 +236,7 @@ function main() {
                 const matchDate = new Date(targetMatch.kickoff_time);
                 if (matchDate > lastMatchDate) lastMatchDate = matchDate;
 
-                // Skip entries if we don't have enough history for the sequence
-                if (i < LOOKBACK) continue;
+                // We don't skip entries without full history, we pad them instead
 
                 const date = new Date(targetMatch.kickoff_time);
                 let season = "Unknown";
@@ -298,6 +297,10 @@ function main() {
                 const seqData: number[][] = [];
 
                 for (let k = LOOKBACK; k >= 1; k--) {
+                    if (i - k < 0) {
+                        seqData.push(new Array(13).fill(0));
+                        continue;
+                    }
                     const past = history[i - k];
                     // Calculate form for this past match (avg points from previous 4 matches)
                     let pastForm = 0;
@@ -382,14 +385,18 @@ function main() {
         // Use the LAST valid history sequence for placeholder
         // We need a valid sequence to feed the model, even if sim_utils will swap it.
         // It's critical for the data loader to return a valid shape.
-        // If the player lacks the 10 games of history needed for the rolling windows, drop them
-        // per user request (instead of zero-padding them).
-        if (history.length < LOOKBACK) {
+        // If the player lacks the 10 games of history, pad them
+        // we'll apply a penalty factor during training/inference.
+        if (history.length === 0) {
             continue;
         }
 
         let placeholderSeq: number[][] = [];
         for (let k = LOOKBACK; k >= 1; k--) {
+            if (history.length - k < 0) {
+                placeholderSeq.push(new Array(13).fill(0));
+                continue;
+            }
             const past = history[history.length - k]; // Oldest to newest in the Lookback window
             // Calculate form for this past match
             let pastForm = 0;
