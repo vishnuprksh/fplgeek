@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { optimizeTransfers, optimizeWithAllowance, pickBestXI } from '../utils/solver';
 import type { Pick, UnifiedPlayer, Player } from '../types/fpl';
-import type { PredictionResult } from '../utils/predictions';
-import type { OptimizationResult } from '../utils/solver';
-import type { PredictionMap, T100OwnershipMap } from './useFPLData';
+import type { OptimizationResult, PredictionResult } from '../utils/solver';
+import type { T100OwnershipMap } from './useFPLData';
 
 export const useOptimization = (
     activePicks: Pick[],
     staticData: { elements: UnifiedPlayer[] } | null,
-    predictionsMap: PredictionMap,
     bank: number,
     t100OwnershipMap: T100OwnershipMap = {}
 ) => {
@@ -54,27 +52,26 @@ export const useOptimization = (
             // Build current squad structure
             const currentSquad = activePicks.map(p => {
                 const player = staticData.elements.find(e => e.id === p.element);
-                const pred = predictionsMap[p.element];
                 if (!player) return null;
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
-                    predictedPoints: pred?.prob_gt_6 || 0,
-                    totalForecast: pred?.prob_gt_6 || 0,
+                    predictedPoints: 0,
+                    totalForecast: 0,
                     smartValue: 0,
                     next5Points: []
                 } as PredictionResult;
             }).filter(Boolean) as PredictionResult[];
 
-            // Build candidates (all players with a prediction)
+            // Build candidates
             const allCandidates: PredictionResult[] = staticData.elements.map(e => ({
                 player: e,
                 cost: e.now_cost,
-                predictedPoints: predictionsMap[e.id]?.prob_gt_6 || 0,
-                totalForecast: predictionsMap[e.id]?.prob_gt_6 || 0,
+                predictedPoints: 0,
+                totalForecast: 0,
                 smartValue: 0,
                 next5Points: []
-            })).filter(p => p.totalForecast > 0);
+            }));
 
             // If user manually picked players to sell → use targeted replacement
             if (selectedToSell.size > 0) {

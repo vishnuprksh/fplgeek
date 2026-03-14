@@ -33,7 +33,6 @@ export default function App() {
   const {
     staticData,
     fixtures,
-    predictionsMap,
     t100OwnershipMap,
     teamData,
     picksData,
@@ -72,7 +71,7 @@ export default function App() {
     handleToggleSell,
     runOptimization,
     currentWarnings
-  } = useOptimization(activePicks, staticData, predictionsMap, bank, t100OwnershipMap);
+  } = useOptimization(activePicks, staticData, bank, t100OwnershipMap);
 
 
   // Load default team when static data is ready (and no team data yet)
@@ -215,18 +214,7 @@ export default function App() {
                             )}
                           </div>
 
-                          {/* Haul summary pill (non-optimize mode) */}
-                          {!isOptimizing && (
-                            <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.85em', display: 'flex', gap: '14px' }}>
-                              <span>
-                                <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
-                              </span>
-                              <span style={{ color: '#ccc' }}>
-                                <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
-                              </span>
-                              <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg / GW)</span>
-                            </div>
-                          )}
+                          {/* Haul summary pill (removed) */}
                         </div>
 
                         {/* Row 2: Transfer Allowance Selector (only in optimize mode) */}
@@ -268,8 +256,7 @@ export default function App() {
                         <div className="pitch-right-panel">
                           {optimizationResult ? (
                             <OptimizationReport result={optimizationResult} />
-                          ) : isProcessingOpt ? (
-                            <div className="opt-report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', textAlign: 'center' }}>
+                          ) <div className="opt-report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', textAlign: 'center' }}>
                               <h3 style={{ color: '#00d2ff', marginBottom: '16px' }}>🤖 AI is crunching the numbers...</h3>
                               <p style={{ color: '#888' }}>Simulating future gameweeks and evaluating thousands of transfer combinations.</p>
                             </div>
@@ -327,8 +314,7 @@ export default function App() {
                 elements={staticData.elements}
                 teams={staticData.teams}
                 predictions={predictionsMap}
-                t100Ownership={t100OwnershipMap}
-              />
+                
             </div>
           )}
 
@@ -359,9 +345,9 @@ export default function App() {
             bank={bank}
             onClose={() => setSelectedTransferPlayer(null)}
             onTransfer={onTransferWrapper}
-            predictions={predictionsMap}
-            t100Ownership={t100OwnershipMap}
-          />
+            prPlayerClick={setSelectedTransferPlayer}
+            onClose={() => setSelectedTransferPlayer(null)}
+            onTransfer={onTransferWrapper
         )}
       </div >
       <BottomNav currentView={currentView} onChangeView={setCurrentView} />

@@ -5,7 +5,7 @@ This guide explains how to deploy the FPL Geek application to [Render](https://r
 ## Overview
 
 The application is deployed as two separate services on Render:
-1.  **fplgeek-backend**: A Node.js web service that handles the AI API and serves the SQLite database.
+1.  **fplgeek-backend**: A Node.js web service that serves the SQLite database and provides data endpoints.
 2.  **fplgeek-frontend**: A static site that hosts the React application.
 
 ## Prerequisites
@@ -33,7 +33,6 @@ The `render.yaml` file pre-configures most variables. However, you should ensure
 -   **fplgeek-backend**:
     -   `ServerPort`: `3000` (default)
     -   `DATA_DIR`: `/opt/render/project/src/data` (persistent disk mount point)
-    -   `GOOGLE_GENAI_API_KEY`: Add your Google Gemini API key if you use AI features.
 
 -   **fplgeek-frontend**:
     -   `VITE_API_URL`: Set this to the URL of your deployed backend (e.g., `https://fplgeek-backend.onrender.com`).

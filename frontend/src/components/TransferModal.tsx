@@ -10,14 +10,14 @@ interface TransferModalProps {
     bank: number;
     onClose: () => void;
     onTransfer: (playerOut: Player, playerIn: Player) => void;
-    predictions?: Record<number, any>;
     t100Ownership?: Record<number, number>;
+    onPlayerClick?: (player: Player) => void;
 }
 
 type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff' | 't100_ownership';
 type SortDirection = 'asc' | 'desc';
 
-export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, predictions, t100Ownership }: TransferModalProps) {
+export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, t100Ownership, onPlayerClick }: TransferModalProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortField, setSortField] = useState<SortField>('total_points');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -71,10 +71,9 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
             return isPositionMatch && isNotSelf && nameMatch;
         })
         .map(e => {
-            const pred = predictions ? predictions[e.id] : null;
             return {
                 ...e,
-                haul_3gw: pred?.prob_gt_6 || 0,
+                haul_3gw: 0,
                 t100_ownership: t100Ownership ? (t100Ownership[e.id] || 0) : 0
             };
         })

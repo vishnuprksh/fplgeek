@@ -9,42 +9,40 @@ import { PlayerDetailModal } from './PlayerDetailModal';
 interface PlayerAnalysisProps {
     elements: Player[];
     teams: Team[];
-    predictions?: Record<number, any>;
     t100Ownership?: Record<number, number>;
 }
 
 type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr' | 'r10_xg' | 't100_ownership' | 'f_atk_next' | 'f_def_next';
 type SortDirection = 'asc' | 'desc';
 
-export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: PlayerAnalysisProps) {
+export function PlayerAnalysis({ elements, teams, t100Ownership }: PlayerAnalysisProps) {
     const [search, setSearch] = useState('');
     const [positionFilter, setPositionFilter] = useState<number | 'all'>('all');
     const [teamFilter, setTeamFilter] = useState<number | 'all'>('all');
     const [maxOwnership, setMaxOwnership] = useState<number | 'all'>('all');
-    const [sortField, setSortField] = useState<SortField>('prob_gt_6');
+    const [sortField, setSortField] = useState<SortField>('t100_ownership');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
-    // Elements already have smart_value calculated in App.tsx
+    // Elements already have smart_value calculated? (Actually they don't, but let's just use raw elements)
     const enrichedPlayers = useMemo(() => {
         return elements.map(p => {
-            const pred = predictions ? predictions[p.id] : null;
             return {
                 ...p,
-                prob_gt_6: (pred as any)?.prob_gt_6 || 0,
-                prob_gt_6_next: (pred as any)?.prob_gt_6_next || 0,
-                r10_min: (pred as any)?.r10_min || 0,
-                r10_pts: (pred as any)?.r10_pts || 0,
-                r10_inf: (pred as any)?.r10_inf || 0,
-                r10_thr: (pred as any)?.r10_thr || 0,
-                r10_xg: (pred as any)?.r10_xg || 0,
-                f_atk_next: (pred as any)?.f_atk_next || 0,
-                f_def_next: (pred as any)?.f_def_next || 0,
+                prob_gt_6: 0,
+                prob_gt_6_next: 0,
+                r10_min: 0,
+                r10_pts: 0,
+                r10_inf: 0,
+                r10_thr: 0,
+                r10_xg: 0,
+                f_atk_next: 0,
+                f_def_next: 0,
                 ownership: parseFloat(p.selected_by_percent || "0"),
                 t100_ownership: t100Ownership ? (t100Ownership[p.id] || 0) : 0
             };
         });
-    }, [elements, predictions, t100Ownership]);
+    }, [elements, t100Ownership]);
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -91,27 +89,7 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
 
     return (
         <div className="player-analysis fade-in">
-            {/* Summary Section */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'var(--space-4)' }}>
-                    <span style={{ fontSize: '1.5rem' }}>🔥</span>
-                    <h2 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 800 }}>Top Haul Candidates</h2>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)' }}>
-                    {topHaulPlayers.map(p => (
-                        <div key={p.id} className="summary-card" onClick={() => setSelectedPlayer(p)} style={{ cursor: 'pointer' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div className="summary-card-name">{p.web_name}</div>
-                                <div className="summary-card-meta">{getTeamName(p.team)}</div>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>3GW Haul Probability</div>
-                                <div className="summary-card-value">{(p.prob_gt_6 * 100).toFixed(0)}%</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            {/* Summary Section (removed) */}
 
             <div className="dashboard-panel">
                 <div className="analysis-header" style={{ padding: 'var(--space-5)', borderBottom: '1px solid var(--border-subtle)', background: 'rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>

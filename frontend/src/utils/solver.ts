@@ -1,5 +1,13 @@
+import type { Pick, UnifiedPlayer, Player } from '../types/fpl';
 
-import type { PredictionResult } from './predictions';
+export interface PredictionResult {
+    player: Player | UnifiedPlayer;
+    cost: number;
+    predictedPoints: number;
+    totalForecast: number;
+    smartValue: number;
+    next5Points: number[];
+}
 
 export interface Lineup {
     starting11: PredictionResult[];

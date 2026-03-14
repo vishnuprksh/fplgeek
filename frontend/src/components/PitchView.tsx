@@ -8,7 +8,6 @@ interface PitchViewProps {
     elements: UnifiedPlayer[];
     teams: Team[];
     onPlayerClick: (player: UnifiedPlayer) => void;
-    predictions: Record<number, { totalForecast: number; prob_gt_6?: number }>;
     isOptimizing?: boolean;
     selectedToSell?: Set<number>;
     onToggleSell?: (id: number) => void;
@@ -215,7 +214,6 @@ export function PitchView({
     elements,
     teams,
     onPlayerClick,
-    predictions,
     isOptimizing = false,
     selectedToSell = new Set(),
     onToggleSell,
@@ -277,7 +275,7 @@ export function PitchView({
                 pick={pick}
                 player={player}
                 team={getTeam(player.team)}
-                prediction={predictions ? predictions[player.id] : null}
+                prediction={null}
                 isOptimizing={isOptimizing}
                 isSold={selectedToSell.has(player.id)}
                 onToggleSell={onToggleSell}

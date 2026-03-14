@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --root frontend",
+    "dev": "vite frontend",
     "dev:backend": "tsx watch backend/server.ts",
     "build": "tsc --build frontend && vite build --root frontend",
     "lint": "eslint frontend/src",
@@ -46,4 +46,3 @@
     "vite": "^7.2.4"
   }
 }
-

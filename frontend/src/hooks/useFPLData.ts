@@ -5,27 +5,9 @@ import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl'
 
 export type T100OwnershipMap = Record<number, number>;
 
-export interface PredictionMap {
-    [id: number]: {
-        totalForecast: number;
-        prob_gt_6?: number;
-        prob_gt_10?: number;
-        prob_gt_6_next?: number;
-        prob_gt_10_next?: number;
-        r10_min?: number;
-        r10_pts?: number;
-        r10_inf?: number;
-        r10_thr?: number;
-        r10_xg?: number;
-        f_atk_next?: number;
-        f_def_next?: number;
-    };
-}
-
 export const useFPLData = () => {
     const [staticData, setStaticData] = useState<BootstrapStatic | null>(null);
     const [fixtures, setFixtures] = useState<Match[]>([]);
-    const [predictionsMap, setPredictionsMap] = useState<PredictionMap>({});
     const [t100OwnershipMap, setT100OwnershipMap] = useState<T100OwnershipMap>({});
 
     const [teamData, setTeamData] = useState<TeamEntry | null>(null);
@@ -51,31 +33,6 @@ export const useFPLData = () => {
 
                 setStaticData(bootstrap);
                 setFixtures(matches);
-
-                // Load Predictions dependent on static data (actually it's independent fetch, but mapped later)
-                // We can fetch it parallel too
-                const storedPreds = await getDataProvider().getPredictions();
-                if (storedPreds && storedPreds.length > 0) {
-                    const map: PredictionMap = {};
-                    storedPreds.forEach((sp: any) => {
-                        map[sp.id] = {
-                            totalForecast: sp.total3Week || sp.total5Week || 0,
-                            prob_gt_6: sp.prob_gt_6,
-                            prob_gt_10: sp.prob_gt_10,
-                            prob_gt_6_next: sp.prob_gt_6_next,
-                            prob_gt_10_next: sp.prob_gt_10_next,
-                            r10_min: sp.r10_min,
-                            r10_pts: sp.r10_pts,
-                            r10_inf: sp.r10_inf,
-                            r10_thr: sp.r10_thr,
-                            r10_xg: sp.r10_xg,
-                            f_atk_next: sp.f_atk_next,
-                            f_def_next: sp.f_def_next
-                        };
-                    });
-                    console.log("✅ Predictions Map updated, sample:", Object.values(map)[0]);
-                    setPredictionsMap(map);
-                }
 
                 // Load T100 ownership from league analysis
                 try {
@@ -144,7 +101,6 @@ export const useFPLData = () => {
     return {
         staticData,
         fixtures,
-        predictionsMap,
         t100OwnershipMap,
         teamData,
         picksData,

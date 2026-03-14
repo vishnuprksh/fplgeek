@@ -140,31 +140,6 @@ export class SqliteProvider implements IDataProvider {
         };
     }
 
-    async getPredictions(): Promise<any[]> {
-        // Attempt to fetch generated JSON predictions first
-        try {
-            const response = await fetch(`/data/ai_predictions.json?t=${Date.now()}`);
-            if (response.ok) {
-                const data = await response.json();
-                console.log("Loaded predictions from JSON file");
-                return data;
-            }
-        } catch (e) {
-            console.warn("Failed to fetch ai_predictions.json", e);
-        }
-
-        await this.ensureInitialized();
-        if (!this.db) throw new Error("Database not initialized");
-
-        try {
-            const result = this.querySingle<any>("SELECT data FROM predictions");
-            return result;
-        } catch (e) {
-            console.warn("Predictions table not found or empty", e);
-            return [];
-        }
-    }
-
     async getBacktestHistory(): Promise<any[]> {
         // Attempt to fetch generated JSON backtest first
         try {
