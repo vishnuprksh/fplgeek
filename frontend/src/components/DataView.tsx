@@ -17,7 +17,8 @@ interface ProcessedSample {
     ctx_chance_of_playing: number;
     ctx_fixture_attack: number;
     ctx_fixture_defense: number;
-    history_sequence: number[][]; // [ [min, xG, xA, Thr, Cre, Inf, GC, Saves, Sel, Price, Home, Pts, Form] ]
+    agg_r4: number[]; // pre-computed rolling-window aggregates [min, pts, xG, xA, inf, cre, thr, gc, saves]
+    agg_r10: number[]; // pre-computed rolling-window aggregates [min, pts, xG, xA, inf, cre, thr, gc, saves]
 }
 
 interface TrainingDataResponse {
@@ -28,20 +29,7 @@ interface TrainingDataResponse {
     totalPages: number;
 }
 
-// Indices in history_sequence
-const H_IDX = {
-    MIN: 0,
-    XG: 1,
-    XA: 2,
-    THR: 3,
-    CRE: 4,
-    INF: 5,
-    GC: 6,
-    SAVES: 7,
-    PTS: 11
-};
 
-const AGG_INDICES = [H_IDX.MIN, H_IDX.PTS, H_IDX.XG, H_IDX.XA, H_IDX.INF, H_IDX.CRE, H_IDX.THR, H_IDX.GC, H_IDX.SAVES];
 
 export const DataView: React.FC = () => {
     const [data, setData] = useState<ProcessedSample[]>([]);
@@ -82,23 +70,7 @@ export const DataView: React.FC = () => {
         return () => clearTimeout(timer);
     }, [position, page, search]);
 
-    const getAggregates = (history: number[][], window: number) => {
-        if (!history || history.length === 0) return Array(AGG_INDICES.length).fill(0);
 
-        // Filter to only games where the player played (minutes > 0)
-        const played = history.filter(h => h[H_IDX.MIN] > 0);
-        const available = Math.min(window, played.length);
-
-        if (available === 0) return Array(AGG_INDICES.length).fill(0);
-
-        // history_sequence is oldest-first in the JSON from preprocessing_dataset.ts
-        const sub = played.slice(-available);
-
-        return AGG_INDICES.map(idx => {
-            const sum = sub.reduce((acc, h) => acc + h[idx], 0);
-            return sum / available;
-        });
-    };
 
     const positions = ['GKP', 'DEF', 'MID', 'FWD'];
 
@@ -207,8 +179,8 @@ export const DataView: React.FC = () => {
                             </thead>
                             <tbody>
                                 {data.map((sample, idx) => {
-                                    const r4 = showAggregates ? getAggregates(sample.history_sequence, 4) : [];
-                                    const r10 = showAggregates ? getAggregates(sample.history_sequence, 10) : [];
+                                    const r4 = showAggregates && sample.agg_r4 ? sample.agg_r4 : Array(9).fill(0);
+                                    const r10 = showAggregates && sample.agg_r10 ? sample.agg_r10 : Array(9).fill(0);
 
                                     return (
                                         <tr key={`${sample.id}-${sample.gw}-${idx}`}>
@@ -228,26 +200,26 @@ export const DataView: React.FC = () => {
                                             {showAggregates && (
                                                 <>
                                                     {/* R4 */}
-                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r4[1].toFixed(1)}</td>
-                                                    <td>{r4[2].toFixed(2)}</td>
-                                                    <td>{r4[3].toFixed(2)}</td>
-                                                    <td>{r4[4].toFixed(1)}</td>
-                                                    <td>{r4[5].toFixed(1)}</td>
-                                                    <td>{r4[6].toFixed(1)}</td>
-                                                    <td>{r4[7].toFixed(1)}</td>
-                                                    <td>{r4[8].toFixed(1)}</td>
-                                                    <td style={{ color: '#888' }}>{Math.round(r4[0])}</td>
+                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r4[1]?.toFixed(1)}</td>
+                                                    <td>{r4[2]?.toFixed(2)}</td>
+                                                    <td>{r4[3]?.toFixed(2)}</td>
+                                                    <td>{r4[4]?.toFixed(1)}</td>
+                                                    <td>{r4[5]?.toFixed(1)}</td>
+                                                    <td>{r4[6]?.toFixed(1)}</td>
+                                                    <td>{r4[7]?.toFixed(1)}</td>
+                                                    <td>{r4[8]?.toFixed(1)}</td>
+                                                    <td style={{ color: '#888' }}>{Math.round(r4[0] || 0)}</td>
 
                                                     {/* R10 */}
-                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r10[1].toFixed(1)}</td>
-                                                    <td>{r10[2].toFixed(2)}</td>
-                                                    <td>{r10[3].toFixed(2)}</td>
-                                                    <td>{r10[4].toFixed(1)}</td>
-                                                    <td>{r10[5].toFixed(1)}</td>
-                                                    <td>{r10[6].toFixed(1)}</td>
-                                                    <td>{r10[7].toFixed(1)}</td>
-                                                    <td>{r10[8].toFixed(1)}</td>
-                                                    <td style={{ color: '#888' }}>{Math.round(r10[0])}</td>
+                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r10[1]?.toFixed(1)}</td>
+                                                    <td>{r10[2]?.toFixed(2)}</td>
+                                                    <td>{r10[3]?.toFixed(2)}</td>
+                                                    <td>{r10[4]?.toFixed(1)}</td>
+                                                    <td>{r10[5]?.toFixed(1)}</td>
+                                                    <td>{r10[6]?.toFixed(1)}</td>
+                                                    <td>{r10[7]?.toFixed(1)}</td>
+                                                    <td>{r10[8]?.toFixed(1)}</td>
+                                                    <td style={{ color: '#888' }}>{Math.round(r10[0] || 0)}</td>
                                                 </>
                                             )}
                                             <td>
