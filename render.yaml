@@ -20,9 +20,8 @@ services:
       sizeGB: 1
 
   # Frontend Service
-  - type: web
+  - type: static
     name: fplgeek-frontend
-    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     publishPath: dist
