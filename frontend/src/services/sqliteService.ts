@@ -23,7 +23,8 @@ export class SqliteProvider implements IDataProvider {
             });
 
             console.log("Fetching fpl.sqlite...");
-            const response = await fetch('/data/fpl.sqlite');
+            const DATA_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/data/fpl.sqlite` : '/data/fpl.sqlite';
+            const response = await fetch(DATA_URL);
             if (!response.ok) {
                 throw new Error(`Failed to fetch database: ${response.statusText}`);
             }

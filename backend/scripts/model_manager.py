@@ -68,12 +68,29 @@ def train_position_model(pos):
     if len(X) == 0:
         print(f"No data for {pos}")
         return None
+        
+    # Filter out future items (which are strictly for prediction)
+    train_mask = []
+    for m in meta:
+        if 'is_future' in m:
+            is_future = bool(m['is_future'])
+        else:
+            is_future = (int(m.get('target', 0)) == 0 and m.get('season') == '25/26')
+        train_mask.append(not is_future)
+        
+    train_idx = np.where(train_mask)[0]
+    if len(train_idx) == 0:
+        print(f"No valid training data for {pos}")
+        return None
+        
+    X_filt = X[train_idx]
+    y_filt = y[train_idx]
 
     # Clean NaN/Inf first (no scaling yet)
-    X = clean_and_scale(X)
+    X_filt = clean_and_scale(X_filt)
     
     # Split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(X_filt, y_filt, test_size=0.2, random_state=42)
     
     # Fit StandardScaler on training data only
     scaler = fit_scaler(X_train, pos)
@@ -119,8 +136,8 @@ def train_position_model(pos):
         "loss": loss,
         "train_accuracy": train_acc,
         "train_mae": train_mae,
-        "X": X,
-        "y": y,
+        "X": X_filt,
+        "y": y_filt,
         "meta": meta
     }
 
@@ -194,7 +211,7 @@ def predict_future():
         for i, fidx in enumerate(future_idx):
             m = meta[fidx]
             pid = m['id']
-            gw = m['gw']
+            gw = m.get('gw', m.get('event', 0))
             dist = preds_proba[i]
             xp = float(np.sum(dist * classes))
             
@@ -310,10 +327,6 @@ def main():
             f.write("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
             for r in results:
                 f.write(f"| **{r['pos']}** | {r['train_accuracy']:.4f} | {r['accuracy']:.4f} | {r['train_mae']:.4f} | {r['mae']:.4f} | {r['loss']:.4f} |\n")
-
-if __name__ == "__main__":
-    main()
-
 
 if __name__ == "__main__":
     main()

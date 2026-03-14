@@ -3,7 +3,7 @@
 
 export type AnalysisType = 'general' | 'player' | 'buy-hold-sell';
 
-const API_BASE = '/ai-api';
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/ai-api` : '/ai-api';
 
 export const aiService = {
     async generateTeamReport(teamName: string, recentPerformance: string, strengths: string, weaknesses: string): Promise<string> {

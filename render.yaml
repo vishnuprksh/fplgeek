@@ -1,0 +1,44 @@
+services:
+  # Backend Service
+  - type: web
+    name: fplgeek-backend
+    env: node
+    rootDir: backend
+    plan: free # Change to a paid plan if you need more resources or persistence for SQLite
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ServerPort
+        value: 3000
+      - key: DATA_DIR
+        value: /opt/render/project/src/data
+    disk:
+      name: fpl-data
+      mountPath: /opt/render/project/src/data
+      sizeGB: 1
+
+  # Frontend Service
+  - type: web
+    name: fplgeek-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+    routes:
+      - type: rewrite
+        source: /ai-api/*
+        destination: https://fplgeek-backend.onrender.com/* # You will need to update this after first deployment
+      - type: rewrite
+        source: /data/*
+        destination: https://fplgeek-backend.onrender.com/data/*
+      - type: rewrite
+        source: /api/*
+        destination: https://fantasy.premierleague.com/*
+      - type: fallback
+        destination: /index.html

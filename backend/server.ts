@@ -11,17 +11,30 @@ const Database = require('better-sqlite3');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables from root .env
+// Load environment variables from root .env or environment
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
 const app = express();
-const PORT = process.env.ServerPort || 3000;
+const PORT = process.env.PORT || process.env.ServerPort || 3000;
 
 app.use(cors());
 app.use(express.json());
 
 const DATA_DIR = process.env.DATA_DIR || path.resolve(__dirname, '../data');
+
+// Ensure data directory exists
+if (!fs.existsSync(DATA_DIR)) {
+    console.log(`Creating data directory at ${DATA_DIR}`);
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
 const DB_PATH = path.join(DATA_DIR, 'fpl.sqlite');
+
+// Check if database exists, if not maybe we need to seed it or log error
+if (!fs.existsSync(DB_PATH)) {
+    console.warn(`Database not found at ${DB_PATH}. Backend might fail until data is ingested.`);
+}
+
 const db = new Database(DB_PATH);
 
 // Training Data Endpoint
@@ -31,7 +44,7 @@ app.get('/api/training-data', (req, res) => {
     const query = String(search).toLowerCase();
 
     try {
-        let sql = `SELECT metadata, target_class FROM preprocessed_data WHERE position = ?`;
+        let sql = `SELECT gw, season, metadata, target_class FROM preprocessed_data WHERE position = ?`;
         let params: any[] = [pos];
 
         if (query) {
@@ -40,11 +53,13 @@ app.get('/api/training-data', (req, res) => {
         }
 
         const allRows = db.prepare(sql).all(...params);
-        
+
         const data = allRows.map((row: any) => {
             const meta = JSON.parse(row.metadata);
             return {
                 ...meta,
+                gw: row.gw,
+                season: row.season,
                 target: row.target_class, // Display bucketized target
                 is_future: meta.is_future ?? false
             };
