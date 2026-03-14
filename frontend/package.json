@@ -10,12 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/node-fetch": "^2.6.13",
-    "better-sqlite3": "^12.6.2",
-    "csv-parse": "^6.1.0",
-    "dotenv": "^17.2.3",
-    "node-fetch": "^3.3.2",
     "react": "^19.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",

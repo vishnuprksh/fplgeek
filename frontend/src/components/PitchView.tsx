@@ -16,6 +16,7 @@ interface PitchViewProps {
     statuses?: Record<number, string>; // Historical status override
     injuryChances?: Record<number, number>;
     t100Ownership?: Record<number, number>;
+    predictions?: Record<number, any>;
 }
 
 
@@ -221,7 +222,8 @@ export function PitchView({
     points,
     statuses,
     injuryChances,
-    t100Ownership
+    t100Ownership,
+    predictions = {}
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);
@@ -275,7 +277,6 @@ export function PitchView({
                 pick={pick}
                 player={player}
                 team={getTeam(player.team)}
-                prediction={null}
                 isOptimizing={isOptimizing}
                 isSold={selectedToSell.has(player.id)}
                 onToggleSell={onToggleSell}
@@ -285,6 +286,7 @@ export function PitchView({
                 injuryChance={injuryChances ? injuryChances[player.id] : player.chance_of_playing_this_round ?? undefined}
                 onSwap={onSwap}
                 t100Ownership={t100Ownership ? t100Ownership[player.id] : undefined}
+                prediction={predictions[player.id]}
             />
         );
     };
