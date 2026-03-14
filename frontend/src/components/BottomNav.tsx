@@ -31,12 +31,7 @@ const PlayersIcon = () => (
     </svg>
 );
 
-const HistoryIcon = () => (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-    </svg>
-);
+
 
 const LeagueIcon = () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -47,34 +42,36 @@ const LeagueIcon = () => (
     </svg>
 );
 
-const AssistantIcon = () => (
+const DataIcon = () => (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7H3a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2z" />
-        <path d="M5 14v8" />
-        <path d="M19 14v8" />
-        <path d="M3 22h18" />
-        <circle cx="9" cy="11" r="1" />
-        <circle cx="15" cy="11" r="1" />
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
+        <polyline points="7.5 4.21 12 6.81 16.5 4.21" />
+        <polyline points="7.5 19.79 7.5 14.6 3 12" />
+        <polyline points="21 12 16.5 14.6 16.5 19.79" />
+        <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+        <line x1="12" y1="22.08" x2="12" y2="12" />
     </svg>
 );
+
+
+
+
 
 const iconMap: Record<string, React.FC> = {
     dashboard: TeamIcon,
     fixtures: FixturesIcon,
     players: PlayersIcon,
-    'ai-history': HistoryIcon,
     league: LeagueIcon,
-    assistant: AssistantIcon,
+    data: DataIcon,
 };
 
 export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChangeView }) => {
     const navItems = [
         { id: 'dashboard', label: 'Team' },
-        { id: 'assistant', label: 'Advisor' },
         { id: 'fixtures', label: 'Fixtures' },
         { id: 'players', label: 'Players' },
         { id: 'league', label: 'League' },
-        { id: 'ai-history', label: 'History' },
+        { id: 'data', label: 'Data' },
     ];
 
     return (

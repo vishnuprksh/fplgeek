@@ -337,7 +337,7 @@ class FPLManager:
             def get_out_priority(p):
                 # PRIORITY ORDER (Lower number = Higher Priority to Sell)
                 # 0. Serious Injury (0% Chance) - CRITICAL
-                # 1. Priority Target (Underperformer from ai_manager > 3.0 diff)
+                # 1. Priority Target (Underperformer from model_manager > 3.0 diff)
                 # 2. Minor Injury / Doubtful (< 100% or not 'a')
                 # 3. Standard Low XP (Regular rotation)
                 # 4. Protected Template (Last resort)
@@ -349,7 +349,7 @@ class FPLManager:
                 if p.get('chance_of_playing_this_round') == 0:
                      return (0, p['xp'])
 
-                # Check 1: Underperformer (Explicitly passed from ai_manager logic)
+                # Check 1: Underperformer (Explicitly passed from model_manager logic)
                 if priority_transfer_out_id and p['id'] == priority_transfer_out_id:
                     return (1, p['xp'])
                 
@@ -394,7 +394,7 @@ class FPLManager:
                 
                 # EXCLUDE UNDERPERFORMING PLAYERS
                 # Filter out players who are underperforming (actual < predicted by significant margin)
-                # Use underperformance_map from ai_manager (last 3 GWs of data)
+                # Use underperformance_map from model_manager (last 3 GWs of data)
                 filtered_candidates = []
                 for c in pos_candidates:
                     # Check if player is underperforming based on recent history
@@ -491,7 +491,7 @@ class FPLManager:
         self.purchase_prices = current_purchase_prices
         
         if transfers_done == 0:
-             pass # Do nothing, free transfers accumulate via the daily/weekly update in ai_manager.py
+             pass # Do nothing, free transfers accumulate via the daily/weekly update in model_manager.py
 
              
         # 3. POST-TRANSFER CHIPS (Triple Captain / Bench Boost)

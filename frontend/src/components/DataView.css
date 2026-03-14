@@ -1,0 +1,178 @@
+.data-view-container {
+    padding: 20px;
+    color: #fff;
+}
+
+.data-view-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.data-view-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #00d2ff 0%, #3a7bd5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.data-controls {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pos-tabs {
+    display: flex;
+    gap: 8px;
+}
+
+.pos-tab {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #ccc;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.pos-tab.active {
+    background: #37003c;
+    color: #00ff87;
+    border-color: #00ff87;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.2);
+    color: #fff;
+    flex: 1;
+}
+
+.data-table-container {
+    overflow-x: auto;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-height: 70vh;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+}
+
+.data-table th,
+.data-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    white-space: nowrap;
+}
+
+.data-table th {
+    background: #1a1a1a !important;
+    /* Ensure solid background */
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.05em;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /* Higher z-index for headers */
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1);
+    /* Subtle border effect instead of actual border to avoid sub-pixel gaps */
+}
+
+/* Secondary header row sticky position */
+.data-table thead tr:nth-child(2) th {
+    top: 38px;
+    /* Adjusted based on typical th height */
+    background: #222 !important;
+    z-index: 99;
+}
+
+/* Sticky Player Column */
+.data-table th:first-child,
+.data-table td:first-child {
+    position: sticky;
+    left: 0;
+    background: #0f0f0f;
+    z-index: 50;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.data-table th:first-child {
+    z-index: 110;
+    /* Highest priority for the corner cell */
+}
+
+.data-table tr:hover td {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.target-points {
+    color: #00ff87;
+    font-weight: bold;
+}
+
+.future-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(0, 210, 255, 0.2);
+    color: #00d2ff;
+    font-size: 0.65rem;
+    font-weight: bold;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 24px;
+    padding-bottom: 20px;
+}
+
+.page-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.05);
+    color: #fff;
+    cursor: pointer;
+}
+
+.page-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    color: #00d2ff;
+}

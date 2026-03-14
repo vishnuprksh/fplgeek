@@ -224,7 +224,7 @@ To run a manual data update:
 
 ```bash
 # Inside the server container
-docker compose exec server npm run ingest
+docker compose exec server python3 backend/scripts/ingest_historical_gw.py
 ```
 
 Or via the weekly cron script:

@@ -11,12 +11,10 @@ import { OptimizationReport } from './components/OptimizationReport';
 
 
 import { TransferModal } from './components/TransferModal';
-import { AiHistory } from './components/AiHistory';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
-import { AssistantPage } from './components/AssistantPage';
-import type { ConversationEntry } from './services/multiAgentService';
-import './App.css';
 import { BottomNav } from './components/BottomNav';
+import { DataView } from './components/DataView';
+
 
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -25,16 +23,11 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'ai-history' | 'league' | 'assistant'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
 
-  // Assistant Persistence State
-  const [assistantIsRunning, setAssistantIsRunning] = useState(false);
-  const [assistantIsDone, setAssistantIsDone] = useState(false);
-  const [assistantStatus, setAssistantStatus] = useState('');
-  const [assistantConversation, setAssistantConversation] = useState<ConversationEntry[]>([]);
-  const [assistantCurrentIteration, setAssistantCurrentIteration] = useState(0);
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
+
 
   // 1. Data Fetching Hook
   const {
@@ -128,9 +121,9 @@ export default function App() {
           {!teamData && (
             <div className="hero-section">
               <div className="hero-content">
-                <span className="hero-badge">AI-Powered FPL Tools</span>
+                <span className="hero-badge">Advanced FPL Tools</span>
                 <h2>Dominate Your League</h2>
-                <p>Get advanced analytics, AI team recommendations, and fixture insights to stay ahead in your Fantasy Premier League.</p>
+                <p>Get advanced analytics, team recommendations, and fixture insights to stay ahead in your Fantasy Premier League.</p>
                 <div className="search-form">
                   <input
                     type="number"
@@ -339,45 +332,20 @@ export default function App() {
             </div>
           )}
 
-          {currentView === 'ai-history' && staticData && (
-            <div className="fade-in">
-              <AiHistory
-                elements={staticData.elements}
-                teams={staticData.teams}
-              />
-            </div>
-          )}
-
           {currentView === 'league' && (
             <div className="fade-in">
               <LeagueAnalysis />
             </div>
           )}
 
-          {currentView === 'assistant' && (
+          {currentView === 'data' && (
             <div className="fade-in">
-              <AssistantPage
-                teamData={teamData || null}
-                picks={activePicks}
-                elements={staticData?.elements}
-                predictionsMap={predictionsMap}
-                t100OwnershipMap={t100OwnershipMap}
-                fixtures={fixtures}
-                teams={staticData?.teams || []}
-                events={staticData?.events || []}
-                isRunning={assistantIsRunning}
-                setIsRunning={setAssistantIsRunning}
-                isDone={assistantIsDone}
-                setIsDone={setAssistantIsDone}
-                status={assistantStatus}
-                setStatus={setAssistantStatus}
-                conversation={assistantConversation}
-                setConversation={setAssistantConversation}
-                currentIteration={assistantCurrentIteration}
-                setCurrentIteration={setAssistantCurrentIteration}
-              />
+              <DataView />
             </div>
           )}
+
+
+
         </main>
 
 

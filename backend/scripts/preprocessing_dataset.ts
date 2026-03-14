@@ -229,6 +229,9 @@ function main() {
                 const gw = parseInt(targetMatch.round as any);
                 if (isNaN(gw)) continue;
 
+                // Skip games where the player didn't play (minutes == 0)
+                if (parseFloatSafe(targetMatch.minutes) === 0) continue;
+
                 // Update last match date
                 const matchDate = new Date(targetMatch.kickoff_time);
                 if (matchDate > lastMatchDate) lastMatchDate = matchDate;
@@ -321,7 +324,7 @@ function main() {
                     ]);
                 }
 
-                // Calculate All-Time Statistics — REMOVED (replaced by rolling windows in ai_manager.py)
+                // Calculate All-Time Statistics — REMOVED (replaced by rolling windows in model_manager.py)
 
                 // Compute fixture-based team strength scores
                 const { attackRaw, defenseRaw } = computeFixtureScores(

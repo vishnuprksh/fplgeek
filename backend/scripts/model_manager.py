@@ -10,7 +10,7 @@ from lib.models import build_model, clean_and_scale, fit_scaler, load_scaler  # 
 from sklearn.model_selection import train_test_split  # type: ignore[import]
 from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss  # type: ignore[import]
 
-# Context Features in output vector (based on generate_dataset.ts + ai_manager.py ctx list):
+# Context Features in output vector (based on preprocessing_dataset.ts + model_manager.py ctx list):
 # 0: was_home, 1: difficulty, 2: price, 3: hours_rest, 4: ownership,
 # 5: opponent_strength, 6: chance_of_playing,
 # 7: fixture_attack, 8: fixture_defense (normalized [0,1])
@@ -70,7 +70,7 @@ def load_and_process_data(position):
         
         # 3. Dual Rolling-Window Aggregated Features (9 × 2 = 18 features)
         history = sample["history_sequence"]  # List of lists
-        # history[0] is most recent match (due to unshift in generate_dataset.ts)
+        # history[0] is most recent match (due to unshift in preprocessing_dataset.ts)
         
         hist_arr = np.array(history)  # Shape (20, 13) with LOOKBACK=20
         if len(hist_arr) == 0:

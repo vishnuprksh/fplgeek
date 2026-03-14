@@ -6,8 +6,7 @@
     "main": "server.ts",
     "scripts": {
         "start": "tsx server.ts",
-        "dev": "tsx watch server.ts",
-        "ingest": "tsx ingest.ts"
+        "dev": "tsx watch server.ts"
     },
     "dependencies": {
         "@google/genai": "latest",

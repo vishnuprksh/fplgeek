@@ -8,7 +8,7 @@ DATA_DIR = os.environ.get('FPL_DATA_DIR', os.path.normpath(os.path.join(os.path.
 DATA_DIR = os.path.join(DATA_DIR, 'processed')
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]
 
-# The 29-dimensional feature vector names (must match ai_manager.py feature engineering)
+# The 29-dimensional feature vector names (must match model_manager.py feature engineering)
 feature_names = [
     # 11 Context
     "ctx_was_home", "ctx_difficulty", "ctx_price", "ctx_hours_rest",
@@ -24,7 +24,7 @@ feature_names = [
     "r10_cre", "r10_thr", "r10_gc", "r10_saves"
 ]
 
-# History sequence indices (from generate_dataset.ts):
+# History sequence indices (from preprocessing_dataset.ts):
 # 0: Min, 1: xG, 2: xA, 3: Thr, 4: Cre, 5: Inf, 6: GC, 7: Saves, 8: Sel, 9: Price, 10: Home, 11: Pts, 12: Form
 AGG_INDICES = [0, 11, 1, 2, 5, 4, 3, 6, 7]  # min, pts, xG, xA, inf, cre, thr, gc, saves
 AGG_WINDOWS = [4, 10]

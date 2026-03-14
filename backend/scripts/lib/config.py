@@ -8,9 +8,9 @@ _DATA_ROOT = os.environ.get(
 
 # Configuration
 DATA_DIR = os.path.join(_DATA_ROOT, 'processed')
-MODELS_DIR = os.path.join(_DATA_ROOT, 'models/ai_manager_mlp')
+MODELS_DIR = os.path.join(_DATA_ROOT, 'models/model_manager_mlp')
 DB_PATH = os.path.join(_DATA_ROOT, 'fpl.sqlite')
-OUTPUT_FILE = os.path.join(_DATA_ROOT, 'ai_manager_history.json')
+OUTPUT_FILE = os.path.join(_DATA_ROOT, 'model_manager_history.json')
 PREDICTIONS_FILE = os.path.join(_DATA_ROOT, 'ai_predictions.json')
 REPORT_FILE = os.path.join(_DATA_ROOT, 'model_accuracy_report.md')
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]

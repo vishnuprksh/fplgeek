@@ -19,6 +19,10 @@ export default defineConfig({
         target: 'http://localhost:3000',
         changeOrigin: true,
       },
+      '/eda': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
     watch: {
       ignored: ['**/venv/**']
