@@ -1,113 +1,63 @@
 import json
 import os
+import sqlite3
 from typing import Dict, List, Any, Optional, cast
 
 import numpy as np  # type: ignore[import]
 import joblib  # type: ignore[import]
 import tensorflow as tf  # type: ignore[import]
-from lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES, PREDICTIONS_FILE, REPORT_FILE  # type: ignore[import]
+from lib.config import DATA_DIR, POSITIONS, INPUT_DIM, MODELS_DIR, EPOCHS, BATCH_SIZE, NUM_CTX_FEATURES, PREDICTIONS_FILE, REPORT_FILE, DB_PATH  # type: ignore[import]
 from lib.models import build_model, clean_and_scale, fit_scaler, load_scaler  # type: ignore[import]
 from sklearn.model_selection import train_test_split  # type: ignore[import]
 from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss  # type: ignore[import]
 
-# Context Features in output vector (based on preprocessing_dataset.ts + model_manager.py ctx list):
+# Context Features in output vector (based on preprocessing_dataset.ts ctx list):
 # 0: was_home, 1: difficulty, 2: price, 3: hours_rest, 4: ownership,
 # 5: opponent_strength, 6: chance_of_playing,
 # 7: fixture_attack, 8: fixture_defense (normalized [0,1])
 #
-# Feature Indices in history_sequence:
-# 0: Min, 1: xG, 2: xA, 3: Thr, 4: Cre, 5: Inf, 6: GC, 7: Saves, 8: Sel, 9: Price, 10: Home, 11: Pts, 12: Form
-IDX_MIN = 0
-IDX_PTS = 11
-IDX_XG = 1
-IDX_XA = 2
-IDX_INF = 5
-IDX_CRE = 4
-IDX_THR = 3
-IDX_GC = 6
-IDX_SAVES = 7
-
-AGG_INDICES = [IDX_MIN, IDX_PTS, IDX_XG, IDX_XA, IDX_INF, IDX_CRE, IDX_THR, IDX_GC, IDX_SAVES]
-AGG_NAMES = ["min", "pts", "xG", "xA", "inf", "cre", "thr", "gc", "saves"]
-AGG_WINDOWS = [4, 10]  # Dual rolling windows: short-term form + medium-term trend
+# Aggregated Features (pre-computed in preprocessing_dataset.ts, dual rolling windows):
+# R4  [9]: [min, pts, xG, xA, inf, cre, thr, gc, saves]
+# R10 [9]: [min, pts, xG, xA, inf, cre, thr, gc, saves]
+# Total: 9 ctx + 9 r4 + 9 r10 = 27 features
 
 def load_and_process_data(position):
     """
-    Load data for a position and engineer static features.
+    Load data for a position from preprocessed_data table.
     """
-    file_path = os.path.join(DATA_DIR, f"dataset_{position}.json")
-    if not os.path.exists(file_path):
-        print(f"Warning: No data found for {position}")
+    if not os.path.exists(DB_PATH):
+        print(f"Warning: DB not found at {DB_PATH}")
         return np.array([]), np.array([]), []
 
-    with open(file_path, "r") as f:
-        data = json.load(f)
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    query = "SELECT feature_vector, target_class, metadata, is_future FROM preprocessed_data WHERE position = ?"
+    cursor.execute(query, (position,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    if not rows:
+        print(f"Warning: No preprocessed data found for {position}")
+        return np.array([]), np.array([]), []
 
     X_list = []
     y_list = []
     meta_list = []
 
-    for sample in data:
-        # 1. Target
-        # Classify points into 0-15+
-        target = max(0, min(int(sample["target"]), 15))
-        y_list.append(target)
-
-        # 2. Context Features (9 features):
-        # [was_home, diff, price, rest, own, opp, chance_of_playing,
-        #  fixture_attack, fixture_defense]
-        ctx = [
-            sample["ctx_was_home"],
-            sample["ctx_difficulty"],
-            sample["ctx_price"],
-            sample["ctx_hours_rest"],
-            sample["ctx_ownership"],
-            sample["ctx_opponent"],
-            sample.get("ctx_chance_of_playing", 100),
-            sample.get("ctx_fixture_attack", 0),
-            sample.get("ctx_fixture_defense", 0),
-        ]
+    for row in rows:
+        feat_blob, target_class, meta_json, is_future = row
         
-        # 3. Dual Rolling-Window Aggregated Features (9 × 2 = 18 features)
-        history = sample["history_sequence"]  # List of lists
-        # history[0] is most recent match (due to unshift in preprocessing_dataset.ts)
+        # Convert blob back to float32 numpy array
+        feat_vec = np.frombuffer(feat_blob, dtype=np.float32)
         
-        hist_arr = np.array(history)  # Shape (10, 13) with LOOKBACK=10
-        if len(hist_arr) == 0:
-            aggs = np.zeros(len(AGG_INDICES) * len(AGG_WINDOWS))
-        else:
-            # Filter to only games where the player actually played (minutes > 0)
-            played_mask = hist_arr[:, IDX_MIN] > 0
-            played_arr = hist_arr[played_mask]
-
-            def get_agg(n: int) -> np.ndarray:
-                available = min(n, len(played_arr))
-                if available == 0:
-                    return np.zeros(len(AGG_INDICES))
-                # history_sequence is oldest-first, so the most recent games are at the end
-                sub = played_arr[-available:]
-                subset_vals = sub[:, AGG_INDICES]
-                means = np.mean(subset_vals, axis=0)
-                stds = np.std(subset_vals, axis=0)
-                # Calculate consistency-adjusted value: mean * (1 - std_dev / mean)
-                # Avoid division by zero
-                cv = np.divide(stds, means, out=np.zeros_like(stds), where=means != 0)
-                adjusted = means * (1 - cv)
-                
-                # Apply penalty if there are no last `n` games
-                # Depends upon how many games are available (available / n)
-                penalty_factor = available / n
-                adjusted = adjusted * penalty_factor
-                
-                return adjusted
-
-            agg_parts = [get_agg(w) for w in AGG_WINDOWS]
-            aggs = np.concatenate(agg_parts)  # 9 + 9 = 18 features
-
-        # Combine: 7 ctx + 18 agg = 25
-        full_vec = np.concatenate([ctx, aggs])
-        X_list.append(full_vec)
-        meta_list.append(sample)
+        # Metadata
+        meta = json.loads(meta_json)
+        meta['is_future'] = bool(is_future)
+        
+        X_list.append(feat_vec)
+        y_list.append(target_class)
+        meta_list.append(meta)
 
     return np.array(X_list), np.array(y_list), meta_list
 
@@ -124,15 +74,13 @@ def train_position_model(pos):
     
     # Split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-    X_train, X_val, y_train, y_val = train_test_split(X_train, y_train, test_size=0.2, random_state=42)
     
     # Fit StandardScaler on training data only
     scaler = fit_scaler(X_train, pos)
     X_train = scaler.transform(X_train)
-    X_val = scaler.transform(X_val)
     X_test = scaler.transform(X_test)
     
-    print(f"Train: {X_train.shape}, Val: {X_val.shape}, Test: {X_test.shape}")
+    print(f"Train: {X_train.shape}, Test: {X_test.shape}")
     
     # Build
     clf = build_model()
@@ -145,20 +93,20 @@ def train_position_model(pos):
     train_acc = accuracy_score(y_train, train_preds)
     train_mae = mean_absolute_error(y_train, train_preds)
     
-    # Validation Metrics
-    val_preds = clf.predict(X_val)
-    val_probs = clf.predict_proba(X_val)
+    # Test Metrics
+    test_preds = clf.predict(X_test)
+    test_probs = clf.predict_proba(X_test)
     
     # Handle probas shape for log_loss
-    full_val_probs = np.zeros((len(X_val), 16))
+    full_test_probs = np.zeros((len(X_test), 16))
     for i, cls in enumerate(clf.classes_):
-        if cls < 16: full_val_probs[:, int(cls)] = val_probs[:, i]
+        if cls < 16: full_test_probs[:, int(cls)] = test_probs[:, i]
         
-    acc = accuracy_score(y_val, val_preds)
-    mae = mean_absolute_error(y_val, val_preds)
-    loss = log_loss(y_val, full_val_probs, labels=list(range(16)))
+    acc = accuracy_score(y_test, test_preds)
+    mae = mean_absolute_error(y_test, test_preds)
+    loss = log_loss(y_test, full_test_probs, labels=list(range(16)))
     
-    print(f"Train Acc: {train_acc:.4f} | Val Acc: {acc:.4f} | Val MAE: {mae:.4f}")
+    print(f"Train Acc: {train_acc:.4f} | Test Acc: {acc:.4f} | Test MAE: {mae:.4f}")
     
     # Save model
     joblib.dump(clf, os.path.join(MODELS_DIR, f"model_{pos}.joblib"))
@@ -358,7 +306,7 @@ def main():
         os.makedirs(os.path.dirname(report_path), exist_ok=True)
         with open(report_path, "w") as f:
             f.write("# Model Accuracy Report (Random Forest)\n\n")
-            f.write("| Position | Train Acc | Val Acc | Train MAE | Val MAE | Log Loss |\n")
+            f.write("| Position | Train Acc | Test Acc | Train MAE | Test MAE | Log Loss |\n")
             f.write("| :--- | :--- | :--- | :--- | :--- | :--- |\n")
             for r in results:
                 f.write(f"| **{r['pos']}** | {r['train_accuracy']:.4f} | {r['accuracy']:.4f} | {r['train_mae']:.4f} | {r['mae']:.4f} | {r['loss']:.4f} |\n")

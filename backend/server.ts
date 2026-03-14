@@ -4,6 +4,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const Database = require('better-sqlite3');
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -16,30 +20,35 @@ const PORT = process.env.ServerPort || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Routes will be imported here
 const DATA_DIR = process.env.DATA_DIR || path.resolve(__dirname, '../data');
+const DB_PATH = path.join(DATA_DIR, 'fpl.sqlite');
+const db = new Database(DB_PATH);
 
 // Training Data Endpoint
 app.get('/api/training-data', (req, res) => {
     const { position = 'MID', page = 1, pageSize = 50, search = '' } = req.query;
     const pos = String(position).toUpperCase();
     const query = String(search).toLowerCase();
-    const filePath = path.join(DATA_DIR, 'processed', `dataset_${pos}.json`);
 
     try {
-        if (!fs.existsSync(filePath)) {
-            return res.status(404).json({ error: `Dataset for ${pos} not found` });
-        }
+        let sql = `SELECT metadata, target_class FROM preprocessed_data WHERE position = ?`;
+        let params: any[] = [pos];
 
-        const rawData = fs.readFileSync(filePath, 'utf-8');
-        let data = JSON.parse(rawData);
-
-        // Filter by search query if provided
         if (query) {
-            data = data.filter((item: any) =>
-                item.name && item.name.toLowerCase().includes(query)
-            );
+            sql += ` AND metadata LIKE ?`;
+            params.push(`%${query}%`);
         }
+
+        const allRows = db.prepare(sql).all(...params);
+        
+        const data = allRows.map((row: any) => {
+            const meta = JSON.parse(row.metadata);
+            return {
+                ...meta,
+                target: row.target_class, // Display bucketized target
+                is_future: meta.is_future ?? false
+            };
+        });
 
         const start = (Number(page) - 1) * Number(pageSize);
         const end = start + Number(pageSize);
@@ -53,7 +62,7 @@ app.get('/api/training-data', (req, res) => {
             totalPages: Math.ceil(data.length / Number(pageSize))
         });
     } catch (err) {
-        console.error('Error serving training data:', err);
+        console.error('Error serving training data from DB:', err);
         res.status(500).json({ error: 'Failed to load training data' });
     }
 });

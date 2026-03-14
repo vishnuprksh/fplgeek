@@ -144,6 +144,12 @@ interface ProcessedSample {
     ctx_fixture_defense: number;   // [0,1] — higher = easier to keep sheet
     // History Sequence (Flat for now, but ordered)
     history_sequence: number[][]; // [ [min, xG, xA...], [min, xG, xA...] ]
+    // Pre-computed rolling-window aggregates (consistency-adjusted, penalty-scaled)
+    agg_r4: number[];  // 9 features: [min, pts, xG, xA, inf, cre, thr, gc, saves] over last 4 played games
+    agg_r10: number[]; // 9 features: same over last 10 played games
+    // ML Ready
+    target_class: number; // 0-15 bucketized points
+    feature_vector: number[]; // All 27 features normalized/cleaned
 }
 
 // --- Helpers ---
@@ -152,6 +158,48 @@ function parseFloatSafe(val: any): number {
     return isNaN(f) ? 0 : f;
 }
 
+// Rolling window aggregation
+// history_sequence columns: [min, xG, xA, thr, cre, inf, gc, saves, sel, price, home, pts, form]
+const AGG_INDICES = [0, 11, 1, 2, 5, 4, 3, 6, 7]; // [min, pts, xG, xA, inf, cre, thr, gc, saves]
+const AGG_WINDOWS = [4, 10];
+
+function computeRollingAgg(historySeq: number[][], window: number): number[] {
+    if (historySeq.length === 0) return new Array(AGG_INDICES.length).fill(0);
+    const played = historySeq.filter(h => h[0] > 0); // minutes > 0
+    const available = Math.min(window, played.length);
+    if (available === 0) return new Array(AGG_INDICES.length).fill(0);
+    const sub = played.slice(-available);
+    const penaltyFactor = available / window;
+    return AGG_INDICES.map(idx => {
+        const vals = sub.map(h => h[idx]);
+        const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
+        if (mean === 0) return 0;
+        const variance = vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length;
+        const std = Math.sqrt(variance);
+        const cv = std / mean;
+        return mean * (1 - cv) * penaltyFactor;
+    });
+}
+
+function classifyTarget(points: number): number {
+    return Math.max(0, Math.min(Math.floor(points), 15));
+}
+
+function cleanAndVectorize(sample: any): number[] {
+    const ctx = [
+        sample.ctx_was_home,
+        sample.ctx_difficulty,
+        sample.ctx_price,
+        sample.ctx_hours_rest,
+        sample.ctx_ownership,
+        sample.ctx_opponent,
+        sample.ctx_chance_of_playing,
+        sample.ctx_fixture_attack,
+        sample.ctx_fixture_defense
+    ];
+    const vec = [...ctx, ...sample.agg_r4, ...sample.agg_r10];
+    return vec.map(v => (isNaN(v) || !isFinite(v)) ? 0 : v);
+}
 
 
 // --- Main ---
@@ -162,6 +210,21 @@ function main() {
     }
 
     const db = new Database(DB_PATH);
+
+    // Ensure preprocessed_data table exists
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS preprocessed_data (
+            player_id INTEGER,
+            gw INTEGER,
+            season TEXT,
+            position TEXT,
+            is_future INTEGER,
+            target_class INTEGER,
+            feature_vector BLOB,
+            metadata TEXT,
+            PRIMARY KEY (player_id, gw, season)
+        );
+    `);
 
     // 1. Fetch Raw Data
     const players = db.prepare("SELECT id, data FROM players").all().map((r: any) => ({
@@ -272,10 +335,13 @@ function main() {
                 }
 
                 // Calc Rest
-                const prevMatch = history[i - 1];
-                const currTime = new Date(targetMatch.kickoff_time).getTime();
-                const prevTime = new Date(prevMatch.kickoff_time).getTime();
-                const hoursRest = (currTime - prevTime) / (1000 * 60 * 60);
+                let hoursRest = 168; // Default 1 week
+                if (i > 0) {
+                    const prevMatch = history[i - 1];
+                    const currTime = new Date(targetMatch.kickoff_time).getTime();
+                    const prevTime = new Date(prevMatch.kickoff_time).getTime();
+                    hoursRest = (currTime - prevTime) / (1000 * 60 * 60);
+                }
 
                 // Calc Opponent Strength
                 const opponentId = targetMatch.opponent_team;
@@ -327,7 +393,9 @@ function main() {
                     ]);
                 }
 
-                // Calculate All-Time Statistics — REMOVED (replaced by rolling windows in model_manager.py)
+                // Compute pre-aggregated rolling window features
+                const agg_r4 = computeRollingAgg(seqData, AGG_WINDOWS[0]);
+                const agg_r10 = computeRollingAgg(seqData, AGG_WINDOWS[1]);
 
                 // Compute fixture-based team strength scores
                 const { attackRaw, defenseRaw } = computeFixtureScores(
@@ -337,21 +405,25 @@ function main() {
                 const sample = {
                     name: player.web_name,
                     id: player.id,
+                    team: player.team,
                     gw: gw,
                     season: season,
                     target: targetMatch.total_points,
+                    target_class: classifyTarget(targetMatch.total_points),
                     is_future: false,
-                    selected_by_percent: parseFloatSafe(targetMatch.selected_by_percent),
+                    selected_by_percent: parseFloatSafe(player.selected_by_percent),
                     ctx_was_home: targetMatch.was_home ? 1 : 0,
                     ctx_opponent: opponentStrength,
                     ctx_difficulty: difficulty,
                     ctx_price: targetMatch.value / 10.0,
                     ctx_hours_rest: Math.min(hoursRest, 300),
-                    ctx_ownership: parseFloatSafe(targetMatch.selected_by_percent),
+                    ctx_ownership: parseFloatSafe(player.selected_by_percent),
                     ctx_chance_of_playing: 100,
                     ctx_fixture_attack: 0,    // filled in second pass
                     ctx_fixture_defense: 0,   // filled in second pass
                     history_sequence: seqData,
+                    agg_r4,
+                    agg_r10,
                     _attackRaw: attackRaw,
                     _defenseRaw: defenseRaw
                 } as any;
@@ -463,24 +535,32 @@ function main() {
                 player.team, futOpponentId, venueTable
             );
 
+            // Compute pre-aggregated rolling window features from the placeholder history
+            const fut_agg_r4 = computeRollingAgg(placeholderSeq, AGG_WINDOWS[0]);
+            const fut_agg_r10 = computeRollingAgg(placeholderSeq, AGG_WINDOWS[1]);
+
             const sample = {
                 name: player.web_name,
                 id: player.id,
+                team: player.team,
                 gw: gw,
                 season: season,
                 target: 0,
+                target_class: 0,
                 is_future: true,
-                selected_by_percent: 0,
+                selected_by_percent: parseFloatSafe(player.selected_by_percent),
                 ctx_was_home: isHome ? 1 : 0,
                 ctx_opponent: opponentStrength,
                 ctx_difficulty: difficulty,
                 ctx_price: lastValue,
                 ctx_hours_rest: Math.min(hoursRest, 300),
-                ctx_ownership: 0,
+                ctx_ownership: parseFloatSafe(player.selected_by_percent),
                 ctx_chance_of_playing: player.chance_of_playing_next_round ?? 100,
                 ctx_fixture_attack: 0,    // filled in second pass
                 ctx_fixture_defense: 0,   // filled in second pass
                 history_sequence: placeholderSeq,
+                agg_r4: fut_agg_r4,
+                agg_r10: fut_agg_r10,
                 _attackRaw: futAttackRaw,
                 _defenseRaw: futDefenseRaw
             } as any;
@@ -524,17 +604,78 @@ function main() {
             const defScaled = (maxDef - s._defenseRaw) / rangeDef;
 
             const { _attackRaw, _defenseRaw, ...rest } = s;
-            return {
+            const updated = {
                 ...rest,
                 ctx_fixture_attack: parseFloat(atkScaled.toFixed(4)),
                 ctx_fixture_defense: parseFloat(defScaled.toFixed(4))
             } as ProcessedSample;
+            // Now vectorize
+            updated.feature_vector = cleanAndVectorize(updated);
+            return updated;
         });
 
         const p = path.join(OUTPUT_DIR, `dataset_${pos}.json`);
         fs.writeFileSync(p, JSON.stringify(output, null, 2));
         console.log(`Saved ${pos}: ${output.length} samples -> ${p}`);
     }
+
+    // --- THIRD PASS: Store in SQLite ---
+    console.log(`\nStoring preprocessed data in SQLite...`);
+    db.prepare("DELETE FROM preprocessed_data").run();
+
+    const insertStmt = db.prepare(`
+        INSERT OR REPLACE INTO preprocessed_data (player_id, gw, season, position, is_future, target_class, feature_vector, metadata)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+
+    const insertMany = db.transaction((datasets: Record<string, ProcessedSample[]>) => {
+        for (const [pos, data] of Object.entries(datasets)) {
+            for (const s of data) {
+                // Convert feature_vector number[] to Buffer (Float32Array)
+                const buffer = Buffer.from(new Float32Array(s.feature_vector).buffer);
+                const metadata = JSON.stringify({
+                    name: s.name,
+                    id: s.id,
+                    team: (s as any).team,
+                    selected_by_percent: s.selected_by_percent,
+                    ctx_was_home: s.ctx_was_home,
+                    ctx_opponent: s.ctx_opponent,
+                    ctx_difficulty: s.ctx_difficulty,
+                    ctx_price: s.ctx_price,
+                    ctx_hours_rest: s.ctx_hours_rest,
+                    ctx_ownership: s.ctx_ownership,
+                    ctx_chance_of_playing: s.ctx_chance_of_playing,
+                    ctx_fixture_attack: s.ctx_fixture_attack,
+                    ctx_fixture_defense: s.ctx_fixture_defense,
+                    agg_r4: s.agg_r4,
+                    agg_r10: s.agg_r10
+                });
+
+                insertStmt.run(
+                    s.id,
+                    s.gw,
+                    s.season,
+                    pos,
+                    s.is_future ? 1 : 0,
+                    s.target_class,
+                    buffer,
+                    metadata
+                );
+            }
+        }
+    });
+
+    // We need to use the output of the second pass mappings
+    const allDatasets: Record<string, ProcessedSample[]> = {};
+    for (const pos of ["GKP", "DEF", "MID", "FWD"]) {
+        const p = path.join(OUTPUT_DIR, `dataset_${pos}.json`);
+        if (fs.existsSync(p)) {
+            allDatasets[pos] = JSON.parse(fs.readFileSync(p, 'utf-8'));
+        }
+    }
+
+    insertMany(allDatasets);
+    console.log(`Successfully stored all samples in SQLite.`);
 }
 
 main();

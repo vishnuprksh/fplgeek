@@ -41,6 +41,17 @@ export class SqliteRepository implements IDatabaseRepository {
                 data TEXT,
                 PRIMARY KEY (player_id, fixture_id)
             );
+            CREATE TABLE IF NOT EXISTS preprocessed_data (
+                player_id INTEGER,
+                gw INTEGER,
+                season TEXT,
+                position TEXT,
+                is_future INTEGER,
+                target_class INTEGER,
+                feature_vector BLOB,
+                metadata TEXT,
+                PRIMARY KEY (player_id, gw, season)
+            );
         `);
     }
 
