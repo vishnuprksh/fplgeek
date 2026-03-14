@@ -22,7 +22,7 @@ services:
   # Frontend Service
   - type: web
     name: fplgeek-frontend
-    env: static
+    runtime: static
     rootDir: frontend
     buildCommand: npm install && npm run build
     publishPath: dist
