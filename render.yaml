@@ -22,11 +22,12 @@ services:
       sizeGB: 1
 
   # Frontend Service
-  - type: static_site
+  - type: web
     name: fplgeek-frontend
+    env: static
     rootDir: frontend
     buildCommand: npm install && npm run build
-    publishPath: dist
+    staticPublishPath: dist
     headers:
       - path: /*
         name: Cache-Control
