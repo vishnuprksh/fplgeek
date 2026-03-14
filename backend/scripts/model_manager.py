@@ -87,8 +87,13 @@ def load_and_process_data(position):
                 # history_sequence is oldest-first, so the most recent games are at the end
                 sub = played_arr[-available:]
                 subset_vals = sub[:, AGG_INDICES]
-                total = np.sum(subset_vals, axis=0)
-                return total / available
+                means = np.mean(subset_vals, axis=0)
+                stds = np.std(subset_vals, axis=0)
+                # Calculate consistency-adjusted value: mean * (1 - std_dev / mean)
+                # Avoid division by zero
+                cv = np.divide(stds, means, out=np.zeros_like(stds), where=means != 0)
+                adjusted = means * (1 - cv)
+                return adjusted
 
             agg_parts = [get_agg(w) for w in AGG_WINDOWS]
             aggs = np.concatenate(agg_parts)  # 9 + 9 = 18 features
