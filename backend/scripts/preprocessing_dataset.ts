@@ -173,11 +173,15 @@ function computeRollingAgg(historySeq: number[][], window: number): number[] {
     return AGG_INDICES.map(idx => {
         const vals = sub.map(h => h[idx]);
         const mean = vals.reduce((a, b) => a + b, 0) / vals.length;
-        if (mean === 0) return 0;
-        const variance = vals.reduce((a, b) => a + (b - mean) ** 2, 0) / vals.length;
-        const std = Math.sqrt(variance);
-        const cv = std / mean;
-        return mean * (1 - cv) * penaltyFactor;
+
+        // Median calculation
+        const sorted = [...vals].sort((a, b) => a - b);
+        const mid = Math.floor(sorted.length / 2);
+        const median = sorted.length % 2 !== 0
+            ? sorted[mid]
+            : (sorted[mid - 1] + sorted[mid]) / 2;
+
+        return ((mean + median) / 2) * penaltyFactor;
     });
 }
 
