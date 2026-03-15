@@ -86,7 +86,7 @@ export default function App() {
   const applyOptimization = () => {
     if (!optimizationResult) return;
     handleBatchTransfer(
-      optimizationResult.transfers.map((t: any) => ({ in: t.in.player, out: t.out.player })),
+      optimizationResult.transfers.map((t: { in: { player: Player }, out: { player: Player } }) => ({ in: t.in.player, out: t.out.player })),
       [...optimizationResult.lineup.starting11, ...optimizationResult.lineup.bench]
     );
     toggleOptimizationMode();

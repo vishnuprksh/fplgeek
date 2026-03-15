@@ -30,7 +30,7 @@ cd "$REPO_ROOT/backend"
 
 # 1. Ingest latest data from FPL API (using Python scripts)
 echo "📥 Step 1: Ingesting latest data..."
-python3 backend/scripts/ingest_historical_gw.py
+python3 scripts/ingest_historical_gw.py
 
 # 2. Generate ML datasets
 echo "📊 Step 2: Generating datasets..."
