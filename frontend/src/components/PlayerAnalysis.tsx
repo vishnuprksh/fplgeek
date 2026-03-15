@@ -40,6 +40,7 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                 r10_xg: (pred as any)?.r10_xg || 0,
                 f_atk_next: (pred as any)?.f_atk_next || 0,
                 f_def_next: (pred as any)?.f_def_next || 0,
+                projections: (pred as any)?.projections || [],
                 ownership: parseFloat(p.selected_by_percent || "0"),
                 t100_ownership: t100Ownership ? (t100Ownership[p.id] || 0) : 0
             };
@@ -175,6 +176,8 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                                 <th>Team</th>
                                 <th>Pos</th>
                                 <th onClick={() => handleSort('prob_gt_6_next')} className="sortable">Next GW Haul {sortField === 'prob_gt_6_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th>GW+2</th>
+                                <th>GW+3</th>
                                 <th onClick={() => handleSort('f_atk_next')} className="sortable">Fix Atk {sortField === 'f_atk_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('f_def_next')} className="sortable">Fix Def {sortField === 'f_def_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul (3GW Avg) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -202,6 +205,14 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                                     <td className="color-cell" style={{ fontWeight: 600 }}>
                                         <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(player.prob_gt_6_next * 0.8, 0.4)})` }}></div>
                                         {((player as any).prob_gt_6_next * 100).toFixed(0)}%
+                                    </td>
+                                    <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
+                                        <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(((player as any).projections?.[1]?.prob_gt_6 || 0) * 0.6, 0.3)})` }}></div>
+                                        {(((player as any).projections?.[1]?.prob_gt_6 || 0) * 100).toFixed(0)}%
+                                    </td>
+                                    <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
+                                        <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(((player as any).projections?.[2]?.prob_gt_6 || 0) * 0.6, 0.3)})` }}></div>
+                                        {(((player as any).projections?.[2]?.prob_gt_6 || 0) * 100).toFixed(0)}%
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 600 }}>
                                         <div className="color-bg" style={{ backgroundColor: `rgba(0, 255, 135, ${(player as any).f_atk_next * 0.4})` }}></div>

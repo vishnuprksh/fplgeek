@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useFPLData } from './hooks/useFPLData';
 import { useTransfers } from './hooks/useTransfers';
 import { useOptimization } from './hooks/useOptimization';
+import './App.css';
+
 
 import { TeamCard } from './components/TeamCard';
 import { PitchView } from './components/PitchView';
@@ -217,14 +219,17 @@ export default function App() {
 
                           {/* Haul summary pill (non-optimize mode) */}
                           {!isOptimizing && (
-                            <div style={{ background: '#37003c', color: '#00ff87', padding: '5px 12px', borderRadius: '4px', fontSize: '0.85em', display: 'flex', gap: '14px' }}>
-                              <span>
+                            <div className="haul-summary-pill">
+                              <span className="haul-item">
+                                <span className="haul-icon">📈</span>
                                 <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
                               </span>
-                              <span style={{ color: '#ccc' }}>
+                              <span className="haul-divider"></span>
+                              <span className="haul-item bench">
+                                <span className="haul-icon">🪑</span>
                                 <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
                               </span>
-                              <span style={{ color: '#888', fontSize: '0.8em', alignSelf: 'center' }}>(avg / GW)</span>
+                              <span className="haul-meta">(avg / GW)</span>
                             </div>
                           )}
                         </div>

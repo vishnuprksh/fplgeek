@@ -8,6 +8,7 @@ export type T100OwnershipMap = Record<number, number>;
 export interface PredictionMap {
     [id: number]: {
         totalForecast: number;
+        projections?: any[];
         prob_gt_6?: number;
         prob_gt_10?: number;
         prob_gt_6_next?: number;
@@ -60,6 +61,7 @@ export const useFPLData = () => {
                     storedPreds.forEach((sp: any) => {
                         map[sp.id] = {
                             totalForecast: sp.total3Week || sp.total5Week || 0,
+                            projections: sp.projections || [],
                             prob_gt_6: sp.prob_gt_6,
                             prob_gt_10: sp.prob_gt_10,
                             prob_gt_6_next: sp.prob_gt_6_next,

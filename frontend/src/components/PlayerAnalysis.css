@@ -41,6 +41,7 @@
     width: 100%;
     border-collapse: collapse;
     min-width: 800px;
+    border: 1px solid var(--border-subtle);
 }
 
 .analysis-table th {
@@ -50,6 +51,11 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: 600;
+    padding: var(--space-3) var(--space-2);
+    border: 1px solid var(--border-subtle);
+    white-space: normal;
+    vertical-align: middle;
+    text-align: left;
 }
 
 .analysis-table th.sortable {
@@ -61,6 +67,12 @@
 .analysis-table th.sortable:hover {
     color: var(--text-primary);
     background: rgba(255, 255, 255, 0.05);
+}
+
+.analysis-table td {
+    padding: var(--space-3) var(--space-2);
+    border: 1px solid var(--border-subtle);
+    vertical-align: middle;
 }
 
 .clickable-row {
