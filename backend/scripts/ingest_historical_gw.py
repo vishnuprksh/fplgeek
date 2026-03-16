@@ -24,7 +24,7 @@ import os
 import sys
 
 import os as _os
-_DATA_ROOT = _os.environ.get('FPL_DATA_DIR', _os.path.normpath(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '../../../data')))
+_DATA_ROOT = _os.environ.get('FPL_DATA_DIR', _os.path.normpath(_os.path.join(_os.path.dirname(_os.path.abspath(__file__)), '../../data')))
 DB_PATH = _os.path.join(_DATA_ROOT, 'fpl.sqlite')
 
 SEASONS = [

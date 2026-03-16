@@ -165,7 +165,7 @@ const AGG_WINDOWS = [4, 10];
 
 function computeRollingAgg(historySeq: number[][], window: number): number[] {
     if (historySeq.length === 0) return new Array(AGG_INDICES.length).fill(0);
-    const played = historySeq.filter(h => h[0] > 0); // minutes > 0
+    const played = historySeq; // include all games, even with 0 minutes
     const available = Math.min(window, played.length);
     if (available === 0) return new Array(AGG_INDICES.length).fill(0);
     const sub = played.slice(-available);
@@ -281,7 +281,7 @@ function main() {
     for (const player of players) {
         // Filter out matches with missing data
         const historyRawData = historyByPlayer[player.id] || [];
-        const history = historyRawData.filter(m => m.kickoff_time && !isNaN(new Date(m.kickoff_time).getTime()) && parseFloatSafe(m.minutes) > 0);
+        const history = historyRawData.filter(m => m.kickoff_time && !isNaN(new Date(m.kickoff_time).getTime()));
 
         // Sort by Kickoff Time (Chronological: Oldest -> Newest)
         history.sort((a, b) => new Date(a.kickoff_time).getTime() - new Date(b.kickoff_time).getTime());
@@ -296,8 +296,8 @@ function main() {
                 const gw = parseInt(targetMatch.round as any);
                 if (isNaN(gw)) continue;
 
-                // Skip games where the player didn't play (minutes == 0)
-                if (parseFloatSafe(targetMatch.minutes) === 0) continue;
+                // Include games where the player didn't play (minutes == 0)
+                // if (parseFloatSafe(targetMatch.minutes) === 0) continue;
 
                 // Update last match date
                 const matchDate = new Date(targetMatch.kickoff_time);
