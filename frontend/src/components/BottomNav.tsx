@@ -53,14 +53,21 @@ const DataIcon = () => (
     </svg>
 );
 
-
-
+const AnalysisIcon = () => (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        <line x1="11" y1="8" x2="11" y2="14" />
+        <line x1="8" y1="11" x2="14" y2="11" />
+    </svg>
+);
 
 
 const iconMap: Record<string, React.FC> = {
     dashboard: TeamIcon,
     fixtures: FixturesIcon,
     players: PlayersIcon,
+    analysis: AnalysisIcon,
     league: LeagueIcon,
     data: DataIcon,
 };
@@ -70,6 +77,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentView, onChangeView 
         { id: 'dashboard', label: 'Team' },
         { id: 'fixtures', label: 'Fixtures' },
         { id: 'players', label: 'Players' },
+        { id: 'analysis', label: 'Analysis' },
         { id: 'league', label: 'League' },
         { id: 'data', label: 'Data' },
     ];

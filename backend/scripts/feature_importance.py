@@ -1,9 +1,11 @@
 import numpy as np
 import os
+import json
 from sklearn.ensemble import RandomForestClassifier
 from model_manager import load_and_process_data
 
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]
+DATA_OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "../../data/feature_importance.json")
 
 # The 27-dimensional feature vector names (must match model_manager.py feature engineering)
 feature_names = [
@@ -24,6 +26,8 @@ feature_names = [
 MIN_RELIABLE_SAMPLES = 300  # Warn below this
 
 print("=== HAUL FEATURE IMPORTANCE ANALYSIS (>6 POINTS) ===")
+results = {}
+
 for pos in POSITIONS:
     X, y, meta = load_and_process_data(pos)
     if len(X) == 0:
@@ -73,11 +77,37 @@ for pos in POSITIONS:
     X_haul = X_filt[y_filt == 1]
     X_non  = X_filt[y_filt == 0]
 
+    pos_results = []
     print(f"{'Rank':<5} {'Feature':<30} {'Importance':>10}  {'Haul mean':>10}  {'Non-haul mean':>13}")
     print("-" * 75)
     for rank in range(10):
         idx = indices[rank]
-        haul_m = X_haul[:, idx].mean() if len(X_haul) else 0
-        non_m  = X_non[:, idx].mean()  if len(X_non)  else 0
-        print(f"{rank+1:<5} {feature_names[idx]:<30} {importances[idx]:>10.4f}  {haul_m:>10.3f}  {non_m:>13.3f}")
+        feat_name = feature_names[idx]
+        imp_val = float(importances[idx])
+        haul_m = float(X_haul[:, idx].mean()) if len(X_haul) else 0.0
+        non_m  = float(X_non[:, idx].mean())  if len(X_non)  else 0.0
+        
+        if rank < 5:
+            pos_results.append({
+                "rank": rank + 1,
+                "feature": feat_name,
+                "importance": imp_val,
+                "haul_mean": haul_m,
+                "non_haul_mean": non_m
+            })
+            
+        print(f"{rank+1:<5} {feat_name:<30} {imp_val:>10.4f}  {haul_m:>10.3f}  {non_m:>13.3f}")
+    
+    results[pos] = {
+        "samples": n_total,
+        "hauls": n_hauls,
+        "haul_rate": haul_rate,
+        "features": pos_results
+    }
+
+# Save results to JSON
+os.makedirs(os.path.dirname(DATA_OUTPUT_PATH), exist_ok=True)
+with open(DATA_OUTPUT_PATH, 'w') as f:
+    json.dump(results, f, indent=4)
+print(f"\n✅ Results saved to {DATA_OUTPUT_PATH}")
 

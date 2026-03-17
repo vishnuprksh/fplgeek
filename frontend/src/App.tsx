@@ -14,6 +14,7 @@ import { OptimizationReport } from './components/OptimizationReport';
 
 import { TransferModal } from './components/TransferModal';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
+import { AnalysisView } from './components/AnalysisView';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
 
@@ -25,7 +26,7 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data' | 'analysis'>('dashboard');
 
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
@@ -346,6 +347,12 @@ export default function App() {
           {currentView === 'data' && (
             <div className="fade-in">
               <DataView />
+            </div>
+          )}
+
+          {currentView === 'analysis' && (
+            <div className="fade-in">
+              <AnalysisView />
             </div>
           )}
 
