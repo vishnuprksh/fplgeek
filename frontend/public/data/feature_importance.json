@@ -1,0 +1,170 @@
+{
+    "GKP": {
+        "samples": 6338,
+        "hauls": 273,
+        "haul_rate": 4.30735247712212,
+        "features": [
+            {
+                "rank": 1,
+                "feature": "r4_inf",
+                "importance": 0.15030774853757842,
+                "haul_mean": 18.864011764526367,
+                "non_haul_mean": 6.1313066482543945
+            },
+            {
+                "rank": 2,
+                "feature": "r4_min",
+                "importance": 0.13183433402042938,
+                "haul_mean": 75.26786041259766,
+                "non_haul_mean": 23.674423217773438
+            },
+            {
+                "rank": 3,
+                "feature": "r4_saves",
+                "importance": 0.11715773586378912,
+                "haul_mean": 2.289377212524414,
+                "non_haul_mean": 0.7507625818252563
+            },
+            {
+                "rank": 4,
+                "feature": "r4_pts",
+                "importance": 0.08234299378717673,
+                "haul_mean": 2.6021063327789307,
+                "non_haul_mean": 0.8053998351097107
+            },
+            {
+                "rank": 5,
+                "feature": "r4_gc",
+                "importance": 0.06790352014612329,
+                "haul_mean": 1.1172161102294922,
+                "non_haul_mean": 0.3557296097278595
+            }
+        ]
+    },
+    "DEF": {
+        "samples": 18180,
+        "hauls": 966,
+        "haul_rate": 5.313531353135314,
+        "features": [
+            {
+                "rank": 1,
+                "feature": "r4_min",
+                "importance": 0.14266473870059174,
+                "haul_mean": 67.97852325439453,
+                "non_haul_mean": 32.04973602294922
+            },
+            {
+                "rank": 2,
+                "feature": "r4_inf",
+                "importance": 0.12308990907664603,
+                "haul_mean": 15.19011402130127,
+                "non_haul_mean": 6.799404621124268
+            },
+            {
+                "rank": 3,
+                "feature": "r4_cre",
+                "importance": 0.08406764911546658,
+                "haul_mean": 6.7686333656311035,
+                "non_haul_mean": 2.911715269088745
+            },
+            {
+                "rank": 4,
+                "feature": "ctx_ownership",
+                "importance": 0.0704191186473089,
+                "haul_mean": 6.069875717163086,
+                "non_haul_mean": 2.2709944248199463
+            },
+            {
+                "rank": 5,
+                "feature": "r4_pts",
+                "importance": 0.06387372416972555,
+                "haul_mean": 2.3985507488250732,
+                "non_haul_mean": 1.0661598443984985
+            }
+        ]
+    },
+    "MID": {
+        "samples": 25394,
+        "hauls": 1433,
+        "haul_rate": 5.643065291013626,
+        "features": [
+            {
+                "rank": 1,
+                "feature": "r4_min",
+                "importance": 0.11513692062079317,
+                "haul_mean": 64.71039581298828,
+                "non_haul_mean": 26.97169303894043
+            },
+            {
+                "rank": 2,
+                "feature": "r4_thr",
+                "importance": 0.10753349018979302,
+                "haul_mean": 14.210223197937012,
+                "non_haul_mean": 4.427486419677734
+            },
+            {
+                "rank": 3,
+                "feature": "r4_xA",
+                "importance": 0.09234754939389359,
+                "haul_mean": 0.10369853675365448,
+                "non_haul_mean": 0.033087413758039474
+            },
+            {
+                "rank": 4,
+                "feature": "r10_thr",
+                "importance": 0.08120924553464365,
+                "haul_mean": 12.646056175231934,
+                "non_haul_mean": 3.9373669624328613
+            },
+            {
+                "rank": 5,
+                "feature": "r4_cre",
+                "importance": 0.07251369105565549,
+                "haul_mean": 16.92436408996582,
+                "non_haul_mean": 5.780129909515381
+            }
+        ]
+    },
+    "FWD": {
+        "samples": 5574,
+        "hauls": 505,
+        "haul_rate": 9.059921062073913,
+        "features": [
+            {
+                "rank": 1,
+                "feature": "r4_min",
+                "importance": 0.10156220664052487,
+                "haul_mean": 61.88960266113281,
+                "non_haul_mean": 25.302032470703125
+            },
+            {
+                "rank": 2,
+                "feature": "r10_thr",
+                "importance": 0.08839329948536327,
+                "haul_mean": 19.876434326171875,
+                "non_haul_mean": 7.610712051391602
+            },
+            {
+                "rank": 3,
+                "feature": "r4_thr",
+                "importance": 0.07825782311847461,
+                "haul_mean": 22.30198097229004,
+                "non_haul_mean": 8.488114356994629
+            },
+            {
+                "rank": 4,
+                "feature": "r10_inf",
+                "importance": 0.07167304034042371,
+                "haul_mean": 12.743980407714844,
+                "non_haul_mean": 4.41428279876709
+            },
+            {
+                "rank": 5,
+                "feature": "r4_pts",
+                "importance": 0.06827430749118768,
+                "haul_mean": 3.5507426261901855,
+                "non_haul_mean": 1.3038567304611206
+            }
+        ]
+    }
+}
