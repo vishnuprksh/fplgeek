@@ -1,4 +1,12 @@
 # Task Tracking
+- [x] **GW 33 Data Update (2026-04-22 23:45)** — Collected latest FPL data up to GW 33
+  - Fetched 829 players with GW 33 history
+  - Regenerated datasets: 85,995 samples (+35%)
+  - Retrained unified model with improved metrics
+  - Test Accuracy: 62.83% (↑ from 61.22%)
+  - MAE: 1.0191 (↓ from 1.0956, -7% better)
+  - Generated 820 predictions for GW 34+
+  - Feature importance updated (r6_inf now top feature)
 - [x] **Unified Model Migration (2026-04-22 23:20)** — Migrated from 4 position-specific models to 1 unified model with position as input feature
   - Updated INPUT_DIM to 19 (position encoding added)
   - Regenerated 63,550 preprocessed samples with position feature

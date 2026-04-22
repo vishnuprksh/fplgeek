@@ -1,4 +1,16 @@
 # Strategic Memories
+### 2026-04-22 - GW 33 Data Update and Model Improvement
+- **Context:** User requested data collection up to GW 32. Found data was only at GW 29, fetched all the way to GW 33.
+- **Action:** Created update_current_gw.py to fetch from FPL API element-summary endpoints.
+- **Results:**
+  - **Fetched:** 824/829 players with GW 33 history (5 timeouts)
+  - **Data:** 85,995 samples (↑35% from 63,550 at GW29)
+  - **Model Performance:** Improved accuracy by 2.6%, reduced MAE by 7%
+  - **Feature Shift:** r6_inf (Influence) now top predictor instead of r6_min
+  - **Predictions:** 820 players with updated forecasts
+- **Key Insight:** More data improves prediction quality. Feature importance shifted toward involvement metrics (influence, recent points) over raw minutes played.
+- **Files Updated:** update_current_gw.py (new), model_unified.joblib (retrained), ai_predictions.json, feature_importance.json
+
 ### 2026-04-22 - Unified Model Migration: 4 Position-Specific → 1 Universal
 - **Context:** User requested switch from position-specific models to single unified model using position as input feature.
 - **Decision:** Complete architecture change to single Random Forest classifier with position encoding.
