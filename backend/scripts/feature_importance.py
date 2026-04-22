@@ -7,20 +7,16 @@ from model_manager import load_and_process_data
 POSITIONS = ["GKP", "DEF", "MID", "FWD"]
 DATA_OUTPUT_PATH = os.path.join(os.path.dirname(__file__), "../../data/feature_importance.json")
 
-# The 27-dimensional feature vector names (must match model_manager.py feature engineering)
+# The 18-dimensional feature vector names (must match model_manager.py feature engineering)
 feature_names = [
     # 9 Context
     "ctx_was_home", "ctx_difficulty", "ctx_price", "ctx_hours_rest",
     "ctx_ownership", "ctx_opponent", "ctx_chance_of_playing",
     "ctx_fixture_attack", "ctx_fixture_defense",
 
-    # 9 Rolling-4
-    "r4_min", "r4_pts", "r4_xG", "r4_xA", "r4_inf",
-    "r4_cre", "r4_thr", "r4_gc", "r4_saves",
-
-    # 9 Rolling-10
-    "r10_min", "r10_pts", "r10_xG", "r10_xA", "r10_inf",
-    "r10_cre", "r10_thr", "r10_gc", "r10_saves"
+    # 9 Rolling-6
+    "r6_min", "r6_pts", "r6_xG", "r6_xA", "r6_inf",
+    "r6_cre", "r6_thr", "r6_gc", "r6_saves"
 ]
 
 MIN_RELIABLE_SAMPLES = 300  # Warn below this

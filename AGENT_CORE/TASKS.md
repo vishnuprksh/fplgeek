@@ -1,5 +1,9 @@
 # Task Tracking
-- [x] **Current Focus:** Started backend and frontend servers.
+- [x] **Current Focus:** Transitioning to Rolling-6 feature window.
+- [x] Update `preprocessing_dataset.ts` to use 6-game rolling window.
+- [x] Update `model_manager.py` and `config.py` for 18-feature vector.
+- [x] Retrain models and update predictions.
+- [x] Update frontend UI for R6 data.
 - [x] Investigate why `/data/fpl.sqlite` is returning a 500 error.
 - [x] Verify if `fpl.sqlite` exists in the expected location.
 - [x] Check Vite configuration for static asset serving or proxying.

@@ -16,10 +16,9 @@ from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss  # typ
 # 5: opponent_strength, 6: chance_of_playing,
 # 7: fixture_attack, 8: fixture_defense (normalized [0,1])
 #
-# Aggregated Features (pre-computed in preprocessing_dataset.ts, dual rolling windows):
-# R4  [9]: [min, pts, xG, xA, inf, cre, thr, gc, saves]
-# R10 [9]: [min, pts, xG, xA, inf, cre, thr, gc, saves]
-# Total: 9 ctx + 9 r4 + 9 r10 = 27 features
+# Aggregated Features (pre-computed in preprocessing_dataset.ts, single rolling window):
+# R6 [9]: [min, pts, xG, xA, inf, cre, thr, gc, saves]
+# Total: 9 ctx + 9 r6 = 18 features
 
 def load_and_process_data(position):
     """
@@ -218,19 +217,19 @@ def predict_future():
             prob_gt_6 = float(np.sum(dist[7:])) if len(dist) > 7 else 0.0
             prob_gt_10 = float(np.sum(dist[11:])) if len(dist) > 11 else 0.0
             
-            # Extract r10 features from original X
-            # Feature vector is 27-dim: 9 ctx + 9 (r4) + 9 (r10)
-            # r10 window starts at index: 9 + 9 = 18
+            # Extract r6 features from original X
+            # Feature vector is 18-dim: 9 ctx + 9 (r6)
+            # r6 window starts at index: 9
             original_x = X[fidx]
-            r10_min = float(original_x[18]) if len(original_x) == 27 else 0.0
-            r10_pts = float(original_x[19]) if len(original_x) == 27 else 0.0
-            r10_inf = float(original_x[22]) if len(original_x) >= 27 else 0.0
-            r10_thr = float(original_x[24]) if len(original_x) >= 27 else 0.0
-            r10_xg = float(original_x[20]) if len(original_x) >= 27 else 0.0
+            r6_min = float(original_x[9]) if len(original_x) >= 10 else 0.0
+            r6_pts = float(original_x[10]) if len(original_x) >= 11 else 0.0
+            r6_inf = float(original_x[13]) if len(original_x) >= 14 else 0.0
+            r6_thr = float(original_x[15]) if len(original_x) >= 16 else 0.0
+            r6_xg = float(original_x[11]) if len(original_x) >= 12 else 0.0
 
             # Extract Fixture Features (Indices 7-8 in ctx block)
-            f_atk = float(original_x[7]) if len(original_x) >= 27 else 0.0
-            f_def = float(original_x[8]) if len(original_x) >= 27 else 0.0
+            f_atk = float(original_x[7]) if len(original_x) >= 18 else 0.0
+            f_def = float(original_x[8]) if len(original_x) >= 18 else 0.0
             
             if pid not in all_predictions:
                 all_predictions[pid] = {
@@ -243,22 +242,22 @@ def predict_future():
                     "prob_gt_10": 0.0,
                     "prob_gt_6_next": 0.0,
                     "prob_gt_10_next": 0.0,
-                    "r10_min": r10_min,
-                    "r10_pts": r10_pts,
-                    "r10_inf": r10_inf,
-                    "r10_thr": r10_thr,
-                    "r10_xg": r10_xg,
+                    "r6_min": r6_min,
+                    "r6_pts": r6_pts,
+                    "r6_inf": r6_inf,
+                    "r6_thr": r6_thr,
+                    "r6_xg": r6_xg,
                     "f_atk_next": f_atk,
                     "f_def_next": f_def,
                 }
             
-            # Always update R10 to use the latest (highest GW) sample's values
+            # Always update R6 to use the latest (highest GW) sample's values
             entry_ref = all_predictions[pid]  # type: ignore
-            entry_ref["r10_min"] = r10_min
-            entry_ref["r10_pts"] = r10_pts
-            entry_ref["r10_inf"] = r10_inf
-            entry_ref["r10_thr"] = r10_thr
-            entry_ref["r10_xg"] = r10_xg
+            entry_ref["r6_min"] = r6_min
+            entry_ref["r6_pts"] = r6_pts
+            entry_ref["r6_inf"] = r6_inf
+            entry_ref["r6_thr"] = r6_thr
+            entry_ref["r6_xg"] = r6_xg
             
             entry = all_predictions[pid]  # type: ignore
             entry["projections"].append({

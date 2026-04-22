@@ -145,8 +145,7 @@ interface ProcessedSample {
     // History Sequence (Flat for now, but ordered)
     history_sequence: number[][]; // [ [min, xG, xA...], [min, xG, xA...] ]
     // Pre-computed rolling-window aggregates (consistency-adjusted, penalty-scaled)
-    agg_r4: number[];  // 9 features: [min, pts, xG, xA, inf, cre, thr, gc, saves] over last 4 played games
-    agg_r10: number[]; // 9 features: same over last 10 played games
+    agg_r6: number[];  // 9 features: [min, pts, xG, xA, inf, cre, thr, gc, saves] over last 6 played games
     // ML Ready
     target_class: number; // 0-15 bucketized points
     feature_vector: number[]; // All 27 features normalized/cleaned
@@ -161,7 +160,7 @@ function parseFloatSafe(val: any): number {
 // Rolling window aggregation
 // history_sequence columns: [min, xG, xA, thr, cre, inf, gc, saves, sel, price, home, pts, form]
 const AGG_INDICES = [0, 11, 1, 2, 5, 4, 3, 6, 7]; // [min, pts, xG, xA, inf, cre, thr, gc, saves]
-const AGG_WINDOWS = [4, 10];
+const AGG_WINDOWS = [6];
 
 function computeRollingAgg(historySeq: number[][], window: number): number[] {
     if (historySeq.length === 0) return new Array(AGG_INDICES.length).fill(0);
@@ -201,7 +200,7 @@ function cleanAndVectorize(sample: any): number[] {
         sample.ctx_fixture_attack,
         sample.ctx_fixture_defense
     ];
-    const vec = [...ctx, ...sample.agg_r4, ...sample.agg_r10];
+    const vec = [...ctx, ...sample.agg_r6];
     return vec.map(v => (isNaN(v) || !isFinite(v)) ? 0 : v);
 }
 
@@ -398,8 +397,7 @@ function main() {
                 }
 
                 // Compute pre-aggregated rolling window features
-                const agg_r4 = computeRollingAgg(seqData, AGG_WINDOWS[0]);
-                const agg_r10 = computeRollingAgg(seqData, AGG_WINDOWS[1]);
+                const agg_r6 = computeRollingAgg(seqData, AGG_WINDOWS[0]);
 
                 // Compute fixture-based team strength scores
                 const { attackRaw, defenseRaw } = computeFixtureScores(
@@ -426,8 +424,7 @@ function main() {
                     ctx_fixture_attack: 0,    // filled in second pass
                     ctx_fixture_defense: 0,   // filled in second pass
                     history_sequence: seqData,
-                    agg_r4,
-                    agg_r10,
+                    agg_r6,
                     _attackRaw: attackRaw,
                     _defenseRaw: defenseRaw
                 } as any;
@@ -540,8 +537,7 @@ function main() {
             );
 
             // Compute pre-aggregated rolling window features from the placeholder history
-            const fut_agg_r4 = computeRollingAgg(placeholderSeq, AGG_WINDOWS[0]);
-            const fut_agg_r10 = computeRollingAgg(placeholderSeq, AGG_WINDOWS[1]);
+            const fut_agg_r6 = computeRollingAgg(placeholderSeq, AGG_WINDOWS[0]);
 
             const sample = {
                 name: player.web_name,
@@ -563,8 +559,7 @@ function main() {
                 ctx_fixture_attack: 0,    // filled in second pass
                 ctx_fixture_defense: 0,   // filled in second pass
                 history_sequence: placeholderSeq,
-                agg_r4: fut_agg_r4,
-                agg_r10: fut_agg_r10,
+                agg_r6: fut_agg_r6,
                 _attackRaw: futAttackRaw,
                 _defenseRaw: futDefenseRaw
             } as any;

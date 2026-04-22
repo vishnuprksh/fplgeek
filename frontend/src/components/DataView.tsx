@@ -17,8 +17,7 @@ interface ProcessedSample {
     ctx_chance_of_playing: number;
     ctx_fixture_attack: number;
     ctx_fixture_defense: number;
-    agg_r4: number[]; // pre-computed rolling-window aggregates [min, pts, xG, xA, inf, cre, thr, gc, saves]
-    agg_r10: number[]; // pre-computed rolling-window aggregates [min, pts, xG, xA, inf, cre, thr, gc, saves]
+    agg_r6: number[]; // pre-computed rolling-window aggregates [min, pts, xG, xA, inf, cre, thr, gc, saves]
 }
 
 interface TrainingDataResponse {
@@ -136,8 +135,7 @@ export const DataView: React.FC = () => {
                                     <th colSpan={9} style={{ textAlign: 'center', background: '#2a2a2a' }}>Current Fixture Context</th>
                                     {showAggregates && (
                                         <>
-                                            <th colSpan={9} style={{ textAlign: 'center', background: '#1c2e26' }}>R4 Forms</th>
-                                            <th colSpan={9} style={{ textAlign: 'center', background: '#162a33' }}>R10 Trends</th>
+                                            <th colSpan={9} style={{ textAlign: 'center', background: '#1c2e26' }}>R6 Aggregates (6-Game Window)</th>
                                         </>
                                     )}
                                     <th rowSpan={2}>Status</th>
@@ -154,33 +152,22 @@ export const DataView: React.FC = () => {
                                     <th title="Fixture Defense Strength">Def</th>
                                     {showAggregates && (
                                         <>
-                                            <th title="R4 Pts">Pts</th>
-                                            <th title="R4 xG">xG</th>
-                                            <th title="R4 xA">xA</th>
-                                            <th title="R4 Inf">Inf</th>
-                                            <th title="R4 Cre">Cre</th>
-                                            <th title="R4 Thr">Thr</th>
-                                            <th title="R4 GC">GC</th>
-                                            <th title="R4 Saves">Sav</th>
-                                            <th title="R4 Min">Min</th>
-
-                                            <th title="R10 Pts">Pts</th>
-                                            <th title="R10 xG">xG</th>
-                                            <th title="R10 xA">xA</th>
-                                            <th title="R10 Inf">Inf</th>
-                                            <th title="R10 Cre">Cre</th>
-                                            <th title="R10 Thr">Thr</th>
-                                            <th title="R10 GC">GC</th>
-                                            <th title="R10 Saves">Sav</th>
-                                            <th title="R10 Min">Min</th>
+                                            <th title="R6 Pts">Pts</th>
+                                            <th title="R6 xG">xG</th>
+                                            <th title="R6 xA">xA</th>
+                                            <th title="R6 Inf">Inf</th>
+                                            <th title="R6 Cre">Cre</th>
+                                            <th title="R6 Thr">Thr</th>
+                                            <th title="R6 GC">GC</th>
+                                            <th title="R6 Saves">Sav</th>
+                                            <th title="R6 Min">Min</th>
                                         </>
                                     )}
                                 </tr>
                             </thead>
                             <tbody>
                                 {data.map((sample, idx) => {
-                                    const r4 = showAggregates && sample.agg_r4 ? sample.agg_r4 : Array(9).fill(0);
-                                    const r10 = showAggregates && sample.agg_r10 ? sample.agg_r10 : Array(9).fill(0);
+                                    const r6 = showAggregates && sample.agg_r6 ? sample.agg_r6 : Array(9).fill(0);
 
                                     return (
                                         <tr key={`${sample.id}-${sample.gw}-${idx}`}>
@@ -199,27 +186,16 @@ export const DataView: React.FC = () => {
                                             <td>{sample.ctx_fixture_defense.toFixed(2)}</td>
                                             {showAggregates && (
                                                 <>
-                                                    {/* R4 */}
-                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r4[1]?.toFixed(1)}</td>
-                                                    <td>{r4[2]?.toFixed(2)}</td>
-                                                    <td>{r4[3]?.toFixed(2)}</td>
-                                                    <td>{r4[4]?.toFixed(1)}</td>
-                                                    <td>{r4[5]?.toFixed(1)}</td>
-                                                    <td>{r4[6]?.toFixed(1)}</td>
-                                                    <td>{r4[7]?.toFixed(1)}</td>
-                                                    <td>{r4[8]?.toFixed(1)}</td>
-                                                    <td style={{ color: '#888' }}>{Math.round(r4[0] || 0)}</td>
-
-                                                    {/* R10 */}
-                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r10[1]?.toFixed(1)}</td>
-                                                    <td>{r10[2]?.toFixed(2)}</td>
-                                                    <td>{r10[3]?.toFixed(2)}</td>
-                                                    <td>{r10[4]?.toFixed(1)}</td>
-                                                    <td>{r10[5]?.toFixed(1)}</td>
-                                                    <td>{r10[6]?.toFixed(1)}</td>
-                                                    <td>{r10[7]?.toFixed(1)}</td>
-                                                    <td>{r10[8]?.toFixed(1)}</td>
-                                                    <td style={{ color: '#888' }}>{Math.round(r10[0] || 0)}</td>
+                                                    {/* R6 */}
+                                                    <td style={{ borderLeft: '1px solid rgba(255,255,255,0.1)' }}>{r6[1]?.toFixed(1)}</td>
+                                                    <td>{r6[2]?.toFixed(2)}</td>
+                                                    <td>{r6[3]?.toFixed(2)}</td>
+                                                    <td>{r6[4]?.toFixed(1)}</td>
+                                                    <td>{r6[5]?.toFixed(1)}</td>
+                                                    <td>{r6[6]?.toFixed(1)}</td>
+                                                    <td>{r6[7]?.toFixed(1)}</td>
+                                                    <td>{r6[8]?.toFixed(1)}</td>
+                                                    <td style={{ color: '#888' }}>{Math.round(r6[0] || 0)}</td>
                                                 </>
                                             )}
                                             <td>

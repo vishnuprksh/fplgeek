@@ -13,11 +13,11 @@ export interface PredictionMap {
         prob_gt_10?: number;
         prob_gt_6_next?: number;
         prob_gt_10_next?: number;
-        r10_min?: number;
-        r10_pts?: number;
-        r10_inf?: number;
-        r10_thr?: number;
-        r10_xg?: number;
+        r6_min?: number;
+        r6_pts?: number;
+        r6_inf?: number;
+        r6_thr?: number;
+        r6_xg?: number;
         f_atk_next?: number;
         f_def_next?: number;
     };
@@ -66,11 +66,11 @@ export const useFPLData = () => {
                             prob_gt_10: sp.prob_gt_10,
                             prob_gt_6_next: sp.prob_gt_6_next,
                             prob_gt_10_next: sp.prob_gt_10_next,
-                            r10_min: sp.r10_min,
-                            r10_pts: sp.r10_pts,
-                            r10_inf: sp.r10_inf,
-                            r10_thr: sp.r10_thr,
-                            r10_xg: sp.r10_xg,
+                            r6_min: sp.r6_min,
+                            r6_pts: sp.r6_pts,
+                            r6_inf: sp.r6_inf,
+                            r6_thr: sp.r6_thr,
+                            r6_xg: sp.r6_xg,
                             f_atk_next: sp.f_atk_next,
                             f_def_next: sp.f_def_next
                         };

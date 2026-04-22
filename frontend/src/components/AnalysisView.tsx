@@ -103,7 +103,7 @@ export const AnalysisView: React.FC = () => {
                     if a player will "haul" (score more than 6 points) in a given gameweek.
                 </p>
                 <ul>
-                    <li><strong>r4 / r10:</strong> Rolling performance over the last 4 or 10 gameweeks.</li>
+                    <li><strong>r6:</strong> Rolling performance over the last 6 gameweeks.</li>
                     <li><strong>ctx:</strong> Contextual data like fixture difficulty, price, and home/away status.</li>
                     <li><strong>thr / cre / inf:</strong> Threat, Creativity, and Influence (ICT Index metrics).</li>
                 </ul>
@@ -115,8 +115,7 @@ export const AnalysisView: React.FC = () => {
 function formatFeatureName(name: string): string {
     return name
         .replace('ctx_', '')
-        .replace('r4_', '4wk ')
-        .replace('r10_', '10wk ')
+        .replace('r6_', '6wk ')
         .replace('inf', 'Influence')
         .replace('thr', 'Threat')
         .replace('cre', 'Creativity')

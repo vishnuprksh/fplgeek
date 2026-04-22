@@ -13,7 +13,7 @@ interface PlayerAnalysisProps {
     t100Ownership?: Record<number, number>;
 }
 
-type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r10_min' | 'r10_pts' | 'r10_inf' | 'r10_thr' | 'r10_xg' | 'r10_creativity' | 't100_ownership' | 'f_atk_next' | 'f_def_next';
+type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r6_min' | 'r6_pts' | 'r6_inf' | 'r6_thr' | 'r6_xg' | 'r6_creativity' | 't100_ownership' | 'f_atk_next' | 'f_def_next';
 type SortDirection = 'asc' | 'desc';
 
 export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: PlayerAnalysisProps) {
@@ -33,12 +33,12 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                 ...p,
                 prob_gt_6: (pred as any)?.prob_gt_6 || 0,
                 prob_gt_6_next: (pred as any)?.prob_gt_6_next || 0,
-                r10_min: (pred as any)?.r10_min || 0,
-                r10_pts: (pred as any)?.r10_pts || 0,
-                r10_inf: (pred as any)?.r10_inf || 0,
-                r10_thr: (pred as any)?.r10_thr || 0,
-                r10_creativity: (((pred as any)?.r10_inf || 0) + ((pred as any)?.r10_thr || 0)) / 2,
-                r10_xg: (pred as any)?.r10_xg || 0,
+                r6_min: (pred as any)?.r6_min || 0,
+                r6_pts: (pred as any)?.r6_pts || 0,
+                r6_inf: (pred as any)?.r6_inf || 0,
+                r6_thr: (pred as any)?.r6_thr || 0,
+                r6_creativity: (((pred as any)?.r6_inf || 0) + ((pred as any)?.r6_thr || 0)) / 2,
+                r6_xg: (pred as any)?.r6_xg || 0,
                 f_atk_next: (pred as any)?.f_atk_next || 0,
                 f_def_next: (pred as any)?.f_def_next || 0,
                 projections: (pred as any)?.projections || [],
@@ -157,13 +157,13 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                                 <th onClick={() => handleSort('prob_gt_6_next')} className="sortable">GW + 1 {sortField === 'prob_gt_6_next' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th>GW + 2</th>
                                 <th>GW + 3</th>
-                                <th onClick={() => handleSort('r10_creativity')} className="sortable">L10 Creative {sortField === 'r10_creativity' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_creativity')} className="sortable">L6 Creative {sortField === 'r6_creativity' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul (3GW Avg) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r10_pts')} className="sortable">L10 Pts {sortField === 'r10_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r10_xg')} className="sortable">L10 xG {sortField === 'r10_xg' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r10_inf')} className="sortable">L10 Inf {sortField === 'r10_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r10_thr')} className="sortable">L10 Thr {sortField === 'r10_thr' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r10_min')} className="sortable">L10 Min {sortField === 'r10_min' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_pts')} className="sortable">L6 Pts {sortField === 'r6_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_xg')} className="sortable">L6 xG {sortField === 'r6_xg' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_inf')} className="sortable">L6 Inf {sortField === 'r6_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_thr')} className="sortable">L6 Thr {sortField === 'r6_thr' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_min')} className="sortable">L6 Min {sortField === 'r6_min' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('total_points')} className="sortable">Points {sortField === 'total_points' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('form')} className="sortable">Form {sortField === 'form' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -191,16 +191,16 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
                                         <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(((player as any).projections?.[2]?.prob_gt_6 || 0) * 0.6, 0.3)})` }}></div>
                                         {(((player as any).projections?.[2]?.prob_gt_6 || 0) * 100).toFixed(0)}%
                                     </td>
-                                    <td>{((player as any).r10_creativity || 0).toFixed(1)}</td>
+                                    <td>{((player as any).r6_creativity || 0).toFixed(1)}</td>
                                     <td className="color-cell" style={{ fontWeight: 800 }}>
                                         <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(player.prob_gt_6 * 1.5, 0.8)})` }}></div>
                                         {((player as any).prob_gt_6 * 100).toFixed(0)}%
                                     </td>
-                                    <td>{((player as any).r10_pts || 0).toFixed(1)}</td>
-                                    <td>{((player as any).r10_xg || 0).toFixed(2)}</td>
-                                    <td>{((player as any).r10_inf || 0).toFixed(1)}</td>
-                                    <td>{((player as any).r10_thr || 0).toFixed(1)}</td>
-                                    <td>{((player as any).r10_min || 0).toFixed(0)}</td>
+                                    <td>{((player as any).r6_pts || 0).toFixed(1)}</td>
+                                    <td>{((player as any).r6_xg || 0).toFixed(2)}</td>
+                                    <td>{((player as any).r6_inf || 0).toFixed(1)}</td>
+                                    <td>{((player as any).r6_thr || 0).toFixed(1)}</td>
+                                    <td>{((player as any).r6_min || 0).toFixed(0)}</td>
                                     <td>£{(player.now_cost / 10).toFixed(1)}m</td>
                                     <td className="font-bold">{player.total_points}</td>
                                     <td>{player.form}</td>

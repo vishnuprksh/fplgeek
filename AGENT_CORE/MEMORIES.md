@@ -1,4 +1,9 @@
 # Strategic Memories
+### 2026-04-22 - Reduced Input Features to Rolling-6
+- **Context:** User requested simplifying the model by replacing the 4/10-game dual window with a single 6-game window.
+- **Decision:** Decreased feature complexity to 18 total features per sample (9 context + 9 rolling).
+- **Reasoning:** Streamlining input features can sometimes improve generalization and simplifies the UI for the user. Rolling 6 is a common metric in FPL (short-medium term form).
+
 ### 2026-04-22 - Debugging Database Fetch Error
 - **Context:** The frontend is reporting a 500 Internal Server Error when trying to fetch `/data/fpl.sqlite` via `sqliteService.ts`.
 - **Decision:** Initializing investigation into the static file serving and Vite configuration.
