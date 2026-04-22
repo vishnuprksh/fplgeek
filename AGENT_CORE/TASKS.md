@@ -1,4 +1,9 @@
 # Task Tracking
+- [x] **Add Flexible Haul Week Selector to Team Optimization (2026-04-23 01:15)** — Allow users to select 1, 2, or 3 weeks for haul prediction
+  - [x] Added haulingWeeks state to useOptimization hook
+  - [x] Created haul calculation logic to average prob_gt_6 across selected weeks
+  - [x] Added UI controls (dropdown) to select weeks in optimization panel
+  - [x] Updated haul summary pill to reflect selected weeks
 - [x] **Synced Fixture Page to Predictions (2026-04-22 23:52)** — Updated fixture page to show GW 34, 35, 36
   - Changed default lookahead from 5 weeks to 3 weeks in FixtureAnalysis component
   - Now displays same gameweeks as predictions (34, 35, 36)

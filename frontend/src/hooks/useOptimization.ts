@@ -5,6 +5,23 @@ import type { PredictionResult } from '../utils/predictions';
 import type { OptimizationResult } from '../utils/solver';
 import type { PredictionMap, T100OwnershipMap } from './useFPLData';
 
+// Helper: Calculate average haul probability from projections based on weeks
+const calculateHaulFromProjections = (
+    predictionsData: any,
+    weeks: number
+): number => {
+    if (!predictionsData?.projections || predictionsData.projections.length === 0) {
+        return predictionsData?.prob_gt_6 || 0;
+    }
+    
+    const weeksToConsider = Math.min(weeks, predictionsData.projections.length);
+    let sum = 0;
+    for (let i = 0; i < weeksToConsider; i++) {
+        sum += predictionsData.projections[i].prob_gt_6 || 0;
+    }
+    return weeksToConsider > 0 ? sum / weeksToConsider : 0;
+};
+
 export const useOptimization = (
     activePicks: Pick[],
     staticData: { elements: UnifiedPlayer[] } | null,
@@ -17,6 +34,7 @@ export const useOptimization = (
     const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [transferAllowance, setTransferAllowance] = useState(1); // 0–15
+    const [haulingWeeks, setHaulingWeeks] = useState(3); // 1, 2, or 3 weeks
 
     const toggleOptimizationMode = () => {
         if (isOptimizing) {
@@ -56,25 +74,30 @@ export const useOptimization = (
                 const player = staticData.elements.find(e => e.id === p.element);
                 const pred = predictionsMap[p.element];
                 if (!player) return null;
+                const haul = calculateHaulFromProjections(pred, haulingWeeks);
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
-                    predictedPoints: pred?.prob_gt_6 || 0,
-                    totalForecast: pred?.prob_gt_6 || 0,
+                    predictedPoints: haul,
+                    totalForecast: haul,
                     smartValue: 0,
                     next5Points: []
                 } as PredictionResult;
             }).filter(Boolean) as PredictionResult[];
 
             // Build candidates (all players with a prediction)
-            const allCandidates: PredictionResult[] = staticData.elements.map(e => ({
-                player: e,
-                cost: e.now_cost,
-                predictedPoints: predictionsMap[e.id]?.prob_gt_6 || 0,
-                totalForecast: predictionsMap[e.id]?.prob_gt_6 || 0,
-                smartValue: 0,
-                next5Points: []
-            })).filter(p => p.totalForecast > 0);
+            const allCandidates: PredictionResult[] = staticData.elements.map(e => {
+                const pred = predictionsMap[e.id];
+                const haul = calculateHaulFromProjections(pred, haulingWeeks);
+                return {
+                    player: e,
+                    cost: e.now_cost,
+                    predictedPoints: haul,
+                    totalForecast: haul,
+                    smartValue: 0,
+                    next5Points: []
+                };
+            }).filter(p => p.totalForecast > 0);
 
             // If user manually picked players to sell → use targeted replacement
             if (selectedToSell.size > 0) {
@@ -136,6 +159,12 @@ export const useOptimization = (
         }, 100);
     };
 
+    // When user changes weeks, clear optimization result
+    const handleSetHaulingWeeks = (n: number) => {
+        setHaulingWeeks(n);
+        setOptimizationResult(null);
+    };
+
     // Compute T100 ownership warnings
     const computeT100Warnings = (players: Player[]): string[] => {
         const warnings: string[] = [];
@@ -168,6 +197,8 @@ export const useOptimization = (
         selectedToSell,
         transferAllowance,
         setTransferAllowance: handleSetAllowance,
+        haulingWeeks,
+        setHaulingWeeks: handleSetHaulingWeeks,
         toggleOptimizationMode,
         handleToggleSell,
         runOptimization,

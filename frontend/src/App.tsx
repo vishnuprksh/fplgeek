@@ -71,6 +71,8 @@ export default function App() {
     selectedToSell,
     transferAllowance,
     setTransferAllowance,
+    haulingWeeks,
+    setHaulingWeeks,
     toggleOptimizationMode,
     handleToggleSell,
     runOptimization,
@@ -99,6 +101,19 @@ export default function App() {
     value: i,
     label: String(i)
   }));
+
+  // Helper: Calculate haul from projections based on weeks
+  const calculateHaulFromProjections = (predictionsData: any, weeks: number): number => {
+    if (!predictionsData?.projections || predictionsData.projections.length === 0) {
+      return predictionsData?.prob_gt_6 || 0;
+    }
+    const weeksToConsider = Math.min(weeks, predictionsData.projections.length);
+    let sum = 0;
+    for (let i = 0; i < weeksToConsider; i++) {
+      sum += predictionsData.projections[i].prob_gt_6 || 0;
+    }
+    return weeksToConsider > 0 ? sum / weeksToConsider : 0;
+  };
 
   const onTransferWrapper = (playerOut: Player, playerIn: Player) => {
     handleTransfer(playerOut, playerIn);
@@ -223,14 +238,14 @@ export default function App() {
                             <div className="haul-summary-pill">
                               <span className="haul-item">
                                 <span className="haul-icon">📈</span>
-                                <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
+                                <b>XI Haul:</b> {((activePicks.filter(p => p.position <= 11).reduce((acc, p) => acc + (calculateHaulFromProjections(predictionsMap[p.element], haulingWeeks) || 0), 0)) * 100).toFixed(0)}%
                               </span>
                               <span className="haul-divider"></span>
                               <span className="haul-item bench">
                                 <span className="haul-icon">🪑</span>
-                                <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (predictionsMap[p.element]?.prob_gt_6 || 0), 0)) * 100).toFixed(0)}%
+                                <b>Bench:</b> {((activePicks.filter(p => p.position > 11).reduce((acc, p) => acc + (calculateHaulFromProjections(predictionsMap[p.element], haulingWeeks) || 0), 0)) * 100).toFixed(0)}%
                               </span>
-                              <span className="haul-meta">(avg / GW)</span>
+                              <span className="haul-meta">({haulingWeeks}w avg)</span>
                             </div>
                           )}
                         </div>
@@ -247,6 +262,25 @@ export default function App() {
                                   onClick={() => { setTransferAllowance(opt.value); }}
                                 >
                                   {opt.label}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Row 3: Haul Weeks Selector (only in optimize mode) */}
+                        {isOptimizing && (
+                          <div className="transfer-allowance-selector">
+                            <span className="allowance-label">Haul Window:</span>
+                            <div className="allowance-pills">
+                              {[1, 2, 3].map(weeks => (
+                                <button
+                                  key={weeks}
+                                  className={`allowance-pill${haulingWeeks === weeks ? ' active' : ''}`}
+                                  onClick={() => { setHaulingWeeks(weeks); }}
+                                  title={`${weeks} week${weeks > 1 ? 's' : ''} ahead`}
+                                >
+                                  {weeks}w
                                 </button>
                               ))}
                             </div>
