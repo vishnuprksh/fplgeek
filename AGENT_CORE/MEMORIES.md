@@ -1,4 +1,17 @@
 # Strategic Memories
+### 2026-04-22 - Unified Model Migration: 4 Position-Specific → 1 Universal
+- **Context:** User requested switch from position-specific models to single unified model using position as input feature.
+- **Decision:** Complete architecture change to single Random Forest classifier with position encoding.
+- **Changes:**
+  - **Config:** Added NUM_POS_FEATURES=1, updated INPUT_DIM: 18→19
+  - **Features:** Position encoded as numeric (0=GKP, 1=DEF, 2=MID, 3=FWD) appended to 18D vector
+  - **Training:** Unified model trained on 55,486 samples from all positions
+  - **Models:** Deleted 4 position-specific models, replaced with model_unified.joblib (6.7MB)
+  - **Performance:** Test Acc 0.6122, MAE 1.0956 (comparable to position-specific models)
+- **Reasoning:** Unified approach allows model to learn position-aware patterns directly. Simplifies deployment, reduces model size (one scaler vs. four), enables position as learned feature.
+- **Impact:** 820 predictions generated; frontend receives position in prediction JSON; UI position filter still works for data display filtering.
+- **Files:** preprocessing_dataset.ts (+position encoding), config.py, model_manager_unified.py (new), feature_importance_unified.py (new)
+
 ### 2026-04-22 - Repository Cleanup (Throwaway & Obsolete Files)
 - **Context:** User requested removal of all throwaway and obsolete files from the repository.
 - **Decision:** Executed targeted cleanup removing 10 files/directories totaling ~142MB:

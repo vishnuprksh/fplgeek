@@ -31,8 +31,12 @@ NUM_CTX_FEATURES = 11
 # Total Aggregated: 9
 NUM_AGG_FEATURES = 9
 
-# Total Input: 9 context + 9 agg = 18
-INPUT_DIM = 18
+# Position Feature:
+# Single feature encoding: 0=GKP, 1=DEF, 2=MID, 3=FWD
+NUM_POS_FEATURES = 1
+
+# Total Input: 9 context + 9 agg + 1 position = 19
+INPUT_DIM = 19
 
 # Constants
 STARTING_BUDGET = 1000

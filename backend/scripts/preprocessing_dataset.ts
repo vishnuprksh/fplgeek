@@ -188,7 +188,12 @@ function classifyTarget(points: number): number {
     return Math.max(0, Math.min(Math.floor(points), 15));
 }
 
-function cleanAndVectorize(sample: any): number[] {
+function encodePosition(position: string): number {
+    const posMap: Record<string, number> = { 'GKP': 0, 'DEF': 1, 'MID': 2, 'FWD': 3 };
+    return posMap[position] ?? 0;
+}
+
+function cleanAndVectorize(sample: any, position: string): number[] {
     const ctx = [
         sample.ctx_was_home,
         sample.ctx_difficulty,
@@ -200,7 +205,8 @@ function cleanAndVectorize(sample: any): number[] {
         sample.ctx_fixture_attack,
         sample.ctx_fixture_defense
     ];
-    const vec = [...ctx, ...sample.agg_r6];
+    const posEncoding = encodePosition(position);
+    const vec = [...ctx, ...sample.agg_r6, posEncoding];
     return vec.map(v => (isNaN(v) || !isFinite(v)) ? 0 : v);
 }
 
@@ -609,7 +615,7 @@ function main() {
                 ctx_fixture_defense: parseFloat(defScaled.toFixed(4))
             } as ProcessedSample;
             // Now vectorize
-            updated.feature_vector = cleanAndVectorize(updated);
+            updated.feature_vector = cleanAndVectorize(updated, pos);
             return updated;
         });
 
