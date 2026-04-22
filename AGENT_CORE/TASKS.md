@@ -1,4 +1,22 @@
 # Task Tracking
+- [x] **Synced Fixture Page to Predictions (2026-04-22 23:52)** — Updated fixture page to show GW 34, 35, 36
+  - Changed default lookahead from 5 weeks to 3 weeks in FixtureAnalysis component
+  - Now displays same gameweeks as predictions (34, 35, 36)
+  - Attack and defense tickers show focused 3-week window
+  - Users can expand to 5 or 8 weeks if needed via dropdown
+- [x] **Fixed GW Values in Predictions (2026-04-22 23:50)** — Added GW information to metadata
+  - Updated preprocessing_dataset.ts to include gw and target in metadata JSON
+  - Regenerated preprocessed data with GW information
+  - Retrained unified model and regenerated predictions
+  - Verified predictions now show correct GWs (34, 35, 36)
+  - Synced updated predictions to frontend
+- [x] **Fixture Page Update (2026-04-22 23:45)** — Updated fixture database with latest FPL API data
+  - Fetched 380 fixtures from FPL API
+  - Updated SQLite fixtures table
+  - Exported to fixtures.json (2.2 MB)
+  - Synced to frontend public/data
+  - 49 upcoming fixtures ready for fixture analysis
+  - Difficulty ratings and team schedules updated
 - [x] **GW 33 Data Update (2026-04-22 23:45)** — Collected latest FPL data up to GW 33
   - Fetched 829 players with GW 33 history
   - Regenerated datasets: 85,995 samples (+35%)

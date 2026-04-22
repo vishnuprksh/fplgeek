@@ -10,7 +10,7 @@ interface FixtureAnalysisProps {
 }
 
 export function FixtureAnalysis({ fixtures, teams, currentEvent }: FixtureAnalysisProps) {
-    const [weeks, setWeeks] = useState(5);
+    const [weeks, setWeeks] = useState(3);
     const table = calculateTable(fixtures, teams);
 
     // Calculate both tables

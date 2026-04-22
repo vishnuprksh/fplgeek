@@ -1,4 +1,33 @@
 # Strategic Memories
+### 2026-04-22 - Synced Fixture Page to Predictions (3-Week Window)
+- **Context:** User requested fixture page to show GW 34, 35, 36 in sync with predictions.
+- **Solution:** Changed FixtureAnalysis default lookahead from 5 weeks to 3 weeks.
+- **Impact:** Fixture page now displays focused 3-week window matching prediction scope (GW 34-36).
+- **File:** frontend/src/components/FixtureAnalysis.tsx (default weeks state: 5→3)
+- **UX:** Users can still expand via dropdown to 5 or 8 weeks for longer-term planning.
+- **Benefit:** Fixture ticker and predictions now show same gameweeks, improving decision-making coherence.
+
+### 2026-04-22 - Fixed Missing GW Values in AI Predictions
+- **Context:** User asked which GWs are predicted. Investigation revealed all GW values showing as 0.
+- **Root Cause:** Metadata stored in preprocessed_data table was missing `gw` field even though gw was stored as separate DB column.
+- **Solution:** Updated preprocessing_dataset.ts metadata JSON to include `gw`, `season`, and `target` fields.
+- **Verification:** After reprocessing and retraining, predictions now correctly show GW 34, 35, 36 (3 weeks ahead from GW 33).
+- **Predictions:** 820 players with 3-week forecasts across GWs 34-36, plus 5 test samples in GWs 30-32.
+- **Files Modified:** backend/scripts/preprocessing_dataset.ts (metadata creation)
+- **Lesson Learned:** Database column data doesn't automatically propagate to JSON metadata; must explicitly include all needed fields in metadata JSON serialization.
+
+### 2026-04-22 - Fixture Database Update and Frontend Sync
+- **Context:** User requested updating the fixture page alongside GW 33 data update.
+- **Action:** Created update_fixtures.py (API fetch) and export_fixtures.py (JSON export).
+- **Process:**
+  1. Fetched 380 fixtures from FPL API endpoints
+  2. Stored in SQLite fixtures table
+  3. Exported to JSON for frontend consumption
+  4. Copied to frontend/public/data/fixtures.json
+- **Data:** 330 finished, 49 upcoming across 38 gameweeks
+- **Impact:** FixtureAnalysis component now displays current fixture data with difficulty ratings, team schedules, and upcoming fixtures.
+- **Files:** update_fixtures.py (new), export_fixtures.py (new), fixtures.json (2.2MB)
+
 ### 2026-04-22 - GW 33 Data Update and Model Improvement
 - **Context:** User requested data collection up to GW 32. Found data was only at GW 29, fetched all the way to GW 33.
 - **Action:** Created update_current_gw.py to fetch from FPL API element-summary endpoints.
