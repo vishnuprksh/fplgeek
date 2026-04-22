@@ -6,38 +6,38 @@
         "features": [
             {
                 "rank": 1,
-                "feature": "r4_inf",
-                "importance": 0.15030774853757842,
-                "haul_mean": 18.864011764526367,
-                "non_haul_mean": 6.1313066482543945
+                "feature": "r6_saves",
+                "importance": 0.17566168335797244,
+                "haul_mean": 2.155677556991577,
+                "non_haul_mean": 0.7272052764892578
             },
             {
                 "rank": 2,
-                "feature": "r4_min",
-                "importance": 0.13183433402042938,
-                "haul_mean": 75.26786041259766,
-                "non_haul_mean": 23.674423217773438
+                "feature": "r6_inf",
+                "importance": 0.1577076162511481,
+                "haul_mean": 17.705371856689453,
+                "non_haul_mean": 5.9565019607543945
             },
             {
                 "rank": 3,
-                "feature": "r4_saves",
-                "importance": 0.11715773586378912,
-                "haul_mean": 2.289377212524414,
-                "non_haul_mean": 0.7507625818252563
+                "feature": "r6_min",
+                "importance": 0.14273582097526152,
+                "haul_mean": 73.27014923095703,
+                "non_haul_mean": 23.442853927612305
             },
             {
                 "rank": 4,
-                "feature": "r4_pts",
-                "importance": 0.08234299378717673,
-                "haul_mean": 2.6021063327789307,
-                "non_haul_mean": 0.8053998351097107
+                "feature": "r6_pts",
+                "importance": 0.1346873797902395,
+                "haul_mean": 2.402625322341919,
+                "non_haul_mean": 0.7676284313201904
             },
             {
                 "rank": 5,
-                "feature": "r4_gc",
-                "importance": 0.06790352014612329,
-                "haul_mean": 1.1172161102294922,
-                "non_haul_mean": 0.3557296097278595
+                "feature": "r6_gc",
+                "importance": 0.10122278774009313,
+                "haul_mean": 1.049145221710205,
+                "non_haul_mean": 0.3409590721130371
             }
         ]
     },
@@ -48,38 +48,38 @@
         "features": [
             {
                 "rank": 1,
-                "feature": "r4_min",
-                "importance": 0.14266473870059174,
-                "haul_mean": 67.97852325439453,
-                "non_haul_mean": 32.04973602294922
+                "feature": "r6_min",
+                "importance": 0.14487382783846198,
+                "haul_mean": 65.23473358154297,
+                "non_haul_mean": 31.665813446044922
             },
             {
                 "rank": 2,
-                "feature": "r4_inf",
-                "importance": 0.12308990907664603,
-                "haul_mean": 15.19011402130127,
-                "non_haul_mean": 6.799404621124268
+                "feature": "r6_inf",
+                "importance": 0.1361040705548,
+                "haul_mean": 14.285869598388672,
+                "non_haul_mean": 6.55872917175293
             },
             {
                 "rank": 3,
-                "feature": "r4_cre",
-                "importance": 0.08406764911546658,
-                "haul_mean": 6.7686333656311035,
-                "non_haul_mean": 2.911715269088745
+                "feature": "r6_pts",
+                "importance": 0.11161983014009094,
+                "haul_mean": 2.178485155105591,
+                "non_haul_mean": 1.0034855604171753
             },
             {
                 "rank": 4,
                 "feature": "ctx_ownership",
-                "importance": 0.0704191186473089,
+                "importance": 0.09763953981683739,
                 "haul_mean": 6.069875717163086,
-                "non_haul_mean": 2.2709944248199463
+                "non_haul_mean": 2.270994186401367
             },
             {
                 "rank": 5,
-                "feature": "r4_pts",
-                "importance": 0.06387372416972555,
-                "haul_mean": 2.3985507488250732,
-                "non_haul_mean": 1.0661598443984985
+                "feature": "r6_cre",
+                "importance": 0.09073132980851042,
+                "haul_mean": 6.085904121398926,
+                "non_haul_mean": 2.7258925437927246
             }
         ]
     },
@@ -90,38 +90,38 @@
         "features": [
             {
                 "rank": 1,
-                "feature": "r4_min",
-                "importance": 0.11513692062079317,
-                "haul_mean": 64.71039581298828,
-                "non_haul_mean": 26.97169303894043
+                "feature": "r6_thr",
+                "importance": 0.13441557156397785,
+                "haul_mean": 13.439288139343262,
+                "non_haul_mean": 4.185144424438477
             },
             {
                 "rank": 2,
-                "feature": "r4_thr",
-                "importance": 0.10753349018979302,
-                "haul_mean": 14.210223197937012,
-                "non_haul_mean": 4.427486419677734
+                "feature": "r6_min",
+                "importance": 0.12631490722190641,
+                "haul_mean": 62.85914993286133,
+                "non_haul_mean": 26.668529510498047
             },
             {
                 "rank": 3,
-                "feature": "r4_xA",
-                "importance": 0.09234754939389359,
-                "haul_mean": 0.10369853675365448,
-                "non_haul_mean": 0.033087413758039474
+                "feature": "r6_xA",
+                "importance": 0.11703352081545716,
+                "haul_mean": 0.09486856311559677,
+                "non_haul_mean": 0.030886996537446976
             },
             {
                 "rank": 4,
-                "feature": "r10_thr",
-                "importance": 0.08120924553464365,
-                "haul_mean": 12.646056175231934,
-                "non_haul_mean": 3.9373669624328613
+                "feature": "r6_cre",
+                "importance": 0.11310911749154805,
+                "haul_mean": 15.827536582946777,
+                "non_haul_mean": 5.521648406982422
             },
             {
                 "rank": 5,
-                "feature": "r4_cre",
-                "importance": 0.07251369105565549,
-                "haul_mean": 16.92436408996582,
-                "non_haul_mean": 5.780129909515381
+                "feature": "r6_xG",
+                "importance": 0.0976790700873032,
+                "haul_mean": 0.12942951917648315,
+                "non_haul_mean": 0.03761887550354004
             }
         ]
     },
@@ -132,38 +132,38 @@
         "features": [
             {
                 "rank": 1,
-                "feature": "r4_min",
-                "importance": 0.10156220664052487,
-                "haul_mean": 61.88960266113281,
-                "non_haul_mean": 25.302032470703125
+                "feature": "r6_min",
+                "importance": 0.14191074722848984,
+                "haul_mean": 59.79851531982422,
+                "non_haul_mean": 24.957387924194336
             },
             {
                 "rank": 2,
-                "feature": "r10_thr",
-                "importance": 0.08839329948536327,
-                "haul_mean": 19.876434326171875,
-                "non_haul_mean": 7.610712051391602
+                "feature": "r6_pts",
+                "importance": 0.13637990174388373,
+                "haul_mean": 3.2749173641204834,
+                "non_haul_mean": 1.237374186515808
             },
             {
                 "rank": 3,
-                "feature": "r4_thr",
-                "importance": 0.07825782311847461,
-                "haul_mean": 22.30198097229004,
-                "non_haul_mean": 8.488114356994629
+                "feature": "r6_thr",
+                "importance": 0.10057504692711632,
+                "haul_mean": 21.045215606689453,
+                "non_haul_mean": 8.111001014709473
             },
             {
                 "rank": 4,
-                "feature": "r10_inf",
-                "importance": 0.07167304034042371,
-                "haul_mean": 12.743980407714844,
-                "non_haul_mean": 4.41428279876709
+                "feature": "r6_inf",
+                "importance": 0.09966435114053902,
+                "haul_mean": 14.089505195617676,
+                "non_haul_mean": 4.841243743896484
             },
             {
                 "rank": 5,
-                "feature": "r4_pts",
-                "importance": 0.06827430749118768,
-                "haul_mean": 3.5507426261901855,
-                "non_haul_mean": 1.3038567304611206
+                "feature": "r6_xG",
+                "importance": 0.0866962489534247,
+                "haul_mean": 0.2757260799407959,
+                "non_haul_mean": 0.09820691496133804
             }
         ]
     }
