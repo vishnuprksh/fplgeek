@@ -93,28 +93,6 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
 
     return (
         <div className="player-analysis fade-in">
-            {/* Summary Section */}
-            <div style={{ marginBottom: 'var(--space-8)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: 'var(--space-4)' }}>
-                    <span style={{ fontSize: '1.5rem' }}>🔥</span>
-                    <h2 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 800 }}>Top Haul Candidates</h2>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 'var(--space-4)' }}>
-                    {topHaulPlayers.map(p => (
-                        <div key={p.id} className="summary-card" onClick={() => setSelectedPlayer(p)} style={{ cursor: 'pointer' }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                                <div className="summary-card-name">{p.web_name}</div>
-                                <div className="summary-card-meta">{getTeamName(p.team)}</div>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-                                <div style={{ fontSize: '10px', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>3GW Haul Probability</div>
-                                <div className="summary-card-value">{(p.prob_gt_6 * 100).toFixed(0)}%</div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
             <div className="dashboard-panel">
                 <div className="analysis-header" style={{ padding: 'var(--space-5)', borderBottom: '1px solid var(--border-subtle)', background: 'rgba(0,0,0,0.15)', display: 'flex', flexDirection: 'column', gap: 'var(--space-4)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
