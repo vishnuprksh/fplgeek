@@ -453,9 +453,8 @@ export function optimizeWithAllowance(
             const xiPlayerIds = new Set(phase1Lineup.starting11.map(p => p.player.id));
             const benchPlayers = phase1Squad.filter(p => !xiPlayerIds.has(p.player.id));
             
-            // Calculate remaining budget after Phase 1
-            const phase1Cost = phase1Squad.reduce((s, p) => s + p.cost, 0);
-            const remainingBudget = (5000 - phase1Cost) + bank; // 5000 is squad budget limit
+            // Calculate remaining budget after Phase 1 (not currently used)
+            // phase1Squad.reduce((s, p) => s + p.cost, 0) + bank;
             
             // Try to upgrade bench with remaining transfers
             let phase2Squad = [...phase1Squad];

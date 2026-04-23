@@ -1,4 +1,18 @@
 # Strategic Memories
+
+### 2026-04-23 - Single GW Optimization Fix: 4-Layer Architecture Implemented
+- **Context:** Single GW (1w) optimization shows 0% haul gain, multi-GW (2-3w) works. Root cause: blind array indexing doesn't account for gameweek context.
+- **Root Cause:** `calculateHaulFromProjections(pred, 1)` takes `projections[0]` without checking which gameweek it is. For 815 players, this is GW 33 (blank, 0% gain). Filter `p.totalForecast > 0` eliminates all 815 candidates, leaving only 5 outdated ones from Team 17.
+- **Solution Architecture (4 Layers):**
+  1. **Backend Metadata:** Added `/api/gameweek-context` endpoint to expose `{ currentGW, nextPlayGW, blankGWs }`
+  2. **Frontend Types:** Created `frontend/src/types/gameweek.ts` with `PredictionMetadata`, `ValidatedProjection`, `NormalizedPrediction` interfaces
+  3. **Data Utilities:** Created `frontend/src/utils/gameweekValidation.ts` with 7 functions: `isBlankGW()`, `isPastGW()`, `validateProjection()`, `normalizePrediction()`, `calculateValidatedHaul()`, `getSelectedGameweeks()`, `validateCandidatePool()`
+  4. **Hook Integration:** Modified `useOptimization.ts` to accept `gameweekMetadata` param, use `getSelectedGameweeks()` instead of blind indexing, and add validation checkpoint counting filtered candidates
+- **Key Fix:** Replaced `projections[i]` with explicit `getSelectedGameweeks(weeks, metadata)` → returns actual GW list
+- **Implementation Status:** ✓ All 4 layers complete. Frontend builds successfully. Backend endpoint tested and returns correct values.
+- **API Proxy Lesson:** Vite dev server proxy to `/ai-api` prefix with rewrite. Frontend must call `/ai-api/api/gameweek-context` which gets rewritten to `/api/gameweek-context` before proxying to backend at `http://localhost:3000`.
+- **Blockers:** Browser automation tools unstable when testing UI interactions. Manual testing recommended.
+
 ### 2026-04-23 - Disabled Pruning for Exhaustive Optimization
 - **Context:** User wanted guaranteed optimal transfers, not fast approximations. Willing to accept 1-2s UI latency.
 - **Decision:** Removed conditional pruning logic in `optimizeWithAllowance()` that limited removal candidates to bottom 10 players.

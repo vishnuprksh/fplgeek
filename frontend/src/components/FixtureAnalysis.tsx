@@ -9,7 +9,7 @@ interface FixtureAnalysisProps {
     currentEvent: number;
 }
 
-export function FixtureAnalysis({ fixtures, teams, currentEvent }: FixtureAnalysisProps) {
+export function FixtureAnalysis({ fixtures, teams, currentEvent: _currentEvent }: FixtureAnalysisProps) {
     const [weeks, setWeeks] = useState(3);
     const table = calculateTable(fixtures, teams);
 

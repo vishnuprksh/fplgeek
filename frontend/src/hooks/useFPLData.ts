@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { fplService } from '../services/fpl';
 import { getDataProvider } from '../services/dataFactory';
 import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl';
+import type { PredictionMetadata } from '../types/gameweek';
 
 export type T100OwnershipMap = Record<number, number>;
 
@@ -28,6 +29,7 @@ export const useFPLData = () => {
     const [fixtures, setFixtures] = useState<Match[]>([]);
     const [predictionsMap, setPredictionsMap] = useState<PredictionMap>({});
     const [t100OwnershipMap, setT100OwnershipMap] = useState<T100OwnershipMap>({});
+    const [gameweekMetadata, setGameweekMetadata] = useState<PredictionMetadata | null>(null);
 
     const [teamData, setTeamData] = useState<TeamEntry | null>(null);
     const [picksData, setPicksData] = useState<TeamPicks | null>(null);
@@ -41,17 +43,26 @@ export const useFPLData = () => {
         const loadGlobals = async () => {
             console.log("🔄 loadGlobals starting...");
             try {
-                // Parallel fetch for static data and fixtures
-                const [bootstrap, matches] = await Promise.all([
+                // Parallel fetch for static data, fixtures, and gameweek metadata
+                const [bootstrap, matches, gwMetadata] = await Promise.all([
                     fplService.getBootstrapStatic(),
-                    fplService.getFixtures()
+                    fplService.getFixtures(),
+                    // Fetch gameweek context from backend via /ai-api prefix (proxies to localhost:3000)
+                    fetch('/ai-api/api/gameweek-context').then(r => r.json()).catch(err => {
+                        console.warn('⚠️ Could not fetch gameweek context:', err);
+                        return null;
+                    })
                 ]);
 
                 console.log("✅ Bootstrap fetched with", bootstrap?.elements?.length, "elements");
                 console.log("✅ Fixtures fetched:", matches?.length);
+                console.log("✅ Gameweek metadata:", gwMetadata);
 
                 setStaticData(bootstrap);
                 setFixtures(matches);
+                if (gwMetadata) {
+                    setGameweekMetadata(gwMetadata);
+                }
 
                 // Load Predictions dependent on static data (actually it's independent fetch, but mapped later)
                 // We can fetch it parallel too
@@ -148,6 +159,7 @@ export const useFPLData = () => {
         fixtures,
         predictionsMap,
         t100OwnershipMap,
+        gameweekMetadata,
         teamData,
         picksData,
         transfersHistory,

@@ -4,22 +4,47 @@ import type { Pick, UnifiedPlayer, Player } from '../types/fpl';
 import type { PredictionResult } from '../utils/predictions';
 import type { OptimizationResult } from '../utils/solver';
 import type { PredictionMap, T100OwnershipMap } from './useFPLData';
+import type { PredictionMetadata } from '../types/gameweek';
+import { getSelectedGameweeks, calculateValidatedHaul, normalizePrediction } from '../utils/gameweekValidation';
 
-// Helper: Calculate average haul probability from projections based on weeks
+// Helper: Calculate haul using gameweek-aware validation
 const calculateHaulFromProjections = (
     predictionsData: any,
-    weeks: number
+    weeks: number,
+    metadata: PredictionMetadata | null
 ): number => {
-    if (!predictionsData?.projections || predictionsData.projections.length === 0) {
-        return predictionsData?.prob_gt_6 || 0;
+    // Fallback if no metadata (use old logic)
+    if (!metadata) {
+        if (!predictionsData?.projections || predictionsData.projections.length === 0) {
+            return predictionsData?.prob_gt_6 || 0;
+        }
+        
+        const weeksToConsider = Math.min(weeks, predictionsData.projections.length);
+        let sum = 0;
+        for (let i = 0; i < weeksToConsider; i++) {
+            sum += predictionsData.projections[i].prob_gt_6 || 0;
+        }
+        return weeksToConsider > 0 ? sum / weeksToConsider : 0;
     }
-    
-    const weeksToConsider = Math.min(weeks, predictionsData.projections.length);
-    let sum = 0;
-    for (let i = 0; i < weeksToConsider; i++) {
-        sum += predictionsData.projections[i].prob_gt_6 || 0;
-    }
-    return weeksToConsider > 0 ? sum / weeksToConsider : 0;
+
+    // New gameweek-aware logic
+    // Create a mock normalized prediction for calculation
+    const mockPlayer = {
+        id: 0,
+        name: '',
+        team: 0,
+        position: '',
+        now_cost: 0,
+        prob_gt_6: 0,
+        prob_gt_6_next: 0,
+        projections: predictionsData?.projections || []
+    };
+
+    const normalized = normalizePrediction(mockPlayer, metadata);
+    const selectedGWs = getSelectedGameweeks(weeks, metadata);
+    const result = calculateValidatedHaul(normalized, selectedGWs, metadata);
+
+    return result.totalHaul;
 };
 
 export const useOptimization = (
@@ -27,7 +52,8 @@ export const useOptimization = (
     staticData: { elements: UnifiedPlayer[] } | null,
     predictionsMap: PredictionMap,
     bank: number,
-    t100OwnershipMap: T100OwnershipMap = {}
+    t100OwnershipMap: T100OwnershipMap = {},
+    gameweekMetadata: PredictionMetadata | null = null
 ) => {
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [selectedToSell, setSelectedToSell] = useState<Set<number>>(new Set());
@@ -35,6 +61,7 @@ export const useOptimization = (
     const [isProcessing, setIsProcessing] = useState(false);
     const [transferAllowance, setTransferAllowance] = useState(1); // 0–15
     const [haulingWeeks, setHaulingWeeks] = useState(3); // 1, 2, or 3 weeks
+    const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
 
     const toggleOptimizationMode = () => {
         if (isOptimizing) {
@@ -67,14 +94,20 @@ export const useOptimization = (
     const runOptimization = () => {
         if (!staticData || !activePicks.length) return;
         setIsProcessing(true);
+        const warnings: string[] = [];
 
         setTimeout(() => {
+            // Warn if gameweek metadata is missing
+            if (!gameweekMetadata) {
+                warnings.push('⚠️ Gameweek metadata not loaded - using fallback calculation');
+            }
+
             // Build current squad structure
             const currentSquad = activePicks.map(p => {
                 const player = staticData.elements.find(e => e.id === p.element);
                 const pred = predictionsMap[p.element];
                 if (!player) return null;
-                const haul = calculateHaulFromProjections(pred, haulingWeeks);
+                const haul = calculateHaulFromProjections(pred, haulingWeeks, gameweekMetadata);
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
@@ -86,9 +119,9 @@ export const useOptimization = (
             }).filter(Boolean) as PredictionResult[];
 
             // Build candidates (all players with a prediction)
-            const allCandidates: PredictionResult[] = staticData.elements.map(e => {
+            const allCandidatesUnfiltered: PredictionResult[] = staticData.elements.map(e => {
                 const pred = predictionsMap[e.id];
-                const haul = calculateHaulFromProjections(pred, haulingWeeks);
+                const haul = calculateHaulFromProjections(pred, haulingWeeks, gameweekMetadata);
                 return {
                     player: e,
                     cost: e.now_cost,
@@ -97,7 +130,19 @@ export const useOptimization = (
                     smartValue: 0,
                     next5Points: []
                 };
-            }).filter(p => p.totalForecast > 0);
+            });
+
+            // Validation checkpoint: check candidate pool before filtering
+            const zeroHaulCount = allCandidatesUnfiltered.filter(p => p.totalForecast === 0).length;
+            const nonZeroCount = allCandidatesUnfiltered.length - zeroHaulCount;
+
+            if (nonZeroCount < 50) {
+                warnings.push(`⚠️ Only ${nonZeroCount} candidates with non-zero hauls (${zeroHaulCount} filtered) - optimization may be limited`);
+            }
+
+            const allCandidates = allCandidatesUnfiltered.filter(p => p.totalForecast > 0);
+
+            setValidationWarnings(warnings);
 
             // If user manually picked players to sell → use targeted replacement
             if (selectedToSell.size > 0) {
@@ -203,6 +248,7 @@ export const useOptimization = (
         handleToggleSell,
         runOptimization,
         setOptimizationResult,
-        currentWarnings
+        currentWarnings,
+        validationWarnings
     };
 };

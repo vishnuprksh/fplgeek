@@ -6,7 +6,7 @@ interface OptimizationReportProps {
 }
 
 export function OptimizationReport({ result }: OptimizationReportProps) {
-    const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines, warnings } = result;
+    const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines: _logLines, warnings } = result;
 
     const gainColor = netGainPercent > 0 ? '#00ff87' : netGainPercent < 0 ? '#ef4444' : '#888';
 

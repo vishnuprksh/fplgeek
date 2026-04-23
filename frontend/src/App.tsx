@@ -38,6 +38,7 @@ export default function App() {
     fixtures,
     predictionsMap,
     t100OwnershipMap,
+    gameweekMetadata,
     teamData,
     picksData,
     transfersHistory,
@@ -76,8 +77,9 @@ export default function App() {
     toggleOptimizationMode,
     handleToggleSell,
     runOptimization,
-    currentWarnings
-  } = useOptimization(activePicks, staticData, predictionsMap, bank, t100OwnershipMap);
+    currentWarnings,
+    validationWarnings: _validationWarnings // TODO: display in UI
+  } = useOptimization(activePicks, staticData, predictionsMap, bank, t100OwnershipMap, gameweekMetadata);
 
 
   // Load default team when static data is ready (and no team data yet)

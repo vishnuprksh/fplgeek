@@ -87,6 +87,71 @@ app.get('/api/training-data', (req, res) => {
 // DATA_DIR env var defaults to ../data relative to this file (repo root data/)
 app.use('/data', express.static(DATA_DIR));
 
+// Gameweek Context Endpoint
+// Provides metadata: current GW, next playable GW, blank GWs for frontend validation
+app.get('/api/gameweek-context', (req, res) => {
+    try {
+        // Load fixtures to determine gameweek status
+        const fixturesPath = path.join(DATA_DIR, 'fixtures.json');
+        if (!fs.existsSync(fixturesPath)) {
+            return res.status(404).json({ error: 'Fixtures data not found' });
+        }
+
+        const fixtures = JSON.parse(fs.readFileSync(fixturesPath, 'utf-8'));
+        
+        // Count games per GW and check finish status
+        const gwStats = new Map<number, { finished: number; total: number }>();
+        
+        for (const fixture of fixtures) {
+            if (!fixture.event) continue;
+            const gw = fixture.event;
+            
+            if (!gwStats.has(gw)) {
+                gwStats.set(gw, { finished: 0, total: 0 });
+            }
+            
+            const stats = gwStats.get(gw)!;
+            stats.total++;
+            if (fixture.finished) stats.finished++;
+        }
+
+        // Determine current and next GW
+        let currentGW = 33; // default
+        let nextPlayGW = 34; // default
+        const blankGWs: number[] = [];
+
+        for (const [gw, stats] of gwStats) {
+            // Blank week = fewer than 10 games
+            if (stats.total < 10) {
+                blankGWs.push(gw);
+            }
+            
+            // Current GW = one with some but not all games finished
+            if (stats.finished > 0 && stats.finished < stats.total) {
+                currentGW = gw;
+            }
+        }
+
+        // Next playable GW = first with 0 finished games
+        for (const [gw, stats] of Array.from(gwStats.entries()).sort((a, b) => a[0] - b[0])) {
+            if (stats.finished === 0 && stats.total > 0) {
+                nextPlayGW = gw;
+                break;
+            }
+        }
+
+        res.json({
+            currentGW,
+            nextPlayGW,
+            blankGWs: blankGWs.sort((a, b) => a - b),
+            timestamp: new Date().toISOString()
+        });
+    } catch (err) {
+        console.error('Error computing gameweek context:', err);
+        res.status(500).json({ error: 'Failed to compute gameweek context' });
+    }
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', version: '1.0.0' });

@@ -85,11 +85,7 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership }: 
 
 
 
-    const topHaulPlayers = useMemo(() => {
-        return enrichedPlayers
-            .sort((a, b) => b.prob_gt_6 - a.prob_gt_6)
-            .slice(0, 5);
-    }, [enrichedPlayers]);
+    // TODO: topHaulPlayers could be displayed in UI later
 
     return (
         <div className="player-analysis fade-in">
