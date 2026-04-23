@@ -1,5 +1,14 @@
 # Task Tracking
-- [ ] **Re-Restart Localhost Servers (2026-04-23 23:18)** — Stop and start dev servers again
+- [x] **Remove Pruning from Optimization Algorithm (2026-04-23)** — Enable exhaustive search for all transfer allowances
+  - [x] Removed conditional pruning logic from `optimizeWithAllowance()` in solver.ts
+  - [x] Now considers all 15 squad members for removal regardless of allowance
+  - [x] Updated log message to indicate exhaustive search
+  - [x] Trade-off: C(15,8)=6435 combos now evaluated instead of C(10,8)=45
+  - [x] Expected runtime: 1-2 seconds for allowance 8-11 (acceptable per user)
+- [x] **Re-Restart Localhost Servers (2026-04-23 23:18)** — Stop and start dev servers again
+  - [x] Terminated previous processes on ports 3000 and 5173
+  - [x] Started fresh backend and frontend instances
+  - [x] Verified fresh ports active
 - [x] **Workspace Cleanup (2026-04-23)** — Removed 13 obsolete/orphaned files
   - [x] Deleted old TF/Keras `model_manager.py` and `feature_importance.py` (replaced by unified versions)
   - [x] Deleted orphaned `sqliteRepository.ts`, `backend/src/types.ts`, `backend/src/db/repository.ts`

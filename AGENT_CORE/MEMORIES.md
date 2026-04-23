@@ -1,4 +1,22 @@
 # Strategic Memories
+### 2026-04-23 - Disabled Pruning for Exhaustive Optimization
+- **Context:** User wanted guaranteed optimal transfers, not fast approximations. Willing to accept 1-2s UI latency.
+- **Decision:** Removed conditional pruning logic in `optimizeWithAllowance()` that limited removal candidates to bottom 10 players.
+- **Change:** Now always considers all 15 squad members for exhaustive search across all allowances 1-11.
+- **Impact:**
+  - Allowance 5: C(15,5) = 3,003 combos (same as before)
+  - Allowance 8: C(15,8) = 6,435 combos (was C(10,8) = 45 with pruning) → 143x slower
+  - Allowance 11: C(15,11) = 1,365 combos (was C(10,10) = 1) → same
+- **Trade-off:** Sacrifice 80-90% speed improvement for guaranteed optimality (no edge cases with budget arbitrage missed).
+- **File Modified:** frontend/src/utils/solver.ts (removed if/else pruning logic, now just `eligibleIndices = currentSquad.map((_, i) => i)`)
+- **Two-phase for allowance > 11 unchanged:** Still uses strategic decomposition (XI first, bench second) not pruning.
+
+### 2026-04-23 - Fresh Server Restart
+- **Context:** User requested to "restart again" after workspace cleanup.
+- **Action:** Terminated PID 207149 (backend) and 207266 (frontend). Started fresh instances.
+- **Reasoning:** Ensures any stale environment state or cached files from before the cleanup are cleared.
+- **Status:** Development environment fresh and active.
+
 ### 2026-04-23 - Second Workspace Cleanup
 - **Context:** User requested removal of throwaway, test, old, and obsolete files.
 - **Removed:**

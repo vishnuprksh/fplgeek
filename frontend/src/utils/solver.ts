@@ -518,21 +518,12 @@ export function optimizeWithAllowance(
         return phase1Result;
     }
 
-    // SINGLE-PHASE FOR ALLOWANCE ≤ 11
-    let eligibleIndices: number[];
-    if (allowance <= 5) {
-        eligibleIndices = currentSquad.map((_, i) => i);
-    } else {
-        // Prune: sort by haul ascending, take bottom 10 as removal candidates
-        const sorted = currentSquad.map((p, i) => ({ haul: p.totalForecast, idx: i }))
-            .sort((a, b) => a.haul - b.haul);
-        const topN = Math.min(10, currentSquad.length);
-        eligibleIndices = sorted.slice(0, topN).map(s => s.idx).sort((a, b) => a - b);
-    }
-
+    // SINGLE-PHASE FOR ALLOWANCE ≤ 11 — EXHAUSTIVE SEARCH
+    // Consider all 15 squad members for exhaustive optimization
+    const eligibleIndices = currentSquad.map((_, i) => i);
     const effectiveAllowance = Math.min(allowance, eligibleIndices.length);
     const comboCount = comb(eligibleIndices.length, effectiveAllowance);
-    logLines.push(`🔍 Searching ${comboCount} removal combinations (C(${eligibleIndices.length}, ${effectiveAllowance}))`);
+    logLines.push(`🔍 Exhaustive search: ${comboCount} removal combinations (C(${eligibleIndices.length}, ${effectiveAllowance}))`);
 
     let bestHaul = -Infinity;
     let bestTransfers: TransferDetail[] = [];
