@@ -275,16 +275,27 @@ export default function App() {
                           <div className="transfer-allowance-selector">
                             <span className="allowance-label">Haul Window:</span>
                             <div className="allowance-pills">
-                              {[1, 2, 3].map(weeks => (
-                                <button
-                                  key={weeks}
-                                  className={`allowance-pill${haulingWeeks === weeks ? ' active' : ''}`}
-                                  onClick={() => { setHaulingWeeks(weeks); }}
-                                  title={`${weeks} week${weeks > 1 ? 's' : ''} ahead`}
-                                >
-                                  {weeks}w
-                                </button>
-                              ))}
+                              <button
+                                className={`allowance-pill${haulingWeeks === 1 ? ' active' : ''}`}
+                                onClick={() => { setHaulingWeeks(1); }}
+                                title="Predict for GW 34 only"
+                              >
+                                GW 34
+                              </button>
+                              <button
+                                className={`allowance-pill${haulingWeeks === 2 ? ' active' : ''}`}
+                                onClick={() => { setHaulingWeeks(2); }}
+                                title="Average predictions for GW 35"
+                              >
+                                GW 35
+                              </button>
+                              <button
+                                className={`allowance-pill${haulingWeeks === 3 ? ' active' : ''}`}
+                                onClick={() => { setHaulingWeeks(3); }}
+                                title="Average predictions for GW 36"
+                              >
+                                GW 36
+                              </button>
                             </div>
                           </div>
                         )}
@@ -305,6 +316,8 @@ export default function App() {
                             onToggleSell={handleToggleSell}
                             onSwap={handleSwap}
                             t100Ownership={t100OwnershipMap}
+                            haulingWeeks={haulingWeeks}
+                            gameweekMetadata={gameweekMetadata}
                           />
                         </div>
                         <div className="pitch-right-panel">

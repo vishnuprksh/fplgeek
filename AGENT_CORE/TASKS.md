@@ -1,4 +1,19 @@
 # Task Tracking
+- [x] **Update Haul Window UI Labels (2026-04-24)** — Show actual gameweeks instead of relative weeks
+  - [x] Changed haul week selector buttons from "1w, 2w, 3w" to "GW 34, GW 34-35, GW 34-36"
+  - [x] Updated button tooltips to reflect gameweek ranges
+  - [x] Verified optimization algorithm uses averaged hauls correctly
+  - [x] Frontend builds successfully with no TypeScript errors
+  - [x] Updated project memory documentation
+- [x] **Pitch Deck Haul Window Selector (2026-04-24)** — Make haul values on home page depend on GW selection
+  - [x] Updated PitchView props interface to accept `haulingWeeks` and `gameweekMetadata`
+  - [x] Modified PitchView to calculate haul from projections array based on selected weeks
+  - [x] Added `calculateDisplayHaul()` helper function for week-based averaging
+  - [x] Updated sorting logic to use week-based haul calculations
+  - [x] Passed props from App.tsx to PitchView component
+  - [x] Verified TypeScript build passes without errors
+  - [x] Tested on live app: haul badges show correct 3-week averaged values
+  - [x] Updated memory documentation
 - [x] **Remove Pruning from Optimization Algorithm (2026-04-23)** — Enable exhaustive search for all transfer allowances
   - [x] Removed conditional pruning logic from `optimizeWithAllowance()` in solver.ts
   - [x] Now considers all 15 squad members for removal regardless of allowance

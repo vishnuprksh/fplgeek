@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import type { Pick, Team, UnifiedPlayer } from '../types/fpl';
+import type { PredictionMetadata } from '../types/gameweek';
 import './PitchView.css';
 
 interface PitchViewProps {
@@ -8,7 +9,7 @@ interface PitchViewProps {
     elements: UnifiedPlayer[];
     teams: Team[];
     onPlayerClick: (player: UnifiedPlayer) => void;
-    predictions: Record<number, { totalForecast: number; prob_gt_6?: number }>;
+    predictions: Record<number, { totalForecast: number; prob_gt_6?: number; projections?: any[] }>;
     isOptimizing?: boolean;
     selectedToSell?: Set<number>;
     onToggleSell?: (id: number) => void;
@@ -17,6 +18,8 @@ interface PitchViewProps {
     statuses?: Record<number, string>; // Historical status override
     injuryChances?: Record<number, number>;
     t100Ownership?: Record<number, number>;
+    haulingWeeks?: number; // Number of weeks to average haul over (1, 2, or 3)
+    gameweekMetadata?: PredictionMetadata | null; // Metadata for gameweek context
 }
 
 
@@ -39,7 +42,9 @@ function PitchPlayer({
     points,
     status,
     injuryChance,
-    t100Ownership
+    t100Ownership,
+    haulingWeeks = 3,
+    gameweekMetadata
 }: {
     pick: Pick;
     player: UnifiedPlayer;
@@ -54,10 +59,30 @@ function PitchPlayer({
     status?: string;
     injuryChance?: number;
     t100Ownership?: number;
+    haulingWeeks?: number;
+    gameweekMetadata?: PredictionMetadata | null;
 }) {
 
     const getImageUrl = (code: number) => `https://resources.premierleague.com/premierleague/photos/players/110x140/p${code}.png`;
     const [imgError, setImgError] = useState(false);
+
+    // Calculate haul based on selected weeks
+    const calculateDisplayHaul = (pred: any, weeks: number): number => {
+        if (!pred) return 0;
+        
+        // If we have projections and metadata, use gameweek-aware calculation
+        if (pred.projections && pred.projections.length > 0 && gameweekMetadata) {
+            const weeksToConsider = Math.min(weeks, pred.projections.length);
+            let sum = 0;
+            for (let i = 0; i < weeksToConsider; i++) {
+                sum += pred.projections[i].prob_gt_6 || 0;
+            }
+            return weeksToConsider > 0 ? sum / weeksToConsider : 0;
+        }
+        
+        // Fallback: single prob_gt_6 value
+        return pred.prob_gt_6 || 0;
+    };
 
     // DND Hooks
     const [{ isDragging }, drag] = useDrag(() => ({
@@ -174,7 +199,7 @@ function PitchPlayer({
                     borderRadius: '12px', border: '1px solid #00ff87', fontWeight: 'bold', zIndex: 10,
                     boxShadow: '0 0 8px rgba(0, 255, 135, 0.3)', minWidth: '35px', textAlign: 'center'
                 }}>
-                    {(prediction.prob_gt_6 * 100).toFixed(0)}%
+                    {(calculateDisplayHaul(prediction, haulingWeeks) * 100).toFixed(0)}%
                 </div>
             )}
 
@@ -223,7 +248,9 @@ export function PitchView({
     points,
     statuses,
     injuryChances,
-    t100Ownership
+    t100Ownership,
+    haulingWeeks = 3,
+    gameweekMetadata = null
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);
@@ -245,8 +272,20 @@ export function PitchView({
         if (!player1 || !player2) return 0;
 
         // 1. Predicted Haul Probability (Descending)
-        const xp1 = predictions && predictions[player1.id] ? (predictions[player1.id].prob_gt_6 || 0) : 0;
-        const xp2 = predictions && predictions[player2.id] ? (predictions[player2.id].prob_gt_6 || 0) : 0;
+        const calculateSort = (pred: any): number => {
+            if (!pred) return 0;
+            if (pred.projections && pred.projections.length > 0) {
+                const weeksToConsider = Math.min(haulingWeeks, pred.projections.length);
+                let sum = 0;
+                for (let i = 0; i < weeksToConsider; i++) {
+                    sum += pred.projections[i].prob_gt_6 || 0;
+                }
+                return weeksToConsider > 0 ? sum / weeksToConsider : 0;
+            }
+            return pred.prob_gt_6 || 0;
+        };
+        const xp1 = predictions && predictions[player1.id] ? calculateSort(predictions[player1.id]) : 0;
+        const xp2 = predictions && predictions[player2.id] ? calculateSort(predictions[player2.id]) : 0;
 
         if (xp1 !== xp2) {
             return xp2 - xp1;
@@ -287,6 +326,8 @@ export function PitchView({
                 injuryChance={injuryChances ? injuryChances[player.id] : player.chance_of_playing_this_round ?? undefined}
                 onSwap={onSwap}
                 t100Ownership={t100Ownership ? t100Ownership[player.id] : undefined}
+                haulingWeeks={haulingWeeks}
+                gameweekMetadata={gameweekMetadata}
             />
         );
     };

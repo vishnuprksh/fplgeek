@@ -47,10 +47,9 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership, ga
                 if (validated.length > 1) gw2_haul = validated[1]?.prob_gt_6 || 0;
                 if (validated.length > 2) gw3_haul = validated[2]?.prob_gt_6 || 0;
                 
-                // Calculate average only for valid (non-blank) weeks
-                const nonBlankCount = [gw1_haul, gw2_haul, gw3_haul].filter(h => h > 0).length;
-                if (nonBlankCount > 0) {
-                    haul_avg = (gw1_haul + gw2_haul + gw3_haul) / nonBlankCount;
+                // Calculate average across all available projections (including blank weeks)
+                if (validated.length > 0) {
+                    haul_avg = (gw1_haul + gw2_haul + gw3_haul) / validated.length;
                 }
                 
                 validatedProjs = validated;
