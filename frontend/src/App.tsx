@@ -374,6 +374,7 @@ export default function App() {
                 teams={staticData.teams}
                 predictions={predictionsMap}
                 t100Ownership={t100OwnershipMap}
+                gameweekMetadata={gameweekMetadata}
               />
             </div>
           )}

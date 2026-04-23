@@ -101,7 +101,6 @@ Fix single gameweek optimization failure (shows 0% haul gain) while preserving m
   - ✓ COMPLETE: All utilities tested locally
 
 ### Phase 2: Integration (Complete ✓)
-- [x] **Optimize Hook: Use Explicit Gameweek References**
   - Modified `useOptimization.ts` to accept gameweekMetadata parameter
   - Updated calculateHaulFromProjections() to use gameweekValidation functions
   - Replaced blind projections[i] indexing with explicit gameweek selection
@@ -135,6 +134,18 @@ Fix single gameweek optimization failure (shows 0% haul gain) while preserving m
   - Rewrite changes `/ai-api/api/gameweek-context` → `/api/gameweek-context`
   - ✓ TESTED: curl http://localhost:5173/ai-api/api/gameweek-context returns correct JSON
   - ✓ COMPLETE: Frontend can fetch gameweek metadata from backend
+
+- [x] **Update Players Page to Show GW 34+ Predictions**
+  - Modified `PlayerAnalysis.tsx` to accept gameweekMetadata prop
+  - Added imports: PredictionMetadata type, validateProjection function
+  - Updated enrichedPlayers logic to normalize predictions and skip GW 33
+  - Extracts individual GW hauls: gw1_haul (GW 34), gw2_haul (GW 35), gw3_haul (GW 36)
+  - Updated table headers: "GW 34", "GW 35", "GW 36" (was "GW +1", "+2", "+3")
+  - Updated table cells to display validated hauls instead of projections array indexing
+  - Added gameweek context badge in toolbar: "📊 GW X-Z"
+  - Updated haul average calculation to only count non-blank weeks
+  - ✓ COMPLETE: Players page now shows accurate GW 34+ predictions with validation
+  - ✓ TESTED: Frontend builds without errors
 
 - [ ] **Test Single GW Optimization** (Blocked: Browser backend issue)
   - Browser automation tools keep disconnecting when interacting with page

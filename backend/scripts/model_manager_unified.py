@@ -158,17 +158,23 @@ def train_unified_model() -> Dict[str, Any]:
 def get_future_gameweeks() -> List[int]:
     """
     Query fixtures table to determine upcoming gameweeks.
-    Returns list of next 3 (or available) gameweeks in ascending order.
+    Returns list of next 3 gameweeks where ALL fixtures are completely unstarted.
+    Skips gameweeks where any fixtures have started or finished (e.g., GW 33 with mid-week games).
     """
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     
     try:
-        # Get unique future event numbers from fixtures JSON data, ordered
+        # Get gameweeks where EVERY fixture has not started (started=0) and not finished (finished=0)
+        # First, find all gameweeks and count their fixtures
         cursor.execute("""
-            SELECT DISTINCT CAST(json_extract(data, '$.event') AS INTEGER) as event 
+            SELECT CAST(json_extract(data, '$.event') AS INTEGER) as event,
+                   COUNT(*) as total_fixtures,
+                   SUM(CASE WHEN json_extract(data, '$.started') = 0 AND json_extract(data, '$.finished') = 0 THEN 1 ELSE 0 END) as unstarted_fixtures
             FROM fixtures 
-            WHERE json_extract(data, '$.finished') = 0 
+            WHERE CAST(json_extract(data, '$.event') AS INTEGER) > 0
+            GROUP BY event
+            HAVING unstarted_fixtures = total_fixtures
             ORDER BY event ASC 
             LIMIT 10
         """)

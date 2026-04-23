@@ -9,9 +9,22 @@
   3. **Data Utilities:** Created `frontend/src/utils/gameweekValidation.ts` with 7 functions: `isBlankGW()`, `isPastGW()`, `validateProjection()`, `normalizePrediction()`, `calculateValidatedHaul()`, `getSelectedGameweeks()`, `validateCandidatePool()`
   4. **Hook Integration:** Modified `useOptimization.ts` to accept `gameweekMetadata` param, use `getSelectedGameweeks()` instead of blind indexing, and add validation checkpoint counting filtered candidates
 - **Key Fix:** Replaced `projections[i]` with explicit `getSelectedGameweeks(weeks, metadata)` → returns actual GW list
-- **Implementation Status:** ✓ All 4 layers complete. Frontend builds successfully. Backend endpoint tested and returns correct values.
+- **Implementation Status:** ✓ All layers complete and integrated. Frontend builds successfully without errors.
+  - Layer 1: Backend metadata endpoint ✓
+  - Layer 2: Frontend type system ✓
+  - Layer 3: Data validation utilities ✓
+  - Layer 4: Hook integration (Optimization + useFPLData + App) ✓
+  - Layer 5 (NEW): Players page update ✓
+- **Players Page Update (NEW):** Modified `PlayerAnalysis.tsx` to use gameweek metadata for prediction display:
+  - Accepts `gameweekMetadata` prop from App
+  - Uses `validateProjection()` to normalize predictions, filtering to GW 34+
+  - Extracts individual GW hauls: gw1_haul (GW 34), gw2_haul (GW 35), gw3_haul (GW 36)
+  - Updated table headers: "GW 34", "GW 35", "GW 36" (was "GW +1", "+2", "+3")
+  - Calculates haul average only from non-blank weeks
+  - Displays gameweek context badge in toolbar: "📊 GW 34-36"
+  - Result: Accurate predictions for GW 34-36, properly skipping blank GW 33
 - **API Proxy Lesson:** Vite dev server proxy to `/ai-api` prefix with rewrite. Frontend must call `/ai-api/api/gameweek-context` which gets rewritten to `/api/gameweek-context` before proxying to backend at `http://localhost:3000`.
-- **Blockers:** Browser automation tools unstable when testing UI interactions. Manual testing recommended.
+- **Testing Blocker:** Browser automation tools unstable when interacting with page. Manual UI testing recommended.
 
 ### 2026-04-23 - Disabled Pruning for Exhaustive Optimization
 - **Context:** User wanted guaranteed optimal transfers, not fast approximations. Willing to accept 1-2s UI latency.
