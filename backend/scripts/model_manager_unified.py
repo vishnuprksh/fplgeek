@@ -155,10 +155,39 @@ def train_unified_model() -> Dict[str, Any]:
         "y": y_filt,
     }
 
+def get_future_gameweeks() -> List[int]:
+    """
+    Query fixtures table to determine upcoming gameweeks.
+    Returns list of next 3 (or available) gameweeks in ascending order.
+    """
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    
+    try:
+        # Get unique future event numbers from fixtures JSON data, ordered
+        cursor.execute("""
+            SELECT DISTINCT CAST(json_extract(data, '$.event') AS INTEGER) as event 
+            FROM fixtures 
+            WHERE json_extract(data, '$.finished') = 0 
+            ORDER BY event ASC 
+            LIMIT 10
+        """)
+        rows = cursor.fetchall()
+        future_gws = [int(row[0]) for row in rows if row[0] is not None]
+        conn.close()
+        return future_gws[:3] if future_gws else []
+    except Exception as e:
+        print(f"Warning: Could not fetch future gameweeks: {e}")
+        conn.close()
+        return []
+
 def predict_future() -> None:
     """
     Load trained unified model & global scaler, process future fixture samples (target == 0),
     and output ai_predictions.json for the frontend Players page.
+    
+    Includes explicit blank week handling: if a player has no match in a future GW,
+    a projection with 0% haul is added to ensure consistent 3-week coverage.
     """
     from sklearn.preprocessing import StandardScaler  # type: ignore[import]
     
@@ -290,12 +319,34 @@ def predict_future() -> None:
             entry["f_atk_next"] = f_atk
             entry["f_def_next"] = f_def
     
-    # Finalize: compute total3Week, trim to 3 projections
+    # Get list of future gameweeks for blank week handling
+    future_gws = get_future_gameweeks()
+    print(f"Future gameweeks identified: {future_gws}")
+    
+    # Finalize: inject blank weeks, sort, and compute aggregates
     results: List[Dict[str, Any]] = []
     for pid, entry in all_predictions.items():
         projs: List[Dict[str, Any]] = entry["projections"]
+        
+        # If we have future gameweeks, inject blank weeks for missing GWs
+        if future_gws:
+            projected_gws = {p["gw"] for p in projs}
+            
+            # For each future GW not in projections, add a blank week entry (0% haul)
+            for gw in future_gws:
+                if gw not in projected_gws:
+                    projs.append({
+                        "gw": gw,
+                        "xP": 0.0,
+                        "prob_gt_6": 0.0,
+                        "prob_gt_10": 0.0,
+                        "f_atk": 0.0,
+                        "f_def": 0.0
+                    })
+        
+        # Sort by gameweek ascending
         projs.sort(key=lambda x: x["gw"])
-        entry["projections"] = projs[:3]
+        entry["projections"] = projs[:3]  # Keep only first 3 GWs
         entry["total3Week"] = sum(p["xP"] for p in entry["projections"])
         
         if len(entry["projections"]) > 0:

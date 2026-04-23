@@ -1,4 +1,5 @@
 # Task Tracking
+- [ ] **Re-Restart Localhost Servers (2026-04-23 23:18)** — Stop and start dev servers again
 - [x] **Workspace Cleanup (2026-04-23)** — Removed 13 obsolete/orphaned files
   - [x] Deleted old TF/Keras `model_manager.py` and `feature_importance.py` (replaced by unified versions)
   - [x] Deleted orphaned `sqliteRepository.ts`, `backend/src/types.ts`, `backend/src/db/repository.ts`
