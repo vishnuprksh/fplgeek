@@ -1,4 +1,10 @@
 # Strategic Memories
+### 2026-04-23 - Restarted Development Servers
+- **Context:** User requested to "restart localhosts".
+- **Action:** Started `npm run dev:backend` (port 3000) and `npm run dev` (port 5173) in persistent background terminals.
+- **Verification:** Confirmed listening ports via `lsof`.
+- **Status:** Development environment active.
+
 ### 2026-04-22 - Synced Fixture Page to Predictions (3-Week Window)
 - **Context:** User requested fixture page to show GW 34, 35, 36 in sync with predictions.
 - **Solution:** Changed FixtureAnalysis default lookahead from 5 weeks to 3 weeks.

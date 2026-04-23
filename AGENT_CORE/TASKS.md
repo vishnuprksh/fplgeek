@@ -1,4 +1,12 @@
 # Task Tracking
+- [x] **Update Fixture Page to Show GW 34, 35, 36 (2026-04-23 22:19)** — Changed fixture display to show upcoming weeks instead of past weeks
+  - [x] Modified FixtureAnalysis.tsx to hardcode nextGameweek to 34
+  - [x] Aligned with AI predictions which cover GW 34, 35, 36+
+  - [x] Verified fixture page displays correct gameweeks
+- [x] **Restart Localhost Servers (2026-04-23 22:11)** — Revive backend and frontend development servers
+  - [x] Started backend server on port 3000
+  - [x] Started frontend server on port 5173
+  - [x] Verified accessibility via lsof and health endpoint
 - [x] **Add Flexible Haul Week Selector to Team Optimization (2026-04-23 01:15)** — Allow users to select 1, 2, or 3 weeks for haul prediction
   - [x] Added haulingWeeks state to useOptimization hook
   - [x] Created haul calculation logic to average prob_gt_6 across selected weeks

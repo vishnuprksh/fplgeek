@@ -351,13 +351,17 @@ export default function App() {
             </>
           )}
 
-          {currentView === 'fixtures' && staticData && (
+          {currentView === 'fixtures' && (
             <div className="fade-in">
-              <FixtureAnalysis
-                fixtures={fixtures}
-                teams={staticData.teams}
-                currentEvent={staticData.events.find(e => e.is_next)?.id || 1}
-              />
+              {staticData ? (
+                <FixtureAnalysis
+                  fixtures={fixtures}
+                  teams={staticData.teams}
+                  currentEvent={staticData.events.find(e => e.is_next)?.id || 1}
+                />
+              ) : (
+                <div className="info-message">Loading fixture data...</div>
+              )}
             </div>
           )}
 
