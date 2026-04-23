@@ -104,18 +104,20 @@ export function calculateValidatedHaul(
     let sum = 0;
 
     for (const week of selectedWeeks) {
-        // Check if week is blank
-        if (isBlankGW(week, blankGWs)) {
-            skippedReasons.push(`GW ${week} is blank`);
-            continue;
-        }
-
         // Find projection for this week
         const proj = player.projections.find(p => p.gw === week);
-        
+
         if (!proj) {
             skippedReasons.push(`GW ${week} not in projections`);
             continue;
+        }
+
+        // Note blank weeks but still include their per-player projection.
+        // A "blank GW" has fewer fixtures overall, but individual players who
+        // DO have a game will have non-zero prob_gt_6, and those without a
+        // fixture will already have prob_gt_6 = 0 in the data.
+        if (isBlankGW(week, blankGWs)) {
+            skippedReasons.push(`GW ${week} is a blank week (reduced fixtures)`);
         }
 
         sum += proj.prob_gt_6;
@@ -189,19 +191,17 @@ export function getSelectedGameweeks(
     weeks: number,
     metadata: PredictionMetadata
 ): number[] {
-    const { nextPlayGW, blankGWs } = metadata;
+    const { nextPlayGW } = metadata;
     const selected: number[] = [];
 
-    // Start from nextPlayGW and get next `weeks` non-blank gameweeks
-    let currentGW = nextPlayGW;
-    let collected = 0;
-
-    while (collected < weeks && currentGW <= 38) {
-        if (!isBlankGW(currentGW, blankGWs)) {
-            selected.push(currentGW);
-            collected++;
-        }
-        currentGW++;
+    // Return the next `weeks` sequential GWs starting from nextPlayGW.
+    // Blank GWs are intentionally included here so that the explicit GW
+    // selection ("GW 34", "GW 35"…) reflects the real calendar week.
+    // calculateValidatedHaul will then correctly score blank weeks as 0.
+    for (let i = 0; i < weeks; i++) {
+        const gw = nextPlayGW + i;
+        if (gw > 38) break;
+        selected.push(gw);
     }
 
     return selected;

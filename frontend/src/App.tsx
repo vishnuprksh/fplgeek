@@ -275,27 +275,20 @@ export default function App() {
                           <div className="transfer-allowance-selector">
                             <span className="allowance-label">Haul Window:</span>
                             <div className="allowance-pills">
-                              <button
-                                className={`allowance-pill${haulingWeeks === 1 ? ' active' : ''}`}
-                                onClick={() => { setHaulingWeeks(1); }}
-                                title="Predict for GW 34 only"
-                              >
-                                GW 34
-                              </button>
-                              <button
-                                className={`allowance-pill${haulingWeeks === 2 ? ' active' : ''}`}
-                                onClick={() => { setHaulingWeeks(2); }}
-                                title="Average predictions for GW 35"
-                              >
-                                GW 35
-                              </button>
-                              <button
-                                className={`allowance-pill${haulingWeeks === 3 ? ' active' : ''}`}
-                                onClick={() => { setHaulingWeeks(3); }}
-                                title="Average predictions for GW 36"
-                              >
-                                GW 36
-                              </button>
+                              {[1, 2, 3].map(w => {
+                                const gw = gameweekMetadata ? gameweekMetadata.nextPlayGW + (w - 1) : w;
+                                const isBlank = gameweekMetadata?.blankGWs.includes(gw);
+                                return (
+                                  <button
+                                    key={w}
+                                    className={`allowance-pill${haulingWeeks === w ? ' active' : ''}`}
+                                    onClick={() => { setHaulingWeeks(w); }}
+                                    title={`Predict for GW ${gw}${isBlank ? ' (blank — 0 pts)' : ' only'}`}
+                                  >
+                                    GW {gw}{isBlank ? ' 🚫' : ''}
+                                  </button>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
