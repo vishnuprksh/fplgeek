@@ -1,4 +1,15 @@
 # Strategic Memories
+### 2026-04-23 - Second Workspace Cleanup
+- **Context:** User requested removal of throwaway, test, old, and obsolete files.
+- **Removed:**
+  - `backend/scripts/model_manager.py` & `feature_importance.py` (old TF/Keras, 18D, position-specific — superseded by unified versions)
+  - `backend/sqliteRepository.ts`, `backend/src/types.ts`, `backend/src/db/repository.ts` (orphaned — never imported by server.ts or any active code)
+  - `backend/scripts/update_fixtures_db.py` (reads `live_fixtures.json` which doesn't exist — superseded by `update_fixtures.py`)
+  - `data/model_accuracy_report.md` (stale 4-model stats), `data/haul_audit_top20.csv` (one-off artifact)
+  - `frontend/public/fpl.sqlite` (stale 80MB at wrong path; active db is `frontend/public/data/fpl.sqlite`)
+  - `data/processed/dataset_*.json` (gitignored generated artifacts)
+- **Fixed:** `scripts/update_data.sh` steps 3&4 now call `model_manager_unified.py` (was still calling deleted `model_manager.py`)
+
 ### 2026-04-23 - Restarted Development Servers
 - **Context:** User requested to "restart localhosts".
 - **Action:** Started `npm run dev:backend` (port 3000) and `npm run dev` (port 5173) in persistent background terminals.

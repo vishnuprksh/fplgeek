@@ -40,11 +40,11 @@ npx tsx scripts/preprocessing_dataset.ts
 echo "🧠 Step 3: Retraining AI models..."
 source "$REPO_ROOT/venv/bin/activate"
 export PYTHONPATH="$REPO_ROOT/backend"
-python3 scripts/model_manager.py
+python3 scripts/model_manager_unified.py
 
 # 4. Generate Predictions
 echo "🔮 Step 4: Generating future predictions..."
-python3 scripts/model_manager.py --predict
+python3 scripts/model_manager_unified.py --predict
 
 deactivate
 

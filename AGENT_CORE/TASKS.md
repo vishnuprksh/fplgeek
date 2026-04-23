@@ -1,4 +1,12 @@
 # Task Tracking
+- [x] **Workspace Cleanup (2026-04-23)** — Removed 13 obsolete/orphaned files
+  - [x] Deleted old TF/Keras `model_manager.py` and `feature_importance.py` (replaced by unified versions)
+  - [x] Deleted orphaned `sqliteRepository.ts`, `backend/src/types.ts`, `backend/src/db/repository.ts`
+  - [x] Deleted `update_fixtures_db.py` (reads non-existent `live_fixtures.json`)
+  - [x] Deleted stale `frontend/public/fpl.sqlite` (old path, 80MB)
+  - [x] Deleted `data/model_accuracy_report.md` (stale 4-model docs), `data/haul_audit_top20.csv` (one-off artifact)
+  - [x] Deleted `data/processed/dataset_*.json` (gitignored generated artifacts)
+  - [x] Fixed `scripts/update_data.sh` steps 3&4 to call `model_manager_unified.py`
 - [x] **Update Fixture Page to Show GW 34, 35, 36 (2026-04-23 22:19)** — Changed fixture display to show upcoming weeks instead of past weeks
   - [x] Modified FixtureAnalysis.tsx to hardcode nextGameweek to 34
   - [x] Aligned with AI predictions which cover GW 34, 35, 36+
