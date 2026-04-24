@@ -2,7 +2,6 @@
 import { useState, useMemo } from 'react';
 import type { Player, Team, UnifiedPlayer } from '../types/fpl';
 import type { PredictionMetadata } from '../types/gameweek';
-import { validateProjection } from '../utils/gameweekValidation';
 import './PlayerAnalysis.css';
 import { PlayerDetailModal } from './PlayerDetailModal';
 
@@ -16,7 +15,7 @@ interface PlayerAnalysisProps {
 type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r6_min' | 'r6_pts' | 'r6_inf' | 'r6_thr' | 'r6_xg' | 'r6_creativity' | 't100_ownership' | 'f_atk_next' | 'f_def_next' | 'gw1_haul' | 'gw2_haul' | 'gw3_haul';
 type SortDirection = 'asc' | 'desc';
 
-export function PlayerAnalysis({ elements, teams, t100Ownership }: PlayerAnalysisProps) {
+export function PlayerAnalysis({ elements, teams, t100Ownership, gameweekMetadata }: PlayerAnalysisProps) {
     const [search, setSearch] = useState('');
     const [positionFilter, setPositionFilter] = useState<number | 'all'>('all');
     const [teamFilter, setTeamFilter] = useState<number | 'all'>('all');
@@ -80,14 +79,6 @@ export function PlayerAnalysis({ elements, teams, t100Ownership }: PlayerAnalysi
         }
     };
 
-    // Get top 10 threshold for a given field to apply highlighting
-    const getTop10Threshold = (field: SortField): number => {
-        const sorted = [...filteredPlayers]
-            .map(p => Number((p as any)[field] || 0))
-            .sort((a, b) => b - a);
-        return sorted.length >= 10 ? sorted[9] : sorted[0];
-    };
-
     // Get color intensity based on value rank (0-1, where 1 is highest)
     const getTop10Color = (field: SortField, value: number): string => {
         const sorted = [...filteredPlayers]
@@ -110,16 +101,6 @@ export function PlayerAnalysis({ elements, teams, t100Ownership }: PlayerAnalysi
         
         // Use different colors for different value ranges
         return `rgba(168, 85, 247, ${intensity * 0.5 + 0.15})`;
-    };
-
-    // Helper to get background color for a cell
-    const getCellBackground = (field: SortField, value: number): string => {
-        // Skip haul-related features
-        if (field === 'gw1_haul' || field === 'gw2_haul' || field === 'gw3_haul' || field === 'prob_gt_6') {
-            return 'transparent';
-        }
-        
-        return getTop10Color(field, value);
     };
 
     // TODO: topHaulPlayers could be displayed in UI later

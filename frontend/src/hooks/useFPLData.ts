@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
 import { fplService } from '../services/fpl';
-import { getDataProvider } from '../services/dataFactory';
 import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl';
 import type { PredictionMetadata } from '../types/gameweek';
 

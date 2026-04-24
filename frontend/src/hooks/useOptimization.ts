@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { optimizeTransfers, optimizeWithAllowance, pickBestXI } from '../utils/solver';
-import type { Pick, UnifiedPlayer, Player } from '../types/fpl';
+import type { UnifiedPlayer, Player } from '../types/fpl';
 import type { OptimizationResult, PredictionResult } from '../utils/solver';
 import type { T100OwnershipMap } from './useFPLData';
+import type { PredictionMetadata } from '../types/gameweek';
 
 export const useOptimization = (
-    activePicks: Pick[],
+    activePicks: any[],
     staticData: { elements: UnifiedPlayer[] } | null,
     bank: number,
     t100OwnershipMap: T100OwnershipMap = {},
@@ -17,7 +18,6 @@ export const useOptimization = (
     const [isProcessing, setIsProcessing] = useState(false);
     const [transferAllowance, setTransferAllowance] = useState(1); // 0–15
     const [haulingWeeks, setHaulingWeeks] = useState(3); // 1, 2, or 3 weeks
-    const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
 
     const toggleOptimizationMode = () => {
         if (isOptimizing) {
@@ -62,7 +62,6 @@ export const useOptimization = (
             const currentSquad = activePicks.map(p => {
                 const player = staticData.elements.find(e => e.id === p.element);
                 if (!player) return null;
-                const haul = calculateHaulFromProjections(pred, haulingWeeks, gameweekMetadata);
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
@@ -187,7 +186,6 @@ export const useOptimization = (
         handleToggleSell,
         runOptimization,
         setOptimizationResult,
-        currentWarnings,
-        validationWarnings
+        currentWarnings
     };
 };

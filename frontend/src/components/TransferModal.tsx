@@ -11,13 +11,12 @@ interface TransferModalProps {
     onClose: () => void;
     onTransfer: (playerOut: Player, playerIn: Player) => void;
     t100Ownership?: Record<number, number>;
-    onPlayerClick?: (player: Player) => void;
 }
 
 type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff' | 't100_ownership';
 type SortDirection = 'asc' | 'desc';
 
-export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, t100Ownership, onPlayerClick }: TransferModalProps) {
+export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, t100Ownership }: TransferModalProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortField, setSortField] = useState<SortField>('total_points');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');

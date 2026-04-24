@@ -1,4 +1,4 @@
-import type { Pick, UnifiedPlayer, Player } from '../types/fpl';
+import type { UnifiedPlayer, Player } from '../types/fpl';
 
 export interface PredictionResult {
     player: Player | UnifiedPlayer;

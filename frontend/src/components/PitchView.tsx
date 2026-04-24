@@ -18,6 +18,8 @@ interface PitchViewProps {
     injuryChances?: Record<number, number>;
     t100Ownership?: Record<number, number>;
     predictions?: Record<number, any>;
+    haulingWeeks?: number;
+    gameweekMetadata?: PredictionMetadata | null;
 }
 
 
@@ -246,7 +248,8 @@ export function PitchView({
     statuses,
     injuryChances,
     t100Ownership,
-    predictions = {}
+    predictions = {},
+    haulingWeeks = 3
 }: PitchViewProps) {
     // Helper to find player details
     const getPlayer = (id: number) => elements.find(e => e.id === id);

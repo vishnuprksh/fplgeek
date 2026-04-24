@@ -102,12 +102,8 @@ class HybridDataProvider implements IDataProvider {
     }
 
     async getPredictions(): Promise<any[]> {
-        try {
-            return await sqliteProvider.getPredictions();
-        } catch (error) {
-            console.warn('SQLite provider failed for getPredictions, falling back to FPL API:', error);
-            return await fplApiProvider.getPredictions();
-        }
+        // Predictions come from FPL API provider (backend /api/data/predictions endpoint)
+        return await fplApiProvider.getPredictions();
     }
 
     async getBacktestHistory(): Promise<any[]> {

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
@@ -6,6 +6,20 @@ import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
 import { exec } from 'child_process';
+import {
+    initializeDatabase,
+    seedInitialData,
+    getPredictions,
+    getFixtures,
+    getLeagueAnalysis,
+    getFeatureImportance,
+    ingestPredictions,
+    ingestFixtures,
+    ingestLeagueAnalysis,
+    ingestFeatureImportance
+} from './lib/database.js';
+import { handleIngestData } from './lib/ingestData.js';
+
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
 
@@ -37,6 +51,22 @@ if (!fs.existsSync(DB_PATH)) {
 }
 
 const db = new Database(DB_PATH);
+
+// Initialize Postgres on startup (if DATABASE_URL is configured)
+async function initializeApp() {
+    if (process.env.DATABASE_URL) {
+        try {
+            await initializeDatabase();
+            await seedInitialData(DATA_DIR);
+            console.log('✓ Postgres database initialized and seeded');
+        } catch (err) {
+            console.error('Warning: Failed to initialize Postgres database:', err);
+            console.log('Continuing with file-based fallback...');
+        }
+    } else {
+        console.log('ℹ DATABASE_URL not configured. Using file-based data (local development).');
+    }
+}
 
 // Training Data Endpoint
 app.get('/api/training-data', (req, res) => {
@@ -158,9 +188,16 @@ app.get('/api/gameweek-context', (req, res) => {
 // All data is stored in /data folder and processed by backend scripts
 
 // GET /api/data/predictions - Serve AI predictions
-app.get('/api/data/predictions', (req, res) => {
-    const filePath = path.join(DATA_DIR, 'ai_predictions.json');
+app.get('/api/data/predictions', async (req: Request, res: Response) => {
     try {
+        // Try Postgres first if configured
+        if (process.env.DATABASE_URL) {
+            const data = await getPredictions();
+            return res.json(data);
+        }
+        
+        // Fallback to file-based read
+        const filePath = path.join(DATA_DIR, 'ai_predictions.json');
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: 'Predictions data not found' });
         }
@@ -173,9 +210,16 @@ app.get('/api/data/predictions', (req, res) => {
 });
 
 // GET /api/data/fixtures - Serve fixture data
-app.get('/api/data/fixtures', (req, res) => {
-    const filePath = path.join(DATA_DIR, 'fixtures.json');
+app.get('/api/data/fixtures', async (req: Request, res: Response) => {
     try {
+        // Try Postgres first if configured
+        if (process.env.DATABASE_URL) {
+            const data = await getFixtures();
+            return res.json(data);
+        }
+        
+        // Fallback to file-based read
+        const filePath = path.join(DATA_DIR, 'fixtures.json');
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: 'Fixtures data not found' });
         }
@@ -188,9 +232,19 @@ app.get('/api/data/fixtures', (req, res) => {
 });
 
 // GET /api/data/league-analysis - Serve league analysis
-app.get('/api/data/league-analysis', (req, res) => {
-    const filePath = path.join(DATA_DIR, 'league_analysis.json');
+app.get('/api/data/league-analysis', async (req: Request, res: Response) => {
     try {
+        // Try Postgres first if configured
+        if (process.env.DATABASE_URL) {
+            const data = await getLeagueAnalysis();
+            if (!data) {
+                return res.status(404).json({ error: 'League analysis data not found' });
+            }
+            return res.json(data);
+        }
+        
+        // Fallback to file-based read
+        const filePath = path.join(DATA_DIR, 'league_analysis.json');
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: 'League analysis data not found' });
         }
@@ -203,9 +257,19 @@ app.get('/api/data/league-analysis', (req, res) => {
 });
 
 // GET /api/data/feature-importance - Serve feature importance analysis
-app.get('/api/data/feature-importance', (req, res) => {
-    const filePath = path.join(DATA_DIR, 'feature_importance.json');
+app.get('/api/data/feature-importance', async (req: Request, res: Response) => {
     try {
+        // Try Postgres first if configured
+        if (process.env.DATABASE_URL) {
+            const data = await getFeatureImportance();
+            if (!data) {
+                return res.status(404).json({ error: 'Feature importance data not found' });
+            }
+            return res.json(data);
+        }
+        
+        // Fallback to file-based read
+        const filePath = path.join(DATA_DIR, 'feature_importance.json');
         if (!fs.existsSync(filePath)) {
             return res.status(404).json({ error: 'Feature importance data not found' });
         }
@@ -252,6 +316,10 @@ app.get('/api/data/:filename', (req, res) => {
         res.status(500).json({ error: 'Failed to load file' });
     }
 });
+
+// POST /api/ingest-data - Ingest data from GitHub Actions or manual updates
+// Accepts JSON body with predictions, fixtures, league_analysis, feature_importance
+app.post('/api/ingest-data', handleIngestData);
 
 // Track update status
 let updateInProgress = false;
@@ -341,10 +409,20 @@ app.get('/api/update-status', (req, res) => {
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', version: '1.0.0' });
+    res.json({ status: 'ok', version: '1.0.0', timestamp: new Date().toISOString() });
 });
 
+// Start server
+async function startServer() {
+    try {
+        await initializeApp();
+        app.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error('Failed to start server:', err);
+        process.exit(1);
+    }
+}
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+startServer();
