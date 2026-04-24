@@ -19,7 +19,23 @@ export const fplService = {
     },
 
     async getBootstrapStatic(): Promise<BootstrapStatic> {
-        return await getDataProvider().getBootstrapStatic();
+        try {
+            const data = await getDataProvider().getBootstrapStatic();
+            if (!data || !data.elements || data.elements.length === 0) {
+                throw new Error('Invalid bootstrap data');
+            }
+            return data;
+        } catch (error) {
+            console.warn('Failed to get bootstrap static from data provider, trying direct FPL API:', error);
+            try {
+                const response = await fetch(`${API_BASE}/bootstrap-static/`);
+                if (!response.ok) throw new Error(`Failed to fetch from FPL API: ${response.statusText}`);
+                return await response.json();
+            } catch (fallbackError) {
+                console.error('Fallback FPL API also failed:', fallbackError);
+                throw fallbackError;
+            }
+        }
     },
 
     async getTeamPicks(teamId: number, eventId: number): Promise<TeamPicks> {

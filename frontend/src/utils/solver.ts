@@ -393,17 +393,17 @@ function fillSlots(
 /**
  * Combinatorial optimizer.
  *
- * For N transfers:
+ * For N transfers ≤ 11:
  *  1. Generates all C(15, N) combinations of N players to remove
  *  2. For each combo, pools the freed budget (bank + all sell prices)
  *  3. Fills all N positional slots simultaneously with best available candidates
  *  4. Picks the combo with the highest resulting XI haul
  *
- * This avoids the sequential greedy problem where an early expensive transfer
- * prevents a globally better allocation of budget.
+ * For N > 11 (2-PHASE APPROACH):
+ *  Phase 1: Optimize for best XI only using N-4 transfers (leaving 4+ for bench)
+ *  Phase 2: Fill bench positions with remaining transfers and leftover budget
  *
- * For N > 5, uses a pruned search (only considers removing players with
- * below-median haul) to keep runtime reasonable.
+ * This prioritizes starting XI haul first, then optimizes bench for rotation/coverage.
  */
 export function optimizeWithAllowance(
     currentSquad: PredictionResult[],
@@ -430,21 +430,107 @@ export function optimizeWithAllowance(
         };
     }
 
-    // For large N, prune: only consider removing players with below-median haul
-    let eligibleIndices: number[];
-    if (allowance <= 5) {
-        eligibleIndices = currentSquad.map((_, i) => i);
-    } else {
-        // Prune: sort by haul ascending, take bottom 10 as removal candidates
-        const sorted = currentSquad.map((p, i) => ({ haul: p.totalForecast, idx: i }))
-            .sort((a, b) => a.haul - b.haul);
-        const topN = Math.min(10, currentSquad.length);
-        eligibleIndices = sorted.slice(0, topN).map(s => s.idx).sort((a, b) => a - b);
+    // TWO-PHASE APPROACH FOR LARGE ALLOWANCES
+    if (allowance > 11) {
+        logLines.push(`🎯 Two-phase optimization (${allowance} transfers available)`);
+        logLines.push(`  Phase 1: Maximize XI haul`);
+        logLines.push(`  Phase 2: Maximize bench`);
+
+        // Phase 1: Optimize for XI with most of the transfers
+        const phase1Allowance = Math.max(11, allowance - 4); // Leave 4+ for bench
+        const phase1Result = optimizeWithAllowance(currentSquad, bank, allCandidates, phase1Allowance);
+
+        if (!phase1Result.transfers || phase1Result.transfers.length === 0) {
+            // No beneficial transfers found, just optimize formation
+            return phase1Result;
+        }
+
+        // Phase 1 squad (after XI optimizations)
+        const phase1Squad = phase1Result.squadAfter;
+        logLines.push(`📊 After Phase 1 (XI optimization): ${pct(phase1Result.haulAfter)}% XI haul`);
+
+        // Phase 2: With remaining transfers, optimize bench
+        const usedTransfers = phase1Result.transfers.length;
+        const remainingTransfers = allowance - usedTransfers;
+
+        if (remainingTransfers > 0) {
+            logLines.push(`🪑 Phase 2: Optimizing bench with ${remainingTransfers} remaining transfers`);
+            
+            // Find bench players (positions 12-15 in phase1 lineup)
+            const phase1Lineup = pickBestXI(phase1Squad, 0);
+            const xiPlayerIds = new Set(phase1Lineup.starting11.map(p => p.player.id));
+            const benchPlayers = phase1Squad.filter(p => !xiPlayerIds.has(p.player.id));
+            
+            // Calculate remaining budget after Phase 1 (not currently used)
+            // phase1Squad.reduce((s, p) => s + p.cost, 0) + bank;
+            
+            // Try to upgrade bench with remaining transfers
+            let phase2Squad = [...phase1Squad];
+            let phase2Transfers: TransferDetail[] = [...phase1Result.transfers];
+            
+            // Greedily upgrade worst bench players
+            for (let i = 0; i < Math.min(remainingTransfers, benchPlayers.length); i++) {
+                const benchPlayer = benchPlayers[i];
+                const type = benchPlayer.player.element_type;
+                
+                // Find best available replacement
+                const candidates = allCandidates.filter(c =>
+                    c.player.element_type === type &&
+                    !xiPlayerIds.has(c.player.id) &&
+                    !phase2Squad.some(p => p.player.id === c.player.id) &&
+                    c.totalForecast > benchPlayer.totalForecast
+                );
+                
+                if (candidates.length > 0) {
+                    candidates.sort((a, b) => b.totalForecast - a.totalForecast);
+                    const replacement = candidates[0];
+                    
+                    // Replace bench player
+                    const idx = phase2Squad.findIndex(p => p.player.id === benchPlayer.player.id);
+                    if (idx >= 0) {
+                        phase2Squad[idx] = replacement;
+                        phase2Transfers.push({
+                            out: benchPlayer,
+                            in: replacement,
+                            haulBefore: benchPlayer.totalForecast,
+                            haulAfter: replacement.totalForecast,
+                            gainPercent: pct(replacement.totalForecast - benchPlayer.totalForecast),
+                            costDiff: replacement.cost - benchPlayer.cost
+                        });
+                        logLines.push(`  Bench upgrade: ${benchPlayer.player.web_name} → ${replacement.player.web_name}`);
+                    }
+                }
+            }
+            
+            const phase2Lineup = pickBestXI(phase2Squad, 0);
+            const formStr = formatFormation(phase2Lineup.starting11);
+            const haulAfter = squadXIHaul(phase2Squad);
+            const netGainPercent = pct(haulAfter - haulBefore);
+            
+            logLines.push(`✅ Best formation: ${formStr}`);
+            logLines.push(`📈 Final XI Haul: ${pct(haulAfter)}%  (was ${pct(haulBefore)}%, net gain: +${netGainPercent}%)`);
+            
+            return {
+                lineup: phase2Lineup,
+                squadAfter: phase2Squad,
+                transfers: phase2Transfers,
+                haulBefore,
+                haulAfter,
+                netGainPercent,
+                formationSelected: formStr,
+                logLines
+            };
+        }
+
+        return phase1Result;
     }
 
+    // SINGLE-PHASE FOR ALLOWANCE ≤ 11 — EXHAUSTIVE SEARCH
+    // Consider all 15 squad members for exhaustive optimization
+    const eligibleIndices = currentSquad.map((_, i) => i);
     const effectiveAllowance = Math.min(allowance, eligibleIndices.length);
     const comboCount = comb(eligibleIndices.length, effectiveAllowance);
-    logLines.push(`🔍 Searching ${comboCount} removal combinations (C(${eligibleIndices.length}, ${effectiveAllowance}))`);
+    logLines.push(`🔍 Exhaustive search: ${comboCount} removal combinations (C(${eligibleIndices.length}, ${effectiveAllowance}))`);
 
     let bestHaul = -Infinity;
     let bestTransfers: TransferDetail[] = [];

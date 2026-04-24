@@ -26,14 +26,17 @@ LEARNING_RATE = 0.001
 #  fixture_attack_raw, fixture_defense_raw, fixture_attack_scaled, fixture_defense_scaled]
 NUM_CTX_FEATURES = 11
 
-# Aggregated Features (dual rolling windows):
-# Rolling-4:  [min, pts, xG, xA, inf, cre, thr, gc, saves]  (9 features)
-# Rolling-10: [min, pts, xG, xA, inf, cre, thr, gc, saves]  (9 features)
-# Total Aggregated: 9 * 2 = 18
-NUM_AGG_FEATURES = 18
+# Aggregated Features (single rolling window):
+# Rolling-6:  [min, pts, xG, xA, inf, cre, thr, gc, saves]  (9 features)
+# Total Aggregated: 9
+NUM_AGG_FEATURES = 9
 
-# Total Input: 11 + 18 = 29
-INPUT_DIM = NUM_CTX_FEATURES + NUM_AGG_FEATURES  # 29
+# Position Feature:
+# Single feature encoding: 0=GKP, 1=DEF, 2=MID, 3=FWD
+NUM_POS_FEATURES = 1
+
+# Total Input: 9 context + 9 agg + 1 position = 19
+INPUT_DIM = 19
 
 # Constants
 STARTING_BUDGET = 1000

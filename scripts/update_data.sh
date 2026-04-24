@@ -30,7 +30,7 @@ cd "$REPO_ROOT/backend"
 
 # 1. Ingest latest data from FPL API (using Python scripts)
 echo "📥 Step 1: Ingesting latest data..."
-python3 backend/scripts/ingest_historical_gw.py
+python3 scripts/ingest_historical_gw.py
 
 # 2. Generate ML datasets
 echo "📊 Step 2: Generating datasets..."
@@ -40,11 +40,11 @@ npx tsx scripts/preprocessing_dataset.ts
 echo "🧠 Step 3: Retraining AI models..."
 source "$REPO_ROOT/venv/bin/activate"
 export PYTHONPATH="$REPO_ROOT/backend"
-python3 scripts/model_manager.py
+python3 scripts/model_manager_unified.py
 
 # 4. Generate Predictions
 echo "🔮 Step 4: Generating future predictions..."
-python3 scripts/model_manager.py --predict
+python3 scripts/model_manager_unified.py --predict
 
 deactivate
 

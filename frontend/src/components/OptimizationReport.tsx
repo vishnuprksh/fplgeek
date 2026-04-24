@@ -6,7 +6,7 @@ interface OptimizationReportProps {
 }
 
 export function OptimizationReport({ result }: OptimizationReportProps) {
-    const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines, warnings } = result;
+    const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines: _logLines, warnings } = result;
 
     const gainColor = netGainPercent > 0 ? '#00ff87' : netGainPercent < 0 ? '#ef4444' : '#888';
 
@@ -86,33 +86,6 @@ export function OptimizationReport({ result }: OptimizationReportProps) {
                     ✅ No transfers needed — current squad is already optimal for this allowance.
                 </div>
             )}
-
-            {/* Log / Explanation */}
-            <details className="opt-log">
-                <summary>How this optimization works ▾</summary>
-                <div className="opt-log-body">
-                    <h4>Step-by-Step Analysis</h4>
-                    <ol className="opt-log-list">
-                        {logLines.map((line, i) => (
-                            <li key={i}>{line}</li>
-                        ))}
-                    </ol>
-                    <div className="opt-algorithm-box">
-                        <h5>🔬 Algorithm: Greedy Best-Swap Search</h5>
-                        <p>
-                            For each transfer slot, the optimizer evaluates <strong>every possible single player swap</strong> across the full squad,
-                            simulating the resulting XI haul probability for each candidate swap. The swap that yields the highest
-                            haul gain is selected. This repeats for each available transfer, with the updated squad as the new baseline.
-                        </p>
-                        <ul>
-                            <li><strong>Haul probability</strong> = AI-predicted chance of scoring &gt;6 points next GW</li>
-                            <li><strong>Budget</strong>: selling price + bank = total spend available per slot</li>
-                            <li><strong>Constraints</strong>: same position, max 3 players per club, within budget</li>
-                            <li><strong>Formation</strong>: after transfers, all valid FPL formations (e.g. 4-4-2, 3-5-2…) are tested and the one with highest XI haul is selected</li>
-                        </ul>
-                    </div>
-                </div>
-            </details>
 
             {/* T100 Ownership Warnings */}
             {warnings && warnings.length > 0 && (

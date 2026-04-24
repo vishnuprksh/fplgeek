@@ -9,15 +9,19 @@ interface FixtureAnalysisProps {
     currentEvent: number;
 }
 
-export function FixtureAnalysis({ fixtures, teams, currentEvent }: FixtureAnalysisProps) {
-    const [weeks, setWeeks] = useState(5);
+export function FixtureAnalysis({ fixtures, teams, currentEvent: _currentEvent }: FixtureAnalysisProps) {
+    const [weeks, setWeeks] = useState(3);
     const table = calculateTable(fixtures, teams);
 
-    // Calculate both tables
-    const attackTicker = getFixtureTicker(fixtures, table, currentEvent, weeks, 'attack');
-    const defenseTicker = getFixtureTicker(fixtures, table, currentEvent, weeks, 'defense');
+    // Use gameweek 34 as the starting point for upcoming predictions
+    // This aligns with the AI predictions which cover GW 34, 35, 36+
+    const nextGameweek = 34;
 
-    const gameweeks = Array.from({ length: weeks }, (_, i) => currentEvent + i);
+    // Calculate both tables using next upcoming gameweek
+    const attackTicker = getFixtureTicker(fixtures, table, nextGameweek, weeks, 'attack');
+    const defenseTicker = getFixtureTicker(fixtures, table, nextGameweek, weeks, 'defense');
+
+    const gameweeks = Array.from({ length: weeks }, (_, i) => nextGameweek + i);
 
     const topAttack = attackTicker[0];
     const topDefense = defenseTicker[0];

@@ -8,13 +8,16 @@ export const useOptimization = (
     activePicks: Pick[],
     staticData: { elements: UnifiedPlayer[] } | null,
     bank: number,
-    t100OwnershipMap: T100OwnershipMap = {}
+    t100OwnershipMap: T100OwnershipMap = {},
+    gameweekMetadata: PredictionMetadata | null = null
 ) => {
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [selectedToSell, setSelectedToSell] = useState<Set<number>>(new Set());
     const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [transferAllowance, setTransferAllowance] = useState(1); // 0–15
+    const [haulingWeeks, setHaulingWeeks] = useState(3); // 1, 2, or 3 weeks
+    const [validationWarnings, setValidationWarnings] = useState<string[]>([]);
 
     const toggleOptimizationMode = () => {
         if (isOptimizing) {
@@ -47,12 +50,19 @@ export const useOptimization = (
     const runOptimization = () => {
         if (!staticData || !activePicks.length) return;
         setIsProcessing(true);
+        const warnings: string[] = [];
 
         setTimeout(() => {
+            // Warn if gameweek metadata is missing
+            if (!gameweekMetadata) {
+                warnings.push('⚠️ Gameweek metadata not loaded - using fallback calculation');
+            }
+
             // Build current squad structure
             const currentSquad = activePicks.map(p => {
                 const player = staticData.elements.find(e => e.id === p.element);
                 if (!player) return null;
+                const haul = calculateHaulFromProjections(pred, haulingWeeks, gameweekMetadata);
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
@@ -133,6 +143,12 @@ export const useOptimization = (
         }, 100);
     };
 
+    // When user changes weeks, clear optimization result
+    const handleSetHaulingWeeks = (n: number) => {
+        setHaulingWeeks(n);
+        setOptimizationResult(null);
+    };
+
     // Compute T100 ownership warnings
     const computeT100Warnings = (players: Player[]): string[] => {
         const warnings: string[] = [];
@@ -165,10 +181,13 @@ export const useOptimization = (
         selectedToSell,
         transferAllowance,
         setTransferAllowance: handleSetAllowance,
+        haulingWeeks,
+        setHaulingWeeks: handleSetHaulingWeeks,
         toggleOptimizationMode,
         handleToggleSell,
         runOptimization,
         setOptimizationResult,
-        currentWarnings
+        currentWarnings,
+        validationWarnings
     };
 };

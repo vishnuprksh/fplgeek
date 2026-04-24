@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useFPLData } from './hooks/useFPLData';
 import { useTransfers } from './hooks/useTransfers';
 import { useOptimization } from './hooks/useOptimization';
+import './App.css';
+
 
 import { TeamCard } from './components/TeamCard';
 import { PitchView } from './components/PitchView';
@@ -12,8 +14,10 @@ import { OptimizationReport } from './components/OptimizationReport';
 
 import { TransferModal } from './components/TransferModal';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
+import { AnalysisView } from './components/AnalysisView';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
+import { UpdateButton } from './components/UpdateButton';
 
 
 import { DndProvider } from 'react-dnd';
@@ -23,7 +27,7 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data' | 'analysis'>('dashboard');
 
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
@@ -34,6 +38,7 @@ export default function App() {
     staticData,
     fixtures,
     t100OwnershipMap,
+    gameweekMetadata,
     teamData,
     picksData,
     transfersHistory,
@@ -65,6 +70,8 @@ export default function App() {
     selectedToSell,
     transferAllowance,
     setTransferAllowance,
+    haulingWeeks,
+    setHaulingWeeks,
     toggleOptimizationMode,
     runOptimization,
     handleToggleSell,
@@ -85,7 +92,7 @@ export default function App() {
   const applyOptimization = () => {
     if (!optimizationResult) return;
     handleBatchTransfer(
-      optimizationResult.transfers.map((t: any) => ({ in: t.in.player, out: t.out.player })),
+      optimizationResult.transfers.map((t: { in: { player: Player }, out: { player: Player } }) => ({ in: t.in.player, out: t.out.player })),
       [...optimizationResult.lineup.starting11, ...optimizationResult.lineup.bench]
     );
     toggleOptimizationMode();
@@ -95,6 +102,19 @@ export default function App() {
     value: i,
     label: String(i)
   }));
+
+  // Helper: Calculate haul from projections based on weeks
+  const calculateHaulFromProjections = (predictionsData: any, weeks: number): number => {
+    if (!predictionsData?.projections || predictionsData.projections.length === 0) {
+      return predictionsData?.prob_gt_6 || 0;
+    }
+    const weeksToConsider = Math.min(weeks, predictionsData.projections.length);
+    let sum = 0;
+    for (let i = 0; i < weeksToConsider; i++) {
+      sum += predictionsData.projections[i].prob_gt_6 || 0;
+    }
+    return weeksToConsider > 0 ? sum / weeksToConsider : 0;
+  };
 
   const onTransferWrapper = (playerOut: Player, playerIn: Player) => {
     handleTransfer(playerOut, playerIn);
