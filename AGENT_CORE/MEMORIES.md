@@ -1,5 +1,34 @@
 # Strategic Memories
 
+### 2026-04-24 - Data API Implementation: Single Source of Truth via Backend
+- **Context:** Data was split between `/data/` (source) and `frontend/public/data/` (sync copies). Manual sync needed after updates. Wanted unified API delivery system.
+- **Solution:** Created backend API endpoints (`/api/data/*`) that serve from root `/data/` folder, eliminating sync complexity.
+- **Architecture:**
+  1. **Data Collection:** Scripts write to `/data/` (ai_predictions.json, fixtures.json, league_analysis.json, feature_importance.json, fpl.sqlite)
+  2. **Backend API Layer:** New routes serve files via `/api/data/*` with security checks (allowlist for JSON/SQLite files)
+  3. **Frontend Data Provider:** dataFactory.ts, useFPLData.ts, components updated to fetch from `/ai-api/api/data/*` (Vite proxy rewrite)
+  4. **Fallback Strategy:** SQLite provider still queries database if API fails
+- **Endpoints Created:**
+  - `GET /api/data/predictions` → ai_predictions.json
+  - `GET /api/data/fixtures` → fixtures.json
+  - `GET /api/data/league-analysis` → league_analysis.json
+  - `GET /api/data/feature-importance` → feature_importance.json
+  - `GET /api/data/:filename` → Generic handler with allowlist (predictive docs + fpl.sqlite)
+- **Frontend Changes:**
+  - dataFactory.ts: `/data/ai_predictions.json` → `/ai-api/api/data/predictions`
+  - useFPLData.ts: `/data/league_analysis.json` → `/ai-api/api/data/league-analysis`
+  - LeagueAnalysis.tsx: `/data/league_analysis.json` → `/ai-api/api/data/league-analysis`
+  - AnalysisView.tsx: `/data/feature_importance.json` → `/ai-api/api/data/feature-importance`
+  - sqliteService.ts: `/data/ai_predictions.json` → `/ai-api/api/data/predictions`; `/data/fpl.sqlite` → `/ai-api/api/data/fpl.sqlite`
+- **Key Benefits:**
+  - ✓ No manual sync required between `/data/` and `frontend/public/data/`
+  - ✓ Single source of truth (backend `/data/` folder)
+  - ✓ Automatic updates: Scripts modify `/data/` → API serves latest immediately
+  - ✓ Security: Allowlist prevents arbitrary file access
+  - ✓ Scalable: Easy to add new data endpoints
+  - ✓ Dev & Prod compatible: Same API path works in both environments via proxy
+- **Status:** ✓ All endpoints tested and returning correct data
+
 ### 2026-04-23 - Single GW Optimization Fix: 4-Layer Architecture Implemented
 - **Context:** Single GW (1w) optimization shows 0% haul gain, multi-GW (2-3w) works. Root cause: blind array indexing doesn't account for gameweek context.
 - **Root Cause:** `calculateHaulFromProjections(pred, 1)` takes `projections[0]` without checking which gameweek it is. For 815 players, this is GW 33 (blank, 0% gain). Filter `p.totalForecast > 0` eliminates all 815 candidates, leaving only 5 outdated ones from Team 17.

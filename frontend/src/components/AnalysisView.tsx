@@ -27,7 +27,7 @@ export const AnalysisView: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        fetch('/data/feature_importance.json')
+        fetch('/ai-api/api/data/feature-importance')
             .then(res => {
                 if (!res.ok) throw new Error('Failed to load analysis data');
                 return res.json();

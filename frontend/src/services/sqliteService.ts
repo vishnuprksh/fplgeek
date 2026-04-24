@@ -25,7 +25,8 @@ export class SqliteProvider implements IDataProvider {
             });
 
             console.log("Fetching fpl.sqlite...");
-            const DATA_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/data/fpl.sqlite` : '/data/fpl.sqlite';
+            // Use API endpoint for database file (works in both dev and production)
+            const DATA_URL = '/ai-api/api/data/fpl.sqlite';
             const response = await fetch(DATA_URL);
             if (!response.ok) {
                 throw new Error(`Failed to fetch database: ${response.statusText}`);
@@ -164,16 +165,16 @@ export class SqliteProvider implements IDataProvider {
     }
 
     async getPredictions(): Promise<any[]> {
-        // Attempt to fetch generated JSON predictions first
+        // Attempt to fetch generated JSON predictions first from API
         try {
-            const response = await fetch(`/data/ai_predictions.json?t=${Date.now()}`);
+            const response = await fetch(`/ai-api/api/data/predictions`);
             if (response.ok) {
                 const data = await response.json();
-                console.log("Loaded predictions from JSON file");
+                console.log("Loaded predictions from API");
                 return data;
             }
         } catch (e) {
-            console.warn("Failed to fetch ai_predictions.json", e);
+            console.warn("Failed to fetch predictions from API", e);
         }
 
         await this.ensureInitialized();
@@ -189,12 +190,12 @@ export class SqliteProvider implements IDataProvider {
     }
 
     async getBacktestHistory(): Promise<any[]> {
-        // Attempt to fetch generated JSON backtest first
+        // Attempt to fetch generated JSON backtest first from API
         try {
-            const response = await fetch('/data/backtest_results.json');
+            const response = await fetch('/ai-api/api/data/backtest_results.json');
             if (response.ok) {
                 const data = await response.json();
-                console.log("Loaded backtest results from JSON file");
+                console.log("Loaded backtest results from API");
                 return data;
             }
         } catch (e) {

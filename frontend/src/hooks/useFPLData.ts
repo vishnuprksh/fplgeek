@@ -92,7 +92,7 @@ export const useFPLData = () => {
 
                 // Load T100 ownership from league analysis
                 try {
-                    const leagueRes = await fetch('/data/league_analysis.json');
+                    const leagueRes = await fetch('/ai-api/api/data/league-analysis');
                     const contentType = leagueRes.headers.get('content-type');
                     if (leagueRes.ok && contentType && contentType.includes('application/json')) {
                         const leagueData = await leagueRes.json();

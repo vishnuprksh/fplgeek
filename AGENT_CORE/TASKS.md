@@ -1,4 +1,39 @@
 # Task Tracking
+
+# Current Sprint: Data API Implementation & Cleanup (2026-04-24)
+
+- [x] **Add data API endpoints to backend** — Created `/api/data/*` endpoints for single source of truth
+  - [x] GET /api/data/predictions
+  - [x] GET /api/data/fixtures
+  - [x] GET /api/data/league-analysis
+  - [x] GET /api/data/feature-importance
+  - [x] Generic /api/data/:filename handler with security checks
+  - [x] Verified all endpoints return correct data
+
+- [x] **Update frontend data fetching** — Replaced static file imports with API calls
+  - [x] Updated dataFactory.ts (FplApiProvider) to fetch from /ai-api/api/data/*
+  - [x] Updated useFPLData.ts to fetch league-analysis from API
+  - [x] Updated LeagueAnalysis.tsx to fetch from API
+  - [x] Updated AnalysisView.tsx to fetch feature-importance from API
+  - [x] Updated sqliteService.ts to fetch predictions and database from API
+
+- [x] **Remove obsolete files** — Clean up old data sync infrastructure
+  - [x] Deleted `frontend/public/data/` folder (ai_predictions.json, fixtures.json, league_analysis.json, feature_importance.json, fpl.sqlite)
+  - [x] No longer need manual sync between `/data/` and `frontend/public/data/`
+  - [x] Verified frontend build still works without static data files
+  - [x] Updated data folder strategy documentation in memory
+
+- [x] **Verify implementation** — All endpoints working and cleanup complete
+  - [x] Tested curl requests to all /api/data/* endpoints
+  - [x] All JSON files parsed and served correctly
+  - [x] SQLite database served as binary file
+  - [x] Frontend builds successfully without frontend/public/data/
+  - [x] API working and returning fresh data
+  - [x] Updated AGENT_CORE OVERVIEW and MEMORIES documentation
+
+---
+
+## Previous Sprints
 - [x] **Update League Page with Latest Data (2026-04-24)** — Fetch current standings and ownership data
   - [x] Ran fetch_league_data.py to fetch all 33 gameweeks from FPL API
   - [x] Fetched top 100 managers' picks across all gameweeks

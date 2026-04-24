@@ -152,6 +152,106 @@ app.get('/api/gameweek-context', (req, res) => {
     }
 });
 
+// Data API Endpoints - Serve JSON data files
+// These endpoints provide single source of truth for frontend data
+// All data is stored in /data folder and processed by backend scripts
+
+// GET /api/data/predictions - Serve AI predictions
+app.get('/api/data/predictions', (req, res) => {
+    const filePath = path.join(DATA_DIR, 'ai_predictions.json');
+    try {
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'Predictions data not found' });
+        }
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        res.json(data);
+    } catch (err) {
+        console.error('Error serving predictions:', err);
+        res.status(500).json({ error: 'Failed to load predictions' });
+    }
+});
+
+// GET /api/data/fixtures - Serve fixture data
+app.get('/api/data/fixtures', (req, res) => {
+    const filePath = path.join(DATA_DIR, 'fixtures.json');
+    try {
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'Fixtures data not found' });
+        }
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        res.json(data);
+    } catch (err) {
+        console.error('Error serving fixtures:', err);
+        res.status(500).json({ error: 'Failed to load fixtures' });
+    }
+});
+
+// GET /api/data/league-analysis - Serve league analysis
+app.get('/api/data/league-analysis', (req, res) => {
+    const filePath = path.join(DATA_DIR, 'league_analysis.json');
+    try {
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'League analysis data not found' });
+        }
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        res.json(data);
+    } catch (err) {
+        console.error('Error serving league analysis:', err);
+        res.status(500).json({ error: 'Failed to load league analysis' });
+    }
+});
+
+// GET /api/data/feature-importance - Serve feature importance analysis
+app.get('/api/data/feature-importance', (req, res) => {
+    const filePath = path.join(DATA_DIR, 'feature_importance.json');
+    try {
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'Feature importance data not found' });
+        }
+        const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        res.json(data);
+    } catch (err) {
+        console.error('Error serving feature importance:', err);
+        res.status(500).json({ error: 'Failed to load feature importance' });
+    }
+});
+
+// GET /api/data/:filename - Generic data file handler (with security check)
+// Allowed files: ai_predictions.json, fixtures.json, league_analysis.json, feature_importance.json, fpl.sqlite
+app.get('/api/data/:filename', (req, res) => {
+    const allowedFiles = ['ai_predictions.json', 'fixtures.json', 'league_analysis.json', 'feature_importance.json', 'fpl.sqlite'];
+    const { filename } = req.params;
+    
+    if (!allowedFiles.includes(filename)) {
+        return res.status(403).json({ error: 'File not allowed' });
+    }
+    
+    const filePath = path.join(DATA_DIR, filename);
+    
+    try {
+        // Prevent directory traversal
+        if (!path.resolve(filePath).startsWith(path.resolve(DATA_DIR))) {
+            return res.status(403).json({ error: 'Invalid path' });
+        }
+        
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'File not found' });
+        }
+        
+        // For JSON files, parse and serve as JSON
+        if (filename.endsWith('.json')) {
+            const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+            res.json(data);
+        } else {
+            // For binary files (sqlite), serve as-is
+            res.sendFile(filePath);
+        }
+    } catch (err) {
+        console.error(`Error serving file ${filename}:`, err);
+        res.status(500).json({ error: 'Failed to load file' });
+    }
+});
+
 // Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', version: '1.0.0' });

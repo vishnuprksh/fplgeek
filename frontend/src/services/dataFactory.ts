@@ -32,17 +32,18 @@ class FplApiProvider implements IDataProvider {
 
     async getPredictions(): Promise<any[]> {
         try {
-            const response = await fetch(`/data/ai_predictions.json?t=${Date.now()}`);
+            // Fetch from backend API data endpoint (not static files)
+            const response = await fetch('/ai-api/api/data/predictions');
             if (response.ok) return response.json();
         } catch (e) {
-            console.warn('Failed to fetch predictions', e);
+            console.warn('Failed to fetch predictions from API', e);
         }
         return [];
     }
 
     async getBacktestHistory(): Promise<any[]> {
         try {
-            const response = await fetch('/data/backtest_results.json');
+            const response = await fetch('/ai-api/api/data/:filename');
             if (response.ok) return response.json();
         } catch (e) {
             console.warn('Failed to fetch backtest results', e);

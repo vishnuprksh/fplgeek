@@ -34,7 +34,7 @@ export function LeagueAnalysis() {
     const [metric, setMetric] = useState<'percent' | 'effective_ownership'>('percent');
 
     useEffect(() => {
-        fetch('/data/league_analysis.json')
+        fetch('/ai-api/api/data/league-analysis')
             .then(res => {
                 const contentType = res.headers.get("content-type");
                 if (contentType && contentType.includes("text/html")) {
