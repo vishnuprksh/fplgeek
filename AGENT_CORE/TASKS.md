@@ -1,6 +1,39 @@
 # Task Tracking
 
-# Current Sprint: Data API Implementation & Cleanup (2026-04-24)
+# Current Sprint: Update Button Implementation (2026-04-24)
+
+- [x] **Add backend update endpoints** — Created endpoints to trigger and monitor data updates
+  - [x] POST /api/update-data - Triggers the full data pipeline (fixtures, players, model training)
+  - [x] GET /api/update-status - Returns current update status and last update time
+  - [x] Prevents concurrent updates (returns error if already updating)
+  - [x] Uses child_process.exec to run bash script in background
+  - [x] Tested endpoints with curl (both working correctly)
+
+- [x] **Create UpdateButton component** — Built React component for home page
+  - [x] New file: UpdateButton.tsx with update trigger and progress display
+  - [x] New file: UpdateButton.css with gradient styling and animations
+  - [x] Displays loading spinner during update
+  - [x] Shows "last updated" timestamp
+  - [x] Polls status endpoint every 30 seconds to check completion
+  - [x] Auto-refreshes page when update completes via window.location.reload()
+  - [x] Handles errors gracefully with user-friendly messages
+
+- [x] **Integrate button into home page** — Added UpdateButton to App header
+  - [x] Imported UpdateButton component in App.tsx
+  - [x] Added button to header (visible only when team data loaded)
+  - [x] Added .header-center CSS for proper layout
+  - [x] Button positioned in center of header between logo and logout
+
+- [x] **Verify implementation** — All endpoints and components working
+  - [x] Frontend builds successfully with new components
+  - [x] Backend update endpoint accepts requests
+  - [x] Concurrent update prevention works (returns 400 on duplicate request)
+  - [x] Status endpoint correctly reports "updating" status
+  - [x] Button will appear on home page when team is loaded
+
+---
+
+## Previous Sprints
 
 - [x] **Add data API endpoints to backend** — Created `/api/data/*` endpoints for single source of truth
   - [x] GET /api/data/predictions

@@ -1,5 +1,53 @@
 # Strategic Memories
 
+### 2026-04-24 - Update Button: One-Click Data Refresh Pipeline
+- **Context:** Users needed a way to manually trigger complete data updates without accessing terminal. Wanted fixtures, player history, model retraining, and predictions all refreshed.
+- **Solution:** Created backend endpoints + React component for one-click update workflow.
+- **Backend Implementation (backend/server.ts):**
+  - `POST /api/update-data` → Executes `bash scripts/update_data.sh` in background
+    - Runs: ingest → preprocess → train models → generate predictions
+    - Returns immediately with 202-like response (update started)
+    - Prevents concurrent updates (returns 400 if already updating)
+    - Uses `child_process.exec` with 30-minute timeout
+  - `GET /api/update-status` → Reports update progress
+    - Returns `{ isUpdating, status, lastUpdateTime, dataExists }`
+    - Checks file mtimes to detect when update completes
+    - Frontend polls this endpoint every 30 seconds
+- **Frontend Implementation:**
+  - **UpdateButton.tsx:** React component with loading spinner
+    - Triggers POST /api/update-data
+    - Polls GET /api/update-status every 30 seconds
+    - Shows elapsed time during update
+    - Auto-refreshes page when complete via `window.location.reload()`
+    - Displays "Last updated: Xm ago" timestamp
+    - Handles errors with user-friendly messages
+  - **UpdateButton.css:** Gradient button with spinner animation
+    - Purple gradient background
+    - Spinner rotates during update
+    - Disabled state prevents repeated clicks
+  - **App.tsx Integration:** Button in header (only shows when team loaded)
+    - Positioned center of header via `.header-center` flex container
+    - Appears after team data loads
+- **Update Pipeline (scripts/update_data.sh):**
+  1. **Ingest:** `ingest_historical_gw.py` → Fetches all player history from FPL API
+  2. **Preprocess:** `preprocessing_dataset.ts` → Generates ML training data
+  3. **Train:** `model_manager_unified.py` → Retrains Random Forest model
+  4. **Predict:** `model_manager_unified.py --predict` → Generates future projections
+  5. **API serves:** Backend `/api/data/*` endpoints immediately serve refreshed data
+- **Key Features:**
+  - ✓ Prevents concurrent updates (only one can run at a time)
+  - ✓ Non-blocking (returns immediately, polls for completion)
+  - ✓ Auto-refresh (page reloads when done, fetches new data)
+  - ✓ User feedback (spinner + elapsed time + last update timestamp)
+  - ✓ Error handling (user-friendly error messages)
+  - ✓ Timeout protection (30-minute limit prevents hanging)
+- **Testing Results:**
+  - ✓ curl -X POST /api/update-data → Returns status:started (endpoint works)
+  - ✓ Concurrent POST → Returns 400 "Update already in progress" (prevention works)
+  - ✓ GET /api/update-status → Returns isUpdating:true while running (polling works)
+  - ✓ Frontend builds successfully with no errors
+  - ✓ Button will be visible on home page after team loads
+
 ### 2026-04-24 - Data API Implementation: Single Source of Truth via Backend
 - **Context:** Data was split between `/data/` (source) and `frontend/public/data/` (sync copies). Manual sync needed after updates. Wanted unified API delivery system.
 - **Solution:** Created backend API endpoints (`/api/data/*`) that serve from root `/data/` folder, eliminating sync complexity.

@@ -17,6 +17,7 @@ import { LeagueAnalysis } from './components/LeagueAnalysis';
 import { AnalysisView } from './components/AnalysisView';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
+import { UpdateButton } from './components/UpdateButton';
 
 
 import { DndProvider } from 'react-dnd';
@@ -129,6 +130,9 @@ export default function App() {
           <div className="logo-container">
             <div className="logo-icon">⚽</div>
             <h1>FPL GEEK</h1>
+          </div>
+          <div className="header-center">
+            {teamData && <UpdateButton />}
           </div>
           <div className="user-avatar" onClick={handleLogout} title="Click to Logout" style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <span style={{ fontSize: '0.8em', opacity: 0.8 }}>Logout</span>

@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
+import { exec } from 'child_process';
 const require = createRequire(import.meta.url);
 const Database = require('better-sqlite3');
 
@@ -249,6 +250,92 @@ app.get('/api/data/:filename', (req, res) => {
     } catch (err) {
         console.error(`Error serving file ${filename}:`, err);
         res.status(500).json({ error: 'Failed to load file' });
+    }
+});
+
+// Track update status
+let updateInProgress = false;
+let lastUpdateTime = new Date(0);
+
+// Data Update Endpoint - Triggers complete data pipeline
+// POST /api/update-data
+app.post('/api/update-data', (req, res) => {
+    if (updateInProgress) {
+        return res.status(400).json({ 
+            error: 'Update already in progress',
+            status: 'updating'
+        });
+    }
+    
+    const repoRoot = path.resolve(__dirname, '..');
+    const updateScript = path.join(repoRoot, 'scripts', 'update_data.sh');
+    
+    if (!fs.existsSync(updateScript)) {
+        return res.status(404).json({ error: 'Update script not found' });
+    }
+    
+    console.log('🚀 Starting data update pipeline...');
+    updateInProgress = true;
+    
+    // Execute update script in background
+    exec(`bash ${updateScript}`, 
+        { 
+            cwd: repoRoot, 
+            maxBuffer: 50 * 1024 * 1024,
+            timeout: 30 * 60 * 1000 // 30 minute timeout
+        },
+        (error, stdout, stderr) => {
+            updateInProgress = false;
+            if (error) {
+                console.error('❌ Update pipeline failed:', error.message);
+                if (stderr) console.error('stderr:', stderr);
+            } else {
+                lastUpdateTime = new Date();
+                console.log('✅ Update pipeline completed successfully!');
+                console.log('stdout:', stdout);
+            }
+        }
+    );
+    
+    // Return immediately with status that update is in progress
+    res.json({
+        status: 'started',
+        message: 'Data update pipeline initiated. This may take 5-15 minutes.',
+        timestamp: new Date().toISOString()
+    });
+});
+
+// Update Status Endpoint - Check if data has been updated
+// GET /api/update-status
+app.get('/api/update-status', (req, res) => {
+    const predictionsPath = path.join(DATA_DIR, 'ai_predictions.json');
+    const fixturesPath = path.join(DATA_DIR, 'fixtures.json');
+    
+    try {
+        let allFilesExist = fs.existsSync(predictionsPath) && fs.existsSync(fixturesPath);
+        let predictionsModified = 0;
+        let fixturesModified = 0;
+        
+        if (allFilesExist) {
+            const predStats = fs.statSync(predictionsPath);
+            const fixtStats = fs.statSync(fixturesPath);
+            predictionsModified = predStats.mtimeMs;
+            fixturesModified = fixtStats.mtimeMs;
+        }
+        
+        const mostRecentModification = Math.max(predictionsModified, fixturesModified);
+        
+        res.json({
+            isUpdating: updateInProgress,
+            status: updateInProgress ? 'updating' : 'idle',
+            lastUpdateTime: new Date(mostRecentModification).toISOString(),
+            dataExists: allFilesExist,
+            predictionsUpdated: new Date(predictionsModified).toISOString(),
+            fixturesUpdated: new Date(fixturesModified).toISOString()
+        });
+    } catch (err) {
+        console.error('Error checking update status:', err);
+        res.status(500).json({ error: 'Failed to check update status' });
     }
 });
 
