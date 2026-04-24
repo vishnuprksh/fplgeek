@@ -82,6 +82,11 @@
     padding: var(--space-3) var(--space-2);
     border: 1px solid var(--border-subtle);
     vertical-align: middle;
+    transition: background-color var(--transition-fast);
+}
+
+.analysis-table td.color-cell {
+    position: relative;
 }
 
 .clickable-row {

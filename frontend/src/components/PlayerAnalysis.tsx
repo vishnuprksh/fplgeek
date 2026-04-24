@@ -118,7 +118,47 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership, ga
         }
     };
 
+    // Get top 10 threshold for a given field to apply highlighting
+    const getTop10Threshold = (field: SortField): number => {
+        const sorted = [...filteredPlayers]
+            .map(p => Number((p as any)[field] || 0))
+            .sort((a, b) => b - a);
+        return sorted.length >= 10 ? sorted[9] : sorted[0];
+    };
 
+    // Get color intensity based on value rank (0-1, where 1 is highest)
+    const getTop10Color = (field: SortField, value: number): string => {
+        const sorted = [...filteredPlayers]
+            .map(p => Number((p as any)[field] || 0))
+            .filter(v => v > 0)
+            .sort((a, b) => b - a);
+        
+        if (sorted.length === 0) return 'transparent';
+        
+        const top10 = sorted.slice(0, 10);
+        const isInTop10 = value >= top10[top10.length - 1];
+        
+        if (!isInTop10) return 'transparent';
+        
+        // Calculate intensity (0-1)
+        const maxVal = top10[0];
+        const minVal = top10[top10.length - 1];
+        const range = maxVal - minVal || 1;
+        const intensity = (value - minVal) / range;
+        
+        // Use different colors for different value ranges
+        return `rgba(168, 85, 247, ${intensity * 0.5 + 0.15})`;
+    };
+
+    // Helper to get background color for a cell
+    const getCellBackground = (field: SortField, value: number): string => {
+        // Skip haul-related features
+        if (field === 'gw1_haul' || field === 'gw2_haul' || field === 'gw3_haul' || field === 'prob_gt_6') {
+            return 'transparent';
+        }
+        
+        return getTop10Color(field, value);
+    };
 
     // TODO: topHaulPlayers could be displayed in UI later
 
@@ -216,34 +256,50 @@ export function PlayerAnalysis({ elements, teams, predictions, t100Ownership, ga
                                     <td>{getTeamName(player.team)}</td>
                                     <td>{getPosition(player.element_type)}</td>
                                     <td className="color-cell" style={{ fontWeight: 600 }}>
-                                        <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min((player as any).gw1_haul * 0.8, 0.4)})` }}></div>
                                         {(((player as any).gw1_haul || 0) * 100).toFixed(0)}%
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
-                                        <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min((player as any).gw2_haul * 0.6, 0.3)})` }}></div>
                                         {(((player as any).gw2_haul || 0) * 100).toFixed(0)}%
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
-                                        <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min((player as any).gw3_haul * 0.6, 0.3)})` }}></div>
                                         {(((player as any).gw3_haul || 0) * 100).toFixed(0)}%
                                     </td>
-                                    <td>{((player as any).r6_creativity || 0).toFixed(1)}</td>
+                                    <td style={{ backgroundColor: getTop10Color('r6_creativity', (player as any).r6_creativity) }}>
+                                        {((player as any).r6_creativity || 0).toFixed(1)}
+                                    </td>
                                     <td className="color-cell" style={{ fontWeight: 800 }}>
-                                        <div className="color-bg" style={{ backgroundColor: `rgba(168, 85, 247, ${Math.min(player.prob_gt_6 * 1.5, 0.8)})` }}></div>
                                         {((player as any).prob_gt_6 * 100).toFixed(0)}%
                                     </td>
-                                    <td>{((player as any).r6_pts || 0).toFixed(1)}</td>
-                                    <td>{((player as any).r6_xg || 0).toFixed(2)}</td>
-                                    <td>{((player as any).r6_inf || 0).toFixed(1)}</td>
-                                    <td>{((player as any).r6_thr || 0).toFixed(1)}</td>
-                                    <td>{((player as any).r6_min || 0).toFixed(0)}</td>
-                                    <td>£{(player.now_cost / 10).toFixed(1)}m</td>
-                                    <td className="font-bold">{player.total_points}</td>
-                                    <td>{player.form}</td>
-                                    <td style={{ color: (player as any).t100_ownership > 40 ? '#fbbf24' : (player as any).t100_ownership > 0 ? '#888' : '#444' }}>
+                                    <td style={{ backgroundColor: getTop10Color('r6_pts', (player as any).r6_pts) }}>
+                                        {((player as any).r6_pts || 0).toFixed(1)}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('r6_xg', (player as any).r6_xg) }}>
+                                        {((player as any).r6_xg || 0).toFixed(2)}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('r6_inf', (player as any).r6_inf) }}>
+                                        {((player as any).r6_inf || 0).toFixed(1)}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('r6_thr', (player as any).r6_thr) }}>
+                                        {((player as any).r6_thr || 0).toFixed(1)}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('r6_min', (player as any).r6_min) }}>
+                                        {((player as any).r6_min || 0).toFixed(0)}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('now_cost', player.now_cost) }}>
+                                        £{(player.now_cost / 10).toFixed(1)}m
+                                    </td>
+                                    <td className="font-bold" style={{ backgroundColor: getTop10Color('total_points', player.total_points) }}>
+                                        {player.total_points}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('form', parseFloat(player.form)) }}>
+                                        {player.form}
+                                    </td>
+                                    <td style={{ color: (player as any).t100_ownership > 40 ? '#fbbf24' : (player as any).t100_ownership > 0 ? '#888' : '#444', backgroundColor: getTop10Color('t100_ownership', (player as any).t100_ownership) }}>
                                         {(player as any).t100_ownership > 0 ? `${(player as any).t100_ownership.toFixed(0)}%` : '-'}
                                     </td>
-                                    <td>{player.selected_by_percent}%</td>
+                                    <td style={{ backgroundColor: getTop10Color('selected_by_percent', parseFloat(player.selected_by_percent)) }}>
+                                        {player.selected_by_percent}%
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>

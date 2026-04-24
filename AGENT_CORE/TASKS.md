@@ -1,4 +1,11 @@
 # Task Tracking
+- [x] **Update League Page with Latest Data (2026-04-24)** — Fetch current standings and ownership data
+  - [x] Ran fetch_league_data.py to fetch all 33 gameweeks from FPL API
+  - [x] Fetched top 100 managers' picks across all gameweeks
+  - [x] Calculated ownership and effective ownership percentages
+  - [x] Copied updated league_analysis.json to frontend/public/data/
+  - [x] Verified league page displays GW 1-33 with latest data
+  - [x] Confirmed top owned players visible with current gameweek context
 - [x] **Update Haul Window UI Labels (2026-04-24)** — Show actual gameweeks instead of relative weeks
   - [x] Changed haul week selector buttons from "1w, 2w, 3w" to "GW 34, GW 34-35, GW 34-36"
   - [x] Updated button tooltips to reflect gameweek ranges
