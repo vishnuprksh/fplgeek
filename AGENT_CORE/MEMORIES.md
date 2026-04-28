@@ -1,5 +1,15 @@
 # Strategic Memories
 
+### 2026-04-25 - Removed Analysis Page
+- **Context:** User requested deletion of the Analysis page as it was not required.
+- **Decision:** Removed `AnalysisView` component, CSS, and navigation entries.
+- **Reasoning:** Simplifying the UI by removing unused or unnecessary features.
+
+### 2026-04-25 - Session Startup
+- **Context:** User requested to start the localhost.
+- **Action:** Started backend (port 3000) and frontend (port 5173) dev servers.
+- **Verification:** Frontend verified at http://localhost:5173 with browser subagent; backend health check passed.
+
 ### 2026-04-24 - Update Button: One-Click Data Refresh Pipeline
 - **Context:** Users needed a way to manually trigger complete data updates without accessing terminal. Wanted fixtures, player history, model retraining, and predictions all refreshed.
 - **Solution:** Created backend endpoints + React component for one-click update workflow.

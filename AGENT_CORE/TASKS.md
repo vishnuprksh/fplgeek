@@ -1,8 +1,10 @@
 # Task Tracking
 
-# Current Sprint: Update Button Implementation (2026-04-24)
+# Current Sprint: Startup & Testing (2026-04-25)
 
-- [x] **Add backend update endpoints** — Created endpoints to trigger and monitor data updates
+- [x] **Start Local Dev Servers** — Reviving frontend and backend for the session
+- [x] **Verify Endpoints** — Ensure API and frontend are accessible
+- [x] **Remove unnecessary Analysis page** — Deleted AnalysisView and related nav entries
   - [x] POST /api/update-data - Triggers the full data pipeline (fixtures, players, model training)
   - [x] GET /api/update-status - Returns current update status and last update time
   - [x] Prevents concurrent updates (returns error if already updating)

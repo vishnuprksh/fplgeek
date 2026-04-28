@@ -24,7 +24,7 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data' | 'analysis'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
 
   // Initialize keep-alive for Render free tier (pings backend every 8 minutes)
   useKeepAlive();
