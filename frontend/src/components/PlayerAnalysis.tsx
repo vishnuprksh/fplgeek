@@ -13,7 +13,7 @@ interface PlayerAnalysisProps {
     gameweekMetadata?: PredictionMetadata | null;
 }
 
-type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r6_min' | 'r6_pts' | 'r6_inf' | 'r6_thr' | 'r6_xg' | 'r6_creativity' | 't100_ownership' | 'f_atk_next' | 'f_def_next' | 'gw1_haul' | 'gw2_haul' | 'gw3_haul';
+type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r6_min' | 'r6_pts' | 'r6_inf' | 'r6_cre' | 'r6_thr' | 'r6_xg' | 't100_ownership' | 'f_atk_next' | 'f_def_next' | 'gw1_haul' | 'gw2_haul' | 'gw3_haul';
 type SortDirection = 'asc' | 'desc';
 
 export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, gameweekMetadata }: PlayerAnalysisProps) {
@@ -42,9 +42,9 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                 r6_min: pred?.r6_min ?? 0,
                 r6_pts: pred?.r6_pts ?? 0,
                 r6_inf: pred?.r6_inf ?? 0,
+                r6_cre: pred?.r6_cre ?? 0,
                 r6_thr: pred?.r6_thr ?? 0,
                 r6_xg: pred?.r6_xg ?? 0,
-                r6_creativity: parseFloat((p as any).creativity ?? '0'),
                 f_atk_next: pred?.f_atk_next ?? 0,
                 f_def_next: pred?.f_def_next ?? 0,
                 ownership: parseFloat(p.selected_by_percent || "0"),
@@ -187,11 +187,11 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                                 <th onClick={() => handleSort('gw1_haul')} className="sortable">GW {gameweekMetadata?.nextPlayGW ?? '?'} {sortField === 'gw1_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('gw2_haul')} className="sortable">GW {gameweekMetadata ? gameweekMetadata.nextPlayGW + 1 : '?'} {sortField === 'gw2_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('gw3_haul')} className="sortable">GW {gameweekMetadata ? gameweekMetadata.nextPlayGW + 2 : '?'} {sortField === 'gw3_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r6_creativity')} className="sortable">Season Cre {sortField === 'r6_creativity' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul Avg (3GW) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_pts')} className="sortable">L6 Pts {sortField === 'r6_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_xg')} className="sortable">L6 xG {sortField === 'r6_xg' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_inf')} className="sortable">L6 Inf {sortField === 'r6_inf' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_cre')} className="sortable">L6 Cre {sortField === 'r6_cre' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_thr')} className="sortable">L6 Thr {sortField === 'r6_thr' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_min')} className="sortable">L6 Min {sortField === 'r6_min' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('now_cost')} className="sortable">Price {sortField === 'now_cost' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
@@ -218,9 +218,6 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                                     <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
                                         {(((player as any).gw3_haul || 0) * 100).toFixed(0)}%
                                     </td>
-                                    <td style={{ backgroundColor: getTop10Color('r6_creativity', (player as any).r6_creativity) }}>
-                                        {((player as any).r6_creativity || 0).toFixed(1)}
-                                    </td>
                                     <td className="color-cell" style={{ fontWeight: 800 }}>
                                         {((player as any).prob_gt_6 * 100).toFixed(0)}%
                                     </td>
@@ -232,6 +229,9 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                                     </td>
                                     <td style={{ backgroundColor: getTop10Color('r6_inf', (player as any).r6_inf) }}>
                                         {((player as any).r6_inf || 0).toFixed(1)}
+                                    </td>
+                                    <td style={{ backgroundColor: getTop10Color('r6_cre', (player as any).r6_cre) }}>
+                                        {((player as any).r6_cre || 0).toFixed(1)}
                                     </td>
                                     <td style={{ backgroundColor: getTop10Color('r6_thr', (player as any).r6_thr) }}>
                                         {((player as any).r6_thr || 0).toFixed(1)}

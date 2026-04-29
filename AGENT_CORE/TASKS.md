@@ -1,5 +1,46 @@
 # Task Tracking
 
+# Current Session: Fix R6_Cre Data Bug (2026-04-28 Evening)
+
+- [x] **Identified R6 Creativity Data Bug** — Column showed season-total instead of rolling-6
+  - [x] Observed unusually high values (1655.4) in L6 Cre column
+  - [x] Root cause: Frontend reading `parseFloat((p as any).creativity)` from FPL API (season-total)
+  - [x] Should read from ai_predictions.json (rolling-6 aggregate)
+
+- [x] **Fixed Backend Feature Extraction** — Updated model_manager_unified.py
+  - [x] Added extraction of all 9 rolling-6 features from feature vector indices 9-17
+  - [x] Specifically: `r6_cre = float(original_x[14])` from feature vector
+  - [x] Updated all_predictions dict to export r6_cre alongside other rolling-6 values
+  - [x] Updated entry_ref section to store r6_cre for latest GW values
+
+- [x] **Fixed Frontend Data Source** — Updated PlayerAnalysis.tsx
+  - [x] Changed SortField type from `r6_creativity` to `r6_cre` for consistency
+  - [x] Updated enrichment logic to read `pred?.r6_cre ?? 0` from aiPredictions
+  - [x] Changed from raw FPL API property to derived prediction value
+  - [x] Updated table column header and rendering to use r6_cre property
+  - [x] Column correctly positioned between L6 Inf and L6 Thr
+
+- [x] **Regenerated All Predictions** — Ran full data pipeline with corrected code
+  - [x] Updated fixtures (380 total, 339 finished, 41 upcoming)
+  - [x] Refreshed 820 players with GW34 current data
+  - [x] Ingested historical data (33,988 rows: 2023/24 + 2024/25 seasons)
+  - [x] Generated 85,975 feature samples (GKP: 9,839, DEF: 28,167, MID: 39,051, FWD: 8,918)
+  - [x] Retrained unified model (Train Acc: 59.67%, Test Acc: 51.12%, MAE: 1.7673)
+  - [x] Generated future predictions for 820 players (GW 35, 36, 37)
+  - [x] Regenerated ai_predictions.json with complete r6_* features
+
+- [x] **Validated Fix in Browser** — Verified correct data display
+  - [x] Refreshed frontend (http://localhost:5173)
+  - [x] Navigated to Players page
+  - [x] Confirmed L6 Cre values now display rolling-6 aggregates (~10-40 range)
+  - [x] Values no longer show season-totals (previously 1000+)
+  - [x] Example values: B. Fernandes: 38.0, Gabriel: 26.0, Bowen: 30.5, Virgil: 28.3
+  - [x] Column positioned correctly between L6 Inf and L6 Thr as required
+
+**Status:** ✅ COMPLETE — Data flow now correctly wired: AI Model → ai_predictions.json → Frontend Display
+
+---
+
 # Current Sprint: GW35 Readiness (2026-04-28)
 
 - [x] **Fix Python script path bugs** — All 4 scripts use `'../../data'` for `_DATA_ROOT`

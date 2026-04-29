@@ -1,5 +1,19 @@
 # Strategic Memories
 
+### 2026-04-28 - R6 Creativity Data Bug: Seasonals vs Rolling-6
+- **Context:** L6 Cre column displayed unusually high values (~1655.4). Column was mislabeled earlier as "Season Cre" but actually needed to show rolling-6 creativity.
+- **Root Cause:** Frontend `PlayerAnalysis.tsx` read creativity from raw FPL API response via `parseFloat((p as any).creativity)`. FPL API's `creativity` field is **season-total**, not rolling-6. Rolling-6 aggregates must be computed during preprocessing or fetched from model predictions.
+- **Fix (2 components):**
+  1. **Backend (model_manager_unified.py):** Modified to extract all 9 rolling-6 features from unified model's feature vector (indices 9-17):
+     - `r6_cre = float(original_x[14])` ← Index 14 is rolling-6 creativity
+     - Updated `all_predictions` dict and `entry_ref` section to export r6_cre to ai_predictions.json
+  2. **Frontend (PlayerAnalysis.tsx):** Changed data source from raw API to predictions:
+     - From: `r6_creativity: parseFloat((p as any).creativity ?? '0')`
+     - To: `r6_cre: pred?.r6_cre ?? 0`
+     - Also renamed SortField type from `r6_creativity` → `r6_cre` for consistency
+- **Key Insight:** Rolling-6 aggregates are **derived metrics** that must be explicitly computed during feature engineering, not fetched raw from FPL API. The unified model's feature vector already contains these values (indices 9-17) — we just needed to extract and expose them.
+- **Validation:** After regenerating ai_predictions.json, L6 Cre showed correct values (~10-40 range) instead of season-totals (1000+).
+
 ### 2026-04-28 - GW35 Readiness: Events Table Root Cause & Fix
 - **Context:** Fixture Ticker showed GW 30/31/32 instead of GW 35/36/37 even though predictions were correct.
 - **Root Cause:** The SQLite `events` table stored a **single row** (`id='events'`) containing the full events JSON array. This array was stale (GW29=current, GW30=next) — it had not been refreshed since mid-season. The frontend's `FixtureAnalysis` relied on `staticData.events.find(e => e.is_next)?.id` which read this stale value.

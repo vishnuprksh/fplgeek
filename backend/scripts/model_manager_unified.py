@@ -268,12 +268,17 @@ def predict_future() -> None:
         prob_gt_10 = float(np.sum(dist[11:])) if len(dist) > 11 else 0.0
         
         # Extract r6 features from original X (indices 9-17 in 19-dim vector)
+        # Order: [min, pts, xG, xA, inf, cre, thr, gc, saves]
         original_x = X[fidx]
         r6_min = float(original_x[9]) if len(original_x) >= 10 else 0.0
         r6_pts = float(original_x[10]) if len(original_x) >= 11 else 0.0
-        r6_inf = float(original_x[13]) if len(original_x) >= 14 else 0.0
-        r6_thr = float(original_x[15]) if len(original_x) >= 16 else 0.0
         r6_xg = float(original_x[11]) if len(original_x) >= 12 else 0.0
+        r6_xA = float(original_x[12]) if len(original_x) >= 13 else 0.0
+        r6_inf = float(original_x[13]) if len(original_x) >= 14 else 0.0
+        r6_cre = float(original_x[14]) if len(original_x) >= 15 else 0.0
+        r6_thr = float(original_x[15]) if len(original_x) >= 16 else 0.0
+        r6_gc = float(original_x[16]) if len(original_x) >= 17 else 0.0
+        r6_saves = float(original_x[17]) if len(original_x) >= 18 else 0.0
 
         # Extract Fixture Features (Indices 7-8 in ctx block)
         f_atk = float(original_x[7]) if len(original_x) >= 8 else 0.0
@@ -293,9 +298,13 @@ def predict_future() -> None:
                 "prob_gt_10_next": 0.0,
                 "r6_min": r6_min,
                 "r6_pts": r6_pts,
-                "r6_inf": r6_inf,
-                "r6_thr": r6_thr,
                 "r6_xg": r6_xg,
+                "r6_xA": r6_xA,
+                "r6_inf": r6_inf,
+                "r6_cre": r6_cre,
+                "r6_thr": r6_thr,
+                "r6_gc": r6_gc,
+                "r6_saves": r6_saves,
                 "f_atk_next": f_atk,
                 "f_def_next": f_def,
             }
@@ -304,9 +313,13 @@ def predict_future() -> None:
         entry_ref = all_predictions[pid]
         entry_ref["r6_min"] = r6_min
         entry_ref["r6_pts"] = r6_pts
-        entry_ref["r6_inf"] = r6_inf
-        entry_ref["r6_thr"] = r6_thr
         entry_ref["r6_xg"] = r6_xg
+        entry_ref["r6_xA"] = r6_xA
+        entry_ref["r6_inf"] = r6_inf
+        entry_ref["r6_cre"] = r6_cre
+        entry_ref["r6_thr"] = r6_thr
+        entry_ref["r6_gc"] = r6_gc
+        entry_ref["r6_saves"] = r6_saves
         
         entry = all_predictions[pid]
         entry["projections"].append({
