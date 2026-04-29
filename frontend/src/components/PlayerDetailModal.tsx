@@ -92,15 +92,14 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                         <th>Opponent</th>
                                         <th>Res</th>
                                         <th>Mins</th>
-                                        <th>G</th>
                                         <th>xG</th>
-                                        <th>A</th>
                                         <th>xA</th>
-                                        <th>xGI</th>
-                                        <th>xGC</th>
                                         <th>CS</th>
                                         <th>BPS</th>
                                         <th>ICT</th>
+                                        <th>Inf</th>
+                                        <th>Cre</th>
+                                        <th>Thr</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,15 +127,14 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                                 <td>{opponent} {match.opponent_team ? (isHome ? '(H)' : '(A)') : ''}</td>
                                                 <td>{score}</td>
                                                 <td>{match.minutes}</td>
-                                                <td>{match.goals_scored}</td>
                                                 <td className="stat-dim">{match.expected_goals}</td>
-                                                <td>{match.assists}</td>
                                                 <td className="stat-dim">{match.expected_assists}</td>
-                                                <td className="stat-dim">{match.expected_goal_involvements}</td>
-                                                <td className="stat-dim">{match.expected_goals_conceded}</td>
                                                 <td>{match.clean_sheets}</td>
                                                 <td>{match.bps}</td>
                                                 <td>{match.ict_index}</td>
+                                                <td className="stat-dim">{match.influence}</td>
+                                                <td className="stat-dim">{match.creativity}</td>
+                                                <td className="stat-dim">{match.threat}</td>
                                             </tr>
                                         );
                                     })}

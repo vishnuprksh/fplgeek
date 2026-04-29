@@ -82,9 +82,19 @@ export class SqliteProvider implements IDataProvider {
             }
             stmt.free();
 
-            // 3. Merge history into players
+            // 3. Merge history into players, deduplicating by kickoff_time
+            // Both the historical ingestion (negative fixture_ids) and the FPL API fetch
+            // (positive fixture_ids) insert entries for the same current-season matches,
+            // causing duplicate rows per round. Dedup by kickoff_time keeps only one per match.
             players.forEach(p => {
-                p.history = historyMap.get(p.id) || [];
+                const rawHistory = historyMap.get(p.id) || [];
+                const seen = new Set<string>();
+                p.history = rawHistory.filter(item => {
+                    const key = item.kickoff_time || String(item.fixture_id ?? Math.random());
+                    if (seen.has(key)) return false;
+                    seen.add(key);
+                    return true;
+                });
             });
 
             return players;
