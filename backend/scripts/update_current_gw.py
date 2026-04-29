@@ -22,7 +22,7 @@ from typing import Dict, List, Any, Optional
 
 _DATA_ROOT = os.environ.get(
     'FPL_DATA_DIR',
-    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../data'))
+    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data'))
 )
 DB_PATH = os.path.join(_DATA_ROOT, 'fpl.sqlite')
 
@@ -215,6 +215,17 @@ def update_current_season():
         )
         update_count += 1
     
+    # 4b. Refresh events, teams, element_types from latest bootstrap
+    print(f"\n📝 Refreshing events, teams, element_types...")
+    events = bootstrap.get('events', [])
+    teams_list = bootstrap.get('teams', [])
+    element_types_list = bootstrap.get('element_types', [])
+
+    cur.execute("INSERT OR REPLACE INTO events (id, data) VALUES ('events', ?)", (json.dumps(events),))
+    cur.execute("INSERT OR REPLACE INTO teams (id, data) VALUES ('teams', ?)", (json.dumps(teams_list),))
+    cur.execute("INSERT OR REPLACE INTO element_types (id, data) VALUES ('element_types', ?)", (json.dumps(element_types_list),))
+    print(f"✓ Events, teams, element_types refreshed")
+
     conn.commit()
     conn.close()
 

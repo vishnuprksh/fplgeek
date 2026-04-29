@@ -13,7 +13,7 @@ from typing import List, Dict, Any
 
 _DATA_ROOT = os.environ.get(
     'FPL_DATA_DIR',
-    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../data'))
+    os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data'))
 )
 DB_PATH = os.path.join(_DATA_ROOT, 'fpl.sqlite')
 OUTPUT_FILE = os.path.join(_DATA_ROOT, 'fixtures.json')

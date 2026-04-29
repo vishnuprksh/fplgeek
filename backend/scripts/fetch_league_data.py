@@ -6,7 +6,7 @@ import concurrent.futures
 from typing import Any, Dict, List, Optional
 
 LEAGUE_ID = 314
-_DATA_ROOT = os.environ.get('FPL_DATA_DIR', os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../../data')))
+_DATA_ROOT = os.environ.get('FPL_DATA_DIR', os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '../../data')))
 DATA_FILE = os.path.join(_DATA_ROOT, 'league_analysis.json')
 
 def fetch_data(url: str) -> Optional[Dict[str, Any]]:

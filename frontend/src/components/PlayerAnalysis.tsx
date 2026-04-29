@@ -9,13 +9,14 @@ interface PlayerAnalysisProps {
     elements: Player[];
     teams: Team[];
     t100Ownership?: Record<number, number>;
+    aiPredictions?: Record<number, any>;
     gameweekMetadata?: PredictionMetadata | null;
 }
 
 type SortField = keyof Player | 'prob_gt_6' | 'prob_gt_6_next' | 'r6_min' | 'r6_pts' | 'r6_inf' | 'r6_thr' | 'r6_xg' | 'r6_creativity' | 't100_ownership' | 'f_atk_next' | 'f_def_next' | 'gw1_haul' | 'gw2_haul' | 'gw3_haul';
 type SortDirection = 'asc' | 'desc';
 
-export function PlayerAnalysis({ elements, teams, t100Ownership, gameweekMetadata }: PlayerAnalysisProps) {
+export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, gameweekMetadata }: PlayerAnalysisProps) {
     const [search, setSearch] = useState('');
     const [positionFilter, setPositionFilter] = useState<number | 'all'>('all');
     const [teamFilter, setTeamFilter] = useState<number | 'all'>('all');
@@ -27,22 +28,30 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, gameweekMetadat
     // Elements already have smart_value calculated? (Actually they don't, but let's just use raw elements)
     const enrichedPlayers = useMemo(() => {
         return elements.map(p => {
+            const pred = aiPredictions?.[p.id];
+            const gw1_haul = pred?.projections?.[0]?.prob_gt_6 ?? 0;
+            const gw2_haul = pred?.projections?.[1]?.prob_gt_6 ?? 0;
+            const gw3_haul = pred?.projections?.[2]?.prob_gt_6 ?? 0;
             return {
                 ...p,
-                prob_gt_6: 0,
-                prob_gt_6_next: 0,
-                r10_min: 0,
-                r10_pts: 0,
-                r10_inf: 0,
-                r10_thr: 0,
-                r10_xg: 0,
-                f_atk_next: 0,
-                f_def_next: 0,
+                prob_gt_6: pred?.prob_gt_6 ?? 0,
+                prob_gt_6_next: pred?.prob_gt_6_next ?? 0,
+                gw1_haul,
+                gw2_haul,
+                gw3_haul,
+                r6_min: pred?.r6_min ?? 0,
+                r6_pts: pred?.r6_pts ?? 0,
+                r6_inf: pred?.r6_inf ?? 0,
+                r6_thr: pred?.r6_thr ?? 0,
+                r6_xg: pred?.r6_xg ?? 0,
+                r6_creativity: parseFloat((p as any).creativity ?? '0'),
+                f_atk_next: pred?.f_atk_next ?? 0,
+                f_def_next: pred?.f_def_next ?? 0,
                 ownership: parseFloat(p.selected_by_percent || "0"),
                 t100_ownership: t100Ownership ? (t100Ownership[p.id] || 0) : 0
             };
         });
-    }, [elements, t100Ownership]);
+    }, [elements, t100Ownership, aiPredictions]);
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -175,10 +184,10 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, gameweekMetadat
                                 <th>Name</th>
                                 <th>Team</th>
                                 <th>Pos</th>
-                                <th onClick={() => handleSort('gw1_haul')} className="sortable">GW 34 {sortField === 'gw1_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('gw2_haul')} className="sortable">GW 35 {sortField === 'gw2_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('gw3_haul')} className="sortable">GW 36 {sortField === 'gw3_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
-                                <th onClick={() => handleSort('r6_creativity')} className="sortable">L6 Creative {sortField === 'r6_creativity' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('gw1_haul')} className="sortable">GW {gameweekMetadata?.nextPlayGW ?? '?'} {sortField === 'gw1_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('gw2_haul')} className="sortable">GW {gameweekMetadata ? gameweekMetadata.nextPlayGW + 1 : '?'} {sortField === 'gw2_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('gw3_haul')} className="sortable">GW {gameweekMetadata ? gameweekMetadata.nextPlayGW + 2 : '?'} {sortField === 'gw3_haul' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+                                <th onClick={() => handleSort('r6_creativity')} className="sortable">Season Cre {sortField === 'r6_creativity' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('prob_gt_6')} className="sortable">Haul Avg (3GW) {sortField === 'prob_gt_6' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_pts')} className="sortable">L6 Pts {sortField === 'r6_pts' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
                                 <th onClick={() => handleSort('r6_xg')} className="sortable">L6 xG {sortField === 'r6_xg' && (sortDirection === 'asc' ? '↑' : '↓')}</th>

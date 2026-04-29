@@ -9,13 +9,12 @@ interface FixtureAnalysisProps {
     currentEvent: number;
 }
 
-export function FixtureAnalysis({ fixtures, teams, currentEvent: _currentEvent }: FixtureAnalysisProps) {
+export function FixtureAnalysis({ fixtures, teams, currentEvent }: FixtureAnalysisProps) {
     const [weeks, setWeeks] = useState(3);
     const table = calculateTable(fixtures, teams);
 
-    // Use gameweek 34 as the starting point for upcoming predictions
-    // This aligns with the AI predictions which cover GW 34, 35, 36+
-    const nextGameweek = 34;
+    // currentEvent prop is already the next GW to play (is_next=true from FPL API)
+    const nextGameweek = currentEvent;
 
     // Calculate both tables using next upcoming gameweek
     const attackTicker = getFixtureTicker(fixtures, table, nextGameweek, weeks, 'attack');

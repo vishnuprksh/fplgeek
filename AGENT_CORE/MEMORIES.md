@@ -1,6 +1,25 @@
 # Strategic Memories
 
-### 2026-04-25 - Removed Analysis Page
+### 2026-04-28 - GW35 Readiness: Events Table Root Cause & Fix
+- **Context:** Fixture Ticker showed GW 30/31/32 instead of GW 35/36/37 even though predictions were correct.
+- **Root Cause:** The SQLite `events` table stored a **single row** (`id='events'`) containing the full events JSON array. This array was stale (GW29=current, GW30=next) — it had not been refreshed since mid-season. The frontend's `FixtureAnalysis` relied on `staticData.events.find(e => e.is_next)?.id` which read this stale value.
+- **Fix (3 parts):**
+  1. Immediately refreshed SQLite events from live FPL API (now GW34=current, GW35=next)
+  2. Changed `App.tsx` to use `gameweekMetadata?.nextPlayGW` (from `/api/gameweek-context`, our authoritative source) as primary value for `FixtureAnalysis.currentEvent`, falling back to `events.find(is_next)?.id`
+  3. Added events/teams/element_types refresh to `update_current_gw.py` so it auto-refreshes on each GW update
+- **Lesson:** The backend `gameweek-context` endpoint (with reverse-scan logic against player history) is more reliable than the SQLite events table for determining current/next GW. Always prefer it.
+
+### 2026-04-28 - "L6 Creative" Renamed to "Season Cre"
+- **Context:** `r6_creativity` in `enrichedPlayers` uses `parseFloat((p as any).creativity)` which is FPL season-total creativity, not rolling-6. Values appeared as 1655.4 (very high) vs expected ~50-100 for rolling-6.
+- **Decision:** Renamed column header from "L6 Creative" to "Season Cre" to accurately reflect what's shown.
+- **Future:** To properly compute rolling-6 creativity, would need to sum last 6 `player_history` records' creativity field per player.
+
+### 2026-04-28 - League Data Refresh Required Each GW
+- **Context:** `league_analysis.json` only had data through GW33 (1 GW behind after GW34 completed).
+- **Fix:** Re-ran `fetch_league_data.py` after each GW — this script fetches from FPL API for all 38 GWs (100 teams sample). Takes ~60s to run.
+- **Pipeline Note:** `fetch_league_data.py` is NOT in `update_data.sh` by default. If you want League page current, run it manually or add to pipeline.
+
+
 - **Context:** User requested deletion of the Analysis page as it was not required.
 - **Decision:** Removed `AnalysisView` component, CSS, and navigation entries.
 - **Reasoning:** Simplifying the UI by removing unused or unnecessary features.

@@ -1,6 +1,24 @@
 # Task Tracking
 
-# Current Sprint: Startup & Testing (2026-04-25)
+# Current Sprint: GW35 Readiness (2026-04-28)
+
+- [x] **Fix Python script path bugs** — All 4 scripts use `'../../data'` for `_DATA_ROOT`
+- [x] **Create lib/models.py** — ML model helpers for unified model pipeline
+- [x] **Fix PYTHONPATH in update_data.sh** — Correct path for ML scripts
+- [x] **Fix gameweek-context endpoint** — Reverse-scan logic returns currentGW:34, nextPlayGW:35
+- [x] **Ingest GW34 results** — Historical data updated in SQLite
+- [x] **Retrain model + predict GW35/36/37** — ai_predictions.json updated
+- [x] **Fix PlayerAnalysis GW headers** — Dynamic GW 35/36/37 (from gameweekMetadata)
+- [x] **Fix AI predictions showing 0%** — Load from API, pass to PlayerAnalysis as prop
+- [x] **Fix Fixture Ticker GW 30/31/32 → GW 35/36/37** — 
+  - Updated SQLite events table from live FPL API (GW34=current, GW35=next)
+  - Changed App.tsx to use `gameweekMetadata?.nextPlayGW` as primary source for FixtureAnalysis
+  - Added events/teams/element_types refresh to `update_current_gw.py`
+- [x] **Update League data to GW34** — Re-ran fetch_league_data.py
+- [x] **Fix "L6 Creative" label** — Renamed to "Season Cre" to reflect it's season total
+- [x] **Audit all pages** — Team✅, Players✅, Fixtures✅, League✅, Data✅
+
+**Blockers:** None — all pages functional for GW35
 
 - [x] **Start Local Dev Servers** — Reviving frontend and backend for the session
 - [x] **Verify Endpoints** — Ensure API and frontend are accessible

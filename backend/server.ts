@@ -147,28 +147,38 @@ app.get('/api/gameweek-context', (req, res) => {
         }
 
         // Determine current and next GW
-        let currentGW = 33; // default
-        let nextPlayGW = 34; // default
+        let currentGW = 1; // default
+        let nextPlayGW = 1; // default
         const blankGWs: number[] = [];
 
-        for (const [gw, stats] of gwStats) {
+        // Sort GWs numerically
+        const sortedGWs = Array.from(gwStats.entries()).sort((a, b) => a[0] - b[0]);
+
+        for (const [gw, stats] of sortedGWs) {
             // Blank week = fewer than 10 games
             if (stats.total < 10) {
                 blankGWs.push(gw);
             }
-            
-            // Current GW = one with some but not all games finished
-            if (stats.finished > 0 && stats.finished < stats.total) {
+        }
+
+        // Current GW = highest GW that has at least 1 finished fixture
+        for (const [gw, stats] of [...sortedGWs].reverse()) {
+            if (stats.finished > 0) {
                 currentGW = gw;
+                break;
             }
         }
 
-        // Next playable GW = first with 0 finished games
-        for (const [gw, stats] of Array.from(gwStats.entries()).sort((a, b) => a[0] - b[0])) {
-            if (stats.finished === 0 && stats.total > 0) {
+        // Next playable GW = first GW after currentGW with 0 finished games and > 0 total
+        for (const [gw, stats] of sortedGWs) {
+            if (gw > currentGW && stats.finished === 0 && stats.total > 0) {
                 nextPlayGW = gw;
                 break;
             }
+        }
+        // Fallback: if no unplayed GW found after current, use currentGW + 1
+        if (nextPlayGW === 1) {
+            nextPlayGW = currentGW + 1;
         }
 
         res.json({

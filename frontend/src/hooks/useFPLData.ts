@@ -4,12 +4,14 @@ import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl'
 import type { PredictionMetadata } from '../types/gameweek';
 
 export type T100OwnershipMap = Record<number, number>;
+export type AIPredictionMap = Record<number, any>;
 
 export const useFPLData = () => {
     const [staticData, setStaticData] = useState<BootstrapStatic | null>(null);
     const [fixtures, setFixtures] = useState<Match[]>([]);
     const [t100OwnershipMap, setT100OwnershipMap] = useState<T100OwnershipMap>({});
     const [gameweekMetadata, setGameweekMetadata] = useState<PredictionMetadata | null>(null);
+    const [aiPredictionMap, setAiPredictionMap] = useState<AIPredictionMap>({});
 
     const [teamData, setTeamData] = useState<TeamEntry | null>(null);
     const [picksData, setPicksData] = useState<TeamPicks | null>(null);
@@ -63,6 +65,20 @@ export const useFPLData = () => {
                     console.warn('⚠️ Could not load league analysis for T100 ownership', e);
                 }
 
+                // Load AI predictions
+                try {
+                    const predRes = await fetch('/ai-api/api/data/predictions');
+                    if (predRes.ok) {
+                        const predData: any[] = await predRes.json();
+                        const predMap: AIPredictionMap = {};
+                        predData.forEach(p => { predMap[p.id] = p; });
+                        setAiPredictionMap(predMap);
+                        console.log('✅ AI predictions loaded:', predData.length, 'players');
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Could not load AI predictions', e);
+                }
+
             } catch (e) {
                 console.error("❌ Failed to load global FPL data", e);
                 setError("Failed to load FPL database or fixtures.");
@@ -112,6 +128,7 @@ export const useFPLData = () => {
         staticData,
         fixtures,
         t100OwnershipMap,
+        aiPredictionMap,
         gameweekMetadata,
         teamData,
         picksData,

@@ -28,6 +28,15 @@ fi
 
 cd "$REPO_ROOT/backend"
 
+# 0. Update fixtures to get current GW state
+echo "🗓️ Step 0: Updating fixtures..."
+python3 scripts/update_fixtures.py
+python3 scripts/export_fixtures.py
+
+# 1a. Fetch current season GW data from FPL API (mark GW34 as played)
+echo "📥 Step 1a: Updating current season GW data..."
+python3 scripts/update_current_gw.py
+
 # 1. Ingest latest data from FPL API (using Python scripts)
 echo "📥 Step 1: Ingesting latest data..."
 python3 scripts/ingest_historical_gw.py
@@ -39,12 +48,16 @@ npx tsx scripts/preprocessing_dataset.ts
 # 3. Retrain AI Models
 echo "🧠 Step 3: Retraining AI models..."
 source "$REPO_ROOT/venv/bin/activate"
-export PYTHONPATH="$REPO_ROOT/backend"
+export PYTHONPATH="$REPO_ROOT/backend/scripts"
 python3 scripts/model_manager_unified.py
 
 # 4. Generate Predictions
 echo "🔮 Step 4: Generating future predictions..."
 python3 scripts/model_manager_unified.py --predict
+
+# 5. Refresh league ownership data
+echo "🏆 Step 5: Refreshing league ownership data..."
+python3 scripts/fetch_league_data.py
 
 deactivate
 

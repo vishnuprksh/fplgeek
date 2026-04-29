@@ -15,6 +15,7 @@ import { TransferModal } from './components/TransferModal';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
+import { UpdateButton } from './components/UpdateButton';
 
 
 import { DndProvider } from 'react-dnd';
@@ -37,6 +38,8 @@ export default function App() {
     staticData,
     fixtures,
     t100OwnershipMap,
+    aiPredictionMap,
+    gameweekMetadata,
     teamData,
     picksData,
     transfersHistory,
@@ -118,6 +121,7 @@ export default function App() {
               <span style={{ fontSize: '0.8em', opacity: 0.8 }}>Logout</span>
               <div style={{ width: '32px', height: '32px', background: '#37003c', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>VP</div>
             </div>
+            <UpdateButton onUpdateComplete={() => window.location.reload()} />
           </div>
         </header>
 
@@ -307,7 +311,7 @@ export default function App() {
                 <FixtureAnalysis
                   fixtures={fixtures}
                   teams={staticData.teams}
-                  currentEvent={staticData.events.find(e => e.is_next)?.id || 1}
+                  currentEvent={gameweekMetadata?.nextPlayGW || staticData.events.find(e => e.is_next)?.id || 1}
                 />
               </div>
             )}
@@ -318,6 +322,8 @@ export default function App() {
                   elements={staticData.elements}
                   teams={staticData.teams}
                   t100Ownership={t100OwnershipMap}
+                  aiPredictions={aiPredictionMap}
+                  gameweekMetadata={gameweekMetadata}
                 />
               </div>
             )}
