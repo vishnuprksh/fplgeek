@@ -1,33 +1,19 @@
 # Task Tracking
 
-- [x] **Current Focus:** Completion of Python backend migration and legacy cleanup.
-- [x] Update `scripts/update_data.sh` to use Python preprocessing script.
-- [x] Verify `backend/scripts/preprocessing_dataset.py` execution.
-- [x] Delete legacy `backend/scripts/preprocessing_dataset.ts`.
-- [x] Remove legacy TypeScript database/ingest files (`backend/lib/`).
-- [x] Delete redundant processed JSON datasets (`data/processed/`).
-
-**Blockers:** None
+- [x] **Current Focus:** Backend simplification — full rewrite complete.
 
 ## ✅ Completed Tasks:
-- [x] Full Project Discovery & Analysis
-- [x] Python Backend Migration Complete
-- [x] Python Backend Rewrite
-    - [x] Create `backend/requirements.txt`
-    - [x] Implement `backend/database.py`
-    - [x] Implement `backend/ingest.py`
-    - [x] Implement `backend/main.py`
-    - [x] Update `backend/package.json`
-    - [x] Verify all endpoints with `curl`
-- [x] **Final Cleanup & Integration**
-    - [x] Update root `package.json` scripts
-    - [x] Validate frontend integration
-    - [x] Fix `ingest.py` CLI entry point
-    - [x] Verify backend server stability with uvicorn
-- [x] **Remove Throwaway Files**
-    - [x] Delete `backend/server.ts`
-    - [x] Delete `backend/package.json` and `package-lock.json`
-    - [x] Delete `backend/node_modules`
+- [x] Rewrite `backend/main.py` (145 lines, no Postgres, reads JSON directly)
+- [x] Delete `backend/database.py` and `backend/ingest.py` (Postgres removed)
+- [x] Create `backend/scripts/fetch_data.py` (merges 5 old scripts)
+- [x] Create `backend/scripts/preprocess.py` (replaces preprocessing_dataset.py)
+- [x] Create `backend/scripts/train_predict.py` (merges model_manager_unified + feature_importance_unified)
+- [x] Delete old scripts (8 files) and `backend/scripts/lib/` folder
+- [x] Update `scripts/update_data.sh` to 3-step pipeline
+- [x] Remove `psycopg2-binary` from requirements.txt
+- [x] Install ML packages into backend venv
+
+**Blockers:** None
     - [x] Delete `backend/tsconfig.json`
     - [x] Delete `backend/Dockerfile` and `.dockerignore`
     - [x] Remove legacy Node.js backend references in root config
