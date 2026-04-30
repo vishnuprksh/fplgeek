@@ -56,6 +56,9 @@ def init_db(conn):
             player_id INTEGER, fixture_id INTEGER, data TEXT NOT NULL,
             PRIMARY KEY (player_id, fixture_id)
         );
+        CREATE TABLE IF NOT EXISTS app_data (
+            key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL
+        );
     """)
     conn.commit()
 
@@ -92,11 +95,7 @@ def fetch_and_store_fixtures(conn):
     conn.execute("DELETE FROM fixtures")
     conn.executemany("INSERT INTO fixtures VALUES (?, ?)", rows)
     conn.commit()
-
-    fixtures_json = [json.loads(r[1]) for r in rows]
-    with open(os.path.join(DATA_DIR, 'fixtures.json'), 'w') as f:
-        json.dump(fixtures_json, f)
-    print(f"  {len(rows)} fixtures saved → fixtures.json")
+    print(f"  {len(rows)} fixtures saved to SQLite")
 
 
 def build_history_row(h):
@@ -254,7 +253,7 @@ def fetch_historical_seasons(conn):
         print(f"    {len(rows)} rows inserted, {missed} missed")
 
 
-def fetch_league_analysis(bootstrap):
+def fetch_league_analysis(conn, bootstrap):
     print("Fetching league analysis...")
     elements = {
         el['id']: f"{el['web_name']} ({next((t['short_name'] for t in bootstrap['teams'] if t['id'] == el['team']), '')})"
@@ -311,9 +310,12 @@ def fetch_league_analysis(bootstrap):
         history.append({'gw': gw, 'top_owned': top_owned})
 
     out = {'league_id': LEAGUE_ID, 'total_teams_analyzed': total, 'history': history}
-    with open(os.path.join(DATA_DIR, 'league_analysis.json'), 'w') as f:
-        json.dump(out, f)
-    print(f"  league_analysis.json saved")
+    conn.execute(
+        "INSERT OR REPLACE INTO app_data (key, value, updated_at) VALUES (?, ?, strftime('%Y-%m-%dT%H:%M:%S', 'now'))",
+        ('league_analysis', json.dumps(out))
+    )
+    conn.commit()
+    print(f"  league_analysis saved to SQLite")
 
 
 def main():
@@ -334,7 +336,7 @@ def main():
     fetch_and_store_fixtures(conn)
     fetch_current_gw_history(conn, bootstrap)
     fetch_historical_seasons(conn)
-    fetch_league_analysis(bootstrap)
+    fetch_league_analysis(conn, bootstrap)
 
     conn.close()
     print("=== Done ===")

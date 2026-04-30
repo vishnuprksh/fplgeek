@@ -3,6 +3,7 @@ import os
 import sqlite3
 import numpy as np
 import joblib
+from datetime import datetime, timezone
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, mean_absolute_error, log_loss
@@ -11,8 +12,6 @@ from sklearn.preprocessing import StandardScaler
 DATA_DIR = os.environ.get('FPL_DATA_DIR', os.path.normpath(os.path.join(os.path.dirname(__file__), '../../data')))
 DB_PATH = os.path.join(DATA_DIR, 'fpl.sqlite')
 MODELS_DIR = os.path.join(DATA_DIR, 'models/model_manager_mlp')
-PREDICTIONS_FILE = os.path.join(DATA_DIR, 'ai_predictions.json')
-FEATURE_IMPORTANCE_FILE = os.path.join(DATA_DIR, 'feature_importance.json')
 
 FEATURE_NAMES = [
     "ctx_was_home", "ctx_difficulty", "ctx_price", "ctx_hours_rest",
@@ -217,10 +216,19 @@ def predict(clf, scaler, X, meta):
         results.append(entry)
 
     results.sort(key=lambda x: x["total3Week"], reverse=True)
-    os.makedirs(os.path.dirname(PREDICTIONS_FILE), exist_ok=True)
-    with open(PREDICTIONS_FILE, 'w') as f:
-        json.dump(results, f, indent=2)
-    print(f"Predictions saved: {len(results)} players → {PREDICTIONS_FILE}")
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS app_data (
+            key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute(
+        "INSERT OR REPLACE INTO app_data (key, value, updated_at) VALUES (?, ?, ?)",
+        ('ai_predictions', json.dumps(results), datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S'))
+    )
+    conn.commit()
+    conn.close()
+    print(f"Predictions saved: {len(results)} players → SQLite")
 
 
 def analyze_feature_importance(X, y, meta):
@@ -255,10 +263,19 @@ def analyze_feature_importance(X, y, meta):
         })
 
     output = {"UNIFIED": {"samples": n, "hauls": hauls, "haul_rate": float(hauls / n * 100), "features": features}}
-    os.makedirs(os.path.dirname(FEATURE_IMPORTANCE_FILE), exist_ok=True)
-    with open(FEATURE_IMPORTANCE_FILE, 'w') as f:
-        json.dump(output, f, indent=2)
-    print(f"Feature importance saved → {FEATURE_IMPORTANCE_FILE}")
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS app_data (
+            key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute(
+        "INSERT OR REPLACE INTO app_data (key, value, updated_at) VALUES (?, ?, ?)",
+        ('feature_importance', json.dumps(output), datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S'))
+    )
+    conn.commit()
+    conn.close()
+    print(f"Feature importance saved → SQLite")
 
 
 def main():

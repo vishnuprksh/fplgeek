@@ -16,14 +16,30 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 
 update_in_progress = False
 
-ALLOWED_FILES = ['ai_predictions.json', 'fixtures.json', 'league_analysis.json', 'feature_importance.json', 'fpl.sqlite']
+ALLOWED_FILES = ['fpl.sqlite']
 
-def load_json(name):
-    path = os.path.join(DATA_DIR, name)
-    if not os.path.exists(path):
-        raise HTTPException(404, f"{name} not found")
-    with open(path) as f:
-        return json.load(f)
+def load_fixtures():
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.execute("SELECT data FROM fixtures")
+        return [json.loads(row[0]) for row in cur.fetchall()]
+    except sqlite3.OperationalError:
+        raise HTTPException(404, "fixtures not found")
+    finally:
+        conn.close()
+
+def load_app_data(key):
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.execute("SELECT value FROM app_data WHERE key = ?", (key,))
+        row = cur.fetchone()
+        if not row:
+            raise HTTPException(404, f"{key} not found")
+        return json.loads(row[0])
+    except sqlite3.OperationalError:
+        raise HTTPException(404, f"{key} not found")
+    finally:
+        conn.close()
 
 @app.get("/health")
 def health():
@@ -31,19 +47,19 @@ def health():
 
 @app.get("/api/data/predictions")
 def predictions():
-    return load_json('ai_predictions.json')
+    return load_app_data('ai_predictions')
 
 @app.get("/api/data/fixtures")
 def fixtures():
-    return load_json('fixtures.json')
+    return load_fixtures()
 
 @app.get("/api/data/league-analysis")
 def league_analysis():
-    return load_json('league_analysis.json')
+    return load_app_data('league_analysis')
 
 @app.get("/api/data/feature-importance")
 def feature_importance():
-    return load_json('feature_importance.json')
+    return load_app_data('feature_importance')
 
 @app.get("/api/data/{filename}")
 def data_file(filename: str):
@@ -52,13 +68,11 @@ def data_file(filename: str):
     path = os.path.join(DATA_DIR, filename)
     if not os.path.exists(path):
         raise HTTPException(404, "File not found")
-    if filename.endswith('.sqlite'):
-        return FileResponse(path)
-    return load_json(filename)
+    return FileResponse(path)
 
 @app.get("/api/gameweek-context")
 def gameweek_context():
-    fixtures = load_json('fixtures.json')
+    fixtures = load_fixtures()
     gw_stats = {}
     for f in fixtures:
         gw = f.get('event')
@@ -131,15 +145,25 @@ def trigger_update(background_tasks: BackgroundTasks):
 
 @app.get("/api/update-status")
 def update_status():
-    pred = os.path.join(DATA_DIR, 'ai_predictions.json')
-    fix = os.path.join(DATA_DIR, 'fixtures.json')
-    files = [p for p in [pred, fix] if os.path.exists(p)]
-    mtime = max(os.path.getmtime(p) for p in files) if files else 0
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.execute("SELECT updated_at FROM app_data WHERE key = 'ai_predictions'")
+        row = cur.fetchone()
+        last_update = row[0] if row else None
+        has_predictions = row is not None
+        count = conn.execute("SELECT COUNT(*) FROM fixtures").fetchone()[0]
+        has_fixtures = count > 0
+    except sqlite3.OperationalError:
+        last_update = None
+        has_predictions = False
+        has_fixtures = False
+    finally:
+        conn.close()
     return {
         "isUpdating": update_in_progress,
         "status": "updating" if update_in_progress else "idle",
-        "lastUpdateTime": datetime.fromtimestamp(mtime).isoformat() if mtime else None,
-        "dataExists": os.path.exists(pred) and os.path.exists(fix)
+        "lastUpdateTime": last_update,
+        "dataExists": has_predictions and has_fixtures
     }
 
 app.mount("/data", StaticFiles(directory=DATA_DIR), name="data")

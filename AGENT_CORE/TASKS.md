@@ -20,6 +20,13 @@
 
 **Blockers:** None
 
+## ✅ Completed: Full JSON → SQLite Migration (2026-04-30)
+- [x] Add `app_data` table to `fpl.sqlite` (key/value store for predictions, league_analysis, feature_importance)
+- [x] `fetch_data.py`: write `league_analysis` to `app_data`, remove `fixtures.json` write
+- [x] `train_predict.py`: write `ai_predictions` + `feature_importance` to `app_data`, remove file constants
+- [x] `main.py`: replace `load_json()` with `load_fixtures()` + `load_app_data()` SQLite helpers, update all endpoints
+- [x] Migrate existing JSON files into SQLite on-the-fly (one-time migration script)
+
 ## ✅ Completed: DGW/BGW-Aware Haul Predictions (2026-04-30)
 - [x] Add `fixtures_in_gw` to `ValidatedProjection` type in `types/gameweek.ts`
 - [x] Propagate `fixtures_in_gw` through `validateProjection()` in `utils/gameweekValidation.ts`
