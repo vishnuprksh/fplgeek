@@ -25,6 +25,7 @@ export interface ValidatedProjection {
     prob_gt_10: number;
     f_atk: number;
     f_def: number;
+    fixtures_in_gw: number;     // 2 = Double GW, 1 = Normal, 0 = Blank GW
     isBlank: boolean;           // Is this GW a blank week?
     isPast: boolean;            // Is this GW in the past?
 }

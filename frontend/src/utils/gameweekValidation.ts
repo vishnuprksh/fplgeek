@@ -34,6 +34,7 @@ export function validateProjection(
         prob_gt_10: proj.prob_gt_10 || 0,
         f_atk: proj.f_atk || 0,
         f_def: proj.f_def || 0,
+        fixtures_in_gw: proj.fixtures_in_gw ?? 1,
         isBlank: isBlankGW(proj.gw, blankGWs),
         isPast: isPastGW(proj.gw, nextPlayGW),
     };

@@ -25,13 +25,31 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
-    // Elements already have smart_value calculated? (Actually they don't, but let's just use raw elements)
+    // Build enriched players using GW-number–matched projection lookup (not blind array index).
+    // This ensures DGW-boosted prob_gt_6 values and blank weeks (prob_gt_6=0) are correctly surfaced.
     const enrichedPlayers = useMemo(() => {
+        const nextGW = gameweekMetadata?.nextPlayGW ?? 35;
+
         return elements.map(p => {
             const pred = aiPredictions?.[p.id];
-            const gw1_haul = pred?.projections?.[0]?.prob_gt_6 ?? 0;
-            const gw2_haul = pred?.projections?.[1]?.prob_gt_6 ?? 0;
-            const gw3_haul = pred?.projections?.[2]?.prob_gt_6 ?? 0;
+            const projections: any[] = pred?.projections ?? [];
+
+            // Match projections by GW number — never by array index
+            const findProj = (gw: number) => projections.find((pr: any) => pr.gw === gw) ?? null;
+
+            const gw1_proj = findProj(nextGW);
+            const gw2_proj = findProj(nextGW + 1);
+            const gw3_proj = findProj(nextGW + 2);
+
+            const gw1_haul = gw1_proj?.prob_gt_6 ?? 0;
+            const gw2_haul = gw2_proj?.prob_gt_6 ?? 0;
+            const gw3_haul = gw3_proj?.prob_gt_6 ?? 0;
+
+            // fixtures_in_gw: 2 = DGW, 1 = normal, 0 = BGW/blank
+            const gw1_fixtures = gw1_proj?.fixtures_in_gw ?? (gw1_proj ? 1 : 0);
+            const gw2_fixtures = gw2_proj?.fixtures_in_gw ?? (gw2_proj ? 1 : 0);
+            const gw3_fixtures = gw3_proj?.fixtures_in_gw ?? (gw3_proj ? 1 : 0);
+
             return {
                 ...p,
                 prob_gt_6: pred?.prob_gt_6 ?? 0,
@@ -39,6 +57,9 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                 gw1_haul,
                 gw2_haul,
                 gw3_haul,
+                gw1_fixtures,
+                gw2_fixtures,
+                gw3_fixtures,
                 r6_min: pred?.r6_min ?? 0,
                 r6_pts: pred?.r6_pts ?? 0,
                 r6_inf: pred?.r6_inf ?? 0,
@@ -51,7 +72,7 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                 t100_ownership: t100Ownership ? (t100Ownership[p.id] || 0) : 0
             };
         });
-    }, [elements, t100Ownership, aiPredictions]);
+    }, [elements, t100Ownership, aiPredictions, gameweekMetadata]);
 
     const handleSort = (field: SortField) => {
         if (sortField === field) {
@@ -210,13 +231,37 @@ export function PlayerAnalysis({ elements, teams, t100Ownership, aiPredictions, 
                                     <td>{getTeamName(player.team)}</td>
                                     <td>{getPosition(player.element_type)}</td>
                                     <td className="color-cell" style={{ fontWeight: 600 }}>
-                                        {(((player as any).gw1_haul || 0) * 100).toFixed(0)}%
+                                        {(player as any).gw1_fixtures === 0
+                                            ? <span style={{ color: '#555', fontSize: '0.8em' }}>— BGW</span>
+                                            : <>
+                                                {(((player as any).gw1_haul || 0) * 100).toFixed(0)}%
+                                                {(player as any).gw1_fixtures >= 2 && (
+                                                    <span style={{ marginLeft: 4, fontSize: '0.72em', background: 'linear-gradient(90deg,#f59e0b,#ef4444)', color: '#fff', borderRadius: 4, padding: '1px 5px', verticalAlign: 'middle', fontWeight: 700 }}>2x</span>
+                                                )}
+                                            </>
+                                        }
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
-                                        {(((player as any).gw2_haul || 0) * 100).toFixed(0)}%
+                                        {(player as any).gw2_fixtures === 0
+                                            ? <span style={{ color: '#555', fontSize: '0.8em' }}>— BGW</span>
+                                            : <>
+                                                {(((player as any).gw2_haul || 0) * 100).toFixed(0)}%
+                                                {(player as any).gw2_fixtures >= 2 && (
+                                                    <span style={{ marginLeft: 4, fontSize: '0.72em', background: 'linear-gradient(90deg,#f59e0b,#ef4444)', color: '#fff', borderRadius: 4, padding: '1px 5px', verticalAlign: 'middle', fontWeight: 700 }}>2x</span>
+                                                )}
+                                            </>
+                                        }
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 500, fontSize: '0.85em' }}>
-                                        {(((player as any).gw3_haul || 0) * 100).toFixed(0)}%
+                                        {(player as any).gw3_fixtures === 0
+                                            ? <span style={{ color: '#555', fontSize: '0.8em' }}>— BGW</span>
+                                            : <>
+                                                {(((player as any).gw3_haul || 0) * 100).toFixed(0)}%
+                                                {(player as any).gw3_fixtures >= 2 && (
+                                                    <span style={{ marginLeft: 4, fontSize: '0.72em', background: 'linear-gradient(90deg,#f59e0b,#ef4444)', color: '#fff', borderRadius: 4, padding: '1px 5px', verticalAlign: 'middle', fontWeight: 700 }}>2x</span>
+                                                )}
+                                            </>
+                                        }
                                     </td>
                                     <td className="color-cell" style={{ fontWeight: 800 }}>
                                         {((player as any).prob_gt_6 * 100).toFixed(0)}%

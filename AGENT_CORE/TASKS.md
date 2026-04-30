@@ -1,6 +1,19 @@
 # Task Tracking
 
-# Current Session: Fix R6_Cre Data Bug (2026-04-28 Evening)
+## ✅ Completed: DGW/BGW-Aware Haul Predictions (2026-04-30)
+- [x] Add `fixtures_in_gw` to `ValidatedProjection` type in `types/gameweek.ts`
+- [x] Propagate `fixtures_in_gw` through `validateProjection()` in `utils/gameweekValidation.ts`
+- [x] Fix `PlayerAnalysis.tsx`: replace blind index access with GW-number-matched projection lookup
+- [x] Add DGW `2x` badge (amber→red gradient) and BGW `— BGW` label to haul cells
+- [x] TypeScript build: zero errors
+- [x] Browser verification: Man City / Crystal Palace GW36 shows `2x` badge correctly
+
+# Current Session: Restart Local Servers (2026-04-30)
+
+- [x] **Kill active ports** — Clear ports 3000 and 5173
+- [x] **Start Backend** — Run `npm run dev:backend`
+- [x] **Start Frontend** — Run `npm run dev`
+- [x] **Verify accessibility** — Both servers running (Ports 3000, 5173)
 
 - [x] **Identified R6 Creativity Data Bug** — Column showed season-total instead of rolling-6
   - [x] Observed unusually high values (1655.4) in L6 Cre column

@@ -1,5 +1,27 @@
 # Strategic Memories
 
+### 2026-04-30 - DGW/BGW-Aware Haul Predictions: Frontend-Only Fix
+- **Context:** Players page showed flat haul % without DGW/BGW differentiation — blind array index `projections[0]` used instead of GW-number lookup.
+- **Root Cause (confirmed):** Backend (`model_manager_unified.py`) already correctly:
+  - Counts `fixtures_in_gw` per team per GW (2=DGW, 1=normal, 0=BGW)
+  - Combines DGW probabilities via `P(A or B) = 1-(1-P(A))*(1-P(B))`
+  - Sets `prob_gt_6 = 0` for blank weeks
+  - Exports all this in `ai_predictions.json` projections array
+- **Fix (3 files, frontend only):**
+  1. `types/gameweek.ts`: Added `fixtures_in_gw: number` to `ValidatedProjection`
+  2. `utils/gameweekValidation.ts`: Propagated `fixtures_in_gw: proj.fixtures_in_gw ?? 1` in `validateProjection()`
+  3. `components/PlayerAnalysis.tsx`: Replaced `projections[0/1/2]` with `projections.find(p => p.gw === nextGW+n)` and added `2x` badge (amber-red gradient) for DGW and `— BGW` label for blank weeks
+- **Verified:** GW36 DGW (Teams 13/8 = Man City/Crystal Palace) correctly shows `2x` badge with boosted haul %
+- **Key Lesson:** When the backend already aggregates DGW correctly, the frontend fix is lookup-by-GW-number, NOT recalculation.
+
+### 2026-04-30 - Server Restart Session
+- **Context:** User requested to kill all current ports and start the application.
+- **Action:** 
+  1. Killed processes on ports 3000 and 5173 using `fuser -k`.
+  2. Started backend dev server (`npm run dev:backend`) on port 3000.
+  3. Started frontend dev server (`npm run dev`) on port 5173.
+- **Status:** Both servers confirmed active and listening.
+
 ### 2026-04-28 - R6 Creativity Data Bug: Seasonals vs Rolling-6
 - **Context:** L6 Cre column displayed unusually high values (~1655.4). Column was mislabeled earlier as "Season Cre" but actually needed to show rolling-6 creativity.
 - **Root Cause:** Frontend `PlayerAnalysis.tsx` read creativity from raw FPL API response via `parseFloat((p as any).creativity)`. FPL API's `creativity` field is **season-total**, not rolling-6. Rolling-6 aggregates must be computed during preprocessing or fetched from model predictions.
