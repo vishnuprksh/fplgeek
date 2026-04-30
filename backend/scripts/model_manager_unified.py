@@ -330,13 +330,6 @@ def predict_future() -> None:
             "f_atk": f_atk,
             "f_def": f_def
         })
-        
-        # Store 'next' probabilities for the first projection
-        if len(entry["projections"]) == 1:
-            entry["prob_gt_6_next"] = prob_gt_6
-            entry["prob_gt_10_next"] = prob_gt_10
-            entry["f_atk_next"] = f_atk
-            entry["f_def_next"] = f_def
     
     # Get list of future gameweeks for blank week handling
     future_gws = get_future_gameweeks()
@@ -345,7 +338,36 @@ def predict_future() -> None:
     # Finalize: inject blank weeks, sort, and compute aggregates
     results: List[Dict[str, Any]] = []
     for pid, entry in all_predictions.items():
-        projs: List[Dict[str, Any]] = entry["projections"]
+        raw_projs: List[Dict[str, Any]] = entry["projections"]
+        
+        # Aggregate multiple fixtures in the same GW (Double Gameweek)
+        gw_aggregated: Dict[int, Dict[str, Any]] = {}
+        for p in raw_projs:
+            gw = p["gw"]
+            if gw not in gw_aggregated:
+                gw_aggregated[gw] = {
+                    "gw": gw,
+                    "xP": 0.0,
+                    "prob_gt_6": 0.0,
+                    "prob_gt_10": 0.0,
+                    "f_atk": p["f_atk"],
+                    "f_def": p["f_def"],
+                    "fixtures_in_gw": 0
+                }
+                
+            current = gw_aggregated[gw]
+            # Combin probabilities: P(A or B) = 1 - (1 - P(A)) * (1 - P(B))
+            current["prob_gt_6"] = 1 - (1 - current["prob_gt_6"]) * (1 - p["prob_gt_6"])
+            current["prob_gt_10"] = 1 - (1 - current["prob_gt_10"]) * (1 - p["prob_gt_10"])
+            current["xP"] += p["xP"]
+            
+            current["fixtures_in_gw"] += 1
+            if current["fixtures_in_gw"] > 1:
+                # Average fixture difficulties for double gameweeks
+                current["f_atk"] = ((current["f_atk"] * (current["fixtures_in_gw"] - 1)) + p["f_atk"]) / current["fixtures_in_gw"]
+                current["f_def"] = ((current["f_def"] * (current["fixtures_in_gw"] - 1)) + p["f_def"]) / current["fixtures_in_gw"]
+                
+        projs = list(gw_aggregated.values())
         
         # If we have future gameweeks, inject blank weeks for missing GWs
         if future_gws:
@@ -360,12 +382,25 @@ def predict_future() -> None:
                         "prob_gt_6": 0.0,
                         "prob_gt_10": 0.0,
                         "f_atk": 0.0,
-                        "f_def": 0.0
+                        "f_def": 0.0,
+                        "fixtures_in_gw": 0
                     })
         
         # Sort by gameweek ascending
         projs.sort(key=lambda x: x["gw"])
         entry["projections"] = projs[:3]  # Keep only first 3 GWs
+        
+        if entry["projections"]:
+            entry["prob_gt_6_next"] = entry["projections"][0]["prob_gt_6"]
+            entry["prob_gt_10_next"] = entry["projections"][0]["prob_gt_10"]
+            entry["f_atk_next"] = entry["projections"][0]["f_atk"]
+            entry["f_def_next"] = entry["projections"][0]["f_def"]
+        else:
+            entry["prob_gt_6_next"] = 0.0
+            entry["prob_gt_10_next"] = 0.0
+            entry["f_atk_next"] = 0.0
+            entry["f_def_next"] = 0.0
+            
         entry["total3Week"] = sum(p["xP"] for p in entry["projections"])
         
         if len(entry["projections"]) > 0:
