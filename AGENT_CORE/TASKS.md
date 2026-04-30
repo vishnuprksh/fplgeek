@@ -1,5 +1,39 @@
 # Task Tracking
 
+- [x] **Current Focus:** Completion of Python backend migration and legacy cleanup.
+- [x] Update `scripts/update_data.sh` to use Python preprocessing script.
+- [x] Verify `backend/scripts/preprocessing_dataset.py` execution.
+- [x] Delete legacy `backend/scripts/preprocessing_dataset.ts`.
+- [x] Remove legacy TypeScript database/ingest files (`backend/lib/`).
+- [x] Delete redundant processed JSON datasets (`data/processed/`).
+
+**Blockers:** None
+
+## ✅ Completed Tasks:
+- [x] Full Project Discovery & Analysis
+- [x] Python Backend Migration Complete
+- [x] Python Backend Rewrite
+    - [x] Create `backend/requirements.txt`
+    - [x] Implement `backend/database.py`
+    - [x] Implement `backend/ingest.py`
+    - [x] Implement `backend/main.py`
+    - [x] Update `backend/package.json`
+    - [x] Verify all endpoints with `curl`
+- [x] **Final Cleanup & Integration**
+    - [x] Update root `package.json` scripts
+    - [x] Validate frontend integration
+    - [x] Fix `ingest.py` CLI entry point
+    - [x] Verify backend server stability with uvicorn
+- [x] **Remove Throwaway Files**
+    - [x] Delete `backend/server.ts`
+    - [x] Delete `backend/package.json` and `package-lock.json`
+    - [x] Delete `backend/node_modules`
+    - [x] Delete `backend/tsconfig.json`
+    - [x] Delete `backend/Dockerfile` and `.dockerignore`
+    - [x] Remove legacy Node.js backend references in root config
+
+**Blockers:** None
+
 ## ✅ Completed: DGW/BGW-Aware Haul Predictions (2026-04-30)
 - [x] Add `fixtures_in_gw` to `ValidatedProjection` type in `types/gameweek.ts`
 - [x] Propagate `fixtures_in_gw` through `validateProjection()` in `utils/gameweekValidation.ts`

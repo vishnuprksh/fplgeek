@@ -17,7 +17,9 @@ services:
       - proxy
 
   server:
-    build: ./backend
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: fplgeek-server
     restart: always
     env_file: .env

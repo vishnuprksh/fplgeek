@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite frontend",
-    "dev:backend": "tsx watch backend/server.ts",
+    "dev:backend": "cd backend && ./venv/bin/python -m uvicorn main:app --reload --port 3000",
     "build": "tsc --build frontend && vite build --root frontend",
     "lint": "eslint frontend/src",
     "preview": "vite preview --root frontend",
-    "ingest:local": "tsx backend/ingest.ts",
+    "ingest:local": "cd backend && ./venv/bin/python ingest.py",
     "update:data": "bash scripts/update_data.sh"
   },
   "dependencies": {

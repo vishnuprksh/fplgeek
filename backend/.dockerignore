@@ -1,9 +1,0 @@
-node_modules
-dist
-scripts/results
-scripts/__pycache__
-scripts/lib/__pycache__
-*.py
-*.pyc
-*.joblib
-*.sqlite

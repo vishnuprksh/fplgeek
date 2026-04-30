@@ -17,7 +17,7 @@ if [[ "$1" == "--docker" ]]; then
     docker compose -f "$REPO_ROOT/docker-compose.yml" exec server python3 backend/scripts/ingest_historical_gw.py
 
     echo "📊 Step 2: Generating datasets..."
-    docker compose -f "$REPO_ROOT/docker-compose.yml" exec server npx tsx scripts/preprocessing_dataset.ts
+    docker compose -f "$REPO_ROOT/docker-compose.yml" exec server python3 backend/scripts/preprocessing_dataset.py
 
     echo "⚠️  Step 3 & 4 (AI training/prediction) must be run locally — Python/venv not available in the server container."
     echo "   Run: bash scripts/update_data.sh (without --docker) to train and generate predictions locally."
@@ -43,7 +43,7 @@ python3 scripts/ingest_historical_gw.py
 
 # 2. Generate ML datasets
 echo "📊 Step 2: Generating datasets..."
-npx tsx scripts/preprocessing_dataset.ts
+python3 scripts/preprocessing_dataset.py
 
 # 3. Retrain AI Models
 echo "🧠 Step 3: Retraining AI models..."
