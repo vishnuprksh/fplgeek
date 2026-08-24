@@ -1,4 +1,5 @@
 import { cacheHeaders, sendJson } from '../../lib/http';
+import type { ApiResponse, GameweekContext } from '../../lib/api-contracts';
 import { requireGet, table, withErrors, type Handler } from '../_helpers';
 
 const handler: Handler = withErrors(async (req, res) => {
@@ -9,6 +10,8 @@ const handler: Handler = withErrors(async (req, res) => {
   let currentGW = 1;
   for (const stat of [...stats].reverse()) if (stat.finished > 0) { currentGW = stat.gw; break; }
   const next = stats.find(stat => stat.gw > currentGW && stat.finished === 0 && stat.total > 0);
-  sendJson(res, 200, { data: { currentGW, nextPlayGW: next?.gw || currentGW + 1, blankGWs: stats.filter(stat => stat.total < 10).map(stat => stat.gw), timestamp: new Date().toISOString() } }, cacheHeaders(600));
+  const data: GameweekContext = { currentGW, nextPlayGW: next?.gw || currentGW + 1, blankGWs: stats.filter(stat => stat.total < 10).map(stat => stat.gw), timestamp: new Date().toISOString() };
+  const response: ApiResponse<GameweekContext> = { data, generatedAt: data.timestamp };
+  sendJson(res, 200, response, cacheHeaders(600));
 });
 export default handler;

@@ -6,7 +6,7 @@ export type ApiResponse = ServerResponse & {
   json: (body: unknown) => void;
 };
 
-export function sendJson(res: ServerResponse, status: number, body: unknown, headers: Record<string, string> = {}): void {
+export function sendJson<T>(res: ServerResponse, status: number, body: T, headers: Record<string, string> = {}): void {
   const payload = JSON.stringify(body);
   res.statusCode = status;
   res.setHeader('Content-Type', 'application/json; charset=utf-8');
