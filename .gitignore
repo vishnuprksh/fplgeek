@@ -63,4 +63,5 @@ __pycache__/
 .env
 *.tar.gz
 *.joblib
+*.egg-info/
 graphify-out/cache/
