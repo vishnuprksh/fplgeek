@@ -920,6 +920,7 @@ export async function getStaticProps() {
 DATABRICKS_HOST=your-workspace.cloud.databricks.com
 DATABRICKS_TOKEN=dapi...
 DATABRICKS_HTTP_PATH=/sql/1.0/warehouses/...
+DATABRICKS_WAREHOUSE_ID=your-warehouse-id
 DATABRICKS_CATALOG=workspace
 DATABRICKS_SCHEMA=fplgeek
 ```
