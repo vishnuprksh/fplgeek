@@ -7,19 +7,6 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://fantasy.premierleague.com',
-        changeOrigin: true,
-      },
-      '/ai-api': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/ai-api/, ''),
-      },
-      '/data': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
-      '/eda': {
         target: 'http://localhost:3000',
         changeOrigin: true,
       },

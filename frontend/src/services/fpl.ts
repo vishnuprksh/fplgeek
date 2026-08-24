@@ -1,17 +1,14 @@
 import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl';
 
 import { getDataProvider } from './dataFactory';
+import { apiGet } from './apiClient';
 
-const API_BASE = '/api'; // Uses the Vite proxy (or Firebase Rewrite)
+const API_BASE = '/api/fpl';
 
 export const fplService = {
     async getTeamDetails(teamId: number): Promise<TeamEntry> {
         try {
-            const response = await fetch(`${API_BASE}/entry/${teamId}/`);
-            if (!response.ok) {
-                throw new Error(`Failed to fetch team details: ${response.statusText}`);
-            }
-            return await response.json();
+            return await apiGet<TeamEntry>(`${API_BASE}/entry/${teamId}`);
         } catch (error) {
             console.error('Error fetching team details:', error);
             throw error;
@@ -28,9 +25,7 @@ export const fplService = {
         } catch (error) {
             console.warn('Failed to get bootstrap static from data provider, trying direct FPL API:', error);
             try {
-                const response = await fetch(`${API_BASE}/bootstrap-static/`);
-                if (!response.ok) throw new Error(`Failed to fetch from FPL API: ${response.statusText}`);
-                return await response.json();
+                return await apiGet<BootstrapStatic>(`${API_BASE}/bootstrap-static`);
             } catch (fallbackError) {
                 console.error('Fallback FPL API also failed:', fallbackError);
                 throw fallbackError;
@@ -40,9 +35,7 @@ export const fplService = {
 
     async getTeamPicks(teamId: number, eventId: number): Promise<TeamPicks> {
         try {
-            const response = await fetch(`${API_BASE}/entry/${teamId}/event/${eventId}/picks/`);
-            if (!response.ok) throw new Error('Failed to fetch team picks');
-            return await response.json();
+            return await apiGet<TeamPicks>(`${API_BASE}/entry/${teamId}/event/${eventId}/picks`);
         } catch (error) {
             console.error('Error fetching team picks:', error);
             throw error;
@@ -51,9 +44,7 @@ export const fplService = {
 
     async getFixtures(): Promise<Match[]> {
         try {
-            const response = await fetch(`${API_BASE}/fixtures/`);
-            if (!response.ok) throw new Error('Failed to fetch fixtures');
-            return await response.json();
+            return await apiGet<Match[]>(`${API_BASE}/fixtures`);
         } catch (error) {
             console.error('Error fetching fixtures:', error);
             throw error;
@@ -62,9 +53,7 @@ export const fplService = {
 
     async getPlayerSummary(elementId: number): Promise<any> { // Using any loosely here, but ideally PlayerSummary
         try {
-            const response = await fetch(`${API_BASE}/element-summary/${elementId}/`);
-            if (!response.ok) throw new Error(`Failed to fetch player summary for ${elementId}`);
-            return await response.json();
+            return await apiGet(`${API_BASE}/element-summary/${elementId}`);
         } catch (error) {
             console.error('Error fetching player summary:', error);
             throw error;
@@ -73,9 +62,7 @@ export const fplService = {
 
     async getTransfers(teamId: number): Promise<any[]> {
         try {
-            const response = await fetch(`${API_BASE}/entry/${teamId}/transfers/`);
-            if (!response.ok) throw new Error('Failed to fetch transfers');
-            return await response.json();
+            return await apiGet<any[]>(`${API_BASE}/entry/${teamId}/transfers`);
         } catch (error) {
             console.error('Error fetching transfers:', error);
             return [];

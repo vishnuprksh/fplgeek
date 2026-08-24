@@ -49,7 +49,7 @@ function PitchPlayer({
     pick: Pick;
     player: UnifiedPlayer;
     team?: Team;
-    prediction: any;
+    prediction: Record<string, unknown> | undefined;
     isOptimizing: boolean;
     isSold: boolean;
     onToggleSell?: (id: number) => void;
@@ -324,7 +324,7 @@ export function PitchView({
                 injuryChance={injuryChances ? injuryChances[player.id] : player.chance_of_playing_this_round ?? undefined}
                 onSwap={onSwap}
                 t100Ownership={t100Ownership ? t100Ownership[player.id] : undefined}
-                prediction={predictions[player.id]}
+                            prediction={predictions[player.id]}
             />
         );
     };

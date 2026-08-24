@@ -6,5 +6,4 @@ export interface IDataProvider {
     getEvents(): Promise<Event[]>;
     getElementTypes(): Promise<ElementType[]>;
     getBootstrapStatic(): Promise<BootstrapStatic>;
-    getBacktestHistory(): Promise<any[]>;
 }

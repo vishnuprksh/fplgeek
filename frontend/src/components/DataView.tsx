@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './DataView.css';
+import { dataApi } from '../services/dataApi';
 
 interface ProcessedSample {
     name: string;
@@ -20,16 +21,6 @@ interface ProcessedSample {
     agg_r6: number[]; // pre-computed rolling-window aggregates [min, pts, xG, xA, inf, cre, thr, gc, saves]
 }
 
-interface TrainingDataResponse {
-    data: ProcessedSample[];
-    total: number;
-    page: number;
-    pageSize: number;
-    totalPages: number;
-}
-
-
-
 export const DataView: React.FC = () => {
     const [data, setData] = useState<ProcessedSample[]>([]);
     const [loading, setLoading] = useState(true);
@@ -46,15 +37,13 @@ export const DataView: React.FC = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3000/api/training-data?position=${position}&page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`);
-            if (!response.ok) throw new Error('Failed to fetch training data');
-            const result: TrainingDataResponse = await response.json();
-            setData(result.data);
+            const result = await dataApi.getTrainingData(new URLSearchParams({ position, page: String(page), pageSize: String(pageSize), search }));
+            setData(result.data as unknown as ProcessedSample[]);
             setTotal(result.total);
             setTotalPages(result.totalPages);
             setError(null);
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Failed to fetch training data');
         } finally {
             setLoading(false);
         }

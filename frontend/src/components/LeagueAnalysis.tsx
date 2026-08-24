@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import './LeagueAnalysis.css';
+import { dataApi } from '../services/dataApi';
 
 interface OwnedPlayer {
     id: number;
@@ -34,18 +35,9 @@ export function LeagueAnalysis() {
     const [metric, setMetric] = useState<'percent' | 'effective_ownership'>('percent');
 
     useEffect(() => {
-        fetch('/ai-api/api/data/league-analysis')
-            .then(res => {
-                const contentType = res.headers.get("content-type");
-                if (contentType && contentType.includes("text/html")) {
-                    throw new Error("Data not generated yet (HTML response)");
-                }
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch data: ${res.statusText}`);
-                }
-                return res.json();
-            })
-            .then((json: LeagueData) => {
+        dataApi.getLeagueAnalysis()
+            .then(entries => {
+                const json: LeagueData = { league_id: 0, total_teams_analyzed: entries.reduce((sum, entry) => sum + entry.total_players, 0), history: entries.map((entry, index) => ({ gw: index + 1, top_owned: entry.top_10.map(player => ({ id: player.id || 0, name: player.name || '', count: 0, percent: player.percent || 0, effective_ownership: player.effective_ownership || 0 })) })) };
                 setData(json);
                 setLoading(false);
                 // Default sort: Latest GW Descending
@@ -94,7 +86,7 @@ export function LeagueAnalysis() {
     }, [data, metric]);
 
     const sortedRows = useMemo(() => {
-        let sortableItems = [...tableData.rows];
+        const sortableItems = [...tableData.rows];
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
                 const aVal = a[sortConfig.key];

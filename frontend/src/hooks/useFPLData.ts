@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { fplService } from '../services/fpl';
 import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl';
 import type { PredictionMetadata } from '../types/gameweek';
+import { dataApi } from '../services/dataApi';
 
 export type T100OwnershipMap = Record<number, number>;
 export type AIPredictionMap = Record<number, any>;
@@ -29,8 +30,8 @@ export const useFPLData = () => {
                 const [bootstrap, matches, gwMetadata] = await Promise.all([
                     fplService.getBootstrapStatic(),
                     fplService.getFixtures(),
-                    // Fetch gameweek context from backend via /ai-api prefix (proxies to localhost:3000)
-                    fetch('/ai-api/api/gameweek-context').then(r => r.json()).catch(err => {
+                    // Optional analytics should not block core FPL data.
+                    dataApi.getGameweekContext().catch(err => {
                         console.warn('⚠️ Could not fetch gameweek context:', err);
                         return null;
                     })
@@ -48,33 +49,23 @@ export const useFPLData = () => {
 
                 // Load T100 ownership from league analysis
                 try {
-                    const leagueRes = await fetch('/ai-api/api/data/league-analysis');
-                    const contentType = leagueRes.headers.get('content-type');
-                    if (leagueRes.ok && contentType && contentType.includes('application/json')) {
-                        const leagueData = await leagueRes.json();
-                        if (leagueData.history && leagueData.history.length > 0) {
-                            const latestGw = leagueData.history[leagueData.history.length - 1];
-                            const ownershipMap: T100OwnershipMap = {};
-                            latestGw.top_owned.forEach((p: any) => {
-                                ownershipMap[p.id] = p.percent;
-                            });
-                            setT100OwnershipMap(ownershipMap);
-                        }
-                    }
+                    const leagueData = await dataApi.getLeagueAnalysis();
+                    const ownershipMap: T100OwnershipMap = {};
+                    leagueData.flatMap(entry => entry.top_10).forEach(player => {
+                        if (player.id !== undefined) ownershipMap[player.id] = player.percent || 0;
+                    });
+                    setT100OwnershipMap(ownershipMap);
                 } catch (e) {
                     console.warn('⚠️ Could not load league analysis for T100 ownership', e);
                 }
 
                 // Load AI predictions
                 try {
-                    const predRes = await fetch('/ai-api/api/data/predictions');
-                    if (predRes.ok) {
-                        const predData: any[] = await predRes.json();
-                        const predMap: AIPredictionMap = {};
-                        predData.forEach(p => { predMap[p.id] = p; });
-                        setAiPredictionMap(predMap);
-                        console.log('✅ AI predictions loaded:', predData.length, 'players');
-                    }
+                    const predData = await dataApi.getPredictions();
+                    const predMap: AIPredictionMap = {};
+                    predData.forEach(p => { predMap[p.id] = p; });
+                    setAiPredictionMap(predMap);
+                    console.log('✅ AI predictions loaded:', predData.length, 'players');
                 } catch (e) {
                     console.warn('⚠️ Could not load AI predictions', e);
                 }
@@ -91,6 +82,10 @@ export const useFPLData = () => {
     // 2. Load User Team
     const loadTeam = useCallback(async (id: number) => {
         if (!staticData) return; // Guard: need static data first
+        if (!Number.isInteger(id) || id < 1 || id > 10_000_000) {
+            setError('Enter a valid FPL team ID.');
+            return;
+        }
 
         setLoading(true);
         setError(null);
