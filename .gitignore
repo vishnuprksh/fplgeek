@@ -63,3 +63,6 @@ __pycache__/
 .env
 *.tar.gz
 *.joblib
+.venv/
+.github/
+graphify-out/cache/
