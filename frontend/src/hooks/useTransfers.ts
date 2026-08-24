@@ -86,7 +86,7 @@ export const useTransfers = (
     };
 
     const handleBatchTransfer = (transfers: { in: Player, out: Player }[], newLineup?: any[]) => {
-        let currentBank = bank;
+        const currentBank = bank;
         let newPicks = [...activePicks];
 
         // 1. Apply Transfers (ID Swaps) & Calc Bank

@@ -465,8 +465,8 @@ export function optimizeWithAllowance(
             // phase1Squad.reduce((s, p) => s + p.cost, 0) + bank;
             
             // Try to upgrade bench with remaining transfers
-            let phase2Squad = [...phase1Squad];
-            let phase2Transfers: TransferDetail[] = [...phase1Result.transfers];
+            const phase2Squad = [...phase1Squad];
+            const phase2Transfers: TransferDetail[] = [...phase1Result.transfers];
             
             // Greedily upgrade worst bench players
             for (let i = 0; i < Math.min(remainingTransfers, benchPlayers.length); i++) {
