@@ -13,6 +13,38 @@ alter table if exists player_history drop constraint if exists player_history_pl
 alter table if exists training_data drop constraint if exists training_data_player_id_fkey;
 alter table if exists predictions drop constraint if exists predictions_player_id_fkey;
 
+-- Preserve any rows created by the first migration by attaching them to a
+-- legacy version before making publication ownership mandatory.
+insert into data_versions (version_key, status, metadata)
+values ('legacy-pre-versioning', 'staged', '{"migration": "20260903000000"}'::jsonb)
+on conflict (version_key) do nothing;
+
+update data_versions
+set status = 'active', activated_at = now()
+where version_key = 'legacy-pre-versioning'
+	and not exists (select 1 from data_versions where status = 'active');
+
+update teams set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update element_types set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update events set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update players set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update fixtures set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update player_history set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update training_data set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update predictions set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+update analysis_results set data_version_id = (select id from data_versions where version_key = 'legacy-pre-versioning')
+where data_version_id is null;
+
+-- A legacy active marker is only a migration fallback. Future imports replace
+-- it atomically after the staged version has passed validation.
 alter table if exists teams alter column data_version_id set not null;
 alter table if exists element_types alter column data_version_id set not null;
 alter table if exists events alter column data_version_id set not null;

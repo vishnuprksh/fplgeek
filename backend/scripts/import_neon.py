@@ -277,7 +277,8 @@ def import_app_data(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uui
 
 
 def validate(cur: psycopg.Cursor[Any], counts: dict[str, int], vid: uuid.UUID) -> None:
-    checks = {"players": "players", "teams": "teams", "fixtures": "fixtures", "player_history": "player_history",
+    checks = {"players": "players", "teams": "teams", "events": "events", "element_types": "element_types",
+              "fixtures": "fixtures", "player_history": "player_history",
               "preprocessed_data": "training_data"}
     for source, target in checks.items():
         cur.execute(sql.SQL("SELECT COUNT(*) FROM {} WHERE data_version_id = %s").format(sql.Identifier(target)), (vid,))
