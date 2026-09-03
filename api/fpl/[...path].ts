@@ -23,7 +23,14 @@ function isAllowedPath(parts: string[]) {
 
 function routeParts(request: VercelRequest): string[] {
   const value = request.query.path;
-  return Array.isArray(value) ? value : typeof value === 'string' ? [value] : [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string' && value) return value.split('/').filter(Boolean);
+
+  const pathname = new URL(request.url ?? '', 'https://fplgeek.local').pathname;
+  const prefix = '/api/fpl/';
+  return pathname.startsWith(prefix)
+    ? pathname.slice(prefix.length).split('/').filter(Boolean).map(decodeURIComponent)
+    : [];
 }
 
 export default async function handler(request: VercelRequest, response: VercelResponse) {

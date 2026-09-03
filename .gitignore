@@ -66,3 +66,5 @@ __pycache__/
 *.egg-info/
 graphify-out/cache/
 .venv-fpl/
+.vercel
+.env*
