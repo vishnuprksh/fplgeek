@@ -20,7 +20,7 @@ export default defineConfig({
         changeOrigin: true,
       },
       '/eda': {
-        target: 'http://localhost:3000',
+        target: 'https://fantasy.premierleague.com',
         changeOrigin: true,
       },
     },

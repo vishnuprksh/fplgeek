@@ -2,7 +2,7 @@ import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl'
 
 import { getDataProvider } from './dataFactory';
 
-const API_BASE = '/api'; // Uses the Vite proxy (or Firebase Rewrite)
+const API_BASE = '/api';
 
 export const fplService = {
     async getTeamDetails(teamId: number): Promise<TeamEntry> {

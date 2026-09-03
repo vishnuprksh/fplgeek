@@ -50,7 +50,7 @@ class FplApiProvider implements IDataProvider {
         }
         return [];
     }
-}
+    }
 
 const fplApiProvider = new FplApiProvider();
 
@@ -62,7 +62,7 @@ class HybridDataProvider implements IDataProvider {
         } catch (error) {
             console.warn('SQLite provider failed for getBootstrapStatic, falling back to FPL API:', error);
             return await fplApiProvider.getBootstrapStatic();
-        }
+    }
     }
 
     async getPlayers(): Promise<UnifiedPlayer[]> {
@@ -71,7 +71,7 @@ class HybridDataProvider implements IDataProvider {
         } catch (error) {
             console.warn('SQLite provider failed for getPlayers, falling back to FPL API:', error);
             return await fplApiProvider.getPlayers();
-        }
+    }
     }
 
     async getTeams(): Promise<Team[]> {
@@ -80,7 +80,7 @@ class HybridDataProvider implements IDataProvider {
         } catch (error) {
             console.warn('SQLite provider failed for getTeams, falling back to FPL API:', error);
             return await fplApiProvider.getTeams();
-        }
+    }
     }
 
     async getEvents(): Promise<Event[]> {
@@ -89,7 +89,7 @@ class HybridDataProvider implements IDataProvider {
         } catch (error) {
             console.warn('SQLite provider failed for getEvents, falling back to FPL API:', error);
             return await fplApiProvider.getEvents();
-        }
+}
     }
 
     async getElementTypes(): Promise<ElementType[]> {

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useFPLData } from './hooks/useFPLData';
 import { useTransfers } from './hooks/useTransfers';
 import { useOptimization } from './hooks/useOptimization';
-import { useKeepAlive } from './hooks/useKeepAlive';
 import './App.css';
 
 
@@ -15,7 +14,6 @@ import { TransferModal } from './components/TransferModal';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
-import { UpdateButton } from './components/UpdateButton';
 
 
 import { DndProvider } from 'react-dnd';
@@ -26,9 +24,6 @@ export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(6075264);
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
-
-  // Initialize keep-alive for Render free tier (pings backend every 8 minutes)
-  useKeepAlive();
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
 
@@ -78,7 +73,7 @@ export default function App() {
     currentWarnings
   } = useOptimization(activePicks, staticData, bank, t100OwnershipMap);
 
-  const predictionsMap = {};
+  const predictionsMap = aiPredictionMap;
 
 
   // Load default team when static data is ready
@@ -121,7 +116,6 @@ export default function App() {
               <span style={{ fontSize: '0.8em', opacity: 0.8 }}>Logout</span>
               <div style={{ width: '32px', height: '32px', background: '#37003c', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>VP</div>
             </div>
-            <UpdateButton onUpdateComplete={() => window.location.reload()} />
           </div>
         </header>
 

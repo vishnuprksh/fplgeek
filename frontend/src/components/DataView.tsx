@@ -27,9 +27,6 @@ interface TrainingDataResponse {
     pageSize: number;
     totalPages: number;
 }
-
-
-
 export const DataView: React.FC = () => {
     const [data, setData] = useState<ProcessedSample[]>([]);
     const [loading, setLoading] = useState(true);
@@ -37,7 +34,7 @@ export const DataView: React.FC = () => {
     const [position, setPosition] = useState('MID');
     const [page, setPage] = useState(1);
     const [total, setTotal] = useState(0);
-    const [totalPages, setTotalPages] = useState(0);
+    const [totalPages, setTotalPages] = useState(1);
     const [search, setSearch] = useState('');
     const [showAggregates, setShowAggregates] = useState(true);
 
@@ -46,7 +43,7 @@ export const DataView: React.FC = () => {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`http://localhost:3000/api/training-data?position=${position}&page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`);
+            const response = await fetch(`/api/data/training-data?position=${position}&page=${page}&pageSize=${pageSize}&search=${encodeURIComponent(search)}`);
             if (!response.ok) throw new Error('Failed to fetch training data');
             const result: TrainingDataResponse = await response.json();
             setData(result.data);
