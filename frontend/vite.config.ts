@@ -5,17 +5,11 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    // Local dev runs against the deployed Vercel serverless functions.
+    // Set VITE_API_ORIGIN to your Vercel URL (or use `vercel dev` instead).
     proxy: {
       '/api': {
-        target: 'https://fantasy.premierleague.com',
-        changeOrigin: true,
-      },
-      '/data': {
-        target: 'http://localhost:3000',
-        changeOrigin: true,
-      },
-      '/eda': {
-        target: 'https://fantasy.premierleague.com',
+        target: process.env.VITE_API_ORIGIN || 'https://fplgeek.vercel.app',
         changeOrigin: true,
       },
     },

@@ -171,9 +171,9 @@ export interface PlayerHistory {
 }
 
 export interface PlayerSummary {
-    fixtures: any[];
+    fixtures: Record<string, unknown>[];
     history: PlayerHistory[];
-    history_past: any[];
+    history_past: Record<string, unknown>[];
 }
 
 export interface UnifiedPlayer extends Player {

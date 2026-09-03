@@ -1,7 +1,5 @@
 import type { TeamEntry, BootstrapStatic, TeamPicks, Match } from '../types/fpl';
 
-import { getDataProvider } from './dataFactory';
-
 const API_BASE = '/api';
 
 export const fplService = {
@@ -19,14 +17,17 @@ export const fplService = {
     },
 
     async getBootstrapStatic(): Promise<BootstrapStatic> {
+        // Prefer the Neon-backed serverless route; fall back to the live FPL proxy.
         try {
-            const data = await getDataProvider().getBootstrapStatic();
+            const response = await fetch(`${API_BASE}/data/bootstrap-static`);
+            if (!response.ok) throw new Error(`Failed to fetch bootstrap static: ${response.statusText}`);
+            const data: BootstrapStatic = await response.json();
             if (!data || !data.elements || data.elements.length === 0) {
                 throw new Error('Invalid bootstrap data');
             }
             return data;
         } catch (error) {
-            console.warn('Failed to get bootstrap static from data provider, trying direct FPL API:', error);
+            console.warn('Failed to get bootstrap static from Neon data, trying live FPL API:', error);
             try {
                 const response = await fetch(`${API_BASE}/fpl/bootstrap-static/`);
                 if (!response.ok) throw new Error(`Failed to fetch from FPL API: ${response.statusText}`);
@@ -60,7 +61,7 @@ export const fplService = {
         }
     },
 
-    async getPlayerSummary(elementId: number): Promise<any> { // Using any loosely here, but ideally PlayerSummary
+    async getPlayerSummary(elementId: number): Promise<Record<string, unknown>> {
         try {
             const response = await fetch(`${API_BASE}/fpl/element-summary/${elementId}/`);
             if (!response.ok) throw new Error(`Failed to fetch player summary for ${elementId}`);
@@ -71,7 +72,7 @@ export const fplService = {
         }
     },
 
-    async getTransfers(teamId: number): Promise<any[]> {
+    async getTransfers(teamId: number): Promise<Array<Record<string, unknown>>> {
         try {
             const response = await fetch(`${API_BASE}/fpl/entry/${teamId}/transfers/`);
             if (!response.ok) throw new Error('Failed to fetch transfers');
