@@ -1,227 +1,310 @@
-# FPL Geek — Vercel Migration Plan
+# FPL Geek — Vercel and Weekly Pipeline Plan
 
 ## Decisions
 
-- Continue implementation on the existing `vercel` branch.
-- Deploy the frontend and lightweight API routes to Vercel Hobby/Free.
-- Use Neon PostgreSQL for persistent application and training data.
-- Use GitHub Actions for a scheduled weekly data refresh and model-training pipeline.
-- Remove the Update Data button from the frontend.
-- Preserve full historical training data and expose it through paginated/filterable API access.
-- Do not run the current FastAPI server, SQLite writes, subprocesses, or ML training inside Vercel Functions.
+- Deploy the React/Vite application and read-only API functions to Vercel.
+- Use Neon PostgreSQL as the production data store.
+- Run fetching, preprocessing, model training, prediction generation, and publication in GitHub Actions once per week.
+- Keep team optimization in the browser using the existing TypeScript solver; optimization must not call the backend.
+- Keep SQLite only as a local/GitHub Actions staging format during the migration. It must not be downloaded by the browser or used by Vercel functions.
+- Replace the current FastAPI/SQLite/Render runtime path instead of trying to run the current backend inside Vercel.
+- Use an explicit `vercel` branch until the migration is complete, then merge or promote it to the production branch.
 
 ## Target architecture
 
 ```mermaid
 flowchart LR
-    Browser --> Vercel[ Vercel ]
-    Vercel --> Frontend[React/Vite SPA]
-    Vercel --> API[Vercel API Functions]
-    API --> Neon[Neon PostgreSQL]
-    API --> FPL[FPL API]
-    Actions[GitHub Actions weekly workflow] --> Pipeline[Fetch / preprocess / train]
-    Pipeline --> Neon
-    Pipeline --> FPL
+        Browser[Browser] --> Vercel[Vercel]
+        Vercel --> SPA[React/Vite SPA]
+        Vercel --> API[TypeScript API Functions]
+        API --> Neon[Neon PostgreSQL]
+        API --> FPL[FPL API allowlisted proxy]
+        Actions[GitHub Actions weekly cron] --> Pipeline[Python pipeline]
+        Pipeline --> Staging[SQLite staging database]
+        Pipeline --> Neon
+        Browser -->|local optimization| Solver[TypeScript squad optimizer]
 ```
 
-### Vercel
+### Stack
 
-- React/Vite frontend
-- SPA fallback routing
-- Lightweight API functions
-- FPL API proxy for allowed endpoints
-- Neon-backed data endpoints
+| Area | Choice |
+|---|---|
+| UI | React 19 + TypeScript + Vite |
+| Hosting/API | Vercel SPA and TypeScript serverless functions |
+| Database | Neon PostgreSQL |
+| Serverless database driver | `@neondatabase/serverless` |
+| Pipeline | Python, pandas, NumPy, scikit-learn, joblib |
+| Scheduler | GitHub Actions cron plus `workflow_dispatch` |
+| Optimization | Existing browser-side TypeScript solver |
+| FPL integration | Server-side, allowlisted Vercel proxy |
 
-### Neon
+Vercel Cron is not the primary scheduler because the pipeline is long-running and performs ML work. GitHub Actions provides a better environment for Python dependencies, temporary disk, logs, retries, and artifacts.
 
-Store:
+## Current blockers discovered
 
-- Players
-- Teams
-- Events
-- Fixtures
-- Current and historical player history
-- Predictions
-- League analysis
-- Feature importance
-- Backtest results
-- Full preprocessed training data
-- Data-version and update metadata
-
-### GitHub Actions
-
-Run weekly:
-
-1. Fetch current and historical FPL data.
-2. Build the local staging dataset.
-3. Preprocess training data.
-4. Train the Random Forest model.
-5. Generate predictions and analysis results.
-6. Validate the generated data.
-7. Upload data to Neon in batches.
-8. Mark the new data version active only after the upload succeeds.
+- There is no Vercel configuration, API directory, or weekly workflow.
+- Frontend code still uses `/ai-api`, `http://localhost:3000`, Render keep-alive logic, and browser-loaded `fpl.sqlite`.
+- `frontend/src/App.tsx` passes an empty `predictionsMap` to `PitchView`, so optimization receives zero forecasts.
+- The optimizer is called without `gameweekMetadata` even though the hook accepts it.
+- `backend/main.py` depends on mutable SQLite files, process state, background tasks, and shell subprocesses; these are not suitable for Vercel Functions.
+- `backend/scripts/fetch_data.py` does not populate `events` or `element_types`, although the frontend requires them.
+- The current training-data API fetches all matching rows before slicing, so pagination is not actually server-side.
+- Preprocessing has hardcoded `2025/26` assumptions and must support `2026/27` and future seasons.
+- The current Neon schema stores version IDs but uses global primary keys. Upserts can overwrite rows from the previous active version during a failed import.
 
 ## Migration phases
 
-### 1. Measure and design the data model
+### Phase 1 — Establish the production data contract
 
-- Measure the production SQLite database size and row counts.
-- Identify all tables and fields used by the frontend.
-- Create Neon/PostgreSQL migrations for the required tables and indexes.
-- Preserve the current composite key for `player_history`.
-- Add indexes for player, season, gameweek, position, and training-data queries.
-- Add a `data_versions` table to track successful weekly updates.
+1. Measure the current SQLite database size, row counts, and payload shapes.
+2. Define typed contracts for bootstrap data, predictions, analysis results, training-data pages, and data-version metadata.
+3. Decide whether training data is public. If it is private, authentication must be implemented before exposing the endpoint.
+4. Add or verify PostgreSQL tables for:
+     - `data_versions`
+     - `players`
+     - `teams`
+     - `element_types`
+     - `events`
+     - `fixtures`
+     - `player_history`
+     - `training_data`
+     - `predictions`
+     - `analysis_results`
+5. Preserve the `(player_id, fixture_id)` logical key for player history.
+6. Add indexes for player, team, position, season, gameweek, fixture, prediction score, and training-data queries.
 
-Suggested tables:
+### Phase 2 — Make publication version-safe
 
-- `players`
-- `teams`
-- `events`
-- `fixtures`
-- `player_history`
-- `training_data`
-- `predictions`
-- `analysis_results`
-- `data_versions`
+The active dataset must remain readable while a new weekly dataset is being loaded. Prefer immutable versioned rows:
 
-Use typed columns for fields used in filtering/sorting and `jsonb` for flexible payloads such as fixture stats, metadata, and projections.
+```text
+primary key (data_version_id, entity_id)
+```
 
-### 2. Migrate the existing dataset
+Apply this pattern to players, teams, events, fixtures, histories, training rows, predictions, and analysis results. Keep `data_versions` as the atomic publication marker.
 
-- Keep SQLite as a local staging format for the Python pipeline initially.
-- Add a Neon sync/import script using the PostgreSQL connection string.
-- Upload existing data in batches.
-- Make the import idempotent with upserts.
-- Verify row counts and representative records after import.
-- Ensure the last valid production version remains available if an update fails.
+Expose active-only views or require every query to join the active version. For example:
 
-### 3. Refactor the Python pipeline
+```sql
+create view active_predictions as
+select p.*
+from predictions p
+join data_versions v on v.id = p.data_version_id
+where v.status = 'active';
+```
 
-- Separate data generation from data publication.
-- Keep `fetch_data.py`, `preprocess.py`, and `train_predict.py` usable locally.
-- Add a publication step that reads the completed staging database and writes to Neon.
-- Add retries, batching, validation, and clear failure reporting.
-- Avoid replacing active production data until all tables and generated results are valid.
-- Keep model artifacts in the GitHub Actions workspace or artifact storage; do not depend on a writable Vercel filesystem.
+If the existing schema is retained, use separate staging tables and an atomic publication strategy instead. Do not rely on ordinary upserts against globally keyed production tables.
 
-### 4. Add Vercel API routes
+### Phase 3 — Complete and validate the Python pipeline
 
-Add a Vercel-compatible API layer, likely under `api/`:
+Keep these scripts locally runnable:
 
-- `GET /api/health`
-- `GET /api/bootstrap-static`
-- `GET /api/data/predictions`
-- `GET /api/data/fixtures`
-- `GET /api/data/league-analysis`
-- `GET /api/data/feature-importance`
-- `GET /api/data/backtest-results`
-- `GET /api/gameweek-context`
-- `GET /api/training-data`
-- `GET /api/data-version`
-- `GET /api/fpl/*` for an allowlisted FPL proxy
+```text
+backend/scripts/fetch_data.py
+backend/scripts/preprocess.py
+backend/scripts/train_predict.py
+backend/scripts/validate_data.py       # add
+backend/scripts/import_neon.py
+```
 
-The training-data endpoint must perform filtering, search, ordering, and pagination in Neon rather than loading the complete dataset into a serverless function or browser.
+Required sequence:
 
-Protect Neon writes with a restricted database connection string, which must only be available to GitHub Actions and server-side API functions. Never expose it to frontend code.
+1. Fetch `bootstrap-static`, including players, teams, events, and element types.
+2. Fetch fixtures and current player histories.
+3. Fetch configured historical seasons.
+4. Fetch league analysis.
+5. Build the SQLite staging database.
+6. Preprocess historical and future rows.
+7. Train the Random Forest model and generate predictions.
+8. Persist model metrics and prediction metadata.
+9. Validate counts, positions, keys, gameweeks, prediction coverage, and feature dimensions.
+10. Import the complete dataset into a staged Neon version.
+11. Validate the imported version.
+12. Activate the version only after every check succeeds.
 
-### 5. Refactor the frontend
+Pipeline requirements:
 
-Replace old Render/backend-specific paths:
+- Populate and import `events` and `element_types`.
+- Calculate season names instead of hardcoding `2025/26`.
+- Use time-based validation for forecasting where practical; avoid random splits that leak future information.
+- Make imports idempotent and safe to retry.
+- Mark failed versions without changing the active version.
+- Store model metrics and source snapshot metadata in `data_versions.metadata`.
+- Keep joblib model files in the GitHub Actions workspace or artifacts; Vercel only serves generated predictions.
+
+### Phase 4 — Add the Vercel API layer
+
+Create a server-side TypeScript API layer, for example:
+
+```text
+api/
+    health.ts
+    data/bootstrap-static.ts
+    data/fixtures.ts
+    data/predictions.ts
+    data/league-analysis.ts
+    data/feature-importance.ts
+    data/backtest-results.ts
+    data/training-data.ts
+    data/version.ts
+    gameweek-context.ts
+    fpl/[...path].ts
+```
+
+Routes:
+
+```text
+GET /api/health
+GET /api/data/bootstrap-static
+GET /api/data/fixtures
+GET /api/data/predictions
+GET /api/data/league-analysis
+GET /api/data/feature-importance
+GET /api/data/backtest-results
+GET /api/data/training-data
+GET /api/data-version
+GET /api/gameweek-context
+GET /api/fpl/bootstrap-static
+GET /api/fpl/fixtures
+GET /api/fpl/entry/:teamId
+GET /api/fpl/entry/:teamId/event/:gameweek/picks
+GET /api/fpl/element-summary/:playerId
+GET /api/fpl/entry/:teamId/transfers
+```
+
+API rules:
+
+- Use `@neondatabase/serverless` and a server-only `DATABASE_URL`.
+- Query only the active data version.
+- Use parameterized SQL and validate all route/query parameters.
+- Enforce a maximum training-data page size, for example 100.
+- Apply `LIMIT`, `OFFSET`, ordering, filtering, and `COUNT` in PostgreSQL.
+- Do not return the SQLite database.
+- Do not allow arbitrary external URLs through the FPL proxy.
+- Return consistent errors and short timeouts.
+
+### Phase 5 — Refactor the frontend
+
+Create one typed client such as `frontend/src/services/apiClient.ts` and route all application data through it.
+
+Required changes:
 
 - Remove `/ai-api` prefixes.
-- Remove `http://localhost:3000` calls from production code.
-- Replace browser-side SQLite loading with Vercel API requests.
-- Consolidate API paths in one client/service module.
-- Fix the backtest endpoint to use a concrete API route.
-- Remove the Render-specific `useKeepAlive` hook.
-- Remove the Update Data button, polling, and update-status UI.
-- Preserve full training-data browsing through the paginated endpoint.
+- Remove `http://localhost:3000` production calls.
+- Replace `SqliteProvider`/`sql.js` browser loading with API requests.
+- Remove `useKeepAlive` and its Render-specific polling.
+- Remove `UpdateButton`, update polling, and client-triggered backend updates.
+- Replace the invalid backtest path with a concrete API route or remove the unfinished feature.
+- Pass `aiPredictionMap` into `PitchView` and convert it into valid `PredictionResult` objects.
+- Pass `gameweekMetadata` to `useOptimization`.
+- Define behavior for missing or stale predictions.
+- Display the active data version rather than an update-in-progress state.
 
-The Vite development proxy may remain temporarily for local development, but production must use the Vercel routes.
+The browser optimization flow must be:
 
-### 6. Add the weekly GitHub Actions workflow
+```text
+FPL team + active predictions + fixtures → TypeScript solver → lineup/transfers
+```
+
+No optimization request should be sent to Vercel.
+
+### Phase 6 — Add Vercel configuration
+
+Add `vercel.json` with:
+
+- Vite build configuration.
+- `frontend/dist` output handling, or configure the Vercel project root as `frontend`.
+- SPA fallback to `index.html` for non-API routes.
+- API function routing.
+- Cache headers for weekly data.
+
+The existing `frontend/Dockerfile`, `frontend/nginx.conf`, and `backend/Dockerfile` are not part of the Vercel runtime. Keep them only if VPS/Docker self-hosting remains supported.
+
+Update `frontend/vite.config.ts` so local development proxies the same explicit paths used in production. Do not proxy all `/api` requests directly to the FPL API because that conflicts with application API routes.
+
+### Phase 7 — Automate the weekly refresh
 
 Create `.github/workflows/weekly-data-update.yml` with:
 
-- Weekly cron schedule
-- `workflow_dispatch` for manual runs
-- Python setup and dependency installation
-- Node setup only if preprocessing requires it
-- Fetch, preprocess, train, predict, validate, and Neon sync steps
-- Failure reporting
-- Safe reruns and idempotent upserts
+- A weekly `schedule`.
+- `workflow_dispatch` for manual execution.
+- Concurrency protection so two publications cannot overlap.
+- Python 3.11 or the selected supported version.
+- Dependency caching and installation from `backend/requirements.txt`.
+- A temporary `FPL_DATA_DIR` staging directory.
+- Fetch, preprocess, train, validate, and import steps.
+- Failure logs and staging artifacts.
+- A stable version key based on source snapshot or workflow run.
 
 Required GitHub secrets:
 
-- `DATABASE_URL` (Neon pooled connection string)
-- `NEON_DATABASE_URL` (optional direct connection string for migrations or administrative tasks)
+```text
+NEON_DATABASE_URL
+```
 
-Add any future source/API credentials only as repository or environment secrets.
+Use a direct or pooled Neon URL according to the importer and connection limits. Never expose it as a frontend `VITE_*` variable.
 
-### 7. Configure Vercel
+### Phase 8 — Test and cut over
 
-Add or update:
+Add tests before production cutover.
 
-- `vercel.json`
-- API function configuration
-- SPA rewrite to `index.html`
-- Production environment variables
-- Cache headers for weekly data
-- Build and output settings for the Vite frontend
+Frontend:
 
-The existing Dockerfiles and Nginx configuration are not used by Vercel. Keep them only if legacy self-hosting remains supported.
+- Solver budget and three-player-per-team constraints.
+- Legal formations and bench ordering.
+- Transfer allowances and selling prices.
+- Blank and double gameweeks.
+- Missing prediction behavior.
+- Prediction-to-solver mapping.
+- API client error handling.
 
-### 8. Test and cut over
+Pipeline/API:
 
-Test locally and in a Vercel preview:
+- Season detection, including `2026/27`.
+- Fetcher and staging row counts.
+- Prediction output shape.
+- Training-data SQL pagination and search.
+- Active-version filtering.
+- Import idempotency.
+- Failed import preserving the previous active version.
+- Atomic activation after validation.
+- FPL proxy allowlist.
 
-- SPA deep links and client-side routing
-- All API routes
-- Neon/PostgreSQL errors and timeouts
-- FPL proxy failures
-- Training-data pagination and search
-- Large result sets
-- Mobile UI behavior
-- Weekly update success
-- Failed update preserving the previous active version
-- Safe rerun of an interrupted update
+Preview validation:
 
-After validation:
-
-1. Compare Vercel output with the current deployment.
-2. Run at least one complete weekly update cycle.
-3. Configure the production domain and DNS.
-4. Promote the `vercel` branch deployment.
-5. Monitor Vercel function errors, Neon usage, database connections, and GitHub Actions failures.
+1. Run the full pipeline manually.
+2. Verify Neon row counts and representative records.
+3. Verify every API route from a Vercel preview.
+4. Test SPA deep links and mobile layouts.
+5. Run the browser optimizer with real predictions.
+6. Run a failed publication simulation and verify rollback behavior.
+7. Complete one successful weekly refresh before switching DNS/production traffic.
 
 ## Caching
 
-Because data updates weekly:
-
 - Cache bootstrap, fixtures, predictions, and analysis responses for several hours.
-- Cache training-data pages by query parameters where practical.
-- Give `/api/data-version` a short cache duration.
-- Do not cache health responses.
-- Use a new active data version so clients do not mix rows from different weekly updates.
+- Cache training-data pages briefly using query parameters as part of the cache key.
+- Cache `/api/data-version` for only a few minutes.
+- Do not cache `/api/health`.
+- Use the active version consistently so clients do not mix rows from different weekly publications.
 
 ## Security and free-tier safeguards
 
-- Never expose the Neon connection string in Vercel client bundles.
-- Allow only known FPL proxy paths.
-- Enforce maximum `pageSize` values.
-- Validate all query parameters.
-- Add rate limiting or lightweight abuse protection to expensive endpoints.
-- Restrict database writes to the GitHub Actions publisher and server-side API functions.
-- Use PostgreSQL roles, grants, and Row Level Security where appropriate according to the final access policy.
-- Use Neon branching for isolated migration/testing workflows where practical.
-- Monitor Vercel function size, execution time, Neon compute/storage, connection usage, and GitHub Actions minutes.
+- Keep Neon credentials server-side and in GitHub secrets only.
+- Use a read-only database role for Vercel API functions where possible.
+- Enforce query limits and validate ordering fields against an allowlist.
+- Allow only known FPL proxy paths and methods.
+- Avoid returning full training data in a single response.
+- Add basic abuse protection or rate limiting to expensive routes.
+- Use Neon branches for migration testing where practical.
+- Monitor Vercel function errors, execution time, Neon connections/storage, and GitHub Actions minutes.
 
-## Open access decision
+## Definition of done
 
-Before implementing database policies, decide whether full training data is:
-
-1. Publicly readable without authentication;
-2. Available only to authenticated application users; or
-3. Available through a protected Vercel API/session.
-
-The simplest initial implementation is publicly readable, paginated API access through server-side Neon queries with read-only database permissions. If the training data is not intended to be public, implement authentication before exposing the endpoint.
+- The Vercel deployment serves the SPA with working deep links.
+- The frontend has no `/ai-api`, localhost, Render keep-alive, or browser SQLite dependency.
+- Vercel APIs read only the active Neon version.
+- The optimizer produces non-zero recommendations using current predictions entirely in the browser.
+- GitHub Actions can run the complete weekly refresh manually and on schedule.
+- A failed refresh leaves the previous active data version available.
+- A successful refresh publishes players, teams, events, element types, fixtures, history, training rows, predictions, and analysis results atomically.
