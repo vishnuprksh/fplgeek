@@ -2,7 +2,8 @@ name: Weekly FPL data update
 
 on:
   schedule:
-    - cron: '30 3 * * 2'
+    # Wednesdays 03:30 UTC (04:30 BST / 05:30 CEST)
+    - cron: '30 3 * * 3'
   workflow_dispatch:
 
 concurrency:
