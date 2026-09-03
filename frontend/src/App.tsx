@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFPLData } from './hooks/useFPLData';
 import { useTransfers } from './hooks/useTransfers';
 import { useOptimization } from './hooks/useOptimization';
@@ -22,7 +22,7 @@ import type { Player } from './types/fpl';
 
 export default function App() {
   console.log("🚀 App component rendering");
-  const [teamId, setTeamId] = useState(6075264);
+  const [teamId, setTeamId] = useState<number>(0);
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
@@ -76,12 +76,7 @@ export default function App() {
   const predictionsMap = aiPredictionMap;
 
 
-  // Load default team when static data is ready
-  useEffect(() => {
-    if (staticData && !teamData) {
-      loadTeam(teamId);
-    }
-  }, [staticData, teamData, teamId, loadTeam]);
+  // Team is only loaded manually via the hero search form (no auto-fetch)
 
   // Bridge Optimization Application to Transfer Logic
   const applyOptimization = () => {
@@ -132,13 +127,13 @@ export default function App() {
                       type="number"
                       placeholder="Enter Team ID"
                       value={teamId || ''}
-                      onChange={(e) => setTeamId(Number(e.target.value))}
+                      onChange={(e) => setTeamId(Number(e.target.value) || 0)}
                       className="search-input"
-                      onKeyPress={(e) => e.key === 'Enter' && loadTeam(teamId)}
+                      onKeyPress={(e) => e.key === 'Enter' && teamId > 0 && !loading && loadTeam(teamId)}
                     />
                     <button
                       onClick={() => loadTeam(teamId)}
-                      disabled={loading}
+                      disabled={loading || teamId <= 0}
                       className="search-button"
                     >
                       {loading ? 'Crunching Numbers...' : 'Analyze My Team'}
