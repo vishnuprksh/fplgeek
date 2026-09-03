@@ -89,18 +89,6 @@
     "ast_hash": "c312f1136b63345e7d1c00d17f60a40d",
     "semantic_hash": "c312f1136b63345e7d1c00d17f60a40d"
   },
-  "frontend/src/components/PlayerHistoryModal.tsx": {
-    "mtime": 1787557481.343138,
-    "seen": 1787565342.189807,
-    "ast_hash": "9bb88259f3dfcdc569235377ce551525",
-    "semantic_hash": "9bb88259f3dfcdc569235377ce551525"
-  },
-  "frontend/src/components/SkeletonLoader.tsx": {
-    "mtime": 1787557481.343138,
-    "seen": 1787565342.1898088,
-    "ast_hash": "14025ab5f1a60b53a660a402c805f8e5",
-    "semantic_hash": "14025ab5f1a60b53a660a402c805f8e5"
-  },
   "frontend/src/components/TeamCard.tsx": {
     "mtime": 1787557481.343138,
     "seen": 1787565342.189811,
@@ -113,23 +101,11 @@
     "ast_hash": "2624ccc7717ae2cb9492b51762e7e235",
     "semantic_hash": "2624ccc7717ae2cb9492b51762e7e235"
   },
-  "frontend/src/components/UpdateButton.tsx": {
-    "mtime": 1788421390.0607524,
-    "seen": 1788424246.7107005,
-    "ast_hash": "8cb494cee7ec2ee64996b79ac0d64a99",
-    "semantic_hash": "8cb494cee7ec2ee64996b79ac0d64a99"
-  },
   "frontend/src/hooks/useFPLData.ts": {
     "mtime": 1788425939.9935582,
     "seen": 1788426275.5564134,
     "ast_hash": "8eb3c00a3e223ea358245b4770614b04",
     "semantic_hash": "8eb3c00a3e223ea358245b4770614b04"
-  },
-  "frontend/src/hooks/useKeepAlive.ts": {
-    "mtime": 1788421390.0617523,
-    "seen": 1788424246.7107048,
-    "ast_hash": "5b7f51e3e21876658b8bb1a7be884366",
-    "semantic_hash": "5b7f51e3e21876658b8bb1a7be884366"
   },
   "frontend/src/hooks/useOptimization.ts": {
     "mtime": 1788425435.9105797,
@@ -166,12 +142,6 @@
     "seen": 1788426275.5571887,
     "ast_hash": "855dfc837e162f7d8fe4bd45ee3c301d",
     "semantic_hash": "855dfc837e162f7d8fe4bd45ee3c301d"
-  },
-  "frontend/src/services/sqliteService.ts": {
-    "mtime": 1788421390.0627525,
-    "seen": 1788424246.7110136,
-    "ast_hash": "d1f26c0e6c9cafe569fb7941d6e05687",
-    "semantic_hash": "d1f26c0e6c9cafe569fb7941d6e05687"
   },
   "frontend/src/types/fpl.ts": {
     "mtime": 1787557481.3441381,
@@ -234,16 +204,16 @@
     "semantic_hash": "eec85c9d7c6b599801557f1afd86672c"
   },
   "frontend/vite.config.ts": {
-    "mtime": 1788425940.001558,
-    "seen": 1788426275.5603652,
-    "ast_hash": "a760284df596e81aa2d5d7cd815dda83",
-    "semantic_hash": "a760284df596e81aa2d5d7cd815dda83"
+    "mtime": 1788444204.0513787,
+    "seen": 1788444310.7818582,
+    "ast_hash": "3036888eee2e0675ca1b3abdbb25d9eb",
+    "semantic_hash": "3036888eee2e0675ca1b3abdbb25d9eb"
   },
   "package.json": {
-    "mtime": 1788425940.034558,
-    "seen": 1788426275.5603683,
-    "ast_hash": "492f79e98ab347201b645f64d5354a44",
-    "semantic_hash": "492f79e98ab347201b645f64d5354a44"
+    "mtime": 1788444305.0363717,
+    "seen": 1788444310.7818606,
+    "ast_hash": "0d5c16dc14944863e33ab8867019c29f",
+    "semantic_hash": "0d5c16dc14944863e33ab8867019c29f"
   },
   "README.md": {
     "mtime": 1787557481.3311381,
