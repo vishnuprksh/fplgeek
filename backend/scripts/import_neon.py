@@ -32,6 +32,8 @@ except ModuleNotFoundError:  # Dry-run mode only needs SQLite.
 TABLES = (
     "players",
     "teams",
+    "events",
+    "element_types",
     "fixtures",
     "player_history",
     "preprocessed_data",
@@ -156,12 +158,23 @@ def import_teams(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uuid.U
          strength_attack_home, strength_attack_away, strength_defence_home, strength_defence_away,
          payload, data_version_id)
         VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        ON CONFLICT (id) DO UPDATE SET name=EXCLUDED.name, short_name=EXCLUDED.short_name,
+        ON CONFLICT (data_version_id, id) DO UPDATE SET name=EXCLUDED.name, short_name=EXCLUDED.short_name,
         code=EXCLUDED.code, strength=EXCLUDED.strength, strength_overall_home=EXCLUDED.strength_overall_home,
         strength_overall_away=EXCLUDED.strength_overall_away, strength_attack_home=EXCLUDED.strength_attack_home,
         strength_attack_away=EXCLUDED.strength_attack_away, strength_defence_home=EXCLUDED.strength_defence_home,
         strength_defence_away=EXCLUDED.strength_defence_away, payload=EXCLUDED.payload,
         data_version_id=EXCLUDED.data_version_id, updated_at=now()""", rows, size)
+
+
+def import_simple_bootstrap_table(
+    cur: psycopg.Cursor[Any], conn: sqlite3.Connection, table: str, vid: uuid.UUID, size: int
+) -> None:
+    rows = list(load_json_rows(conn, table))
+    statement = sql.SQL("""INSERT INTO {} (id, payload, data_version_id)
+        VALUES (%s, %s, %s)
+        ON CONFLICT (data_version_id, id) DO UPDATE SET payload=EXCLUDED.payload,
+        updated_at=now()""").format(sql.Identifier(table))
+    executemany_batched(cur, statement.as_string(cur), [(row_id, Jsonb(data), vid) for row_id, data in rows], size)
 
 
 def import_players(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uuid.UUID, size: int) -> None:
@@ -178,7 +191,7 @@ def import_players(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uuid
         (id,code,web_name,first_name,second_name,element_type,team_id,now_cost,total_points,event_points,
          selected_by_percent,form,status,chance_of_playing_next_round,chance_of_playing_this_round,
          minutes,saves,payload,data_version_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        ON CONFLICT (id) DO UPDATE SET code=EXCLUDED.code,web_name=EXCLUDED.web_name,
+        ON CONFLICT (data_version_id, id) DO UPDATE SET code=EXCLUDED.code,web_name=EXCLUDED.web_name,
         first_name=EXCLUDED.first_name,second_name=EXCLUDED.second_name,element_type=EXCLUDED.element_type,
         team_id=EXCLUDED.team_id,now_cost=EXCLUDED.now_cost,total_points=EXCLUDED.total_points,
         event_points=EXCLUDED.event_points,selected_by_percent=EXCLUDED.selected_by_percent,form=EXCLUDED.form,
@@ -197,7 +210,7 @@ def import_fixtures(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uui
     executemany_batched(cur, """INSERT INTO fixtures
         (id,event_id,home_team_id,away_team_id,home_score,away_score,finished,started,kickoff_time,
          home_difficulty,away_difficulty,stats,payload,data_version_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-        ON CONFLICT (id) DO UPDATE SET event_id=EXCLUDED.event_id,home_team_id=EXCLUDED.home_team_id,
+        ON CONFLICT (data_version_id, id) DO UPDATE SET event_id=EXCLUDED.event_id,home_team_id=EXCLUDED.home_team_id,
         away_team_id=EXCLUDED.away_team_id,home_score=EXCLUDED.home_score,away_score=EXCLUDED.away_score,
         finished=EXCLUDED.finished,started=EXCLUDED.started,kickoff_time=EXCLUDED.kickoff_time,
         home_difficulty=EXCLUDED.home_difficulty,away_difficulty=EXCLUDED.away_difficulty,stats=EXCLUDED.stats,
@@ -225,7 +238,7 @@ def import_history(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uuid
      selected_by_percent,transfers_in,transfers_out,starts,expected_goals,expected_assists,expected_goal_involvements,
      expected_goals_conceded,influence,creativity,threat,ict_index,home_score,away_score,payload,data_version_id)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    ON CONFLICT (player_id,fixture_id) DO UPDATE SET season_name=EXCLUDED.season_name,gameweek=EXCLUDED.gameweek,
+    ON CONFLICT (data_version_id,player_id,fixture_id) DO UPDATE SET season_name=EXCLUDED.season_name,gameweek=EXCLUDED.gameweek,
     kickoff_time=EXCLUDED.kickoff_time,opponent_team_id=EXCLUDED.opponent_team_id,was_home=EXCLUDED.was_home,
     total_points=EXCLUDED.total_points,minutes=EXCLUDED.minutes,payload=EXCLUDED.payload,data_version_id=EXCLUDED.data_version_id""", rows, size)
 
@@ -239,7 +252,7 @@ def import_training(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uui
     executemany_batched(cur, """INSERT INTO training_data
     (player_id,gameweek,season,position,is_future,target_class,feature_vector,metadata,data_version_id)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-    ON CONFLICT (player_id,gameweek,season) DO UPDATE SET position=EXCLUDED.position,is_future=EXCLUDED.is_future,
+    ON CONFLICT (data_version_id,player_id,gameweek,season) DO UPDATE SET position=EXCLUDED.position,is_future=EXCLUDED.is_future,
     target_class=EXCLUDED.target_class,feature_vector=EXCLUDED.feature_vector,metadata=EXCLUDED.metadata,data_version_id=EXCLUDED.data_version_id""", rows, size)
 
 
@@ -251,7 +264,7 @@ def import_app_data(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uui
                 cur.execute("""INSERT INTO predictions
                 (player_id,position,total_three_week,probability_gt_six,probability_gt_ten,next_gameweek,projections,payload,data_version_id)
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
-                ON CONFLICT (player_id) DO UPDATE SET position=EXCLUDED.position,total_three_week=EXCLUDED.total_three_week,
+                ON CONFLICT (data_version_id, player_id) DO UPDATE SET position=EXCLUDED.position,total_three_week=EXCLUDED.total_three_week,
                 probability_gt_six=EXCLUDED.probability_gt_six,probability_gt_ten=EXCLUDED.probability_gt_ten,
                 next_gameweek=EXCLUDED.next_gameweek,projections=EXCLUDED.projections,payload=EXCLUDED.payload,
                 data_version_id=EXCLUDED.data_version_id,updated_at=now()""",
@@ -259,7 +272,7 @@ def import_app_data(cur: psycopg.Cursor[Any], conn: sqlite3.Connection, vid: uui
                      (p.get("projections") or [{}])[0].get("gw"), Jsonb(p.get("projections") or []), Jsonb(p), vid))
         elif key != "ai_predictions":
             cur.execute("""INSERT INTO analysis_results (result_type,payload,data_version_id)
-            VALUES (%s,%s,%s) ON CONFLICT (result_type) DO UPDATE SET payload=EXCLUDED.payload,
+            VALUES (%s,%s,%s) ON CONFLICT (data_version_id, result_type) DO UPDATE SET payload=EXCLUDED.payload,
             data_version_id=EXCLUDED.data_version_id,updated_at=now()""", (key, Jsonb(payload), vid))
 
 
@@ -292,6 +305,8 @@ def publish(source: Path, database_url: str, key: str, batch_size: int, dry_run:
             with psycopg.connect(database_url) as pg_conn:
                 with pg_conn.cursor() as cur:
                     vid = version_id(cur, key)
+                    import_simple_bootstrap_table(cur, sqlite_conn, "element_types", vid, batch_size)
+                    import_simple_bootstrap_table(cur, sqlite_conn, "events", vid, batch_size)
                     import_teams(cur, sqlite_conn, vid, batch_size)
                     import_players(cur, sqlite_conn, vid, batch_size)
                     import_fixtures(cur, sqlite_conn, vid, batch_size)
