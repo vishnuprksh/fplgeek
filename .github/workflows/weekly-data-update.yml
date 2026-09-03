@@ -1,0 +1,46 @@
+name: Weekly FPL data update
+
+on:
+  schedule:
+    - cron: '30 3 * * 2'
+  workflow_dispatch:
+
+concurrency:
+  group: weekly-fpl-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      FPL_DATA_DIR: ${{ runner.temp }}/fpl-data
+      NEON_DATABASE_URL: ${{ secrets.NEON_DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - name: Install pipeline dependencies
+        run: python -m pip install -r backend/requirements.txt
+      - name: Prepare staging directory
+        run: mkdir -p "$FPL_DATA_DIR"
+      - name: Fetch FPL data
+        run: python backend/scripts/fetch_data.py
+      - name: Preprocess training data
+        run: python backend/scripts/preprocess.py
+      - name: Train predictions
+        run: python backend/scripts/train_predict.py
+      - name: Validate staging data
+        run: python backend/scripts/validate_data.py "$FPL_DATA_DIR/fpl.sqlite"
+      - name: Publish staged data to Neon
+        run: python backend/scripts/import_neon.py --source "$FPL_DATA_DIR/fpl.sqlite" --version-key "run-${{ github.run_id }}"
+      - name: Upload staging artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fpl-staging-failure-${{ github.run_id }}
+          path: ${{ runner.temp }}/fpl-data
+          if-no-files-found: ignore
+          retention-days: 7

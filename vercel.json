@@ -1,0 +1,14 @@
+{
+  "buildCommand": "npm --prefix frontend run build",
+  "outputDirectory": "frontend/dist",
+  "framework": "vite",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/data/:path*",
+      "headers": [{ "key": "Cache-Control", "value": "public, s-maxage=21600, stale-while-revalidate=86400" }]
+    }
+  ]
+}
