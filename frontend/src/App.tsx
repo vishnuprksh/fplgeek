@@ -71,7 +71,7 @@ export default function App() {
     runOptimization,
     handleToggleSell,
     currentWarnings
-  } = useOptimization(activePicks, staticData, bank, t100OwnershipMap);
+  } = useOptimization(activePicks, staticData, bank, t100OwnershipMap, gameweekMetadata);
 
   const predictionsMap = aiPredictionMap;
 

@@ -30,7 +30,7 @@ export const useFPLData = () => {
                     fplService.getBootstrapStatic(),
                     fplService.getFixtures(),
                     // Fetch gameweek context from backend via /ai-api prefix (proxies to localhost:3000)
-                    fetch('/ai-api/api/gameweek-context').then(r => r.json()).catch(() => {
+                    fetch('/api/gameweek-context').then(r => r.json()).catch(() => {
                         return null;
                     })
                 ]);
@@ -47,7 +47,7 @@ export const useFPLData = () => {
 
                 // Load T100 ownership from league analysis
                 try {
-                    const leagueRes = await fetch('/ai-api/api/data/league-analysis');
+                    const leagueRes = await fetch('/api/data/league-analysis');
                     const contentType = leagueRes.headers.get('content-type');
                     if (leagueRes.ok && contentType && contentType.includes('application/json')) {
                         const leagueData = await leagueRes.json();
@@ -64,7 +64,7 @@ export const useFPLData = () => {
                     console.warn('⚠️ Could not load league analysis for T100 ownership', e);
                 }
                 try {
-                    const predRes = await fetch('/ai-api/api/data/predictions');
+                    const predRes = await fetch('/api/data/predictions');
                     if (predRes.ok) {
                         const predData: any[] = await predRes.json();
                         const predMap: AIPredictionMap = {};
