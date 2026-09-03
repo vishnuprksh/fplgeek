@@ -127,7 +127,7 @@ export default function App() {
 
         <div className="app-container">
           <main className="main-content">
-            {!teamData && (
+            {!teamData && currentView === 'dashboard' && (
               <div className="hero-section">
                 <div className="hero-content">
                   <span className="hero-badge">Advanced FPL Tools</span>
