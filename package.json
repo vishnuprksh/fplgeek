@@ -6,11 +6,8 @@
   "scripts": {
     "dev": "vite frontend",
     "dev:backend": "cd backend && ./venv/bin/python -m uvicorn main:app --reload --port 3000",
-    "build": "tsc --build frontend && vite build --root frontend",
-    "lint": "eslint frontend/src",
-    "preview": "vite preview --root frontend",
-    "ingest:local": "cd backend && ./venv/bin/python ingest.py",
-    "update:data": "bash scripts/update_data.sh"
+    "update:data": "bash scripts/update_data.sh",
+    "setup": "bash scripts/setup.sh"
   },
   "dependencies": {
     "@types/better-sqlite3": "^7.6.13",

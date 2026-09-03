@@ -20,10 +20,11 @@ FPL Geek is an advanced Fantasy Premier League analytics tool that helps you opt
     git clone https://github.com/yourusername/fplgeek.git
     cd fplgeek
     ```
-2.  Install dependencies:
+2.  Run the one-time setup (installs Node dependencies, creates the backend Python virtualenv, and wires up the data directory):
     ```bash
-    npm install
+    npm run setup
     ```
+    To also fetch the FPL dataset during setup, use: `npm run setup -- --with-data`
 3.  Start the development server:
     ```bash
     npm run dev

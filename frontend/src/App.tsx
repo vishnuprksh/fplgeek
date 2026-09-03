@@ -24,7 +24,7 @@ import type { Player } from './types/fpl';
 
 export default function App() {
   console.log("🚀 App component rendering");
-  const [teamId, setTeamId] = useState(6075264);
+  const [teamId, setTeamId] = useState(0); // Must be entered by the user — no automatic login to a fixed ID
   const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
 
   // Initialize keep-alive for Render free tier (pings backend every 8 minutes)
@@ -81,9 +81,9 @@ export default function App() {
   const predictionsMap = {};
 
 
-  // Load default team when static data is ready
+  // Team is only loaded when the user submits their Team ID (no auto-login)
   useEffect(() => {
-    if (staticData && !teamData) {
+    if (teamId > 0 && staticData && !teamData) {
       loadTeam(teamId);
     }
   }, [staticData, teamData, teamId, loadTeam]);
