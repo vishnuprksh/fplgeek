@@ -5,7 +5,7 @@ const API_BASE = '/api';
 export const fplService = {
     async getTeamDetails(teamId: number): Promise<TeamEntry> {
         try {
-            const response = await fetch(`${API_BASE}/fpl/entry/${teamId}/`);
+            const response = await fetch(`${API_BASE}/fpl/entry/${teamId}`);
             if (!response.ok) {
                 throw new Error(`Failed to fetch team details: ${response.statusText}`);
             }
@@ -29,7 +29,7 @@ export const fplService = {
         } catch (error) {
             console.warn('Failed to get bootstrap static from Neon data, trying live FPL API:', error);
             try {
-                const response = await fetch(`${API_BASE}/fpl/bootstrap-static/`);
+                const response = await fetch(`${API_BASE}/fpl/bootstrap-static`);
                 if (!response.ok) throw new Error(`Failed to fetch from FPL API: ${response.statusText}`);
                 return await response.json();
             } catch (fallbackError) {
@@ -41,7 +41,7 @@ export const fplService = {
 
     async getTeamPicks(teamId: number, eventId: number): Promise<TeamPicks> {
         try {
-            const response = await fetch(`${API_BASE}/fpl/entry/${teamId}/event/${eventId}/picks/`);
+            const response = await fetch(`${API_BASE}/fpl/entry/${teamId}/event/${eventId}/picks`);
             if (!response.ok) throw new Error('Failed to fetch team picks');
             return await response.json();
         } catch (error) {
@@ -63,7 +63,7 @@ export const fplService = {
 
     async getPlayerSummary(elementId: number): Promise<Record<string, unknown>> {
         try {
-            const response = await fetch(`${API_BASE}/fpl/element-summary/${elementId}/`);
+            const response = await fetch(`${API_BASE}/fpl/element-summary/${elementId}`);
             if (!response.ok) throw new Error(`Failed to fetch player summary for ${elementId}`);
             return await response.json();
         } catch (error) {
@@ -74,7 +74,7 @@ export const fplService = {
 
     async getTransfers(teamId: number): Promise<Array<Record<string, unknown>>> {
         try {
-            const response = await fetch(`${API_BASE}/fpl/entry/${teamId}/transfers/`);
+            const response = await fetch(`${API_BASE}/fpl/entry/${teamId}/transfers`);
             if (!response.ok) throw new Error('Failed to fetch transfers');
             return await response.json();
         } catch (error) {
