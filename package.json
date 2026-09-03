@@ -9,32 +9,23 @@
     "build": "npm --prefix frontend run build",
     "lint": "eslint frontend/src",
     "preview": "vite preview --root frontend",
-    "ingest:local": "cd backend && ./venv/bin/python ingest.py",
-    "update:data": "bash scripts/update_data.sh"
+    "pipeline:local": "cd backend && ./venv/bin/python scripts/fetch_data.py && ./venv/bin/python scripts/preprocess.py && ./venv/bin/python scripts/train_predict.py && ./venv/bin/python scripts/import_neon.py"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/node-fetch": "^2.6.13",
-    "better-sqlite3": "^12.6.2",
-    "csv-parse": "^6.1.0",
-    "dotenv": "^17.2.3",
-    "node-fetch": "^3.3.2",
     "react": "^19.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^19.2.0",
     "react-markdown": "^10.1.0",
     "recharts": "^3.7.0",
-    "remark-gfm": "^4.0.1",
-    "sql.js": "^1.13.0"
+    "remark-gfm": "^4.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
-    "@types/sql.js": "^1.4.9",
     "@vercel/node": "^10.0.0",
     "@vitejs/plugin-react": "^5.1.1",
     "copy-webpack-plugin": "^13.0.1",

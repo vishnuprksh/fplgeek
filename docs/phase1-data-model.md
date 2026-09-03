@@ -50,7 +50,7 @@ python backend/scripts/import_neon.py --dry-run
 python backend/scripts/import_neon.py --source data/fpl.sqlite --version-key 2026-08-24
 ```
 
-Run the migration in `supabase/migrations/20260824000000_create_fpl_data_model.sql`
+Run the migration in `neon/migrations/20260824000000_create_fpl_data_model.sql`
 against the Neon database before the first publish. The source database is
 never modified by the importer. `element_types` and `events` are reserved for
 the bootstrap-aware pipeline and are not inferable from the current SQLite

@@ -16,8 +16,8 @@ This document describes the safe order for setting up Neon, applying the schema,
 
 Run both migrations in filename order against the target Neon database:
 
-1. `supabase/migrations/20260824000000_create_fpl_data_model.sql`
-2. `supabase/migrations/20260903000000_make_publication_rows_immutable.sql`
+1. `neon/migrations/20260824000000_create_fpl_data_model.sql`
+2. `neon/migrations/20260903000000_make_publication_rows_immutable.sql`
 
 Using `psql`:
 
@@ -26,9 +26,9 @@ set -a
 source .env
 set +a
 psql "$NEON_DATABASE_URL" -v ON_ERROR_STOP=1 \
-  -f supabase/migrations/20260824000000_create_fpl_data_model.sql
+  -f neon/migrations/20260824000000_create_fpl_data_model.sql
 psql "$NEON_DATABASE_URL" -v ON_ERROR_STOP=1 \
-  -f supabase/migrations/20260903000000_make_publication_rows_immutable.sql
+  -f neon/migrations/20260903000000_make_publication_rows_immutable.sql
 ```
 
 The second migration preserves any rows created by the first migration by assigning them to `legacy-pre-versioning`. Future imports write a separate version and activate it only after validation.
