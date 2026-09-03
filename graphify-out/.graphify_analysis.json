@@ -1,92 +1,6 @@
 {
   "communities": {
     "0": [
-      "frontend_src_components_optimizationreport",
-      "frontend_src_components_optimizationreport_optimizationreport",
-      "frontend_src_components_optimizationreport_optimizationreportprops",
-      "frontend_src_components_pitchview",
-      "frontend_src_components_pitchview_itemtypes",
-      "frontend_src_components_pitchview_pitchplayer",
-      "frontend_src_components_pitchview_pitchview",
-      "frontend_src_components_pitchview_pitchviewprops",
-      "frontend_src_components_playeranalysis",
-      "frontend_src_components_playeranalysis_playeranalysis",
-      "frontend_src_components_playeranalysis_playeranalysisprops",
-      "frontend_src_components_playeranalysis_rationale_136",
-      "frontend_src_components_playeranalysis_sortdirection",
-      "frontend_src_components_playeranalysis_sortfield",
-      "frontend_src_components_playerdetailmodal",
-      "frontend_src_components_playerdetailmodal_playerdetailmodal",
-      "frontend_src_components_playerdetailmodal_playerdetailmodalprops",
-      "frontend_src_components_teamcard",
-      "frontend_src_components_teamcard_teamcard",
-      "frontend_src_components_teamcard_teamcardprops",
-      "frontend_src_components_transfermodal",
-      "frontend_src_components_transfermodal_sortdirection",
-      "frontend_src_components_transfermodal_sortfield",
-      "frontend_src_components_transfermodal_transfermodal",
-      "frontend_src_components_transfermodal_transfermodalprops",
-      "frontend_src_hooks_usefpldata",
-      "frontend_src_hooks_usefpldata_aipredictionmap",
-      "frontend_src_hooks_usefpldata_t100ownershipmap",
-      "frontend_src_hooks_useoptimization",
-      "frontend_src_hooks_useoptimization_useoptimization",
-      "frontend_src_hooks_usetransfers",
-      "frontend_src_hooks_usetransfers_usetransfers",
-      "frontend_src_services_datafactory",
-      "frontend_src_services_datafactory_apiprovider",
-      "frontend_src_services_datafactory_getdataprovider",
-      "frontend_src_services_dataprovider",
-      "frontend_src_services_dataprovider_idataprovider",
-      "frontend_src_services_dataprovider_idataprovider_getbacktesthistory",
-      "frontend_src_services_dataprovider_idataprovider_getbootstrapstatic",
-      "frontend_src_services_dataprovider_idataprovider_getelementtypes",
-      "frontend_src_services_dataprovider_idataprovider_getevents",
-      "frontend_src_services_dataprovider_idataprovider_getplayers",
-      "frontend_src_services_dataprovider_idataprovider_getteams",
-      "frontend_src_services_fpl",
-      "frontend_src_services_fpl_fplservice",
-      "frontend_src_types_fpl",
-      "frontend_src_types_fpl_bootstrapstatic",
-      "frontend_src_types_fpl_elementtype",
-      "frontend_src_types_fpl_event",
-      "frontend_src_types_fpl_pick",
-      "frontend_src_types_fpl_player",
-      "frontend_src_types_fpl_playerhistory",
-      "frontend_src_types_fpl_playersummary",
-      "frontend_src_types_fpl_team",
-      "frontend_src_types_fpl_teamentry",
-      "frontend_src_types_fpl_teampicks",
-      "frontend_src_types_fpl_unifiedplayer",
-      "frontend_src_types_gameweek_predictionmetadata",
-      "frontend_src_utils_fpl",
-      "frontend_src_utils_fpl_isvalidformation",
-      "frontend_src_utils_price",
-      "frontend_src_utils_price_calculatesellingprice",
-      "frontend_src_utils_price_enrichpickswithprices",
-      "frontend_src_utils_solver",
-      "frontend_src_utils_solver_comb",
-      "frontend_src_utils_solver_combinations",
-      "frontend_src_utils_solver_fillslots",
-      "frontend_src_utils_solver_formatformation",
-      "frontend_src_utils_solver_lineup",
-      "frontend_src_utils_solver_optimizationresult",
-      "frontend_src_utils_solver_optimizelineup",
-      "frontend_src_utils_solver_optimizesquad",
-      "frontend_src_utils_solver_optimizetransfers",
-      "frontend_src_utils_solver_optimizewithallowance",
-      "frontend_src_utils_solver_pct",
-      "frontend_src_utils_solver_pickbestxi",
-      "frontend_src_utils_solver_predictionresult",
-      "frontend_src_utils_solver_squadxihaul",
-      "frontend_src_utils_solver_transferdetail"
-    ],
-    "1": [
-      "copy_webpack_plugin",
-      "eslint",
-      "eslint_js",
-      "eslint_plugin_react_hooks",
-      "eslint_plugin_react_refresh",
       "frontend_package_devdependencies",
       "frontend_package_devdependencies_eslint",
       "frontend_package_devdependencies_eslint_js",
@@ -101,71 +15,26 @@
       "frontend_package_devdependencies_typescript_eslint",
       "frontend_package_devdependencies_vite",
       "frontend_package_devdependencies_vitejs_plugin_react",
-      "globals",
-      "package_devdependencies",
-      "package_devdependencies_copy_webpack_plugin",
-      "package_devdependencies_eslint",
-      "package_devdependencies_eslint_js",
-      "package_devdependencies_eslint_plugin_react_hooks",
-      "package_devdependencies_eslint_plugin_react_refresh",
-      "package_devdependencies_globals",
-      "package_devdependencies_tsx",
-      "package_devdependencies_types_node",
-      "package_devdependencies_types_react",
-      "package_devdependencies_types_react_dom",
-      "package_devdependencies_typescript",
-      "package_devdependencies_typescript_eslint",
-      "package_devdependencies_vercel_node",
-      "package_devdependencies_vite",
-      "package_devdependencies_vitejs_plugin_react",
-      "tsx",
-      "types_node",
-      "types_react",
-      "types_react_dom",
-      "typescript",
-      "typescript_eslint",
-      "vercel_node",
-      "vite",
-      "vitejs_plugin_react"
-    ],
-    "2": [
-      "frontend_package",
-      "frontend_package_dependencies",
-      "frontend_package_dependencies_react",
-      "frontend_package_dependencies_react_dnd",
-      "frontend_package_dependencies_react_dnd_html5_backend",
-      "frontend_package_dependencies_react_dom",
-      "frontend_package_dependencies_react_markdown",
-      "frontend_package_dependencies_recharts",
-      "frontend_package_dependencies_remark_gfm",
-      "frontend_package_name",
-      "frontend_package_private",
-      "frontend_package_scripts",
-      "frontend_package_scripts_build",
-      "frontend_package_scripts_dev",
-      "frontend_package_scripts_lint",
-      "frontend_package_scripts_preview",
-      "frontend_package_type",
-      "frontend_package_version",
       "neondatabase_serverless",
+      "package",
       "package_dependencies",
       "package_dependencies_neondatabase_serverless",
-      "package_dependencies_react",
-      "package_dependencies_react_dnd",
-      "package_dependencies_react_dnd_html5_backend",
-      "package_dependencies_react_dom",
-      "package_dependencies_react_markdown",
-      "package_dependencies_recharts",
-      "package_dependencies_remark_gfm",
-      "react",
-      "react_dnd",
-      "react_dnd_html5_backend",
-      "react_dom",
-      "react_markdown",
-      "recharts",
-      "remark_gfm"
+      "package_devdependencies",
+      "package_devdependencies_types_node",
+      "package_devdependencies_vercel_node",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_pipeline_local",
+      "package_type",
+      "package_version",
+      "types_node",
+      "vercel_node"
     ],
-    "3": [
+    "1": [
       "any",
       "backend_scripts_import_neon",
       "backend_scripts_import_neon_as_float",
@@ -197,7 +66,7 @@
       "path",
       "uuid"
     ],
-    "4": [
+    "2": [
       "api_data_bootstrap_static",
       "api_data_bootstrap_static_handler",
       "api_data_fixtures",
@@ -217,6 +86,8 @@
       "api_fpl_path_handler",
       "api_fpl_path_isallowedpath",
       "api_fpl_path_routeparts",
+      "api_gameweek_context",
+      "api_gameweek_context_handler",
       "api_health",
       "api_health_handler",
       "api_lib_db",
@@ -227,7 +98,7 @@
       "api_lib_response_cache",
       "api_lib_response_senderror"
     ],
-    "5": [
+    "3": [
       "frontend_tsconfig_app",
       "frontend_tsconfig_app_compileroptions",
       "frontend_tsconfig_app_compileroptions_allowimportingtsextensions",
@@ -256,33 +127,32 @@
       "ref_src",
       "ref_vite_client"
     ],
-    "6": [
-      "frontend_src_app",
-      "frontend_src_app_app",
-      "frontend_src_components_bottomnav",
-      "frontend_src_components_bottomnav_bottomnav",
-      "frontend_src_components_bottomnav_bottomnavprops",
-      "frontend_src_components_bottomnav_dataicon",
-      "frontend_src_components_bottomnav_fixturesicon",
-      "frontend_src_components_bottomnav_iconmap",
-      "frontend_src_components_bottomnav_leagueicon",
-      "frontend_src_components_bottomnav_playersicon",
-      "frontend_src_components_bottomnav_teamicon",
-      "frontend_src_components_dataview",
-      "frontend_src_components_dataview_dataview",
-      "frontend_src_components_dataview_processedsample",
-      "frontend_src_components_dataview_trainingdataresponse",
-      "frontend_src_components_leagueanalysis",
-      "frontend_src_components_leagueanalysis_gwdata",
-      "frontend_src_components_leagueanalysis_leagueanalysis",
-      "frontend_src_components_leagueanalysis_leaguedata",
-      "frontend_src_components_leagueanalysis_ownedplayer",
-      "frontend_src_components_leagueanalysis_sortconfig",
-      "frontend_src_components_leagueanalysis_tablerow",
-      "frontend_src_hooks_usefpldata_usefpldata",
-      "frontend_src_main"
+    "4": [
+      "frontend_src_components_optimizationreport",
+      "frontend_src_components_optimizationreport_optimizationreport",
+      "frontend_src_components_optimizationreport_optimizationreportprops",
+      "frontend_src_hooks_useoptimization",
+      "frontend_src_hooks_useoptimization_useoptimization",
+      "frontend_src_types_fpl_player",
+      "frontend_src_types_fpl_unifiedplayer",
+      "frontend_src_utils_solver",
+      "frontend_src_utils_solver_comb",
+      "frontend_src_utils_solver_combinations",
+      "frontend_src_utils_solver_fillslots",
+      "frontend_src_utils_solver_formatformation",
+      "frontend_src_utils_solver_lineup",
+      "frontend_src_utils_solver_optimizationresult",
+      "frontend_src_utils_solver_optimizelineup",
+      "frontend_src_utils_solver_optimizesquad",
+      "frontend_src_utils_solver_optimizetransfers",
+      "frontend_src_utils_solver_optimizewithallowance",
+      "frontend_src_utils_solver_pct",
+      "frontend_src_utils_solver_pickbestxi",
+      "frontend_src_utils_solver_predictionresult",
+      "frontend_src_utils_solver_squadxihaul",
+      "frontend_src_utils_solver_transferdetail"
     ],
-    "7": [
+    "5": [
       "frontend_tsconfig_node",
       "frontend_tsconfig_node_compileroptions",
       "frontend_tsconfig_node_compileroptions_allowimportingtsextensions",
@@ -307,24 +177,64 @@
       "ref_node",
       "ref_vite_config_ts"
     ],
+    "6": [
+      "frontend_src_components_playerdetailmodal",
+      "frontend_src_components_playerdetailmodal_playerdetailmodal",
+      "frontend_src_components_playerdetailmodal_playerdetailmodalprops",
+      "frontend_src_components_teamcard",
+      "frontend_src_components_teamcard_teamcard",
+      "frontend_src_components_teamcard_teamcardprops",
+      "frontend_src_hooks_usefpldata",
+      "frontend_src_hooks_usefpldata_aipredictionmap",
+      "frontend_src_hooks_usefpldata_t100ownershipmap",
+      "frontend_src_services_fpl",
+      "frontend_src_services_fpl_fplservice",
+      "frontend_src_types_fpl",
+      "frontend_src_types_fpl_bootstrapstatic",
+      "frontend_src_types_fpl_elementtype",
+      "frontend_src_types_fpl_event",
+      "frontend_src_types_fpl_playerhistory",
+      "frontend_src_types_fpl_playersummary",
+      "frontend_src_types_fpl_teamentry",
+      "frontend_src_types_fpl_teampicks"
+    ],
+    "7": [
+      "frontend_package",
+      "frontend_package_dependencies",
+      "frontend_package_dependencies_react",
+      "frontend_package_dependencies_react_dnd",
+      "frontend_package_dependencies_react_dnd_html5_backend",
+      "frontend_package_dependencies_react_dom",
+      "frontend_package_dependencies_react_markdown",
+      "frontend_package_dependencies_recharts",
+      "frontend_package_dependencies_remark_gfm",
+      "frontend_package_name",
+      "frontend_package_private",
+      "frontend_package_scripts",
+      "frontend_package_scripts_build",
+      "frontend_package_scripts_dev",
+      "frontend_package_scripts_lint",
+      "frontend_package_scripts_preview",
+      "frontend_package_type",
+      "frontend_package_version"
+    ],
     "8": [
-      "backend_main",
-      "backend_main_data_file",
-      "backend_main_feature_importance",
-      "backend_main_fixtures",
-      "backend_main_gameweek_context",
-      "backend_main_health",
-      "backend_main_league_analysis",
-      "backend_main_load_app_data",
-      "backend_main_load_fixtures",
-      "backend_main_predictions",
-      "backend_main_run_update",
-      "backend_main_training_data",
-      "backend_main_trigger_update",
-      "backend_main_update_status",
-      "backgroundtasks",
-      "get",
-      "post"
+      "frontend_src_app",
+      "frontend_src_app_app",
+      "frontend_src_components_dataview",
+      "frontend_src_components_dataview_dataview",
+      "frontend_src_components_dataview_processedsample",
+      "frontend_src_components_dataview_trainingdataresponse",
+      "frontend_src_components_leagueanalysis",
+      "frontend_src_components_leagueanalysis_gwdata",
+      "frontend_src_components_leagueanalysis_leagueanalysis",
+      "frontend_src_components_leagueanalysis_leaguedata",
+      "frontend_src_components_leagueanalysis_ownedplayer",
+      "frontend_src_components_leagueanalysis_sortconfig",
+      "frontend_src_components_leagueanalysis_tablerow",
+      "frontend_src_components_pitchview_pitchview",
+      "frontend_src_hooks_usefpldata_usefpldata",
+      "frontend_src_main"
     ],
     "9": [
       "frontend_src_components_fixtureanalysis",
@@ -342,6 +252,21 @@
       "frontend_src_utils_fixtures_tickermatch"
     ],
     "10": [
+      "frontend_src_components_transfermodal",
+      "frontend_src_components_transfermodal_sortdirection",
+      "frontend_src_components_transfermodal_sortfield",
+      "frontend_src_components_transfermodal_transfermodal",
+      "frontend_src_components_transfermodal_transfermodalprops",
+      "frontend_src_hooks_usetransfers",
+      "frontend_src_hooks_usetransfers_usetransfers",
+      "frontend_src_types_fpl_pick",
+      "frontend_src_utils_fpl",
+      "frontend_src_utils_fpl_isvalidformation",
+      "frontend_src_utils_price",
+      "frontend_src_utils_price_calculatesellingprice",
+      "frontend_src_utils_price_enrichpickswithprices"
+    ],
+    "11": [
       "frontend_src_types_gameweek",
       "frontend_src_types_gameweek_candidatepoolvalidation",
       "frontend_src_types_gameweek_haulcalculationresult",
@@ -356,21 +281,21 @@
       "frontend_src_utils_gameweekvalidation_validatecandidatepool",
       "frontend_src_utils_gameweekvalidation_validateprojection"
     ],
-    "11": [
-      "package",
-      "package_name",
-      "package_private",
-      "package_scripts",
-      "package_scripts_build",
-      "package_scripts_dev",
-      "package_scripts_dev_backend",
-      "package_scripts_lint",
-      "package_scripts_pipeline_local",
-      "package_scripts_preview",
-      "package_type",
-      "package_version"
-    ],
     "12": [
+      "frontend_src_components_pitchview",
+      "frontend_src_components_pitchview_itemtypes",
+      "frontend_src_components_pitchview_pitchplayer",
+      "frontend_src_components_pitchview_pitchviewprops",
+      "frontend_src_components_playeranalysis",
+      "frontend_src_components_playeranalysis_playeranalysis",
+      "frontend_src_components_playeranalysis_playeranalysisprops",
+      "frontend_src_components_playeranalysis_rationale_136",
+      "frontend_src_components_playeranalysis_sortdirection",
+      "frontend_src_components_playeranalysis_sortfield",
+      "frontend_src_types_fpl_team",
+      "frontend_src_types_gameweek_predictionmetadata"
+    ],
+    "13": [
       "backend_scripts_fetch_data",
       "backend_scripts_fetch_data_build_history_row",
       "backend_scripts_fetch_data_fetch",
@@ -383,7 +308,7 @@
       "backend_scripts_fetch_data_main",
       "backend_scripts_fetch_data_seed_bootstrap"
     ],
-    "13": [
+    "14": [
       "backend_scripts_preprocess",
       "backend_scripts_preprocess_build_venue_table",
       "backend_scripts_preprocess_fixture_scores",
@@ -395,7 +320,7 @@
       "backend_scripts_preprocess_safe_float",
       "backend_scripts_preprocess_vectorize"
     ],
-    "14": [
+    "15": [
       "backend_scripts_train_predict",
       "backend_scripts_train_predict_analyze_feature_importance",
       "backend_scripts_train_predict_clean",
@@ -406,7 +331,7 @@
       "backend_scripts_train_predict_split_future",
       "backend_scripts_train_predict_train"
     ],
-    "15": [
+    "16": [
       "frontend_index_ai_powered_fpl_analytics",
       "frontend_index_fixture_tracker",
       "frontend_index_team_optimizer",
@@ -417,18 +342,18 @@
       "readme_price_predictions",
       "readme_transfer_recommendations"
     ],
-    "16": [
-      "frontend_src_services_datafactory_apidataprovider",
-      "frontend_src_services_datafactory_apidataprovider_getbacktesthistory",
-      "frontend_src_services_datafactory_apidataprovider_getbootstrapstatic",
-      "frontend_src_services_datafactory_apidataprovider_getelementtypes",
-      "frontend_src_services_datafactory_apidataprovider_getevents",
-      "frontend_src_services_datafactory_apidataprovider_getplayers",
-      "frontend_src_services_datafactory_apidataprovider_getpredictions",
-      "frontend_src_services_datafactory_apidataprovider_getteams",
-      "frontend_src_services_datafactory_request"
-    ],
     "17": [
+      "frontend_src_components_bottomnav",
+      "frontend_src_components_bottomnav_bottomnav",
+      "frontend_src_components_bottomnav_bottomnavprops",
+      "frontend_src_components_bottomnav_dataicon",
+      "frontend_src_components_bottomnav_fixturesicon",
+      "frontend_src_components_bottomnav_iconmap",
+      "frontend_src_components_bottomnav_leagueicon",
+      "frontend_src_components_bottomnav_playersicon",
+      "frontend_src_components_bottomnav_teamicon"
+    ],
+    "18": [
       "readme_deploy_vps_py",
       "readme_docker",
       "readme_docker_compose",
@@ -437,7 +362,7 @@
       "readme_ssl",
       "readme_vps"
     ],
-    "18": [
+    "19": [
       "vercel",
       "vercel_buildcommand",
       "vercel_framework",
@@ -445,89 +370,89 @@
       "vercel_outputdirectory",
       "vercel_rewrites"
     ],
-    "19": [
+    "20": [
       "backend_scripts_validate_data",
       "backend_scripts_validate_data_main",
       "backend_scripts_validate_data_rationale_1",
       "backend_scripts_validate_data_validate"
     ],
-    "20": [
+    "21": [
       "readme_local_development",
       "readme_node_js",
       "readme_npm",
       "readme_yarn"
     ],
-    "21": [
+    "22": [
       "frontend_tsconfig",
       "frontend_tsconfig_files",
       "frontend_tsconfig_references"
     ],
-    "22": [
+    "23": [
       "backend_requirements_fastapi",
       "backend_requirements_uvicorn"
     ],
-    "23": [
+    "24": [
       "frontend_index_main_tsx",
       "frontend_index_root_element"
     ],
-    "24": [
+    "25": [
       "backend_requirements_aiofiles"
     ],
-    "25": [
+    "26": [
       "backend_requirements_joblib"
     ],
-    "26": [
+    "27": [
       "backend_requirements_numpy"
     ],
-    "27": [
+    "28": [
       "backend_requirements_pandas"
     ],
-    "28": [
+    "29": [
       "backend_requirements_pydantic"
     ],
-    "29": [
+    "30": [
       "backend_requirements_python_dateutil"
     ],
-    "30": [
+    "31": [
       "backend_requirements_python_dotenv"
     ],
-    "31": [
+    "32": [
       "backend_requirements_requests"
     ],
-    "32": [
+    "33": [
       "backend_requirements_scikit_learn"
     ],
-    "33": [
+    "34": [
       "frontend_eslint_config"
     ],
-    "34": [
+    "35": [
       "frontend_vite_config"
     ]
   },
   "cohesion": {
-    "0": 0.05907172995780591,
-    "1": 0.05656565656565657,
-    "2": 0.06722689075630252,
-    "3": 0.2367816091954023,
-    "4": 0.23544973544973544,
-    "5": 0.07407407407407407,
-    "6": 0.10144927536231885,
-    "7": 0.08695652173913043,
-    "8": 0.22058823529411764,
+    "0": 0.0625,
+    "1": 0.2367816091954023,
+    "2": 0.22988505747126436,
+    "3": 0.07407407407407407,
+    "4": 0.19367588932806323,
+    "5": 0.08695652173913043,
+    "6": 0.17543859649122806,
+    "7": 0.1111111111111111,
+    "8": 0.15833333333333333,
     "9": 0.2564102564102564,
-    "10": 0.2692307692307692,
-    "11": 0.16666666666666666,
-    "12": 0.4,
+    "10": 0.2564102564102564,
+    "11": 0.2692307692307692,
+    "12": 0.24242424242424243,
     "13": 0.4,
-    "14": 0.5555555555555556,
-    "15": 0.2222222222222222,
-    "16": 0.3888888888888889,
-    "17": 0.3333333333333333,
+    "14": 0.4,
+    "15": 0.5555555555555556,
+    "16": 0.2222222222222222,
+    "17": 0.2222222222222222,
     "18": 0.3333333333333333,
-    "19": 0.6666666666666666,
-    "20": 0.5,
-    "21": 0.6666666666666666,
-    "22": 1.0,
+    "19": 0.3333333333333333,
+    "20": 0.6666666666666666,
+    "21": 0.5,
+    "22": 0.6666666666666666,
     "23": 1.0,
     "24": 1.0,
     "25": 1.0,
@@ -539,7 +464,8 @@
     "31": 1.0,
     "32": 1.0,
     "33": 1.0,
-    "34": 1.0
+    "34": 1.0,
+    "35": 1.0
   },
   "gods": [
     {
@@ -548,29 +474,29 @@
       "degree": 20
     },
     {
+      "id": "api_lib_response_senderror",
+      "label": "sendError()",
+      "degree": 19
+    },
+    {
+      "id": "api_lib_db_activeversion",
+      "label": "activeVersion()",
+      "degree": 18
+    },
+    {
       "id": "frontend_tsconfig_node_compileroptions",
       "label": "compilerOptions",
       "degree": 18
     },
     {
-      "id": "api_lib_response_senderror",
-      "label": "sendError()",
-      "degree": 17
+      "id": "api_lib_response_cache",
+      "label": "cache()",
+      "degree": 15
     },
     {
-      "id": "frontend_src_types_fpl_unifiedplayer",
-      "label": "UnifiedPlayer",
-      "degree": 16
-    },
-    {
-      "id": "api_lib_db_activeversion",
-      "label": "activeVersion()",
-      "degree": 16
-    },
-    {
-      "id": "frontend_src_types_fpl_team",
-      "label": "Team",
-      "degree": 13
+      "id": "api_lib_db_db",
+      "label": "db()",
+      "degree": 14
     },
     {
       "id": "backend_scripts_import_neon_publish",
@@ -578,19 +504,19 @@
       "degree": 13
     },
     {
-      "id": "api_lib_response_cache",
-      "label": "cache()",
+      "id": "frontend_src_types_fpl_unifiedplayer",
+      "label": "UnifiedPlayer",
       "degree": 13
-    },
-    {
-      "id": "api_lib_db_db",
-      "label": "db()",
-      "degree": 12
     },
     {
       "id": "frontend_src_types_fpl_player",
       "label": "Player",
       "degree": 11
+    },
+    {
+      "id": "frontend_src_utils_solver_optimizewithallowance",
+      "label": "optimizeWithAllowance()",
+      "degree": 10
     }
   ],
   "surprises": [
@@ -628,21 +554,21 @@
       "why": "connects across different repos/directories; peripheral node `Team Optimizer` unexpectedly reaches hub `FPL Geek`"
     },
     {
-      "source": "TeamCardProps",
-      "target": "TeamEntry",
+      "source": "TransferModalProps",
+      "target": "Player",
       "source_files": [
-        "frontend/src/components/TeamCard.tsx",
+        "frontend/src/components/TransferModal.tsx",
         "frontend/src/types/fpl.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "peripheral node `TeamCardProps` unexpectedly reaches hub `TeamEntry`"
+      "why": "bridges separate communities"
     },
     {
-      "source": "FixtureAnalysisProps",
+      "source": "TransferModalProps",
       "target": "Team",
       "source_files": [
-        "frontend/src/components/FixtureAnalysis.tsx",
+        "frontend/src/components/TransferModal.tsx",
         "frontend/src/types/fpl.ts"
       ],
       "confidence": "EXTRACTED",
