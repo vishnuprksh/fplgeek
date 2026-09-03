@@ -8,6 +8,19 @@ const allowed = new Set([
   'element-summary',
 ]);
 
+function isAllowedPath(parts: string[]) {
+  if (!parts.length || !allowed.has(parts[0])) return false;
+  if (parts[0] === 'bootstrap-static' || parts[0] === 'fixtures') return parts.length === 1;
+  if (parts[0] === 'element-summary') return parts.length === 2 && /^\d+$/.test(parts[1]);
+  if (parts[0] === 'entry') {
+    return (parts.length === 2 && /^\d+$/.test(parts[1]))
+      || (parts.length === 5 && /^\d+$/.test(parts[1]) && parts[2] === 'event'
+        && /^\d+$/.test(parts[3]) && parts[4] === 'picks')
+      || (parts.length === 3 && /^\d+$/.test(parts[1]) && parts[2] === 'transfers');
+  }
+  return false;
+}
+
 function routeParts(request: VercelRequest): string[] {
   const value = request.query.path;
   return Array.isArray(value) ? value : typeof value === 'string' ? [value] : [];
@@ -16,7 +29,7 @@ function routeParts(request: VercelRequest): string[] {
 export default async function handler(request: VercelRequest, response: VercelResponse) {
   if (request.method !== 'GET') return sendError(response, 405, 'Method not allowed');
   const parts = routeParts(request);
-  if (!parts.length || !allowed.has(parts[0])) return sendError(response, 404, 'FPL endpoint not allowed');
+  if (!isAllowedPath(parts)) return sendError(response, 404, 'FPL endpoint not allowed');
   const path = `/${parts.map(part => encodeURIComponent(part)).join('/')}/`;
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
