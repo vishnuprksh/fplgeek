@@ -1,0 +1,556 @@
+{
+  "nodes": [
+    {
+      "id": "concept:fpl_analytics",
+      "label": "FPL Geek",
+      "type": "concept",
+      "description": "Advanced Fantasy Premier League analytics tool for squad optimization using data-driven insights.",
+      "source_file": "README.md",
+      "confidence": 0.95
+    },
+    {
+      "id": "concept:pitch_view",
+      "label": "Pitch View",
+      "type": "concept",
+      "description": "Feature to visualise the user's team with live data.",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "concept:ai_history",
+      "label": "AI History",
+      "type": "concept",
+      "description": "Feature to analyze past performance vs predicted points (xP).",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "concept:transfer_recommendations",
+      "label": "Transfer Recommendations",
+      "type": "concept",
+      "description": "Smart value analysis for potential transfers.",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "concept:price_predictions",
+      "label": "Price Predictions",
+      "type": "concept",
+      "description": "Monitors potential player price rises and falls.",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "concept:xp_prediction",
+      "label": "Expected Points (xP)",
+      "type": "concept",
+      "description": "Predicted points metric used for AI history analysis and squad recommendations.",
+      "source_file": "README.md",
+      "confidence": 0.85
+    },
+    {
+      "id": "service:fastapi_backend",
+      "label": "FastAPI Backend",
+      "type": "service",
+      "description": "Python backend service built with FastAPI, served by Uvicorn.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.95
+    },
+    {
+      "id": "tech:fastapi",
+      "label": "FastAPI",
+      "type": "technology",
+      "description": "Python web framework (0.110.0) used for the backend API.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.95
+    },
+    {
+      "id": "tech:uvicorn",
+      "label": "Uvicorn",
+      "type": "technology",
+      "description": "ASGI server (0.27.1) used to run the FastAPI backend.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.95
+    },
+    {
+      "id": "tech:pydantic",
+      "label": "Pydantic",
+      "type": "technology",
+      "description": "Data validation library (2.6.3) used in the backend.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:pandas",
+      "label": "pandas",
+      "type": "technology",
+      "description": "Data analysis library used for FPL data processing.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:numpy",
+      "label": "NumPy",
+      "type": "technology",
+      "description": "Numerical computing library used in backend data processing.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:scikit_learn",
+      "label": "scikit-learn",
+      "type": "technology",
+      "description": "Machine learning library used for player point prediction models.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:joblib",
+      "label": "joblib",
+      "type": "technology",
+      "description": "Used for persisting ML models (e.g. model_unified.joblib, scaler_global.joblib).",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85
+    },
+    {
+      "id": "tech:requests",
+      "label": "requests",
+      "type": "technology",
+      "description": "HTTP client library used to fetch FPL data.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85
+    },
+    {
+      "id": "tech:python_dotenv",
+      "label": "python-dotenv",
+      "type": "technology",
+      "description": "Loads environment variables for backend configuration.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85
+    },
+    {
+      "id": "tech:aiofiles",
+      "label": "aiofiles",
+      "type": "technology",
+      "description": "Async file I/O support in the backend.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.8
+    },
+    {
+      "id": "tech:react",
+      "label": "React",
+      "type": "technology",
+      "description": "Frontend UI framework (v19.2) for the FPL Geek app.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.95
+    },
+    {
+      "id": "tech:typescript",
+      "label": "TypeScript",
+      "type": "technology",
+      "description": "Typed language used for the frontend (5.9.3), built with tsc -b.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.95
+    },
+    {
+      "id": "tech:vite",
+      "label": "Vite",
+      "type": "technology",
+      "description": "Build tool and dev server (7.2.4) for the frontend.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.95
+    },
+    {
+      "id": "tech:recharts",
+      "label": "Recharts",
+      "type": "technology",
+      "description": "Charting library (3.7.0) used for data visualizations.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:react_dnd",
+      "label": "react-dnd",
+      "type": "technology",
+      "description": "Drag-and-drop library (16.0.1) with HTML5 backend, likely for pitch/team management UI.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.85
+    },
+    {
+      "id": "tech:sql_js",
+      "label": "sql.js",
+      "type": "technology",
+      "description": "SQLite compiled to WebAssembly, used for client-side data storage.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:react_markdown",
+      "label": "react-markdown",
+      "type": "technology",
+      "description": "Markdown rendering (with remark-gfm) used in the frontend.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.85
+    },
+    {
+      "id": "tech:eslint",
+      "label": "ESLint",
+      "type": "technology",
+      "description": "Linting toolchain (v9) with react-hooks and react-refresh plugins.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:docker",
+      "label": "Docker",
+      "type": "technology",
+      "description": "Containerization used for deployment via docker compose on a VPS.",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "tech:nginx_proxy",
+      "label": "nginx-proxy",
+      "type": "technology",
+      "description": "Reverse proxy container handling SSL and routing for the deployed app.",
+      "source_file": "README.md",
+      "confidence": 0.85
+    },
+    {
+      "id": "tech:nodejs",
+      "label": "Node.js",
+      "type": "technology",
+      "description": "JavaScript runtime (v18+) required for frontend development.",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "component:frontend_app",
+      "label": "Frontend App",
+      "type": "component",
+      "description": "React + TypeScript SPA (fplgeek-frontend) served via Vite/Nginx.",
+      "source_file": "frontend/package.json",
+      "confidence": 0.9
+    },
+    {
+      "id": "component:deploy_vps_script",
+      "label": "deploy_vps.py",
+      "type": "component",
+      "description": "Automated deployment script that uploads code, builds Docker images, and starts containers on a VPS.",
+      "source_file": "README.md",
+      "confidence": 0.9
+    },
+    {
+      "id": "data:ml_models",
+      "label": "ML Models",
+      "type": "data",
+      "description": "Persisted model artifacts (model_unified.joblib, scaler_global.joblib) used for predictions.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.7
+    },
+    {
+      "id": "data:fpl_data",
+      "label": "FPL Data",
+      "type": "data",
+      "description": "Fantasy Premier League player/fixture data fetched and processed for analytics.",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.75
+    }
+  ],
+  "edges": [
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:fastapi",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.95,
+      "evidence": "fastapi==0.110.0"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:uvicorn",
+      "relationship": "served_by",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.9,
+      "evidence": "uvicorn==0.27.1"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:pydantic",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85,
+      "evidence": "pydantic==2.6.3"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:pandas",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85,
+      "evidence": "pandas>=2.1.0"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:numpy",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85,
+      "evidence": "numpy>=1.24.0"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:scikit_learn",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.85,
+      "evidence": "scikit-learn>=1.3.0"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:joblib",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.8,
+      "evidence": "joblib>=1.3.0"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:requests",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.8,
+      "evidence": "requests>=2.31.0"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:python_dotenv",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.8,
+      "evidence": "python-dotenv==1.0.1"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "tech:aiofiles",
+      "relationship": "uses",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.75,
+      "evidence": "aiofiles==23.2.1"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "data:ml_models",
+      "relationship": "loads",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.6,
+      "evidence": "joblib>=1.3.0 (model persistence)"
+    },
+    {
+      "source": "service:fastapi_backend",
+      "target": "data:fpl_data",
+      "relationship": "fetches",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.6,
+      "evidence": "requests>=2.31.0"
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:react",
+      "relationship": "uses",
+      "source_file": "frontend/package.json",
+      "confidence": 0.95,
+      "evidence": "\"react\": \"^19.2.0\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:typescript",
+      "relationship": "uses",
+      "source_file": "frontend/package.json",
+      "confidence": 0.95,
+      "evidence": "\"typescript\": \"~5.9.3\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:vite",
+      "relationship": "built_with",
+      "source_file": "frontend/package.json",
+      "confidence": 0.95,
+      "evidence": "\"build\": \"tsc -b && vite build\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:recharts",
+      "relationship": "uses",
+      "source_file": "frontend/package.json",
+      "confidence": 0.85,
+      "evidence": "\"recharts\": \"^3.7.0\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:react_dnd",
+      "relationship": "uses",
+      "source_file": "frontend/package.json",
+      "confidence": 0.8,
+      "evidence": "\"react-dnd\": \"^16.0.1\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:sql_js",
+      "relationship": "stores",
+      "source_file": "frontend/package.json",
+      "confidence": 0.75,
+      "evidence": "\"sql.js\": \"^1.13.0\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:react_markdown",
+      "relationship": "uses",
+      "source_file": "frontend/package.json",
+      "confidence": 0.8,
+      "evidence": "\"react-markdown\": \"^10.1.0\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:eslint",
+      "relationship": "linted_by",
+      "source_file": "frontend/package.json",
+      "confidence": 0.9,
+      "evidence": "\"lint\": \"eslint .\""
+    },
+    {
+      "source": "component:frontend_app",
+      "target": "tech:nodejs",
+      "relationship": "runs_on",
+      "source_file": "README.md",
+      "confidence": 0.9,
+      "evidence": "Node.js (v18+)"
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "concept:pitch_view",
+      "relationship": "implements",
+      "source_file": "README.md",
+      "confidence": 0.9,
+      "evidence": "**Pitch View**: Visualise your team with live data."
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "concept:ai_history",
+      "relationship": "implements",
+      "source_file": "README.md",
+      "confidence": 0.9,
+      "evidence": "**AI History**: Analyze past performance vs predicted points (xP)."
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "concept:transfer_recommendations",
+      "relationship": "implements",
+      "source_file": "README.md",
+      "confidence": 0.9,
+      "evidence": "**Transfer Recommendations**: Smart value analysis for potential transfers."
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "concept:price_predictions",
+      "relationship": "implements",
+      "source_file": "README.md",
+      "confidence": 0.9,
+      "evidence": "**Price Predictions**: Monitor potential price rises and falls."
+    },
+    {
+      "source": "concept:ai_history",
+      "target": "concept:xp_prediction",
+      "relationship": "depends_on",
+      "source_file": "README.md",
+      "confidence": 0.85,
+      "evidence": "Analyze past performance vs predicted points (xP)"
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "component:frontend_app",
+      "relationship": "exposes",
+      "source_file": "README.md",
+      "confidence": 0.8,
+      "evidence": "The app will be available at http://localhost:5173"
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "service:fastapi_backend",
+      "relationship": "depends_on",
+      "source_file": "backend/requirements.txt",
+      "confidence": 0.6,
+      "evidence": "FastAPI backend dependencies"
+    },
+    {
+      "source": "component:deploy_vps_script",
+      "target": "tech:docker",
+      "relationship": "orchestrates",
+      "source_file": "README.md",
+      "confidence": 0.85,
+      "evidence": "deployment script deploy_vps.py that handles everything for you (uploading code, building Docker images, and starting containers)"
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "tech:docker",
+      "relationship": "deployed_with",
+      "source_file": "README.md",
+      "confidence": 0.85,
+      "evidence": "docker compose up -d --build"
+    },
+    {
+      "source": "concept:fpl_analytics",
+      "target": "tech:nginx_proxy",
+      "relationship": "served_by",
+      "source_file": "README.md",
+      "confidence": 0.8,
+      "evidence": "handles SSL automatically if you referernce it via an nginx-proxy container"
+    }
+  ],
+  "hyperedges": [
+    {
+      "nodes": [
+        "service:fastapi_backend",
+        "tech:scikit_learn",
+        "tech:joblib",
+        "data:ml_models",
+        "concept:xp_prediction"
+      ],
+      "description": "ML prediction pipeline: FastAPI backend loads joblib-persisted scikit-learn models to produce xP predictions.",
+      "source_file": "backend/requirements.txt"
+    },
+    {
+      "nodes": [
+        "component:frontend_app",
+        "tech:react",
+        "tech:vite",
+        "tech:typescript",
+        "tech:recharts"
+      ],
+      "description": "Frontend stack: React SPA written in TypeScript, built with Vite, visualizing data with Recharts.",
+      "source_file": "frontend/package.json"
+    },
+    {
+      "nodes": [
+        "concept:fpl_analytics",
+        "tech:docker",
+        "tech:nginx_proxy",
+        "component:deploy_vps_script"
+      ],
+      "description": "Deployment flow: deploy_vps.py builds Docker images and runs containers behind nginx-proxy with automatic SSL.",
+      "source_file": "README.md"
+    },
+    {
+      "nodes": [
+        "concept:pitch_view",
+        "concept:ai_history",
+        "concept:transfer_recommendations",
+        "concept:price_predictions"
+      ],
+      "description": "Core feature set of FPL Geek: pitch visualization, AI history, transfer recommendations, and price predictions.",
+      "source_file": "README.md"
+    }
+  ],
+  "input_tokens": 0,
+  "output_tokens": 0
+}
