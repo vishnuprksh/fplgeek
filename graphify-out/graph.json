@@ -2091,18 +2091,6 @@
       "source_location": "L19"
     },
     {
-      "id": "frontend_src_components_optimizationreport_optimizationreport",
-      "label": "OptimizationReport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 5,
-      "community_name": "Community 7",
-      "file_type": "code",
-      "norm_label": "optimizationreport()",
-      "source_file": "frontend/src/components/OptimizationReport.tsx",
-      "source_location": "L8"
-    },
-    {
       "id": "frontend_src_components_pitchview_pitchview",
       "label": "PitchView()",
       "_callable": true,
@@ -2345,6 +2333,18 @@
       "norm_label": "senderror()",
       "source_file": "api/_lib/response.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "frontend_src_components_optimizationreport_optimizationreport",
+      "label": "OptimizationReport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "Community 7",
+      "file_type": "code",
+      "norm_label": "optimizationreport()",
+      "source_file": "frontend/src/components/OptimizationReport.tsx",
+      "source_location": "L8"
     },
     {
       "id": "frontend_src_utils_solver_comb",
@@ -15115,5 +15115,5 @@
       "source_file": "README.md"
     }
   ],
-  "built_at_commit": "aac49164a86ee1fa3d4bf6fa7424e860e8ef55c2"
+  "built_at_commit": "a0b8d22d3e0f43b301182a118828207d1bd566ac"
 }
