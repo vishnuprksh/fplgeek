@@ -1,9 +1,7 @@
 {
   "directed": false,
   "multigraph": false,
-  "graph": {
-    "hyperedges": []
-  },
+  "graph": {},
   "nodes": [
     {
       "id": "frontend_src_components_pitchview_pitchviewprops",
@@ -12458,5 +12456,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "22d1bdc1dbea8ae582af0748d50143a3129372da"
+  "built_at_commit": "39fc184a4c6fe1c4fe84d376be2222266c2fdf5d"
 }

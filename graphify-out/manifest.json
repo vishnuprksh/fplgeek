@@ -36,10 +36,10 @@
     "semantic_hash": "fd5374a75b4f3525ec27ab2f64a908d8"
   },
   "frontend/src/App.tsx": {
-    "mtime": 1788473497.7444353,
-    "seen": 1788473586.4933145,
-    "ast_hash": "7f0528a10ef19fd326db3ff3e7945a60",
-    "semantic_hash": "7f0528a10ef19fd326db3ff3e7945a60"
+    "mtime": 1788474599.7984862,
+    "seen": 1788474603.462438,
+    "ast_hash": "7aa00b9ace9c0e4fcaf43fe536ab83b7",
+    "semantic_hash": "7aa00b9ace9c0e4fcaf43fe536ab83b7"
   },
   "frontend/src/components/BottomNav.tsx": {
     "mtime": 1787557481.342138,
