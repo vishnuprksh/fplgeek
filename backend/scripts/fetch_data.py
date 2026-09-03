@@ -51,6 +51,8 @@ def init_db(conn):
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, data TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS teams (id INTEGER PRIMARY KEY, data TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS events (id INTEGER PRIMARY KEY, data TEXT NOT NULL);
+        CREATE TABLE IF NOT EXISTS element_types (id INTEGER PRIMARY KEY, data TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS fixtures (id INTEGER PRIMARY KEY, data TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS player_history (
             player_id INTEGER, fixture_id INTEGER, data TEXT NOT NULL,
@@ -68,8 +70,17 @@ def seed_bootstrap(conn, bootstrap):
                      [(p['id'], json.dumps(p)) for p in bootstrap['elements']])
     conn.executemany("INSERT OR REPLACE INTO teams VALUES (?, ?)",
                      [(t['id'], json.dumps(t)) for t in bootstrap['teams']])
+    conn.execute("DELETE FROM events")
+    conn.executemany("INSERT INTO events VALUES (?, ?)",
+                     [(event['id'], json.dumps(event)) for event in bootstrap.get('events', [])])
+    conn.execute("DELETE FROM element_types")
+    conn.executemany("INSERT INTO element_types VALUES (?, ?)",
+                     [(element_type['id'], json.dumps(element_type))
+                      for element_type in bootstrap.get('element_types', [])])
     conn.commit()
-    print(f"  {len(bootstrap['elements'])} players, {len(bootstrap['teams'])} teams seeded")
+    print(f"  {len(bootstrap['elements'])} players, {len(bootstrap['teams'])} teams, "
+          f"{len(bootstrap.get('events', []))} events, "
+          f"{len(bootstrap.get('element_types', []))} element types seeded")
 
 
 def fetch_and_store_fixtures(conn):
