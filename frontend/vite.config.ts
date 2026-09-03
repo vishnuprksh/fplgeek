@@ -9,7 +9,7 @@ export default defineConfig({
     // Set VITE_API_ORIGIN to your Vercel URL (or use `vercel dev` instead).
     proxy: {
       '/api': {
-        target: process.env.VITE_API_ORIGIN || 'https://fplgeek.vercel.app',
+        target: process.env.VITE_API_ORIGIN || 'https://fplgeek-preview.vercel.app',
         changeOrigin: true,
       },
     },

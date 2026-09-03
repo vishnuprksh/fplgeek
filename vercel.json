@@ -2,8 +2,9 @@
   "buildCommand": "npm ci --prefix frontend && npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
   "framework": "vite",
+  "devCommand": "npm --prefix frontend run dev -- --port $PORT",
   "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|src/|@)[^.]*)", "destination": "/index.html" }
   ],
   "headers": [
     {
