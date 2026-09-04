@@ -1,1 +1,26 @@
-{"0": "types/fpl.ts", "1": "devDependencies", "2": "dataFactory.ts", "3": "App.tsx", "4": "compilerOptions", "5": "useOptimization.ts", "6": "compilerOptions", "7": "FastAPI Backend", "8": "main.py", "9": "dependencies", "10": "gameweekValidation.ts", "11": "fetch_data.py", "12": "preprocess.py", "13": "frontend/package.json", "14": "package.json", "15": "train_predict.py", "16": "dependencies", "17": "Frontend App", "18": "SkeletonLoader.tsx", "19": "setup.sh", "20": "react-dnd", "21": "react-dnd-html5-backend", "22": "react-dom", "23": "react-markdown", "24": "tsconfig.json", "25": "update_data.sh", "26": "eslint.config.js", "27": "vite.config.ts"}
+{
+  "0": "FixtureAnalysis.tsx",
+  "1": "devDependencies",
+  "2": "types/fpl.ts",
+  "3": "App.tsx",
+  "4": "compilerOptions",
+  "5": "useOptimization.ts",
+  "6": "compilerOptions",
+  "7": "FastAPI Backend",
+  "8": "main.py",
+  "9": "dependencies",
+  "10": "test_player_aggregates.py",
+  "11": "fetch_data.py",
+  "12": "preprocess.py",
+  "13": "dependencies",
+  "14": "SqliteProvider",
+  "15": "train_predict.py",
+  "16": "__init__.py",
+  "17": "devDependencies",
+  "18": "SkeletonLoader.tsx",
+  "19": "setup.sh",
+  "24": "tsconfig.json",
+  "25": "update_data.sh",
+  "26": "eslint.config.js",
+  "27": "vite.config.ts"
+}
