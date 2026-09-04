@@ -2,22 +2,70 @@ import { useState } from 'react';
 import { optimizeTransfers, optimizeWithAllowance, pickBestXI } from '../utils/solver';
 import type { UnifiedPlayer, Player } from '../types/fpl';
 import type { OptimizationResult, PredictionResult } from '../utils/solver';
-import type { T100OwnershipMap } from './useFPLData';
+import type { T100OwnershipMap, AIPredictionMap } from './useFPLData';
 import type { PredictionMetadata } from '../types/gameweek';
+import { getSelectedGameweeks } from '../utils/gameweekValidation';
+
+/**
+ * Compute the total haul forecast for a player over the selected gameweek window.
+ *
+ * For each gameweek in the window we combine the per-fixture probabilities the
+ * backend emitted (backend already aggregates multiple fixtures per GW using
+ * 1-(1-p1)(1-p2) composition, exposed as projections[].prob_gt_6), then average
+ * across non-empty weeks. Falls back to the flat `prob_gt_6` field when
+ * projections are missing.
+ */
+export function computeTotalForecast(
+    prediction: any,
+    gameweekMetadata: PredictionMetadata | null,
+    haulingWeeks: number
+): number {
+    if (!prediction) return 0;
+
+    const projections = prediction.projections || [];
+
+    // Determine the GW window to optimize for
+    let weeks: number[] = [];
+    if (gameweekMetadata?.nextPlayGW) {
+        weeks = getSelectedGameweeks(haulingWeeks, gameweekMetadata);
+    }
+    if (weeks.length === 0) {
+        // Fallback: use the first N projections as-is
+        weeks = projections.slice(0, haulingWeeks).map((p: any) => p.gw);
+    }
+    if (weeks.length === 0) {
+        // Last resort: flat average over the whole prediction horizon
+        return prediction.prob_gt_6 || 0;
+    }
+
+    let sum = 0;
+    let counted = 0;
+    for (const gw of weeks) {
+        const proj = projections.find((p: any) => p.gw === gw);
+        const value = proj ? (proj.prob_gt_6 || 0) : 0;
+        sum += value;
+        counted += 1;
+    }
+
+    if (counted === 0) return prediction.prob_gt_6 || 0;
+    return sum / counted;
+}
 
 export const useOptimization = (
     activePicks: any[],
     staticData: { elements: UnifiedPlayer[] } | null,
     bank: number,
     t100OwnershipMap: T100OwnershipMap = {},
-    gameweekMetadata: PredictionMetadata | null = null
+    gameweekMetadata: PredictionMetadata | null = null,
+    aiPredictionMap: AIPredictionMap = {},
+    haulingWeeks: number = 3,
+    onHaulingWeeksChange?: (n: number) => void
 ) => {
     const [isOptimizing, setIsOptimizing] = useState(false);
     const [selectedToSell, setSelectedToSell] = useState<Set<number>>(new Set());
     const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [transferAllowance, setTransferAllowance] = useState(1); // 0–15
-    const [haulingWeeks, setHaulingWeeks] = useState(3); // 1, 2, or 3 weeks
 
     const toggleOptimizationMode = () => {
         if (isOptimizing) {
@@ -62,25 +110,30 @@ export const useOptimization = (
             const currentSquad = activePicks.map(p => {
                 const player = staticData.elements.find(e => e.id === p.element);
                 if (!player) return null;
+                const prediction = aiPredictionMap[p.element];
+                const forecast = computeTotalForecast(prediction, gameweekMetadata, haulingWeeks);
                 return {
                     player,
                     cost: p.selling_price ?? player.now_cost,
-                    predictedPoints: 0,
-                    totalForecast: 0,
+                    predictedPoints: prediction?.total3Week ?? 0,
+                    totalForecast: forecast,
                     smartValue: 0,
                     next5Points: []
                 } as PredictionResult;
             }).filter(Boolean) as PredictionResult[];
 
             // Build candidates
-            const allCandidates: PredictionResult[] = staticData.elements.map(e => ({
-                player: e,
-                cost: e.now_cost,
-                predictedPoints: 0,
-                totalForecast: 0,
-                smartValue: 0,
-                next5Points: []
-            }));
+            const allCandidates: PredictionResult[] = staticData.elements.map(e => {
+                const prediction = aiPredictionMap[e.id];
+                return {
+                    player: e,
+                    cost: e.now_cost,
+                    predictedPoints: prediction?.total3Week ?? 0,
+                    totalForecast: computeTotalForecast(prediction, gameweekMetadata, haulingWeeks),
+                    smartValue: 0,
+                    next5Points: []
+                } as PredictionResult;
+            });
 
             // If user manually picked players to sell → use targeted replacement
             if (selectedToSell.size > 0) {
@@ -142,9 +195,9 @@ export const useOptimization = (
         }, 100);
     };
 
-    // When user changes weeks, clear optimization result
+    // When user changes weeks, clear optimization result (week selection is owned by the parent)
     const handleSetHaulingWeeks = (n: number) => {
-        setHaulingWeeks(n);
+        onHaulingWeeksChange?.(n);
         setOptimizationResult(null);
     };
 

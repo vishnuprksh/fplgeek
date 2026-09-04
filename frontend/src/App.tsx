@@ -31,6 +31,7 @@ export default function App() {
   useKeepAlive();
 
   const [selectedTransferPlayer, setSelectedTransferPlayer] = useState<Player | null>(null);
+  const [optHaulingWeeks, setOptHaulingWeeks] = useState(3); // 1, 2, or 3 week optimization window
 
 
   // 1. Data Fetching Hook
@@ -76,7 +77,7 @@ export default function App() {
     runOptimization,
     handleToggleSell,
     currentWarnings
-  } = useOptimization(activePicks, staticData, bank, t100OwnershipMap);
+  } = useOptimization(activePicks, staticData, bank, t100OwnershipMap, gameweekMetadata, aiPredictionMap, optHaulingWeeks, setOptHaulingWeeks);
 
   const predictionsMap = {};
 
