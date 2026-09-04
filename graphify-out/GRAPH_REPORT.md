@@ -1,22 +1,23 @@
 # Graph Report - fplgeek  (2026-09-04)
 
 ## Corpus Check
-- cluster-only mode — file stats not available
+- 47 files · ~23,972 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 413 nodes · 696 edges · 28 communities (25 shown, 3 thin omitted)
-- Extraction: 95% EXTRACTED · 5% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.83)
+- 448 nodes · 715 edges · 24 communities (20 shown, 4 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9c60ebd6`
+- Built from commit: `a153c20b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- types/fpl.ts
+- FixtureAnalysis.tsx
 - devDependencies
-- dataFactory.ts
+- types/fpl.ts
 - App.tsx
 - compilerOptions
 - useOptimization.ts
@@ -24,20 +25,15 @@
 - FastAPI Backend
 - main.py
 - dependencies
-- gameweekValidation.ts
+- test_player_aggregates.py
 - fetch_data.py
 - preprocess.py
-- frontend/package.json
-- package.json
-- train_predict.py
 - dependencies
-- Frontend App
+- SqliteProvider
+- train_predict.py
+- devDependencies
 - SkeletonLoader.tsx
 - setup.sh
-- react-dnd
-- react-dnd-html5-backend
-- react-dom
-- react-markdown
 - tsconfig.json
 - update_data.sh
 
@@ -60,59 +56,59 @@
   README.md → frontend/package.json
 - `FPL Geek` ----> `FastAPI Backend`  [INFERRED]
   README.md → backend/requirements.txt
-- `TeamCardProps` --references--> `TeamEntry`  [EXTRACTED]
-  frontend/src/components/TeamCard.tsx → frontend/src/types/fpl.ts
 - `ScoredFixture` --references--> `Match`  [EXTRACTED]
   frontend/src/utils/fixtures.ts → frontend/src/types/fpl.ts
+- `App()` --calls--> `useOptimization()`  [EXTRACTED]
+  frontend/src/App.tsx → frontend/src/hooks/useOptimization.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (28 total, 3 thin omitted)
+## Communities (24 total, 4 thin omitted)
 
-### Community 0 - "types/fpl.ts"
-Cohesion: 0.08
-Nodes (39): FixtureAnalysis(), FixtureAnalysisProps, ItemTypes, PitchViewProps, PlayerAnalysis(), PlayerAnalysisProps, TODO: topHaulPlayers could be displayed in UI later, SortDirection (+31 more)
+### Community 0 - "FixtureAnalysis.tsx"
+Cohesion: 0.27
+Nodes (7): FixtureAnalysis(), calculateTable(), getFixtureTicker(), ScoredFixture, TeamSchedule, TeamStats, TickerMatch
 
 ### Community 1 - "devDependencies"
-Cohesion: 0.05
-Nodes (46): copy-webpack-plugin, devDependencies, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals, tsx (+38 more)
+Cohesion: 0.06
+Nodes (31): copy-webpack-plugin, devDependencies, copy-webpack-plugin, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals (+23 more)
 
-### Community 2 - "dataFactory.ts"
-Cohesion: 0.10
-Nodes (9): FplApiProvider, getDataProvider(), HybridDataProvider, hybridProvider, IDataProvider, SqliteProvider, BootstrapStatic, ElementType (+1 more)
+### Community 2 - "types/fpl.ts"
+Cohesion: 0.08
+Nodes (25): FixtureAnalysisProps, PlayerAnalysis(), TODO: topHaulPlayers could be displayed in UI later, SortDirection, SortField, PlayerDetailModal(), PlayerDetailModalProps, TeamCard() (+17 more)
 
 ### Community 3 - "App.tsx"
 Cohesion: 0.07
-Nodes (22): App(), BottomNav(), BottomNavProps, iconMap, DataView(), ProcessedSample, TrainingDataResponse, GWData (+14 more)
+Nodes (27): App(), BottomNav(), BottomNavProps, iconMap, DataView(), ProcessedSample, TrainingDataResponse, GWData (+19 more)
 
 ### Community 4 - "compilerOptions"
 Cohesion: 0.07
 Nodes (26): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, jsx, lib, module, moduleDetection, moduleResolution (+18 more)
 
 ### Community 5 - "useOptimization.ts"
-Cohesion: 0.18
-Nodes (20): OptimizationReport(), OptimizationReportProps, TransferModal(), computeTotalForecast(), useOptimization(), getSelectedGameweeks(), comb(), combinations() (+12 more)
+Cohesion: 0.09
+Nodes (40): OptimizationReport(), OptimizationReportProps, PlayerAnalysisProps, BacktestResult, PlayerHistoryModalProps, SortDirection, SortField, TransferModal() (+32 more)
 
 ### Community 6 - "compilerOptions"
 Cohesion: 0.09
 Nodes (22): compilerOptions, allowImportingTsExtensions, erasableSyntaxOnly, lib, module, moduleDetection, moduleResolution, noEmit (+14 more)
 
 ### Community 7 - "FastAPI Backend"
-Cohesion: 0.09
-Nodes (22): deploy_vps.py, AI History, FPL Geek, Pitch View, Price Predictions, Transfer Recommendations, Expected Points (xP), FPL Data (+14 more)
+Cohesion: 0.07
+Nodes (28): deploy_vps.py, Frontend App, AI History, FPL Geek, Pitch View, Price Predictions, Transfer Recommendations, Expected Points (xP) (+20 more)
 
 ### Community 8 - "main.py"
 Cohesion: 0.22
 Nodes (16): data_file(), feature_importance(), fixtures(), gameweek_context(), health(), league_analysis(), load_app_data(), load_fixtures() (+8 more)
 
 ### Community 9 - "dependencies"
-Cohesion: 0.12
-Nodes (17): better-sqlite3, csv-parse, dotenv, node-fetch, dependencies, better-sqlite3, csv-parse, dotenv (+9 more)
+Cohesion: 0.05
+Nodes (39): better-sqlite3, csv-parse, dotenv, node-fetch, dependencies, better-sqlite3, csv-parse, dotenv (+31 more)
 
-### Community 10 - "gameweekValidation.ts"
-Cohesion: 0.30
-Nodes (10): CandidatePoolValidation, HaulCalculationResult, NormalizedPrediction, ValidatedProjection, calculateValidatedHaul(), isBlankGW(), isPastGW(), normalizePrediction() (+2 more)
+### Community 10 - "test_player_aggregates.py"
+Cohesion: 0.23
+Nodes (12): check_player_aggregates(), dedup_current_season_history(), load_history_by_player(), load_season_totals(), main(), print_report(), Test script: verify that each player's aggregated per-gameweek history (stored…, Filter and deduplicate player_history rows to current-season matches.… (+4 more)
 
 ### Community 11 - "fetch_data.py"
 Cohesion: 0.40
@@ -122,65 +118,41 @@ Nodes (10): build_history_row(), fetch(), fetch_and_store_fixtures(), fetch_csv(
 Cohesion: 0.40
 Nodes (9): build_venue_table(), fixture_scores(), get_season(), main(), make_seq_row(), opp_strength(), rolling_agg(), safe_float() (+1 more)
 
-### Community 13 - "frontend/package.json"
-Cohesion: 0.20
-Nodes (9): name, private, scripts, build, dev, lint, preview, type (+1 more)
-
-### Community 14 - "package.json"
-Cohesion: 0.20
-Nodes (9): name, private, scripts, dev, dev:backend, setup, update:data, type (+1 more)
+### Community 13 - "dependencies"
+Cohesion: 0.08
+Nodes (24): dependencies, react, react-dnd, react-dnd-html5-backend, react-dom, react-markdown, recharts, remark-gfm (+16 more)
 
 ### Community 15 - "train_predict.py"
 Cohesion: 0.56
 Nodes (8): analyze_feature_importance(), clean(), get_future_gws(), load_data(), main(), predict(), split_future(), train()
 
-### Community 16 - "dependencies"
-Cohesion: 0.22
-Nodes (9): dependencies, recharts, remark-gfm, sql.js, sql.js, recharts, remark-gfm, recharts (+1 more)
-
-### Community 17 - "Frontend App"
-Cohesion: 0.33
-Nodes (6): Frontend App, react, vite, Node.js, React, Vite
+### Community 17 - "devDependencies"
+Cohesion: 0.07
+Nodes (29): devDependencies, eslint, @eslint/js, eslint-plugin-react-hooks, eslint-plugin-react-refresh, globals, tsx, @types/node (+21 more)
 
 ### Community 19 - "setup.sh"
 Cohesion: 0.83
 Nodes (3): fail(), setup.sh script, warn()
 
-### Community 20 - "react-dnd"
-Cohesion: 0.67
-Nodes (3): react-dnd, react-dnd, react-dnd
-
-### Community 21 - "react-dnd-html5-backend"
-Cohesion: 0.67
-Nodes (3): react-dnd-html5-backend, react-dnd-html5-backend, react-dnd-html5-backend
-
-### Community 22 - "react-dom"
-Cohesion: 0.67
-Nodes (3): react-dom, react-dom, react-dom
-
-### Community 23 - "react-markdown"
-Cohesion: 0.67
-Nodes (3): react-markdown, react-markdown, react-markdown
-
 ## Knowledge Gaps
-- **115 isolated node(s):** `TeamStats`, `TickerMatch`, `SortDirection`, `SortField`, `PlayerHistory` (+110 more)
+- **156 isolated node(s):** `name`, `private`, `version`, `type`, `dev` (+151 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **3 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **4 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `dependencies` connect `dependencies` to `package.json`, `dependencies`, `react-dnd`, `react-dnd-html5-backend`, `react-dom`, `react-markdown`?**
-  _High betweenness centrality (0.035) - this node is a cross-community bridge._
-- **Why does `devDependencies` connect `devDependencies` to `Frontend App`, `frontend/package.json`?**
-  _High betweenness centrality (0.033) - this node is a cross-community bridge._
-- **Why does `dependencies` connect `dependencies` to `frontend/package.json`, `Frontend App`, `react-dnd`, `react-dnd-html5-backend`, `react-dom`, `react-markdown`?**
-  _High betweenness centrality (0.031) - this node is a cross-community bridge._
-- **What connects `TeamStats`, `TickerMatch`, `SortDirection` to the rest of the system?**
-  _115 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `types/fpl.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.08051948051948052 - nodes in this community are weakly interconnected._
+- **Why does `dependencies` connect `dependencies` to `FastAPI Backend`?**
+  _High betweenness centrality (0.021) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `dependencies`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `devDependencies` connect `devDependencies` to `dependencies`?**
+  _High betweenness centrality (0.016) - this node is a cross-community bridge._
+- **What connects `name`, `private`, `version` to the rest of the system?**
+  _156 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `devDependencies` be split into smaller, more focused modules?**
-  _Cohesion score 0.05410628019323672 - nodes in this community are weakly interconnected._
-- **Should `dataFactory.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.1024390243902439 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06451612903225806 - nodes in this community are weakly interconnected._
+- **Should `types/fpl.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.08176100628930817 - nodes in this community are weakly interconnected._
+- **Should `App.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.06565656565656566 - nodes in this community are weakly interconnected._

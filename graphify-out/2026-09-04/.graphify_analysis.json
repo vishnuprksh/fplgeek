@@ -562,7 +562,7 @@
       ],
       "confidence": "INFERRED",
       "relation": "",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (doc \u2194 code); connects across different repos/directories; peripheral node `Node.js` unexpectedly reaches hub `Frontend App`"
+      "why": "inferred connection - not explicitly stated in source; crosses file types (doc ↔ code); connects across different repos/directories; peripheral node `Node.js` unexpectedly reaches hub `Frontend App`"
     },
     {
       "source": "FPL Geek",
@@ -573,7 +573,7 @@
       ],
       "confidence": "INFERRED",
       "relation": "",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (code \u2194 doc); connects across different repos/directories; bridges separate communities"
+      "why": "inferred connection - not explicitly stated in source; crosses file types (code ↔ doc); connects across different repos/directories; bridges separate communities"
     },
     {
       "source": "FPL Geek",
@@ -598,19 +598,52 @@
       "why": "bridges separate communities; peripheral node `TeamCardProps` unexpectedly reaches hub `TeamEntry`"
     },
     {
-      "source": "PlayerDetailModalProps",
-      "target": "BootstrapStatic",
+      "source": "ScoredFixture",
+      "target": "Match",
       "source_files": [
-        "frontend/src/components/PlayerDetailModal.tsx",
+        "frontend/src/utils/fixtures.ts",
         "frontend/src/types/fpl.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "bridges separate communities"
+      "why": "peripheral node `ScoredFixture` unexpectedly reaches hub `Match`"
     }
   ],
-  "tokens": {
-    "input": 0,
-    "output": 0
-  }
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `package.json`, `dependencies`, `react-dnd`, `react-dnd-html5-backend`, `react-dom`, `react-markdown`?",
+      "why": "High betweenness centrality (0.035) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `devDependencies` connect `devDependencies` to `Frontend App`, `frontend/package.json`?",
+      "why": "High betweenness centrality (0.033) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `frontend/package.json`, `Frontend App`, `react-dnd`, `react-dnd-html5-backend`, `react-dom`, `react-markdown`?",
+      "why": "High betweenness centrality (0.031) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `TeamStats`, `TickerMatch`, `SortDirection` to the rest of the system?",
+      "why": "115 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `types/fpl.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.08051948051948052 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `devDependencies` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.05410628019323672 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `dataFactory.ts` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.1024390243902439 - nodes in this community are weakly interconnected."
+    }
+  ]
 }

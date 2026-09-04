@@ -4,312 +4,13 @@
   "graph": {},
   "nodes": [
     {
-      "id": "frontend_src_components_fixtureanalysis_fixtureanalysisprops",
-      "label": "FixtureAnalysisProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "fixtureanalysisprops",
-      "source_file": "frontend/src/components/FixtureAnalysis.tsx",
-      "source_location": "L6"
-    },
-    {
-      "id": "frontend_src_components_pitchview_pitchviewprops",
-      "label": "PitchViewProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchviewprops",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L7"
-    },
-    {
-      "id": "frontend_src_components_playeranalysis_playeranalysisprops",
-      "label": "PlayerAnalysisProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playeranalysisprops",
-      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
-      "source_location": "L8"
-    },
-    {
-      "id": "frontend_src_components_playeranalysis_sortdirection",
-      "label": "SortDirection",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "sortdirection",
-      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
-      "source_location": "L17"
-    },
-    {
-      "id": "frontend_src_components_playeranalysis_sortfield",
-      "label": "SortField",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "sortfield",
-      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
-      "source_location": "L16"
-    },
-    {
-      "id": "frontend_src_components_playerdetailmodal_playerdetailmodalprops",
-      "label": "PlayerDetailModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerdetailmodalprops",
-      "source_file": "frontend/src/components/PlayerDetailModal.tsx",
-      "source_location": "L4"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal_backtestresult",
-      "label": "BacktestResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "backtestresult",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L4"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal_playerhistorymodalprops",
-      "label": "PlayerHistoryModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistorymodalprops",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L21"
-    },
-    {
-      "id": "frontend_src_components_transfermodal_sortdirection",
-      "label": "SortDirection",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "sortdirection",
-      "source_file": "frontend/src/components/TransferModal.tsx",
-      "source_location": "L22"
-    },
-    {
-      "id": "frontend_src_components_transfermodal_sortfield",
-      "label": "SortField",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "sortfield",
-      "source_file": "frontend/src/components/TransferModal.tsx",
-      "source_location": "L21"
-    },
-    {
-      "id": "frontend_src_components_transfermodal_transfermodalprops",
-      "label": "TransferModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "transfermodalprops",
-      "source_file": "frontend/src/components/TransferModal.tsx",
-      "source_location": "L8"
-    },
-    {
-      "id": "frontend_src_hooks_usefpldata_aipredictionmap",
-      "label": "AIPredictionMap",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "aipredictionmap",
-      "source_file": "frontend/src/hooks/useFPLData.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "frontend_src_hooks_usefpldata_t100ownershipmap",
-      "label": "T100OwnershipMap",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "t100ownershipmap",
-      "source_file": "frontend/src/hooks/useFPLData.ts",
-      "source_location": "L6"
-    },
-    {
-      "id": "frontend_src_types_fpl_match",
-      "label": "Match",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "match",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L103"
-    },
-    {
-      "id": "frontend_src_types_fpl_pick",
-      "label": "Pick",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pick",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L93"
-    },
-    {
-      "id": "frontend_src_types_fpl_player",
-      "label": "Player",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "player",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L26"
-    },
-    {
-      "id": "frontend_src_types_fpl_playerhistory",
-      "label": "PlayerHistory",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistory",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L130"
-    },
-    {
-      "id": "frontend_src_types_fpl_playersummary",
-      "label": "PlayerSummary",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playersummary",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L173"
-    },
-    {
-      "id": "frontend_src_types_fpl_team",
-      "label": "Team",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "team",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L65"
-    },
-    {
-      "id": "frontend_src_types_fpl_teamentry",
-      "label": "TeamEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teamentry",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_types_fpl_teampicks",
-      "label": "TeamPicks",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teampicks",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L114"
-    },
-    {
-      "id": "frontend_src_types_fpl_unifiedplayer",
-      "label": "UnifiedPlayer",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "unifiedplayer",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L179"
-    },
-    {
-      "id": "frontend_src_types_gameweek_predictionmetadata",
-      "label": "PredictionMetadata",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "predictionmetadata",
-      "source_file": "frontend/src/types/gameweek.ts",
-      "source_location": "L10"
-    },
-    {
       "id": "frontend_src_utils_fixtures_scoredfixture",
       "label": "ScoredFixture",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "scoredfixture",
       "source_file": "frontend/src/utils/fixtures.ts",
@@ -322,7 +23,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "teamschedule",
       "source_file": "frontend/src/utils/fixtures.ts",
@@ -335,7 +36,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "teamstats",
       "source_file": "frontend/src/utils/fixtures.ts",
@@ -348,63 +49,24 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "tickermatch",
       "source_file": "frontend/src/utils/fixtures.ts",
       "source_location": "L117"
     },
     {
-      "id": "frontend_src_types_gameweek_candidatepoolvalidation",
-      "label": "CandidatePoolValidation",
+      "id": "frontend_src_services_sqliteservice_sqliteprovider",
+      "label": "SqliteProvider",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community": 14,
+      "community_name": "SqliteProvider",
       "file_type": "code",
-      "norm_label": "candidatepoolvalidation",
-      "source_file": "frontend/src/types/gameweek.ts",
-      "source_location": "L64"
-    },
-    {
-      "id": "frontend_src_types_gameweek_haulcalculationresult",
-      "label": "HaulCalculationResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "gameweekValidation.ts",
-      "file_type": "code",
-      "norm_label": "haulcalculationresult",
-      "source_file": "frontend/src/types/gameweek.ts",
-      "source_location": "L54"
-    },
-    {
-      "id": "frontend_src_types_gameweek_normalizedprediction",
-      "label": "NormalizedPrediction",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "gameweekValidation.ts",
-      "file_type": "code",
-      "norm_label": "normalizedprediction",
-      "source_file": "frontend/src/types/gameweek.ts",
-      "source_location": "L37"
-    },
-    {
-      "id": "frontend_src_types_gameweek_validatedprojection",
-      "label": "ValidatedProjection",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 10,
-      "community_name": "gameweekValidation.ts",
-      "file_type": "code",
-      "norm_label": "validatedprojection",
-      "source_file": "frontend/src/types/gameweek.ts",
-      "source_location": "L21"
+      "norm_label": "sqliteprovider",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L5"
     },
     {
       "id": "frontend_src_components_skeletonloader_skeletonprops",
@@ -420,13 +82,78 @@
       "source_location": "L4"
     },
     {
+      "id": "frontend_src_components_fixtureanalysis_fixtureanalysisprops",
+      "label": "FixtureAnalysisProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "fixtureanalysisprops",
+      "source_file": "frontend/src/components/FixtureAnalysis.tsx",
+      "source_location": "L6"
+    },
+    {
+      "id": "frontend_src_components_playeranalysis_sortdirection",
+      "label": "SortDirection",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "sortdirection",
+      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
+      "source_location": "L17"
+    },
+    {
+      "id": "frontend_src_components_playeranalysis_sortfield",
+      "label": "SortField",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "sortfield",
+      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
+      "source_location": "L16"
+    },
+    {
+      "id": "frontend_src_components_playerdetailmodal_playerdetailmodalprops",
+      "label": "PlayerDetailModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playerdetailmodalprops",
+      "source_file": "frontend/src/components/PlayerDetailModal.tsx",
+      "source_location": "L4"
+    },
+    {
+      "id": "frontend_src_components_teamcard_teamcardprops",
+      "label": "TeamCardProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "teamcardprops",
+      "source_file": "frontend/src/components/TeamCard.tsx",
+      "source_location": "L3"
+    },
+    {
       "id": "frontend_src_services_datafactory_fplapiprovider",
       "label": "FplApiProvider",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "fplapiprovider",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -439,7 +166,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "hybriddataprovider",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -452,24 +179,11 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "idataprovider",
       "source_file": "frontend/src/services/dataProvider.ts",
       "source_location": "L3"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider",
-      "label": "SqliteProvider",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": "sqliteprovider",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L5"
     },
     {
       "id": "frontend_src_types_fpl_bootstrapstatic",
@@ -478,7 +192,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "bootstrapstatic",
       "source_file": "frontend/src/types/fpl.ts",
@@ -491,7 +205,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "elementtype",
       "source_file": "frontend/src/types/fpl.ts",
@@ -504,11 +218,102 @@
       "_callable_class": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "event",
       "source_file": "frontend/src/types/fpl.ts",
       "source_location": "L77"
+    },
+    {
+      "id": "frontend_src_types_fpl_match",
+      "label": "Match",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "match",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L103"
+    },
+    {
+      "id": "frontend_src_types_fpl_playerhistory",
+      "label": "PlayerHistory",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playerhistory",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L130"
+    },
+    {
+      "id": "frontend_src_types_fpl_playersummary",
+      "label": "PlayerSummary",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playersummary",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L173"
+    },
+    {
+      "id": "frontend_src_types_fpl_team",
+      "label": "Team",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "team",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L65"
+    },
+    {
+      "id": "frontend_src_types_fpl_teamentry",
+      "label": "TeamEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "teamentry",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_types_fpl_teampicks",
+      "label": "TeamPicks",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "teampicks",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L114"
+    },
+    {
+      "id": "frontend_src_types_fpl_unifiedplayer",
+      "label": "UnifiedPlayer",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "unifiedplayer",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L179"
     },
     {
       "id": "frontend_src_components_bottomnav_bottomnavprops",
@@ -615,6 +420,19 @@
       "source_location": "L23"
     },
     {
+      "id": "frontend_src_components_pitchview_pitchviewprops",
+      "label": "PitchViewProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "pitchviewprops",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L7"
+    },
+    {
       "id": "frontend_src_components_splashscreen_splashscreenprops",
       "label": "SplashScreenProps",
       "_callable": true,
@@ -625,19 +443,6 @@
       "file_type": "code",
       "norm_label": "splashscreenprops",
       "source_file": "frontend/src/components/SplashScreen.tsx",
-      "source_location": "L3"
-    },
-    {
-      "id": "frontend_src_components_teamcard_teamcardprops",
-      "label": "TeamCardProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "teamcardprops",
-      "source_file": "frontend/src/components/TeamCard.tsx",
       "source_location": "L3"
     },
     {
@@ -654,6 +459,19 @@
       "source_location": "L4"
     },
     {
+      "id": "frontend_src_types_fpl_pick",
+      "label": "Pick",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "pick",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L93"
+    },
+    {
       "id": "frontend_src_components_optimizationreport_optimizationreportprops",
       "label": "OptimizationReportProps",
       "_callable": true,
@@ -665,6 +483,188 @@
       "norm_label": "optimizationreportprops",
       "source_file": "frontend/src/components/OptimizationReport.tsx",
       "source_location": "L4"
+    },
+    {
+      "id": "frontend_src_components_playeranalysis_playeranalysisprops",
+      "label": "PlayerAnalysisProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playeranalysisprops",
+      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal_backtestresult",
+      "label": "BacktestResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "backtestresult",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L4"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal_playerhistorymodalprops",
+      "label": "PlayerHistoryModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playerhistorymodalprops",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L21"
+    },
+    {
+      "id": "frontend_src_components_transfermodal_sortdirection",
+      "label": "SortDirection",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "sortdirection",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L22"
+    },
+    {
+      "id": "frontend_src_components_transfermodal_sortfield",
+      "label": "SortField",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "sortfield",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L21"
+    },
+    {
+      "id": "frontend_src_components_transfermodal_transfermodalprops",
+      "label": "TransferModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "transfermodalprops",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "frontend_src_hooks_usefpldata_aipredictionmap",
+      "label": "AIPredictionMap",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "aipredictionmap",
+      "source_file": "frontend/src/hooks/useFPLData.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "frontend_src_hooks_usefpldata_t100ownershipmap",
+      "label": "T100OwnershipMap",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "t100ownershipmap",
+      "source_file": "frontend/src/hooks/useFPLData.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "frontend_src_types_fpl_player",
+      "label": "Player",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "player",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L26"
+    },
+    {
+      "id": "frontend_src_types_gameweek_candidatepoolvalidation",
+      "label": "CandidatePoolValidation",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "candidatepoolvalidation",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L64"
+    },
+    {
+      "id": "frontend_src_types_gameweek_haulcalculationresult",
+      "label": "HaulCalculationResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "haulcalculationresult",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L54"
+    },
+    {
+      "id": "frontend_src_types_gameweek_normalizedprediction",
+      "label": "NormalizedPrediction",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "normalizedprediction",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L37"
+    },
+    {
+      "id": "frontend_src_types_gameweek_predictionmetadata",
+      "label": "PredictionMetadata",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "predictionmetadata",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "frontend_src_types_gameweek_validatedprojection",
+      "label": "ValidatedProjection",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "validatedprojection",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L21"
     },
     {
       "id": "frontend_src_utils_solver_lineup",
@@ -724,7 +724,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "fixtureanalysis()",
       "source_file": "frontend/src/components/FixtureAnalysis.tsx",
@@ -736,71 +736,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "tickertable()",
       "source_file": "frontend/src/components/FixtureAnalysis.tsx",
       "source_location": "L104"
-    },
-    {
-      "id": "frontend_src_components_pitchview_pitchplayer",
-      "label": "PitchPlayer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchplayer()",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L32"
-    },
-    {
-      "id": "frontend_src_components_playeranalysis_playeranalysis",
-      "label": "PlayerAnalysis()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playeranalysis()",
-      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
-      "source_location": "L19"
-    },
-    {
-      "id": "frontend_src_components_playerdetailmodal_playerdetailmodal",
-      "label": "PlayerDetailModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerdetailmodal()",
-      "source_file": "frontend/src/components/PlayerDetailModal.tsx",
-      "source_location": "L10"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal_playerhistorymodal",
-      "label": "PlayerHistoryModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistorymodal()",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L28"
-    },
-    {
-      "id": "frontend_src_hooks_usetransfers_usetransfers",
-      "label": "useTransfers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "usetransfers()",
-      "source_file": "frontend/src/hooks/useTransfers.ts",
-      "source_location": "L6"
     },
     {
       "id": "frontend_src_utils_fixtures_calculatetable",
@@ -808,7 +748,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "calculatetable()",
       "source_file": "frontend/src/utils/fixtures.ts",
@@ -820,7 +760,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "getfixtureticker()",
       "source_file": "frontend/src/utils/fixtures.ts",
@@ -832,119 +772,95 @@
       "_callable": true,
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "getrankedfixtures()",
       "source_file": "frontend/src/utils/fixtures.ts",
       "source_location": "L76"
     },
     {
-      "id": "frontend_src_utils_fpl_isvalidformation",
-      "label": "isValidFormation()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "isvalidformation()",
-      "source_file": "frontend/src/utils/fpl.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "frontend_src_utils_price_calculatesellingprice",
-      "label": "calculateSellingPrice()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "calculatesellingprice()",
-      "source_file": "frontend/src/utils/price.ts",
-      "source_location": "L3"
-    },
-    {
-      "id": "frontend_src_utils_price_enrichpickswithprices",
-      "label": "enrichPicksWithPrices()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "enrichpickswithprices()",
-      "source_file": "frontend/src/utils/price.ts",
-      "source_location": "L8"
-    },
-    {
-      "id": "frontend_src_utils_gameweekvalidation_calculatevalidatedhaul",
-      "label": "calculateValidatedHaul()",
+      "id": "tests_test_player_aggregates_check_player_aggregates",
+      "label": "check_player_aggregates()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "calculatevalidatedhaul()",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
-      "source_location": "L97"
+      "norm_label": "check_player_aggregates()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L89"
     },
     {
-      "id": "frontend_src_utils_gameweekvalidation_isblankgw",
-      "label": "isBlankGW()",
+      "id": "tests_test_player_aggregates_dedup_current_season_history",
+      "label": "dedup_current_season_history()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "isblankgw()",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
-      "source_location": "L11"
+      "norm_label": "dedup_current_season_history()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L35"
     },
     {
-      "id": "frontend_src_utils_gameweekvalidation_ispastgw",
-      "label": "isPastGW()",
+      "id": "tests_test_player_aggregates_load_history_by_player",
+      "label": "load_history_by_player()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "ispastgw()",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
-      "source_location": "L18"
+      "norm_label": "load_history_by_player()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L76"
     },
     {
-      "id": "frontend_src_utils_gameweekvalidation_normalizeprediction",
-      "label": "normalizePrediction()",
+      "id": "tests_test_player_aggregates_load_season_totals",
+      "label": "load_season_totals()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "normalizeprediction()",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
-      "source_location": "L47"
+      "norm_label": "load_season_totals()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L59"
     },
     {
-      "id": "frontend_src_utils_gameweekvalidation_validatecandidatepool",
-      "label": "validateCandidatePool()",
+      "id": "tests_test_player_aggregates_main",
+      "label": "main()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "validatecandidatepool()",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
-      "source_location": "L142"
+      "norm_label": "main()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L143"
     },
     {
-      "id": "frontend_src_utils_gameweekvalidation_validateprojection",
-      "label": "validateProjection()",
+      "id": "tests_test_player_aggregates_print_report",
+      "label": "print_report()",
       "_callable": true,
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "validateprojection()",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
-      "source_location": "L25"
+      "norm_label": "print_report()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L127"
+    },
+    {
+      "id": "tests_test_player_aggregates_test_player_aggregates_match_season_totals",
+      "label": "test_player_aggregates_match_season_totals()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "test_player_aggregates.py",
+      "file_type": "code",
+      "norm_label": "test_player_aggregates_match_season_totals()",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L165"
     },
     {
       "id": "backend_scripts_fetch_data_build_history_row",
@@ -1175,6 +1091,114 @@
       "source_location": "L82"
     },
     {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_ensureinitialized",
+      "label": ".ensureInitialized()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".ensureinitialized()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L10"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbacktesthistory",
+      "label": ".getBacktestHistory()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".getbacktesthistory()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L167"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbootstrapstatic",
+      "label": ".getBootstrapStatic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".getbootstrapstatic()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L151"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getelementtypes",
+      "label": ".getElementTypes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".getelementtypes()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L137"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getevents",
+      "label": ".getEvents()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".getevents()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L123"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getplayers",
+      "label": ".getPlayers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".getplayers()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L58"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getteams",
+      "label": ".getTeams()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".getteams()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L107"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_initialize",
+      "label": ".initialize()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".initialize()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_querysingle",
+      "label": ".querySingle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "SqliteProvider",
+      "file_type": "code",
+      "norm_label": ".querysingle()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L44"
+    },
+    {
       "id": "backend_scripts_train_predict_analyze_feature_importance",
       "label": "analyze_feature_importance()",
       "_callable": true,
@@ -1295,12 +1319,48 @@
       "source_location": "L25"
     },
     {
+      "id": "frontend_src_components_playeranalysis_playeranalysis",
+      "label": "PlayerAnalysis()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playeranalysis()",
+      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
+      "source_location": "L19"
+    },
+    {
+      "id": "frontend_src_components_playerdetailmodal_playerdetailmodal",
+      "label": "PlayerDetailModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playerdetailmodal()",
+      "source_file": "frontend/src/components/PlayerDetailModal.tsx",
+      "source_location": "L10"
+    },
+    {
+      "id": "frontend_src_components_teamcard_teamcard",
+      "label": "TeamCard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "teamcard()",
+      "source_file": "frontend/src/components/TeamCard.tsx",
+      "source_location": "L9"
+    },
+    {
       "id": "frontend_src_services_datafactory_fplapiprovider_getbacktesthistory",
       "label": ".getBacktestHistory()",
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getbacktesthistory()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1312,7 +1372,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getbootstrapstatic()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1324,7 +1384,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getelementtypes()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1336,7 +1396,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getevents()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1348,7 +1408,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getplayers()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1360,7 +1420,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getpredictions()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1372,7 +1432,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getteams()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1384,7 +1444,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "getdataprovider()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1396,7 +1456,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getbacktesthistory()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1408,7 +1468,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getbootstrapstatic()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1420,7 +1480,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getelementtypes()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1432,7 +1492,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getevents()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1444,7 +1504,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getplayers()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1456,7 +1516,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getpredictions()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1468,7 +1528,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getteams()",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -1480,7 +1540,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getbacktesthistory()",
       "source_file": "frontend/src/services/dataProvider.ts",
@@ -1492,7 +1552,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getbootstrapstatic()",
       "source_file": "frontend/src/services/dataProvider.ts",
@@ -1504,7 +1564,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getelementtypes()",
       "source_file": "frontend/src/services/dataProvider.ts",
@@ -1516,7 +1576,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getevents()",
       "source_file": "frontend/src/services/dataProvider.ts",
@@ -1528,7 +1588,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getplayers()",
       "source_file": "frontend/src/services/dataProvider.ts",
@@ -1540,119 +1600,11 @@
       "_callable": true,
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": ".getteams()",
       "source_file": "frontend/src/services/dataProvider.ts",
       "source_location": "L5"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_ensureinitialized",
-      "label": ".ensureInitialized()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".ensureinitialized()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L10"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbacktesthistory",
-      "label": ".getBacktestHistory()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".getbacktesthistory()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L167"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbootstrapstatic",
-      "label": ".getBootstrapStatic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".getbootstrapstatic()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L151"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getelementtypes",
-      "label": ".getElementTypes()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".getelementtypes()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L137"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getevents",
-      "label": ".getEvents()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".getevents()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L123"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getplayers",
-      "label": ".getPlayers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".getplayers()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L58"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getteams",
-      "label": ".getTeams()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".getteams()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L107"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_initialize",
-      "label": ".initialize()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".initialize()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L19"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_querysingle",
-      "label": ".querySingle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "dataFactory.ts",
-      "file_type": "code",
-      "norm_label": ".querysingle()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L44"
     },
     {
       "id": "frontend_src_app_app",
@@ -1763,6 +1715,18 @@
       "source_location": "L30"
     },
     {
+      "id": "frontend_src_components_pitchview_pitchplayer",
+      "label": "PitchPlayer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "pitchplayer()",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L32"
+    },
+    {
       "id": "frontend_src_components_pitchview_pitchview",
       "label": "PitchView()",
       "_callable": true,
@@ -1785,18 +1749,6 @@
       "norm_label": "splashscreen()",
       "source_file": "frontend/src/components/SplashScreen.tsx",
       "source_location": "L12"
-    },
-    {
-      "id": "frontend_src_components_teamcard_teamcard",
-      "label": "TeamCard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "teamcard()",
-      "source_file": "frontend/src/components/TeamCard.tsx",
-      "source_location": "L9"
     },
     {
       "id": "frontend_src_components_updatebutton_updatebutton",
@@ -1835,6 +1787,54 @@
       "source_location": "L8"
     },
     {
+      "id": "frontend_src_hooks_usetransfers_usetransfers",
+      "label": "useTransfers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "usetransfers()",
+      "source_file": "frontend/src/hooks/useTransfers.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "frontend_src_utils_fpl_isvalidformation",
+      "label": "isValidFormation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "isvalidformation()",
+      "source_file": "frontend/src/utils/fpl.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "frontend_src_utils_price_calculatesellingprice",
+      "label": "calculateSellingPrice()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "calculatesellingprice()",
+      "source_file": "frontend/src/utils/price.ts",
+      "source_location": "L3"
+    },
+    {
+      "id": "frontend_src_utils_price_enrichpickswithprices",
+      "label": "enrichPicksWithPrices()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "enrichpickswithprices()",
+      "source_file": "frontend/src/utils/price.ts",
+      "source_location": "L8"
+    },
+    {
       "id": "frontend_src_components_optimizationreport_optimizationreport",
       "label": "OptimizationReport()",
       "_callable": true,
@@ -1845,6 +1845,18 @@
       "norm_label": "optimizationreport()",
       "source_file": "frontend/src/components/OptimizationReport.tsx",
       "source_location": "L11"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal_playerhistorymodal",
+      "label": "PlayerHistoryModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playerhistorymodal()",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L28"
     },
     {
       "id": "frontend_src_components_transfermodal_transfermodal",
@@ -1883,6 +1895,18 @@
       "source_location": "L54"
     },
     {
+      "id": "frontend_src_utils_gameweekvalidation_calculatevalidatedhaul",
+      "label": "calculateValidatedHaul()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "calculatevalidatedhaul()",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "source_location": "L97"
+    },
+    {
       "id": "frontend_src_utils_gameweekvalidation_getselectedgameweeks",
       "label": "getSelectedGameweeks()",
       "_callable": true,
@@ -1893,6 +1917,66 @@
       "norm_label": "getselectedgameweeks()",
       "source_file": "frontend/src/utils/gameweekValidation.ts",
       "source_location": "L191"
+    },
+    {
+      "id": "frontend_src_utils_gameweekvalidation_isblankgw",
+      "label": "isBlankGW()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "isblankgw()",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "source_location": "L11"
+    },
+    {
+      "id": "frontend_src_utils_gameweekvalidation_ispastgw",
+      "label": "isPastGW()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "ispastgw()",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "source_location": "L18"
+    },
+    {
+      "id": "frontend_src_utils_gameweekvalidation_normalizeprediction",
+      "label": "normalizePrediction()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "normalizeprediction()",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "source_location": "L47"
+    },
+    {
+      "id": "frontend_src_utils_gameweekvalidation_validatecandidatepool",
+      "label": "validateCandidatePool()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "validatecandidatepool()",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "source_location": "L142"
+    },
+    {
+      "id": "frontend_src_utils_gameweekvalidation_validateprojection",
+      "label": "validateProjection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "validateprojection()",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "source_location": "L25"
     },
     {
       "id": "frontend_src_utils_solver_comb",
@@ -2187,131 +2271,10 @@
       "label": "FixtureAnalysis.tsx",
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "fixtureanalysis.tsx",
       "source_file": "frontend/src/components/FixtureAnalysis.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_pitchview",
-      "label": "PitchView.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchview.tsx",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_pitchview_itemtypes",
-      "label": "ItemTypes",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "itemtypes",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L26"
-    },
-    {
-      "id": "frontend_src_components_playeranalysis",
-      "label": "PlayerAnalysis.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playeranalysis.tsx",
-      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_playerdetailmodal",
-      "label": "PlayerDetailModal.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerdetailmodal.tsx",
-      "source_file": "frontend/src/components/PlayerDetailModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal",
-      "label": "PlayerHistoryModal.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistorymodal.tsx",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_transfermodal",
-      "label": "TransferModal.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "transfermodal.tsx",
-      "source_file": "frontend/src/components/TransferModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_hooks_usefpldata",
-      "label": "useFPLData.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "usefpldata.ts",
-      "source_file": "frontend/src/hooks/useFPLData.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_hooks_usetransfers",
-      "label": "useTransfers.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "usetransfers.ts",
-      "source_file": "frontend/src/hooks/useTransfers.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_services_fpl",
-      "label": "services/fpl.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "services/fpl.ts",
-      "source_file": "frontend/src/services/fpl.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_services_fpl_fplservice",
-      "label": "fplService",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "fplservice",
-      "source_file": "frontend/src/services/fpl.ts",
-      "source_location": "L7"
-    },
-    {
-      "id": "frontend_src_types_fpl",
-      "label": "types/fpl.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "types/fpl.ts",
-      "source_file": "frontend/src/types/fpl.ts",
       "source_location": "L1"
     },
     {
@@ -2319,198 +2282,11 @@
       "label": "fixtures.ts",
       "_origin": "ast",
       "community": 0,
-      "community_name": "types/fpl.ts",
+      "community_name": "FixtureAnalysis.tsx",
       "file_type": "code",
       "norm_label": "fixtures.ts",
       "source_file": "frontend/src/utils/fixtures.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_utils_fpl",
-      "label": "utils/fpl.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "utils/fpl.ts",
-      "source_file": "frontend/src/utils/fpl.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_utils_price",
-      "label": "price.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "price.ts",
-      "source_file": "frontend/src/utils/price.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_playeranalysis_rationale_136",
-      "label": "TODO: topHaulPlayers could be displayed in UI later",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "rationale",
-      "norm_label": "todo: tophaulplayers could be displayed in ui later",
-      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
-      "source_location": "L136"
-    },
-    {
-      "id": "frontend_package_devdependencies",
-      "label": "devDependencies",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "devdependencies",
-      "source_file": "frontend/package.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint",
-      "label": "eslint",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "eslint",
-      "source_file": "frontend/package.json",
-      "source_location": "L29"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint_js",
-      "label": "@eslint/js",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@eslint/js",
-      "source_file": "frontend/package.json",
-      "source_location": "L23"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint_plugin_react_hooks",
-      "label": "eslint-plugin-react-hooks",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "eslint-plugin-react-hooks",
-      "source_file": "frontend/package.json",
-      "source_location": "L30"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint_plugin_react_refresh",
-      "label": "eslint-plugin-react-refresh",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "eslint-plugin-react-refresh",
-      "source_file": "frontend/package.json",
-      "source_location": "L31"
-    },
-    {
-      "id": "frontend_package_devdependencies_globals",
-      "label": "globals",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "globals",
-      "source_file": "frontend/package.json",
-      "source_location": "L32"
-    },
-    {
-      "id": "frontend_package_devdependencies_tsx",
-      "label": "tsx",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "tsx",
-      "source_file": "frontend/package.json",
-      "source_location": "L33"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_node",
-      "label": "@types/node",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/node",
-      "source_file": "frontend/package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_react",
-      "label": "@types/react",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/react",
-      "source_file": "frontend/package.json",
-      "source_location": "L25"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_react_dom",
-      "label": "@types/react-dom",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/react-dom",
-      "source_file": "frontend/package.json",
-      "source_location": "L26"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_sql_js",
-      "label": "@types/sql.js",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/sql.js",
-      "source_file": "frontend/package.json",
-      "source_location": "L27"
-    },
-    {
-      "id": "frontend_package_devdependencies_typescript",
-      "label": "typescript",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typescript",
-      "source_file": "frontend/package.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "frontend_package_devdependencies_typescript_eslint",
-      "label": "typescript-eslint",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typescript-eslint",
-      "source_file": "frontend/package.json",
-      "source_location": "L35"
-    },
-    {
-      "id": "frontend_package_devdependencies_vitejs_plugin_react",
-      "label": "@vitejs/plugin-react",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@vitejs/plugin-react",
-      "source_file": "frontend/package.json",
-      "source_location": "L28"
     },
     {
       "id": "package_devdependencies",
@@ -2521,7 +2297,7 @@
       "file_type": "code",
       "norm_label": "devdependencies",
       "source_file": "package.json",
-      "source_location": "L28"
+      "source_location": "L29"
     },
     {
       "id": "package_devdependencies_copy_webpack_plugin",
@@ -2532,7 +2308,7 @@
       "file_type": "code",
       "norm_label": "copy-webpack-plugin",
       "source_file": "package.json",
-      "source_location": "L35"
+      "source_location": "L36"
     },
     {
       "id": "package_devdependencies_eslint",
@@ -2543,7 +2319,7 @@
       "file_type": "code",
       "norm_label": "eslint",
       "source_file": "package.json",
-      "source_location": "L36"
+      "source_location": "L37"
     },
     {
       "id": "package_devdependencies_eslint_js",
@@ -2554,7 +2330,7 @@
       "file_type": "code",
       "norm_label": "@eslint/js",
       "source_file": "package.json",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "package_devdependencies_eslint_plugin_react_hooks",
@@ -2565,7 +2341,7 @@
       "file_type": "code",
       "norm_label": "eslint-plugin-react-hooks",
       "source_file": "package.json",
-      "source_location": "L37"
+      "source_location": "L38"
     },
     {
       "id": "package_devdependencies_eslint_plugin_react_refresh",
@@ -2576,7 +2352,7 @@
       "file_type": "code",
       "norm_label": "eslint-plugin-react-refresh",
       "source_file": "package.json",
-      "source_location": "L38"
+      "source_location": "L39"
     },
     {
       "id": "package_devdependencies_globals",
@@ -2587,7 +2363,7 @@
       "file_type": "code",
       "norm_label": "globals",
       "source_file": "package.json",
-      "source_location": "L39"
+      "source_location": "L40"
     },
     {
       "id": "package_devdependencies_tsx",
@@ -2598,7 +2374,7 @@
       "file_type": "code",
       "norm_label": "tsx",
       "source_file": "package.json",
-      "source_location": "L40"
+      "source_location": "L41"
     },
     {
       "id": "package_devdependencies_types_node",
@@ -2609,7 +2385,7 @@
       "file_type": "code",
       "norm_label": "@types/node",
       "source_file": "package.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "package_devdependencies_types_react",
@@ -2620,7 +2396,7 @@
       "file_type": "code",
       "norm_label": "@types/react",
       "source_file": "package.json",
-      "source_location": "L31"
+      "source_location": "L32"
     },
     {
       "id": "package_devdependencies_types_react_dom",
@@ -2631,7 +2407,7 @@
       "file_type": "code",
       "norm_label": "@types/react-dom",
       "source_file": "package.json",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "package_devdependencies_types_sql_js",
@@ -2642,7 +2418,7 @@
       "file_type": "code",
       "norm_label": "@types/sql.js",
       "source_file": "package.json",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "package_devdependencies_typescript",
@@ -2653,7 +2429,7 @@
       "file_type": "code",
       "norm_label": "typescript",
       "source_file": "package.json",
-      "source_location": "L41"
+      "source_location": "L42"
     },
     {
       "id": "package_devdependencies_typescript_eslint",
@@ -2664,7 +2440,7 @@
       "file_type": "code",
       "norm_label": "typescript-eslint",
       "source_file": "package.json",
-      "source_location": "L42"
+      "source_location": "L43"
     },
     {
       "id": "package_devdependencies_vite",
@@ -2675,7 +2451,7 @@
       "file_type": "code",
       "norm_label": "vite",
       "source_file": "package.json",
-      "source_location": "L43"
+      "source_location": "L44"
     },
     {
       "id": "package_devdependencies_vitejs_plugin_react",
@@ -2686,7 +2462,7 @@
       "file_type": "code",
       "norm_label": "@vitejs/plugin-react",
       "source_file": "package.json",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "copy_webpack_plugin",
@@ -2697,18 +2473,7 @@
       "file_type": "concept",
       "norm_label": "copy-webpack-plugin",
       "source_file": "package.json",
-      "source_location": "L35"
-    },
-    {
-      "id": "frontend_package_json_tsx",
-      "label": "tsx",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "tsx",
-      "source_file": "frontend/package.json",
-      "source_location": "L33"
+      "source_location": "L36"
     },
     {
       "id": "package_json_eslint",
@@ -2719,7 +2484,7 @@
       "file_type": "concept",
       "norm_label": "eslint",
       "source_file": "package.json",
-      "source_location": "L36"
+      "source_location": "L37"
     },
     {
       "id": "package_json_eslint_js",
@@ -2730,7 +2495,7 @@
       "file_type": "concept",
       "norm_label": "@eslint/js",
       "source_file": "package.json",
-      "source_location": "L29"
+      "source_location": "L30"
     },
     {
       "id": "package_json_eslint_plugin_react_hooks",
@@ -2741,7 +2506,7 @@
       "file_type": "concept",
       "norm_label": "eslint-plugin-react-hooks",
       "source_file": "package.json",
-      "source_location": "L37"
+      "source_location": "L38"
     },
     {
       "id": "package_json_eslint_plugin_react_refresh",
@@ -2752,7 +2517,7 @@
       "file_type": "concept",
       "norm_label": "eslint-plugin-react-refresh",
       "source_file": "package.json",
-      "source_location": "L38"
+      "source_location": "L39"
     },
     {
       "id": "package_json_globals",
@@ -2763,7 +2528,7 @@
       "file_type": "concept",
       "norm_label": "globals",
       "source_file": "package.json",
-      "source_location": "L39"
+      "source_location": "L40"
     },
     {
       "id": "package_json_tsx",
@@ -2774,7 +2539,7 @@
       "file_type": "concept",
       "norm_label": "tsx",
       "source_file": "package.json",
-      "source_location": "L40"
+      "source_location": "L41"
     },
     {
       "id": "package_json_types_node",
@@ -2785,7 +2550,7 @@
       "file_type": "concept",
       "norm_label": "@types/node",
       "source_file": "package.json",
-      "source_location": "L30"
+      "source_location": "L31"
     },
     {
       "id": "package_json_types_react",
@@ -2796,7 +2561,7 @@
       "file_type": "concept",
       "norm_label": "@types/react",
       "source_file": "package.json",
-      "source_location": "L31"
+      "source_location": "L32"
     },
     {
       "id": "package_json_types_react_dom",
@@ -2807,7 +2572,7 @@
       "file_type": "concept",
       "norm_label": "@types/react-dom",
       "source_file": "package.json",
-      "source_location": "L32"
+      "source_location": "L33"
     },
     {
       "id": "package_json_types_sql_js",
@@ -2818,7 +2583,7 @@
       "file_type": "concept",
       "norm_label": "@types/sql.js",
       "source_file": "package.json",
-      "source_location": "L33"
+      "source_location": "L34"
     },
     {
       "id": "package_json_typescript",
@@ -2829,7 +2594,7 @@
       "file_type": "concept",
       "norm_label": "typescript",
       "source_file": "package.json",
-      "source_location": "L41"
+      "source_location": "L42"
     },
     {
       "id": "package_json_typescript_eslint",
@@ -2840,7 +2605,7 @@
       "file_type": "concept",
       "norm_label": "typescript-eslint",
       "source_file": "package.json",
-      "source_location": "L42"
+      "source_location": "L43"
     },
     {
       "id": "package_json_vite",
@@ -2851,7 +2616,7 @@
       "file_type": "concept",
       "norm_label": "vite",
       "source_file": "package.json",
-      "source_location": "L43"
+      "source_location": "L44"
     },
     {
       "id": "package_json_vitejs_plugin_react",
@@ -2862,29 +2627,73 @@
       "file_type": "concept",
       "norm_label": "@vitejs/plugin-react",
       "source_file": "package.json",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
-      "id": "frontend_src_types_gameweek",
-      "label": "gameweek.ts",
+      "id": "tests_test_player_aggregates",
+      "label": "test_player_aggregates.py",
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
       "file_type": "code",
-      "norm_label": "gameweek.ts",
-      "source_file": "frontend/src/types/gameweek.ts",
+      "norm_label": "test_player_aggregates.py",
+      "source_file": "tests/test_player_aggregates.py",
       "source_location": "L1"
     },
     {
-      "id": "frontend_src_utils_gameweekvalidation",
-      "label": "gameweekValidation.ts",
+      "id": "tests_test_player_aggregates_rationale_1",
+      "label": "Test script: verify that each player's aggregated per-gameweek history (stored\u2026",
       "_origin": "ast",
       "community": 10,
-      "community_name": "gameweekValidation.ts",
-      "file_type": "code",
-      "norm_label": "gameweekvalidation.ts",
-      "source_file": "frontend/src/utils/gameweekValidation.ts",
+      "community_name": "test_player_aggregates.py",
+      "file_type": "rationale",
+      "norm_label": "test script: verify that each player's aggregated per-gameweek history (stored...",
+      "source_file": "tests/test_player_aggregates.py",
       "source_location": "L1"
+    },
+    {
+      "id": "tests_test_player_aggregates_rationale_36",
+      "label": "Filter and deduplicate player_history rows to current-season matches.\u2026",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "test_player_aggregates.py",
+      "file_type": "rationale",
+      "norm_label": "filter and deduplicate player_history rows to current-season matches....",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "tests_test_player_aggregates_rationale_60",
+      "label": "Return {player_id: {'name': str, 'totals': {field: int}}}.",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "test_player_aggregates.py",
+      "file_type": "rationale",
+      "norm_label": "return {player_id: {'name': str, 'totals': {field: int}}}.",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L60"
+    },
+    {
+      "id": "tests_test_player_aggregates_rationale_77",
+      "label": "Return {player_id: [deduped current-season history dicts]}.",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "test_player_aggregates.py",
+      "file_type": "rationale",
+      "norm_label": "return {player_id: [deduped current-season history dicts]}.",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L77"
+    },
+    {
+      "id": "tests_test_player_aggregates_rationale_90",
+      "label": "Compare summed history to season totals. Returns list of mismatch dicts.",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "test_player_aggregates.py",
+      "file_type": "rationale",
+      "norm_label": "compare summed history to season totals. returns list of mismatch dicts.",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L90"
     },
     {
       "id": "backend_scripts_fetch_data",
@@ -2913,18 +2722,106 @@
       "label": "frontend/package.json",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "frontend/package.json",
       "source_file": "frontend/package.json",
       "source_location": "L1"
     },
     {
+      "id": "frontend_package_dependencies",
+      "label": "dependencies",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "dependencies",
+      "source_file": "frontend/package.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "frontend_package_dependencies_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd",
+      "source_file": "frontend/package.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "frontend/package.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "frontend_package_dependencies_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-markdown",
+      "source_file": "frontend/package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "frontend_package_dependencies_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "recharts",
+      "source_file": "frontend/package.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "frontend_package_dependencies_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "remark-gfm",
+      "source_file": "frontend/package.json",
+      "source_location": "L19"
+    },
+    {
       "id": "frontend_package_name",
       "label": "name",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "name",
       "source_file": "frontend/package.json",
@@ -2935,7 +2832,7 @@
       "label": "private",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "private",
       "source_file": "frontend/package.json",
@@ -2946,7 +2843,7 @@
       "label": "scripts",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "scripts",
       "source_file": "frontend/package.json",
@@ -2957,7 +2854,7 @@
       "label": "build",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "build",
       "source_file": "frontend/package.json",
@@ -2968,7 +2865,7 @@
       "label": "dev",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "dev",
       "source_file": "frontend/package.json",
@@ -2979,7 +2876,7 @@
       "label": "lint",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "lint",
       "source_file": "frontend/package.json",
@@ -2990,7 +2887,7 @@
       "label": "preview",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "preview",
       "source_file": "frontend/package.json",
@@ -3001,7 +2898,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "frontend/package.json",
@@ -3012,121 +2909,88 @@
       "label": "version",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "version",
       "source_file": "frontend/package.json",
       "source_location": "L4"
     },
     {
-      "id": "package",
-      "label": "package.json",
+      "id": "frontend_package_json_react",
+      "label": "react",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "package.json",
-      "source_file": "package.json",
-      "source_location": "L1"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "source_location": "L13"
     },
     {
-      "id": "package_name",
-      "label": "name",
+      "id": "frontend_package_json_react_dnd",
+      "label": "react-dnd",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "name",
-      "source_file": "package.json",
-      "source_location": "L2"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd",
+      "source_file": "frontend/package.json",
+      "source_location": "L14"
     },
     {
-      "id": "package_private",
-      "label": "private",
+      "id": "frontend_package_json_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "private",
-      "source_file": "package.json",
-      "source_location": "L3"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "frontend/package.json",
+      "source_location": "L15"
     },
     {
-      "id": "package_scripts",
-      "label": "scripts",
+      "id": "frontend_package_json_react_dom",
+      "label": "react-dom",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "scripts",
-      "source_file": "package.json",
-      "source_location": "L6"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L16"
     },
     {
-      "id": "package_scripts_dev",
-      "label": "dev",
+      "id": "frontend_package_json_react_markdown",
+      "label": "react-markdown",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "dev",
-      "source_file": "package.json",
-      "source_location": "L7"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-markdown",
+      "source_file": "frontend/package.json",
+      "source_location": "L17"
     },
     {
-      "id": "package_scripts_dev_backend",
-      "label": "dev:backend",
+      "id": "frontend_package_json_recharts",
+      "label": "recharts",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "dev:backend",
-      "source_file": "package.json",
-      "source_location": "L8"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "recharts",
+      "source_file": "frontend/package.json",
+      "source_location": "L18"
     },
     {
-      "id": "package_scripts_setup",
-      "label": "setup",
+      "id": "frontend_package_json_remark_gfm",
+      "label": "remark-gfm",
       "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "setup",
-      "source_file": "package.json",
-      "source_location": "L10"
-    },
-    {
-      "id": "package_scripts_update_data",
-      "label": "update:data",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "update:data",
-      "source_file": "package.json",
-      "source_location": "L9"
-    },
-    {
-      "id": "package_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "package.json",
-      "source_location": "L5"
-    },
-    {
-      "id": "package_version",
-      "label": "version",
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "version",
-      "source_file": "package.json",
-      "source_location": "L4"
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "remark-gfm",
+      "source_file": "frontend/package.json",
+      "source_location": "L19"
     },
     {
       "id": "backend_scripts_train_predict",
@@ -3140,125 +3004,334 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies",
-      "label": "dependencies",
+      "id": "tests_init",
+      "label": "__init__.py",
       "_origin": "ast",
       "community": 16,
-      "community_name": "dependencies",
+      "community_name": "__init__.py",
       "file_type": "code",
-      "norm_label": "dependencies",
-      "source_file": "frontend/package.json",
-      "source_location": "L12"
+      "norm_label": "__init__.py",
+      "source_file": "tests/__init__.py",
+      "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_recharts",
-      "label": "recharts",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "recharts",
-      "source_file": "frontend/package.json",
-      "source_location": "L18"
-    },
-    {
-      "id": "frontend_package_dependencies_remark_gfm",
-      "label": "remark-gfm",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "remark-gfm",
-      "source_file": "frontend/package.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "frontend_package_dependencies_sql_js",
-      "label": "sql.js",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "sql.js",
-      "source_file": "frontend/package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "package_dependencies_recharts",
-      "label": "recharts",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "recharts",
-      "source_file": "package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "package_dependencies_remark_gfm",
-      "label": "remark-gfm",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "code",
-      "norm_label": "remark-gfm",
-      "source_file": "package.json",
-      "source_location": "L25"
-    },
-    {
-      "id": "frontend_package_json_sql_js",
-      "label": "sql.js",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "concept",
-      "norm_label": "sql.js",
-      "source_file": "frontend/package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "package_json_recharts",
-      "label": "recharts",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "concept",
-      "norm_label": "recharts",
-      "source_file": "package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "package_json_remark_gfm",
-      "label": "remark-gfm",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "dependencies",
-      "file_type": "concept",
-      "norm_label": "remark-gfm",
-      "source_file": "package.json",
-      "source_location": "L25"
-    },
-    {
-      "id": "frontend_package_dependencies_react",
-      "label": "react",
+      "id": "frontend_package_devdependencies",
+      "label": "devDependencies",
       "_origin": "ast",
       "community": 17,
-      "community_name": "Frontend App",
+      "community_name": "devDependencies",
       "file_type": "code",
-      "norm_label": "react",
+      "norm_label": "devdependencies",
       "source_file": "frontend/package.json",
-      "source_location": "L13"
+      "source_location": "L22"
+    },
+    {
+      "id": "frontend_package_devdependencies_eslint",
+      "label": "eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "frontend_package_devdependencies_eslint_js",
+      "label": "@eslint/js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@eslint/js",
+      "source_file": "frontend/package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "frontend_package_devdependencies_eslint_plugin_react_hooks",
+      "label": "eslint-plugin-react-hooks",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "eslint-plugin-react-hooks",
+      "source_file": "frontend/package.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "frontend_package_devdependencies_eslint_plugin_react_refresh",
+      "label": "eslint-plugin-react-refresh",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "eslint-plugin-react-refresh",
+      "source_file": "frontend/package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "frontend_package_devdependencies_globals",
+      "label": "globals",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "globals",
+      "source_file": "frontend/package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "frontend_package_devdependencies_tsx",
+      "label": "tsx",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "tsx",
+      "source_file": "frontend/package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/node",
+      "source_file": "frontend/package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_react",
+      "label": "@types/react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/react",
+      "source_file": "frontend/package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_react_dom",
+      "label": "@types/react-dom",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_sql_js",
+      "label": "@types/sql.js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "frontend_package_devdependencies_typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "typescript",
+      "source_file": "frontend/package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "frontend_package_devdependencies_typescript_eslint",
+      "label": "typescript-eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "typescript-eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L35"
     },
     {
       "id": "frontend_package_devdependencies_vite",
       "label": "vite",
       "_origin": "ast",
       "community": 17,
-      "community_name": "Frontend App",
+      "community_name": "devDependencies",
       "file_type": "code",
       "norm_label": "vite",
       "source_file": "frontend/package.json",
       "source_location": "L36"
+    },
+    {
+      "id": "frontend_package_devdependencies_vitejs_plugin_react",
+      "label": "@vitejs/plugin-react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@vitejs/plugin-react",
+      "source_file": "frontend/package.json",
+      "source_location": "L28"
+    },
+    {
+      "id": "frontend_package_json_eslint",
+      "label": "eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "frontend_package_json_eslint_js",
+      "label": "@eslint/js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@eslint/js",
+      "source_file": "frontend/package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "frontend_package_json_eslint_plugin_react_hooks",
+      "label": "eslint-plugin-react-hooks",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "eslint-plugin-react-hooks",
+      "source_file": "frontend/package.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "frontend_package_json_eslint_plugin_react_refresh",
+      "label": "eslint-plugin-react-refresh",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "eslint-plugin-react-refresh",
+      "source_file": "frontend/package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "frontend_package_json_globals",
+      "label": "globals",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "globals",
+      "source_file": "frontend/package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "frontend_package_json_tsx",
+      "label": "tsx",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "tsx",
+      "source_file": "frontend/package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "frontend_package_json_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/node",
+      "source_file": "frontend/package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "frontend_package_json_types_react",
+      "label": "@types/react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/react",
+      "source_file": "frontend/package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "frontend_package_json_types_react_dom",
+      "label": "@types/react-dom",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "frontend_package_json_types_sql_js",
+      "label": "@types/sql.js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "frontend_package_json_typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "typescript",
+      "source_file": "frontend/package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "frontend_package_json_typescript_eslint",
+      "label": "typescript-eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "typescript-eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "frontend_package_json_vite",
+      "label": "vite",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "vite",
+      "source_file": "frontend/package.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "frontend_package_json_vitejs_plugin_react",
+      "label": "@vitejs/plugin-react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@vitejs/plugin-react",
+      "source_file": "frontend/package.json",
+      "source_location": "L28"
     },
     {
       "id": "frontend_src_components_skeletonloader",
@@ -3332,11 +3405,55 @@
       "source_location": "L12"
     },
     {
+      "id": "frontend_src_components_playeranalysis",
+      "label": "PlayerAnalysis.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playeranalysis.tsx",
+      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_playerdetailmodal",
+      "label": "PlayerDetailModal.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "playerdetailmodal.tsx",
+      "source_file": "frontend/src/components/PlayerDetailModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_teamcard",
+      "label": "TeamCard.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "teamcard.tsx",
+      "source_file": "frontend/src/components/TeamCard.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_hooks_usefpldata",
+      "label": "useFPLData.ts",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "usefpldata.ts",
+      "source_file": "frontend/src/hooks/useFPLData.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "frontend_src_services_datafactory",
       "label": "dataFactory.ts",
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "datafactory.ts",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -3347,7 +3464,7 @@
       "label": "hybridProvider",
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "hybridprovider",
       "source_file": "frontend/src/services/dataFactory.ts",
@@ -3358,154 +3475,66 @@
       "label": "dataProvider.ts",
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "dataprovider.ts",
       "source_file": "frontend/src/services/dataProvider.ts",
       "source_location": "L1"
     },
     {
+      "id": "frontend_src_services_fpl",
+      "label": "services/fpl.ts",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "services/fpl.ts",
+      "source_file": "frontend/src/services/fpl.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_services_fpl_fplservice",
+      "label": "fplService",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "fplservice",
+      "source_file": "frontend/src/services/fpl.ts",
+      "source_location": "L7"
+    },
+    {
       "id": "frontend_src_services_sqliteservice",
       "label": "sqliteService.ts",
       "_origin": "ast",
       "community": 2,
-      "community_name": "dataFactory.ts",
+      "community_name": "types/fpl.ts",
       "file_type": "code",
       "norm_label": "sqliteservice.ts",
       "source_file": "frontend/src/services/sqliteService.ts",
       "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_react_dnd",
-      "label": "react-dnd",
+      "id": "frontend_src_types_fpl",
+      "label": "types/fpl.ts",
       "_origin": "ast",
-      "community": 20,
-      "community_name": "react-dnd",
+      "community": 2,
+      "community_name": "types/fpl.ts",
       "file_type": "code",
-      "norm_label": "react-dnd",
-      "source_file": "frontend/package.json",
-      "source_location": "L14"
+      "norm_label": "types/fpl.ts",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L1"
     },
     {
-      "id": "package_dependencies_react_dnd",
-      "label": "react-dnd",
+      "id": "frontend_src_components_playeranalysis_rationale_136",
+      "label": "TODO: topHaulPlayers could be displayed in UI later",
       "_origin": "ast",
-      "community": 20,
-      "community_name": "react-dnd",
-      "file_type": "code",
-      "norm_label": "react-dnd",
-      "source_file": "package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "package_json_react_dnd",
-      "label": "react-dnd",
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "react-dnd",
-      "file_type": "concept",
-      "norm_label": "react-dnd",
-      "source_file": "package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "frontend_package_dependencies_react_dnd_html5_backend",
-      "label": "react-dnd-html5-backend",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "react-dnd-html5-backend",
-      "file_type": "code",
-      "norm_label": "react-dnd-html5-backend",
-      "source_file": "frontend/package.json",
-      "source_location": "L15"
-    },
-    {
-      "id": "package_dependencies_react_dnd_html5_backend",
-      "label": "react-dnd-html5-backend",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "react-dnd-html5-backend",
-      "file_type": "code",
-      "norm_label": "react-dnd-html5-backend",
-      "source_file": "package.json",
-      "source_location": "L21"
-    },
-    {
-      "id": "package_json_react_dnd_html5_backend",
-      "label": "react-dnd-html5-backend",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "react-dnd-html5-backend",
-      "file_type": "concept",
-      "norm_label": "react-dnd-html5-backend",
-      "source_file": "package.json",
-      "source_location": "L21"
-    },
-    {
-      "id": "frontend_package_dependencies_react_dom",
-      "label": "react-dom",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "react-dom",
-      "file_type": "code",
-      "norm_label": "react-dom",
-      "source_file": "frontend/package.json",
-      "source_location": "L16"
-    },
-    {
-      "id": "package_dependencies_react_dom",
-      "label": "react-dom",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "react-dom",
-      "file_type": "code",
-      "norm_label": "react-dom",
-      "source_file": "package.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "package_json_react_dom",
-      "label": "react-dom",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "react-dom",
-      "file_type": "concept",
-      "norm_label": "react-dom",
-      "source_file": "package.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "frontend_package_dependencies_react_markdown",
-      "label": "react-markdown",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "react-markdown",
-      "file_type": "code",
-      "norm_label": "react-markdown",
-      "source_file": "frontend/package.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "package_dependencies_react_markdown",
-      "label": "react-markdown",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "react-markdown",
-      "file_type": "code",
-      "norm_label": "react-markdown",
-      "source_file": "package.json",
-      "source_location": "L23"
-    },
-    {
-      "id": "package_json_react_markdown",
-      "label": "react-markdown",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "react-markdown",
-      "file_type": "concept",
-      "norm_label": "react-markdown",
-      "source_file": "package.json",
-      "source_location": "L23"
+      "community": 2,
+      "community_name": "types/fpl.ts",
+      "file_type": "rationale",
+      "norm_label": "todo: tophaulplayers could be displayed in ui later",
+      "source_file": "frontend/src/components/PlayerAnalysis.tsx",
+      "source_location": "L136"
     },
     {
       "id": "frontend_tsconfig",
@@ -3648,6 +3677,28 @@
       "source_location": "L1"
     },
     {
+      "id": "frontend_src_components_pitchview",
+      "label": "PitchView.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "pitchview.tsx",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_pitchview_itemtypes",
+      "label": "ItemTypes",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "itemtypes",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L26"
+    },
+    {
       "id": "frontend_src_components_splashscreen",
       "label": "SplashScreen.tsx",
       "_origin": "ast",
@@ -3656,17 +3707,6 @@
       "file_type": "code",
       "norm_label": "splashscreen.tsx",
       "source_file": "frontend/src/components/SplashScreen.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_teamcard",
-      "label": "TeamCard.tsx",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "App.tsx",
-      "file_type": "code",
-      "norm_label": "teamcard.tsx",
-      "source_file": "frontend/src/components/TeamCard.tsx",
       "source_location": "L1"
     },
     {
@@ -3692,6 +3732,17 @@
       "source_location": "L1"
     },
     {
+      "id": "frontend_src_hooks_usetransfers",
+      "label": "useTransfers.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "usetransfers.ts",
+      "source_file": "frontend/src/hooks/useTransfers.ts",
+      "source_location": "L1"
+    },
+    {
       "id": "frontend_src_main",
       "label": "main.tsx",
       "_origin": "ast",
@@ -3700,6 +3751,28 @@
       "file_type": "code",
       "norm_label": "main.tsx",
       "source_file": "frontend/src/main.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_utils_fpl",
+      "label": "utils/fpl.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "utils/fpl.ts",
+      "source_file": "frontend/src/utils/fpl.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_utils_price",
+      "label": "price.ts",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "price.ts",
+      "source_file": "frontend/src/utils/price.ts",
       "source_location": "L1"
     },
     {
@@ -4011,6 +4084,28 @@
       "source_location": "L1"
     },
     {
+      "id": "frontend_src_components_playerhistorymodal",
+      "label": "PlayerHistoryModal.tsx",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playerhistorymodal.tsx",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_transfermodal",
+      "label": "TransferModal.tsx",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "transfermodal.tsx",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "frontend_src_hooks_useoptimization",
       "label": "useOptimization.ts",
       "_origin": "ast",
@@ -4019,6 +4114,28 @@
       "file_type": "code",
       "norm_label": "useoptimization.ts",
       "source_file": "frontend/src/hooks/useOptimization.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_types_gameweek",
+      "label": "gameweek.ts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "gameweek.ts",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_utils_gameweekvalidation",
+      "label": "gameweekValidation.ts",
+      "_origin": "ast",
+      "community": 5,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "gameweekvalidation.ts",
+      "source_file": "frontend/src/utils/gameweekValidation.ts",
       "source_location": "L1"
     },
     {
@@ -4286,6 +4403,28 @@
       "source_location": "L25"
     },
     {
+      "id": "frontend_package_dependencies_sql_js",
+      "label": "sql.js",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "FastAPI Backend",
+      "file_type": "code",
+      "norm_label": "sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "frontend_package_json_sql_js",
+      "label": "sql.js",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "FastAPI Backend",
+      "file_type": "concept",
+      "norm_label": "sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L20"
+    },
+    {
       "id": "backend_main",
       "label": "main.py",
       "_origin": "ast",
@@ -4330,6 +4469,17 @@
       "source_location": ""
     },
     {
+      "id": "package",
+      "label": "package.json",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "package.json",
+      "source_file": "package.json",
+      "source_location": "L1"
+    },
+    {
       "id": "package_dependencies",
       "label": "dependencies",
       "_origin": "ast",
@@ -4338,7 +4488,7 @@
       "file_type": "code",
       "norm_label": "dependencies",
       "source_file": "package.json",
-      "source_location": "L12"
+      "source_location": "L13"
     },
     {
       "id": "package_dependencies_better_sqlite3",
@@ -4349,7 +4499,7 @@
       "file_type": "code",
       "norm_label": "better-sqlite3",
       "source_file": "package.json",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "package_dependencies_csv_parse",
@@ -4360,7 +4510,7 @@
       "file_type": "code",
       "norm_label": "csv-parse",
       "source_file": "package.json",
-      "source_location": "L16"
+      "source_location": "L17"
     },
     {
       "id": "package_dependencies_dotenv",
@@ -4371,7 +4521,7 @@
       "file_type": "code",
       "norm_label": "dotenv",
       "source_file": "package.json",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "package_dependencies_node_fetch",
@@ -4382,7 +4532,7 @@
       "file_type": "code",
       "norm_label": "node-fetch",
       "source_file": "package.json",
-      "source_location": "L18"
+      "source_location": "L19"
     },
     {
       "id": "package_dependencies_react",
@@ -4393,7 +4543,73 @@
       "file_type": "code",
       "norm_label": "react",
       "source_file": "package.json",
-      "source_location": "L19"
+      "source_location": "L20"
+    },
+    {
+      "id": "package_dependencies_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd",
+      "source_file": "package.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "package_dependencies_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "package.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "package_dependencies_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dom",
+      "source_file": "package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "package_dependencies_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-markdown",
+      "source_file": "package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "package_dependencies_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "recharts",
+      "source_file": "package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "package_dependencies_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "remark-gfm",
+      "source_file": "package.json",
+      "source_location": "L26"
     },
     {
       "id": "package_dependencies_sql_js",
@@ -4404,7 +4620,7 @@
       "file_type": "code",
       "norm_label": "sql.js",
       "source_file": "package.json",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "package_dependencies_types_better_sqlite3",
@@ -4415,7 +4631,7 @@
       "file_type": "code",
       "norm_label": "@types/better-sqlite3",
       "source_file": "package.json",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "package_dependencies_types_node_fetch",
@@ -4426,7 +4642,117 @@
       "file_type": "code",
       "norm_label": "@types/node-fetch",
       "source_file": "package.json",
-      "source_location": "L14"
+      "source_location": "L15"
+    },
+    {
+      "id": "package_name",
+      "label": "name",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "name",
+      "source_file": "package.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "package_private",
+      "label": "private",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "private",
+      "source_file": "package.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "scripts",
+      "source_file": "package.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "package_scripts_dev",
+      "label": "dev",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "dev",
+      "source_file": "package.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "package_scripts_dev_backend",
+      "label": "dev:backend",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "dev:backend",
+      "source_file": "package.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "package_scripts_setup",
+      "label": "setup",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "setup",
+      "source_file": "package.json",
+      "source_location": "L11"
+    },
+    {
+      "id": "package_scripts_test",
+      "label": "test",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "test",
+      "source_file": "package.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "package_scripts_update_data",
+      "label": "update:data",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "update:data",
+      "source_file": "package.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "package_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "package.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "package_version",
+      "label": "version",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "version",
+      "source_file": "package.json",
+      "source_location": "L4"
     },
     {
       "id": "better_sqlite3",
@@ -4437,7 +4763,7 @@
       "file_type": "concept",
       "norm_label": "better-sqlite3",
       "source_file": "package.json",
-      "source_location": "L15"
+      "source_location": "L16"
     },
     {
       "id": "csv_parse",
@@ -4448,7 +4774,7 @@
       "file_type": "concept",
       "norm_label": "csv-parse",
       "source_file": "package.json",
-      "source_location": "L16"
+      "source_location": "L17"
     },
     {
       "id": "dotenv",
@@ -4459,7 +4785,7 @@
       "file_type": "concept",
       "norm_label": "dotenv",
       "source_file": "package.json",
-      "source_location": "L17"
+      "source_location": "L18"
     },
     {
       "id": "node_fetch",
@@ -4470,7 +4796,7 @@
       "file_type": "concept",
       "norm_label": "node-fetch",
       "source_file": "package.json",
-      "source_location": "L18"
+      "source_location": "L19"
     },
     {
       "id": "package_json_react",
@@ -4481,7 +4807,73 @@
       "file_type": "concept",
       "norm_label": "react",
       "source_file": "package.json",
-      "source_location": "L19"
+      "source_location": "L20"
+    },
+    {
+      "id": "package_json_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd",
+      "source_file": "package.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "package_json_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "package.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "package_json_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dom",
+      "source_file": "package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "package_json_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-markdown",
+      "source_file": "package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "package_json_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "recharts",
+      "source_file": "package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "package_json_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 9,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "remark-gfm",
+      "source_file": "package.json",
+      "source_location": "L26"
     },
     {
       "id": "package_json_sql_js",
@@ -4492,7 +4884,7 @@
       "file_type": "concept",
       "norm_label": "sql.js",
       "source_file": "package.json",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "types_better_sqlite3",
@@ -4503,7 +4895,7 @@
       "file_type": "concept",
       "norm_label": "@types/better-sqlite3",
       "source_file": "package.json",
-      "source_location": "L13"
+      "source_location": "L14"
     },
     {
       "id": "types_node_fetch",
@@ -4514,59 +4906,7 @@
       "file_type": "concept",
       "norm_label": "@types/node-fetch",
       "source_file": "package.json",
-      "source_location": "L14"
-    },
-    {
-      "id": "tech:nodejs",
-      "label": "Node.js",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "Frontend App",
-      "confidence": 0.9,
-      "description": "JavaScript runtime (v18+) required for frontend development.",
-      "file_type": "concept",
-      "norm_label": "node.js",
-      "source_file": "README.md",
-      "type": "technology"
-    },
-    {
-      "id": "component:frontend_app",
-      "label": "Frontend App",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "Frontend App",
-      "confidence": 0.9,
-      "description": "React + TypeScript SPA (fplgeek-frontend) served via Vite/Nginx.",
-      "file_type": "concept",
-      "norm_label": "frontend app",
-      "source_file": "frontend/package.json",
-      "type": "component"
-    },
-    {
-      "id": "tech:vite",
-      "label": "Vite",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "Frontend App",
-      "confidence": 0.95,
-      "description": "Build tool and dev server (7.2.4) for the frontend.",
-      "file_type": "concept",
-      "norm_label": "vite",
-      "source_file": "frontend/package.json",
-      "type": "technology"
-    },
-    {
-      "id": "tech:react",
-      "label": "React",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "Frontend App",
-      "confidence": 0.95,
-      "description": "Frontend UI framework (v19.2) for the FPL Geek app.",
-      "file_type": "concept",
-      "norm_label": "react",
-      "source_file": "frontend/package.json",
-      "type": "technology"
+      "source_location": "L15"
     },
     {
       "id": "data:ml_models",
@@ -4751,6 +5091,19 @@
       "type": "concept"
     },
     {
+      "id": "tech:nodejs",
+      "label": "Node.js",
+      "_origin": "semantic",
+      "community": 7,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.9,
+      "description": "JavaScript runtime (v18+) required for frontend development.",
+      "file_type": "concept",
+      "norm_label": "node.js",
+      "source_file": "README.md",
+      "type": "technology"
+    },
+    {
       "id": "tech:scikit_learn",
       "label": "scikit-learn",
       "_origin": "semantic",
@@ -4790,6 +5143,19 @@
       "type": "technology"
     },
     {
+      "id": "component:frontend_app",
+      "label": "Frontend App",
+      "_origin": "semantic",
+      "community": 7,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.9,
+      "description": "React + TypeScript SPA (fplgeek-frontend) served via Vite/Nginx.",
+      "file_type": "concept",
+      "norm_label": "frontend app",
+      "source_file": "frontend/package.json",
+      "type": "component"
+    },
+    {
       "id": "concept:transfer_recommendations",
       "label": "Transfer Recommendations",
       "_origin": "semantic",
@@ -4827,6 +5193,32 @@
       "norm_label": "fpl geek",
       "source_file": "README.md",
       "type": "concept"
+    },
+    {
+      "id": "tech:vite",
+      "label": "Vite",
+      "_origin": "semantic",
+      "community": 7,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.95,
+      "description": "Build tool and dev server (7.2.4) for the frontend.",
+      "file_type": "concept",
+      "norm_label": "vite",
+      "source_file": "frontend/package.json",
+      "type": "technology"
+    },
+    {
+      "id": "tech:react",
+      "label": "React",
+      "_origin": "semantic",
+      "community": 7,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.95,
+      "description": "Frontend UI framework (v19.2) for the FPL Geek app.",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "type": "technology"
     },
     {
       "id": "service:fastapi_backend",
@@ -5961,6 +6353,78 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_player_aggregates_check_player_aggregates",
+      "target": "tests_test_player_aggregates_load_history_by_player",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_check_player_aggregates",
+      "target": "tests_test_player_aggregates_load_season_totals",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L99",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_load_history_by_player",
+      "target": "tests_test_player_aggregates_dedup_current_season_history",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L86",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_main",
+      "target": "tests_test_player_aggregates_check_player_aggregates",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L153",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_main",
+      "target": "tests_test_player_aggregates_print_report",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L161",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_test_player_aggregates_match_season_totals",
+      "target": "tests_test_player_aggregates_check_player_aggregates",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L166",
+      "weight": 1.0
+    },
+    {
       "source": "backend_main_data_file",
       "target": "get",
       "relation": "references",
@@ -6694,7 +7158,7 @@
     },
     {
       "source": "frontend_package_dependencies_react",
-      "target": "tech:react",
+      "target": "frontend_package_json_react",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6706,7 +7170,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_dnd",
-      "target": "package_json_react_dnd",
+      "target": "frontend_package_json_react_dnd",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6718,7 +7182,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_dnd_html5_backend",
-      "target": "package_json_react_dnd_html5_backend",
+      "target": "frontend_package_json_react_dnd_html5_backend",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6730,7 +7194,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_dom",
-      "target": "package_json_react_dom",
+      "target": "frontend_package_json_react_dom",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6742,7 +7206,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_markdown",
-      "target": "package_json_react_markdown",
+      "target": "frontend_package_json_react_markdown",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6754,7 +7218,7 @@
     },
     {
       "source": "frontend_package_dependencies_recharts",
-      "target": "package_json_recharts",
+      "target": "frontend_package_json_recharts",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6766,7 +7230,7 @@
     },
     {
       "source": "frontend_package_dependencies_remark_gfm",
-      "target": "package_json_remark_gfm",
+      "target": "frontend_package_json_remark_gfm",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6790,7 +7254,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint",
-      "target": "package_json_eslint",
+      "target": "frontend_package_json_eslint",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6802,7 +7266,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint_js",
-      "target": "package_json_eslint_js",
+      "target": "frontend_package_json_eslint_js",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6814,7 +7278,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint_plugin_react_hooks",
-      "target": "package_json_eslint_plugin_react_hooks",
+      "target": "frontend_package_json_eslint_plugin_react_hooks",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6826,7 +7290,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint_plugin_react_refresh",
-      "target": "package_json_eslint_plugin_react_refresh",
+      "target": "frontend_package_json_eslint_plugin_react_refresh",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6838,7 +7302,7 @@
     },
     {
       "source": "frontend_package_devdependencies_globals",
-      "target": "package_json_globals",
+      "target": "frontend_package_json_globals",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6862,7 +7326,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_node",
-      "target": "package_json_types_node",
+      "target": "frontend_package_json_types_node",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6874,7 +7338,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_react",
-      "target": "package_json_types_react",
+      "target": "frontend_package_json_types_react",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6886,7 +7350,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_react_dom",
-      "target": "package_json_types_react_dom",
+      "target": "frontend_package_json_types_react_dom",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6898,7 +7362,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_sql_js",
-      "target": "package_json_types_sql_js",
+      "target": "frontend_package_json_types_sql_js",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6910,7 +7374,7 @@
     },
     {
       "source": "frontend_package_devdependencies_typescript",
-      "target": "package_json_typescript",
+      "target": "frontend_package_json_typescript",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6922,7 +7386,7 @@
     },
     {
       "source": "frontend_package_devdependencies_typescript_eslint",
-      "target": "package_json_typescript_eslint",
+      "target": "frontend_package_json_typescript_eslint",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6934,7 +7398,7 @@
     },
     {
       "source": "frontend_package_devdependencies_vite",
-      "target": "tech:vite",
+      "target": "frontend_package_json_vite",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6946,7 +7410,7 @@
     },
     {
       "source": "frontend_package_devdependencies_vitejs_plugin_react",
-      "target": "package_json_vitejs_plugin_react",
+      "target": "frontend_package_json_vitejs_plugin_react",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -8201,7 +8665,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -8213,7 +8677,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -8225,7 +8689,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -8237,7 +8701,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -8249,7 +8713,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -8261,7 +8725,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -8273,7 +8737,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -8285,7 +8749,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -8297,7 +8761,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -8309,7 +8773,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -8321,7 +8785,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -8333,7 +8797,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -8345,7 +8809,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -8357,7 +8821,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -8369,7 +8833,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -8381,7 +8845,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -8393,7 +8857,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -8405,7 +8869,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -8417,7 +8881,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L38",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -8429,7 +8893,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -8441,7 +8905,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L40",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -8453,7 +8917,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -8465,7 +8929,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -8477,7 +8941,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -8489,7 +8953,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -8501,7 +8965,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -8513,7 +8977,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L42",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -8525,7 +8989,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L43",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -8537,7 +9001,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -11722,7 +12186,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -11744,7 +12208,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L28",
+      "source_location": "L29",
       "weight": 1.0
     },
     {
@@ -11799,7 +12263,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L13",
+      "source_location": "L14",
       "weight": 1.0
     },
     {
@@ -11810,7 +12274,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0
     },
     {
@@ -11821,7 +12285,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L15",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -11832,7 +12296,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L16",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -11843,7 +12307,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L17",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -11854,7 +12318,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L18",
+      "source_location": "L19",
       "weight": 1.0
     },
     {
@@ -11865,7 +12329,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -11876,7 +12340,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -11887,7 +12351,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -11898,7 +12362,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -11909,7 +12373,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -11920,7 +12384,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -11931,7 +12395,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -11942,7 +12406,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -11953,7 +12417,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L29",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -11964,7 +12428,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -11975,7 +12439,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -11986,7 +12450,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -11997,7 +12461,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L33",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -12008,7 +12472,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -12019,7 +12483,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -12030,7 +12494,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L36",
+      "source_location": "L37",
       "weight": 1.0
     },
     {
@@ -12041,7 +12505,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -12052,7 +12516,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L38",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -12063,7 +12527,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0
     },
     {
@@ -12074,7 +12538,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L40",
+      "source_location": "L41",
       "weight": 1.0
     },
     {
@@ -12085,7 +12549,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -12096,7 +12560,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L42",
+      "source_location": "L43",
       "weight": 1.0
     },
     {
@@ -12107,7 +12571,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L43",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "package_scripts",
+      "target": "package_scripts_test",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "package.json",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -12118,7 +12593,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "package.json",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -12174,6 +12649,83 @@
       "confidence_score": 1.0,
       "source_file": "scripts/update_data.sh",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_print_report",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_main",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L143",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_test_player_aggregates_match_season_totals",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L165",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_dedup_current_season_history",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L35",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_load_season_totals",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L59",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_load_history_by_player",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L76",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates",
+      "target": "tests_test_player_aggregates_check_player_aggregates",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -12529,6 +13081,61 @@
       "weight": 1.0
     },
     {
+      "source": "tests_test_player_aggregates_rationale_1",
+      "target": "tests_test_player_aggregates",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_rationale_36",
+      "target": "tests_test_player_aggregates_dedup_current_season_history",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L36",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_rationale_60",
+      "target": "tests_test_player_aggregates_load_season_totals",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_rationale_77",
+      "target": "tests_test_player_aggregates_load_history_by_player",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L77",
+      "weight": 1.0
+    },
+    {
+      "source": "tests_test_player_aggregates_rationale_90",
+      "target": "tests_test_player_aggregates_check_player_aggregates",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "tests/test_player_aggregates.py",
+      "source_location": "L90",
+      "weight": 1.0
+    },
+    {
       "source": "backend_main_trigger_update",
       "target": "backend_main_run_update",
       "relation": "indirect_call",
@@ -12862,5 +13469,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "9c60ebd610b80f0dcb1c4a5a7dd1b21a8e25a647"
+  "built_at_commit": "a153c20b15c628c8cec314b0ea062d26c71ee699"
 }
