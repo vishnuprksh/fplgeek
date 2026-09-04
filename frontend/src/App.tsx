@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFPLData } from './hooks/useFPLData';
 import { useTransfers } from './hooks/useTransfers';
 import { useOptimization } from './hooks/useOptimization';
@@ -13,6 +13,7 @@ import { PlayerAnalysis } from './components/PlayerAnalysis';
 import { OptimizationReport } from './components/OptimizationReport';
 import { TransferModal } from './components/TransferModal';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
+import { ModelDetails } from './components/ModelDetails';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
 import { UpdateButton } from './components/UpdateButton';
@@ -26,7 +27,7 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(0); // Must be entered by the user — no automatic login to a fixed ID
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data' | 'model'>('dashboard');
 
   // Initialize keep-alive for Render free tier (pings backend every 8 minutes)
   useKeepAlive();
@@ -350,6 +351,12 @@ export default function App() {
             {currentView === 'data' && (
               <div className="fade-in">
                 <DataView />
+              </div>
+            )}
+
+            {currentView === 'model' && (
+              <div className="fade-in">
+                <ModelDetails />
               </div>
             )}
           </main>

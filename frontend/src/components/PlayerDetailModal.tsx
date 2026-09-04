@@ -10,15 +10,22 @@ interface PlayerDetailModalProps {
 export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailModalProps) {
     const getTeamName = (id: number) => staticData.teams.find(t => t.id === id)?.short_name;
 
+    // Current-season rows (ingested from the live FPL API) lack season_name,
+    // so derive the ongoing season (Aug-Jul) from today's date instead of
+    // hardcoding it. This keeps the current season visible and correctly labelled.
+    const now = new Date();
+    const seasonStartYear = now.getMonth() >= 7 ? now.getFullYear() : now.getFullYear() - 1;
+    const currentSeason = `${seasonStartYear}/${String(seasonStartYear + 1).slice(-2)}`;
+
     // Filter out summary rows (where round is missing) and sort
     const sortedHistory = player.history
         .filter(h => h.round !== undefined && h.round !== null)
         .sort((a, b) => {
-            // Determine season for sorting. 
-            // Current season usually lacks explicit season_name in 'data' but we can infer or default to '2025/26' (maximal)
+            // Determine season for sorting.
+            // Current season lacks explicit season_name in 'data' so we default to the ongoing season
             // Ingested 24/25 data has season_name = '2024/25'
-            const seasonA = a.season_name || a.season || '2025/26';
-            const seasonB = b.season_name || b.season || '2025/26';
+            const seasonA = a.season_name || a.season || currentSeason;
+            const seasonB = b.season_name || b.season || currentSeason;
 
             if (seasonA !== seasonB) {
                 // Descending season (2025/26 -> 2024/25 -> ...)
@@ -110,9 +117,9 @@ export function PlayerDetailModal({ player, staticData, onClose }: PlayerDetailM
                                             ? (isHome ? `${match.team_h_score}-${match.team_a_score}` : `${match.team_a_score}-${match.team_h_score}`)
                                             : '-';
 
-                                        // Use actual season or default to '25/26' (current) if missing
+                                        // Use actual season or default to the current one if missing
                                         // Past seasons come as summaries with a 'season_name' or 'season' field
-                                        let season = match.season_name || match.season || '25/26';
+                                        let season = match.season_name || match.season || currentSeason;
 
                                         // Normalize to YY/YY format (e.g. 2024/25 -> 24/25)
                                         if (season.length === 7 && season.indexOf('/') === 4) {

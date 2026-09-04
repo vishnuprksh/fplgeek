@@ -18,10 +18,16 @@ FEATURE_NAMES = [
     "ctx_ownership", "ctx_opponent", "ctx_chance_of_playing",
     "ctx_fixture_attack", "ctx_fixture_defense",
     "r6_min", "r6_pts", "r6_xG", "r6_xA", "r6_inf",
-    "r6_cre", "r6_thr", "r6_gc", "r6_saves", "position"
+    "r6_cre", "r6_thr", "r6_gc", "r6_saves"
 ]
 
-POS_ENCODING = {'GKP': 0, 'DEF': 1, 'MID': 2, 'FWD': 3}
+POSITIONS = ['GKP', 'DEF', 'MID', 'FWD']
+MIN_TRAIN_SAMPLES = 200  # skip training a per-position model below this
+
+RF_PARAMS = {
+    'n_estimators': 200, 'max_depth': 12, 'min_samples_leaf': 5,
+    'class_weight': 'balanced', 'random_state': 42, 'n_jobs': -1
+}
 
 
 def load_data():
@@ -34,7 +40,6 @@ def load_data():
     X, y, meta = [], [], []
     for feat_blob, target, meta_json, is_future, position in rows:
         vec = np.frombuffer(feat_blob, dtype=np.float32)
-        vec = np.append(vec, float(POS_ENCODING.get(position, 0)))
         m = json.loads(meta_json)
         m['is_future'] = bool(is_future)
         m['position'] = position
@@ -73,26 +78,18 @@ def get_future_gws():
         conn.close()
 
 
-def train():
-    print("=== Training Unified Model ===")
-    X, y, meta = load_data()
-    if len(X) == 0:
-        print("No data"); return None, None, None, None
+def train_one(X_pos, y_pos):
+    """Train scaler + RandomForest for one position. Returns (clf, scaler, report) or None."""
+    if len(X_pos) < MIN_TRAIN_SAMPLES:
+        print(f"  Skipped: only {len(X_pos)} samples (< {MIN_TRAIN_SAMPLES})")
+        return None
 
-    train_idx, _ = split_future(X, y, meta)
-    X_train_all = clean(X[train_idx])
-    y_train_all = y[train_idx]
-    print(f"Training samples: {len(X_train_all)}")
-
-    X_tr, X_te, y_tr, y_te = train_test_split(X_train_all, y_train_all, test_size=0.2, random_state=42)
+    X_tr, X_te, y_tr, y_te = train_test_split(X_pos, y_pos, test_size=0.2, random_state=42)
     scaler = StandardScaler()
     X_tr = scaler.fit_transform(X_tr)
     X_te = scaler.transform(X_te)
 
-    clf = RandomForestClassifier(
-        n_estimators=200, max_depth=12, min_samples_leaf=5,
-        class_weight='balanced', random_state=42, n_jobs=-1
-    )
+    clf = RandomForestClassifier(**RF_PARAMS)
     clf.fit(X_tr, y_tr)
 
     test_preds = clf.predict(X_te)
@@ -105,70 +102,135 @@ def train():
     acc = accuracy_score(y_te, test_preds)
     mae = mean_absolute_error(y_te, test_preds)
     loss = log_loss(y_te, full_probs, labels=list(range(16)))
-    print(f"Test Acc: {acc:.4f} | MAE: {mae:.4f} | Loss: {loss:.4f}")
+    print(f"  Test Acc: {acc:.4f} | MAE: {mae:.4f} | Loss: {loss:.4f}")
+
+    report = {
+        "model": {
+            "type": "RandomForestClassifier",
+            "params": {**RF_PARAMS},
+            "n_features": int(X_pos.shape[1]),
+            "n_classes": int(clf.n_classes_)
+        },
+        "training": {
+            "samples": int(len(X_pos)),
+            "train_samples": int(len(X_tr)),
+            "test_samples": int(len(X_te)),
+            "test_size": 0.2,
+            "random_state": 42
+        },
+        "metrics": {"test_accuracy": float(acc), "test_mae": float(mae), "test_log_loss": float(loss)}
+    }
+    return clf, scaler, report
+
+
+def train(X, y, meta):
+    print("=== Training Per-Position Models ===")
+    train_idx, _ = split_future(X, y, meta)
 
     os.makedirs(MODELS_DIR, exist_ok=True)
-    joblib.dump(clf, os.path.join(MODELS_DIR, "model_unified.joblib"))
-    joblib.dump(scaler, os.path.join(MODELS_DIR, "scaler_global.joblib"))
-    print(f"Model saved to {MODELS_DIR}")
+    models = {}   # pos -> (clf, scaler)
+    report = {}   # pos -> report dict
 
-    return clf, scaler, X, meta
+    for pos in POSITIONS:
+        pos_idx = [i for i in train_idx if meta[i].get('position') == pos]
+        X_pos = clean(X[pos_idx])
+        y_pos = y[pos_idx]
+        print(f"[{pos}] training on {len(pos_idx)} samples")
+        result = train_one(X_pos, y_pos)
+        if result is None:
+            continue
+        clf, scaler, pos_report = result
+        joblib.dump(clf, os.path.join(MODELS_DIR, f"model_{pos.lower()}.joblib"))
+        joblib.dump(scaler, os.path.join(MODELS_DIR, f"scaler_{pos.lower()}.joblib"))
+        models[pos] = (clf, scaler)
+        report[pos] = pos_report
+
+    if not models:
+        print("No per-position models trained")
+        return models, X, meta
+
+    print(f"Models saved to {MODELS_DIR}: {list(models.keys())}")
+
+    # Persist model report (per-position metrics) for the Model Info page
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS app_data (
+            key TEXT PRIMARY KEY, value TEXT NOT NULL, updated_at TEXT NOT NULL
+        )
+    """)
+    conn.execute(
+        "INSERT OR REPLACE INTO app_data (key, value, updated_at) VALUES (?, ?, ?)",
+        ('model_report', json.dumps(report), datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S'))
+    )
+    conn.commit()
+    conn.close()
+    print("Model report saved → SQLite")
+
+    return models, X, meta
 
 
-def predict(clf, scaler, X, meta):
+def predict(models, X, meta):
     print("=== Generating Predictions ===")
     train_idx, future_idx = split_future(X, None, meta)
     if len(future_idx) == 0:
         print("No future samples"); return
 
-    X_future = scaler.transform(clean(X[future_idx]))
-    raw_probs = clf.predict_proba(X_future)
-    preds_proba = np.zeros((len(X_future), 16), dtype=np.float32)
-    for i, cls in enumerate(clf.classes_):
-        if cls < 16:
-            preds_proba[:, int(cls)] = raw_probs[:, i]
-
     classes = np.arange(16, dtype=np.float32)
     all_predictions = {}
 
-    for i, fidx in enumerate(future_idx):
-        m = meta[fidx]
-        pid = m['id']
-        gw = m.get('gw', 0)
-        dist = preds_proba[i]
-        xp = float(np.sum(dist * classes))
-        prob_gt_6 = float(np.sum(dist[7:])) if len(dist) > 7 else 0.0
-        prob_gt_10 = float(np.sum(dist[11:])) if len(dist) > 11 else 0.0
+    for pos in POSITIONS:
+        if pos not in models:
+            continue
+        clf, scaler = models[pos]
+        pos_future_idx = [i for i in future_idx if meta[i].get('position') == pos]
+        if not pos_future_idx:
+            continue
 
-        orig = X[fidx]
-        r6 = {
-            'r6_min': float(orig[9]), 'r6_pts': float(orig[10]),
-            'r6_xg': float(orig[11]), 'r6_xA': float(orig[12]),
-            'r6_inf': float(orig[13]), 'r6_cre': float(orig[14]),
-            'r6_thr': float(orig[15]), 'r6_gc': float(orig[16]),
-            'r6_saves': float(orig[17])
-        }
-        f_atk = float(orig[7])
-        f_def = float(orig[8])
+        X_future = scaler.transform(clean(X[pos_future_idx]))
+        raw_probs = clf.predict_proba(X_future)
+        preds_proba = np.zeros((len(X_future), 16), dtype=np.float32)
+        for i, cls in enumerate(clf.classes_):
+            if cls < 16:
+                preds_proba[:, int(cls)] = raw_probs[:, i]
 
-        if pid not in all_predictions:
-            all_predictions[pid] = {
-                "id": pid, "name": m.get('name', str(pid)),
-                "team": m.get('team', 0), "position": m.get('position', 'MID'),
-                "total3Week": 0.0, "projections": [],
-                "prob_gt_6": 0.0, "prob_gt_10": 0.0,
-                "prob_gt_6_next": 0.0, "prob_gt_10_next": 0.0,
-                "f_atk_next": f_atk, "f_def_next": f_def,
-                **r6
+        for i, fidx in enumerate(pos_future_idx):
+            m = meta[fidx]
+            pid = m['id']
+            gw = m.get('gw', 0)
+            dist = preds_proba[i]
+            xp = float(np.sum(dist * classes))
+            prob_gt_6 = float(np.sum(dist[7:])) if len(dist) > 7 else 0.0
+            prob_gt_10 = float(np.sum(dist[11:])) if len(dist) > 11 else 0.0
+
+            orig = X[fidx]
+            r6 = {
+                'r6_min': float(orig[9]), 'r6_pts': float(orig[10]),
+                'r6_xg': float(orig[11]), 'r6_xA': float(orig[12]),
+                'r6_inf': float(orig[13]), 'r6_cre': float(orig[14]),
+                'r6_thr': float(orig[15]), 'r6_gc': float(orig[16]),
+                'r6_saves': float(orig[17])
             }
-        else:
-            all_predictions[pid].update(r6)
+            f_atk = float(orig[7])
+            f_def = float(orig[8])
 
-        all_predictions[pid]["projections"].append({
-            "gw": gw, "xP": xp,
-            "prob_gt_6": prob_gt_6, "prob_gt_10": prob_gt_10,
-            "f_atk": f_atk, "f_def": f_def
-        })
+            if pid not in all_predictions:
+                all_predictions[pid] = {
+                    "id": pid, "name": m.get('name', str(pid)),
+                    "team": m.get('team', 0), "position": m.get('position', 'MID'),
+                    "total3Week": 0.0, "projections": [],
+                    "prob_gt_6": 0.0, "prob_gt_10": 0.0,
+                    "prob_gt_6_next": 0.0, "prob_gt_10_next": 0.0,
+                    "f_atk_next": f_atk, "f_def_next": f_def,
+                    **r6
+                }
+            else:
+                all_predictions[pid].update(r6)
+
+            all_predictions[pid]["projections"].append({
+                "gw": gw, "xP": xp,
+                "prob_gt_6": prob_gt_6, "prob_gt_10": prob_gt_10,
+                "f_atk": f_atk, "f_def": f_def
+            })
 
     future_gws = get_future_gws()
     print(f"Future GWs: {future_gws}")
@@ -232,37 +294,49 @@ def predict(clf, scaler, X, meta):
 
 
 def analyze_feature_importance(X, y, meta):
-    print("=== Analyzing Feature Importance ===")
+    print("=== Analyzing Feature Importance (per position) ===")
     train_idx, _ = split_future(X, y, meta)
-    X_filt = clean(X[train_idx])
-    y_bin = np.array([1 if y[i] > 6 else 0 for i in train_idx])
 
-    n = len(y_bin)
-    hauls = int(y_bin.sum())
-    print(f"Samples: {n}, hauls: {hauls} ({hauls/n*100:.1f}%)")
+    output = {}
+    for pos in POSITIONS:
+        pos_idx = [i for i in train_idx if meta[i].get('position') == pos]
+        if len(pos_idx) < MIN_TRAIN_SAMPLES:
+            print(f"[{pos}] skipped: only {len(pos_idx)} samples")
+            continue
 
-    clf = RandomForestClassifier(
-        n_estimators=200, max_depth=8, min_samples_split=10, min_samples_leaf=5,
-        class_weight="balanced", random_state=42, n_jobs=-1
-    )
-    clf.fit(X_filt, y_bin)
+        X_filt = clean(X[pos_idx])
+        y_bin = np.array([1 if y[i] > 6 else 0 for i in pos_idx])
 
-    importances = clf.feature_importances_
-    indices = np.argsort(importances)[::-1]
-    X_haul = X_filt[y_bin == 1]
-    X_non = X_filt[y_bin == 0]
+        n = len(y_bin)
+        hauls = int(y_bin.sum())
+        if hauls == 0:
+            print(f"[{pos}] skipped: no hauls")
+            continue
+        print(f"[{pos}] Samples: {n}, hauls: {hauls} ({hauls/n*100:.1f}%)")
 
-    features = []
-    for rank, idx in enumerate(indices[:19]):
-        name = FEATURE_NAMES[idx] if idx < len(FEATURE_NAMES) else f"feat_{idx}"
-        features.append({
-            "rank": rank + 1, "feature": name,
-            "importance": float(importances[idx]),
-            "haul_mean": float(np.mean(X_haul[:, idx])) if len(X_haul) else 0.0,
-            "non_haul_mean": float(np.mean(X_non[:, idx])) if len(X_non) else 0.0
-        })
+        clf = RandomForestClassifier(
+            n_estimators=200, max_depth=8, min_samples_split=10, min_samples_leaf=5,
+            class_weight="balanced", random_state=42, n_jobs=-1
+        )
+        clf.fit(X_filt, y_bin)
 
-    output = {"UNIFIED": {"samples": n, "hauls": hauls, "haul_rate": float(hauls / n * 100), "features": features}}
+        importances = clf.feature_importances_
+        indices = np.argsort(importances)[::-1]
+        X_haul = X_filt[y_bin == 1]
+        X_non = X_filt[y_bin == 0]
+
+        features = []
+        for rank, idx in enumerate(indices[:len(FEATURE_NAMES)]):
+            name = FEATURE_NAMES[idx] if idx < len(FEATURE_NAMES) else f"feat_{idx}"
+            features.append({
+                "rank": rank + 1, "feature": name,
+                "importance": float(importances[idx]),
+                "haul_mean": float(np.mean(X_haul[:, idx])) if len(X_haul) else 0.0,
+                "non_haul_mean": float(np.mean(X_non[:, idx])) if len(X_non) else 0.0
+            })
+
+        output[pos] = {"samples": n, "hauls": hauls, "haul_rate": float(hauls / n * 100), "features": features}
+
     conn = sqlite3.connect(DB_PATH)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS app_data (
@@ -275,20 +349,20 @@ def analyze_feature_importance(X, y, meta):
     )
     conn.commit()
     conn.close()
-    print(f"Feature importance saved → SQLite")
+    print(f"Feature importance saved → SQLite ({list(output.keys())})")
 
 
 def main():
-    print("=== FPL Geek: Train & Predict ===")
+    print("=== FPL Geek: Train & Predict (per-position models) ===")
     X, y, meta = load_data()
     if len(X) == 0:
         print("No data available"); return
 
-    clf, scaler, X, meta = train()
-    if clf is None:
+    models, X, meta = train(X, y, meta)
+    if not models:
         return
 
-    predict(clf, scaler, X, meta)
+    predict(models, X, meta)
     analyze_feature_importance(X, y, meta)
     print("=== Complete ===")
 
