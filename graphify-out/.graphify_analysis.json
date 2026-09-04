@@ -64,52 +64,52 @@
       "frontend_src_types_gameweek_predictionmetadata"
     ],
     "1": [
-      "better_sqlite3",
-      "component:frontend_app",
-      "csv_parse",
-      "dotenv",
-      "eslint",
-      "frontend_package_dependencies",
-      "frontend_package_dependencies_react",
-      "frontend_package_dependencies_react_dnd",
-      "frontend_package_dependencies_react_dnd_html5_backend",
-      "frontend_package_dependencies_react_dom",
-      "frontend_package_dependencies_react_markdown",
-      "frontend_package_dependencies_recharts",
-      "frontend_package_dependencies_remark_gfm",
-      "frontend_package_dependencies_sql_js",
+      "copy_webpack_plugin",
+      "frontend_package_devdependencies",
       "frontend_package_devdependencies_eslint",
-      "frontend_package_devdependencies_vite",
-      "node_fetch",
-      "package_dependencies",
-      "package_dependencies_better_sqlite3",
-      "package_dependencies_csv_parse",
-      "package_dependencies_dotenv",
-      "package_dependencies_node_fetch",
-      "package_dependencies_react",
-      "package_dependencies_react_dnd",
-      "package_dependencies_react_dnd_html5_backend",
-      "package_dependencies_react_dom",
-      "package_dependencies_react_markdown",
-      "package_dependencies_recharts",
-      "package_dependencies_remark_gfm",
-      "package_dependencies_sql_js",
-      "package_dependencies_types_better_sqlite3",
-      "package_dependencies_types_node_fetch",
+      "frontend_package_devdependencies_eslint_js",
+      "frontend_package_devdependencies_eslint_plugin_react_hooks",
+      "frontend_package_devdependencies_eslint_plugin_react_refresh",
+      "frontend_package_devdependencies_globals",
+      "frontend_package_devdependencies_tsx",
+      "frontend_package_devdependencies_types_node",
+      "frontend_package_devdependencies_types_react",
+      "frontend_package_devdependencies_types_react_dom",
+      "frontend_package_devdependencies_types_sql_js",
+      "frontend_package_devdependencies_typescript",
+      "frontend_package_devdependencies_typescript_eslint",
+      "frontend_package_devdependencies_vitejs_plugin_react",
+      "frontend_package_json_tsx",
+      "package_devdependencies",
+      "package_devdependencies_copy_webpack_plugin",
       "package_devdependencies_eslint",
-      "react",
-      "react_dnd",
-      "react_dnd_html5_backend",
-      "react_dom",
-      "react_markdown",
-      "recharts",
-      "remark_gfm",
-      "sql_js",
-      "tech:nodejs",
-      "tech:react",
-      "tech:vite",
-      "types_better_sqlite3",
-      "types_node_fetch"
+      "package_devdependencies_eslint_js",
+      "package_devdependencies_eslint_plugin_react_hooks",
+      "package_devdependencies_eslint_plugin_react_refresh",
+      "package_devdependencies_globals",
+      "package_devdependencies_tsx",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_types_sql_js",
+      "package_devdependencies_typescript",
+      "package_devdependencies_typescript_eslint",
+      "package_devdependencies_vite",
+      "package_devdependencies_vitejs_plugin_react",
+      "package_json_eslint",
+      "package_json_eslint_js",
+      "package_json_eslint_plugin_react_hooks",
+      "package_json_eslint_plugin_react_refresh",
+      "package_json_globals",
+      "package_json_tsx",
+      "package_json_types_node",
+      "package_json_types_react",
+      "package_json_types_react_dom",
+      "package_json_types_sql_js",
+      "package_json_typescript",
+      "package_json_typescript_eslint",
+      "package_json_vite",
+      "package_json_vitejs_plugin_react"
     ],
     "2": [
       "frontend_src_app",
@@ -156,6 +156,36 @@
       "frontend_src_utils_price_enrichpickswithprices"
     ],
     "3": [
+      "frontend_src_components_optimizationreport",
+      "frontend_src_components_optimizationreport_optimizationreport",
+      "frontend_src_components_optimizationreport_optimizationreportprops",
+      "frontend_src_components_playerhistorymodal",
+      "frontend_src_components_playerhistorymodal_backtestresult",
+      "frontend_src_components_playerhistorymodal_playerhistorymodal",
+      "frontend_src_components_playerhistorymodal_playerhistorymodalprops",
+      "frontend_src_hooks_useoptimization",
+      "frontend_src_hooks_useoptimization_computetotalforecast",
+      "frontend_src_hooks_useoptimization_useoptimization",
+      "frontend_src_types_fpl_player",
+      "frontend_src_utils_gameweekvalidation_getselectedgameweeks",
+      "frontend_src_utils_solver",
+      "frontend_src_utils_solver_comb",
+      "frontend_src_utils_solver_combinations",
+      "frontend_src_utils_solver_fillslots",
+      "frontend_src_utils_solver_formatformation",
+      "frontend_src_utils_solver_lineup",
+      "frontend_src_utils_solver_optimizationresult",
+      "frontend_src_utils_solver_optimizelineup",
+      "frontend_src_utils_solver_optimizesquad",
+      "frontend_src_utils_solver_optimizetransfers",
+      "frontend_src_utils_solver_optimizewithallowance",
+      "frontend_src_utils_solver_pct",
+      "frontend_src_utils_solver_pickbestxi",
+      "frontend_src_utils_solver_predictionresult",
+      "frontend_src_utils_solver_squadxihaul",
+      "frontend_src_utils_solver_transferdetail"
+    ],
+    "4": [
       "frontend_tsconfig_app",
       "frontend_tsconfig_app_compileroptions",
       "frontend_tsconfig_app_compileroptions_allowimportingtsextensions",
@@ -183,34 +213,6 @@
       "ref_es2022",
       "ref_src",
       "ref_vite_client"
-    ],
-    "4": [
-      "frontend_src_components_optimizationreport",
-      "frontend_src_components_optimizationreport_optimizationreport",
-      "frontend_src_components_optimizationreport_optimizationreportprops",
-      "frontend_src_components_playerhistorymodal",
-      "frontend_src_components_playerhistorymodal_backtestresult",
-      "frontend_src_components_playerhistorymodal_playerhistorymodal",
-      "frontend_src_components_playerhistorymodal_playerhistorymodalprops",
-      "frontend_src_hooks_useoptimization",
-      "frontend_src_hooks_useoptimization_useoptimization",
-      "frontend_src_types_fpl_player",
-      "frontend_src_utils_solver",
-      "frontend_src_utils_solver_comb",
-      "frontend_src_utils_solver_combinations",
-      "frontend_src_utils_solver_fillslots",
-      "frontend_src_utils_solver_formatformation",
-      "frontend_src_utils_solver_lineup",
-      "frontend_src_utils_solver_optimizationresult",
-      "frontend_src_utils_solver_optimizelineup",
-      "frontend_src_utils_solver_optimizesquad",
-      "frontend_src_utils_solver_optimizetransfers",
-      "frontend_src_utils_solver_optimizewithallowance",
-      "frontend_src_utils_solver_pct",
-      "frontend_src_utils_solver_pickbestxi",
-      "frontend_src_utils_solver_predictionresult",
-      "frontend_src_utils_solver_squadxihaul",
-      "frontend_src_utils_solver_transferdetail"
     ],
     "5": [
       "frontend_tsconfig_node",
@@ -281,6 +283,25 @@
       "post"
     ],
     "8": [
+      "better_sqlite3",
+      "csv_parse",
+      "dotenv",
+      "node_fetch",
+      "package_dependencies",
+      "package_dependencies_better_sqlite3",
+      "package_dependencies_csv_parse",
+      "package_dependencies_dotenv",
+      "package_dependencies_node_fetch",
+      "package_dependencies_react",
+      "package_dependencies_sql_js",
+      "package_dependencies_types_better_sqlite3",
+      "package_dependencies_types_node_fetch",
+      "package_json_react",
+      "package_json_sql_js",
+      "types_better_sqlite3",
+      "types_node_fetch"
+    ],
+    "9": [
       "frontend_src_components_fixtureanalysis",
       "frontend_src_components_fixtureanalysis_fixtureanalysis",
       "frontend_src_components_fixtureanalysis_fixtureanalysisprops",
@@ -295,7 +316,7 @@
       "frontend_src_utils_fixtures_teamstats",
       "frontend_src_utils_fixtures_tickermatch"
     ],
-    "9": [
+    "10": [
       "frontend_src_types_gameweek",
       "frontend_src_types_gameweek_candidatepoolvalidation",
       "frontend_src_types_gameweek_haulcalculationresult",
@@ -303,14 +324,13 @@
       "frontend_src_types_gameweek_validatedprojection",
       "frontend_src_utils_gameweekvalidation",
       "frontend_src_utils_gameweekvalidation_calculatevalidatedhaul",
-      "frontend_src_utils_gameweekvalidation_getselectedgameweeks",
       "frontend_src_utils_gameweekvalidation_isblankgw",
       "frontend_src_utils_gameweekvalidation_ispastgw",
       "frontend_src_utils_gameweekvalidation_normalizeprediction",
       "frontend_src_utils_gameweekvalidation_validatecandidatepool",
       "frontend_src_utils_gameweekvalidation_validateprojection"
     ],
-    "10": [
+    "11": [
       "backend_scripts_fetch_data",
       "backend_scripts_fetch_data_build_history_row",
       "backend_scripts_fetch_data_fetch",
@@ -323,7 +343,7 @@
       "backend_scripts_fetch_data_main",
       "backend_scripts_fetch_data_seed_bootstrap"
     ],
-    "11": [
+    "12": [
       "backend_scripts_preprocess",
       "backend_scripts_preprocess_build_venue_table",
       "backend_scripts_preprocess_fixture_scores",
@@ -335,7 +355,7 @@
       "backend_scripts_preprocess_safe_float",
       "backend_scripts_preprocess_vectorize"
     ],
-    "12": [
+    "13": [
       "frontend_package",
       "frontend_package_name",
       "frontend_package_private",
@@ -347,7 +367,7 @@
       "frontend_package_type",
       "frontend_package_version"
     ],
-    "13": [
+    "14": [
       "frontend_src_services_sqliteservice_sqliteprovider",
       "frontend_src_services_sqliteservice_sqliteprovider_ensureinitialized",
       "frontend_src_services_sqliteservice_sqliteprovider_getbacktesthistory",
@@ -359,7 +379,7 @@
       "frontend_src_services_sqliteservice_sqliteprovider_initialize",
       "frontend_src_services_sqliteservice_sqliteprovider_querysingle"
     ],
-    "14": [
+    "15": [
       "package",
       "package_name",
       "package_private",
@@ -371,7 +391,7 @@
       "package_type",
       "package_version"
     ],
-    "15": [
+    "16": [
       "backend_scripts_train_predict",
       "backend_scripts_train_predict_analyze_feature_importance",
       "backend_scripts_train_predict_clean",
@@ -382,25 +402,16 @@
       "backend_scripts_train_predict_split_future",
       "backend_scripts_train_predict_train"
     ],
-    "16": [
-      "frontend_package_devdependencies",
-      "frontend_package_devdependencies_tsx",
-      "frontend_package_devdependencies_types_react",
-      "frontend_package_devdependencies_types_react_dom",
-      "frontend_package_json_tsx",
-      "package_devdependencies_types_react",
-      "package_devdependencies_types_react_dom",
-      "types_react",
-      "types_react_dom"
-    ],
     "17": [
-      "copy_webpack_plugin",
-      "package_devdependencies",
-      "package_devdependencies_copy_webpack_plugin",
-      "package_devdependencies_tsx",
-      "package_devdependencies_vite",
-      "tsx",
-      "vite"
+      "component:frontend_app",
+      "frontend_package_dependencies",
+      "frontend_package_dependencies_react",
+      "frontend_package_dependencies_sql_js",
+      "frontend_package_devdependencies_vite",
+      "frontend_package_json_sql_js",
+      "tech:nodejs",
+      "tech:react",
+      "tech:vite"
     ],
     "18": [
       "frontend_src_components_skeletonloader",
@@ -415,85 +426,70 @@
       "scripts_setup_warn"
     ],
     "20": [
-      "eslint_js",
-      "frontend_package_devdependencies_eslint_js",
-      "package_devdependencies_eslint_js"
+      "frontend_package_dependencies_react_dnd",
+      "package_dependencies_react_dnd",
+      "package_json_react_dnd"
     ],
     "21": [
-      "eslint_plugin_react_hooks",
-      "frontend_package_devdependencies_eslint_plugin_react_hooks",
-      "package_devdependencies_eslint_plugin_react_hooks"
+      "frontend_package_dependencies_react_dnd_html5_backend",
+      "package_dependencies_react_dnd_html5_backend",
+      "package_json_react_dnd_html5_backend"
     ],
     "22": [
-      "eslint_plugin_react_refresh",
-      "frontend_package_devdependencies_eslint_plugin_react_refresh",
-      "package_devdependencies_eslint_plugin_react_refresh"
+      "frontend_package_dependencies_react_dom",
+      "package_dependencies_react_dom",
+      "package_json_react_dom"
     ],
     "23": [
-      "frontend_package_devdependencies_globals",
-      "globals",
-      "package_devdependencies_globals"
+      "frontend_package_dependencies_react_markdown",
+      "package_dependencies_react_markdown",
+      "package_json_react_markdown"
     ],
     "24": [
-      "frontend_package_devdependencies_types_node",
-      "package_devdependencies_types_node",
-      "types_node"
+      "frontend_package_dependencies_recharts",
+      "package_dependencies_recharts",
+      "package_json_recharts"
     ],
     "25": [
-      "frontend_package_devdependencies_types_sql_js",
-      "package_devdependencies_types_sql_js",
-      "types_sql_js"
+      "frontend_package_dependencies_remark_gfm",
+      "package_dependencies_remark_gfm",
+      "package_json_remark_gfm"
     ],
     "26": [
-      "frontend_package_devdependencies_typescript",
-      "package_devdependencies_typescript",
-      "typescript"
-    ],
-    "27": [
-      "frontend_package_devdependencies_typescript_eslint",
-      "package_devdependencies_typescript_eslint",
-      "typescript_eslint"
-    ],
-    "28": [
-      "frontend_package_devdependencies_vitejs_plugin_react",
-      "package_devdependencies_vitejs_plugin_react",
-      "vitejs_plugin_react"
-    ],
-    "29": [
       "frontend_tsconfig",
       "frontend_tsconfig_files",
       "frontend_tsconfig_references"
     ],
-    "30": [
+    "27": [
       "scripts_update_data",
       "scripts_update_data_sh__entry"
     ],
-    "31": [
+    "28": [
       "frontend_eslint_config"
     ],
-    "32": [
+    "29": [
       "frontend_vite_config"
     ]
   },
   "cohesion": {
     "0": 0.07103825136612021,
-    "1": 0.05217391304347826,
+    "1": 0.05410628019323672,
     "2": 0.07084785133565621,
-    "3": 0.07407407407407407,
-    "4": 0.15384615384615385,
+    "3": 0.14285714285714285,
+    "4": 0.07407407407407407,
     "5": 0.08695652173913043,
     "6": 0.09090909090909091,
     "7": 0.22058823529411764,
-    "8": 0.2564102564102564,
-    "9": 0.2692307692307692,
-    "10": 0.4,
+    "8": 0.11764705882352941,
+    "9": 0.2564102564102564,
+    "10": 0.30303030303030304,
     "11": 0.4,
-    "12": 0.2,
-    "13": 0.4666666666666667,
-    "14": 0.2,
-    "15": 0.5555555555555556,
-    "16": 0.2222222222222222,
-    "17": 0.2857142857142857,
+    "12": 0.4,
+    "13": 0.2,
+    "14": 0.5333333333333333,
+    "15": 0.2,
+    "16": 0.5555555555555556,
+    "17": 0.25,
     "18": 0.5,
     "19": 0.8333333333333334,
     "20": 0.6666666666666666,
@@ -503,23 +499,20 @@
     "24": 0.6666666666666666,
     "25": 0.6666666666666666,
     "26": 0.6666666666666666,
-    "27": 0.6666666666666666,
-    "28": 0.6666666666666666,
-    "29": 0.6666666666666666,
-    "30": 1.0,
-    "31": 1.0,
-    "32": 1.0
+    "27": 1.0,
+    "28": 1.0,
+    "29": 1.0
   },
   "gods": [
-    {
-      "id": "frontend_src_types_fpl_unifiedplayer",
-      "label": "UnifiedPlayer",
-      "degree": 20
-    },
     {
       "id": "frontend_tsconfig_app_compileroptions",
       "label": "compilerOptions",
       "degree": 20
+    },
+    {
+      "id": "frontend_src_types_fpl_unifiedplayer",
+      "label": "UnifiedPlayer",
+      "degree": 19
     },
     {
       "id": "frontend_tsconfig_node_compileroptions",
@@ -529,7 +522,7 @@
     {
       "id": "frontend_src_types_fpl_team",
       "label": "Team",
-      "degree": 17
+      "degree": 16
     },
     {
       "id": "frontend_src_types_fpl_player",
@@ -544,17 +537,17 @@
     {
       "id": "frontend_src_services_dataprovider_idataprovider",
       "label": "IDataProvider",
-      "degree": 12
+      "degree": 11
     },
     {
       "id": "frontend_src_types_fpl_bootstrapstatic",
       "label": "BootstrapStatic",
-      "degree": 12
+      "degree": 11
     },
     {
       "id": "frontend_src_services_sqliteservice_sqliteprovider",
       "label": "SqliteProvider",
-      "degree": 12
+      "degree": 11
     },
     {
       "id": "frontend_src_utils_solver_optimizewithallowance",
@@ -586,37 +579,37 @@
       "why": "inferred connection - not explicitly stated in source; crosses file types (code \u2194 doc); connects across different repos/directories; bridges separate communities"
     },
     {
-      "source": "Frontend App",
-      "target": "typescript",
+      "source": "FPL Geek",
+      "target": "FastAPI Backend",
       "source_files": [
-        "frontend/package.json",
-        "package.json"
-      ],
-      "confidence": "INFERRED",
-      "relation": "",
-      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; bridges separate communities"
-    },
-    {
-      "source": "Frontend App",
-      "target": "eslint",
-      "source_files": [
-        "frontend/package.json",
-        "package.json"
+        "README.md",
+        "backend/requirements.txt"
       ],
       "confidence": "INFERRED",
       "relation": "",
       "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
     },
     {
-      "source": "Frontend App",
-      "target": "react-dnd",
+      "source": "PitchViewProps",
+      "target": "Pick",
       "source_files": [
-        "frontend/package.json",
-        "package.json"
+        "frontend/src/components/PitchView.tsx",
+        "frontend/src/types/fpl.ts"
       ],
-      "confidence": "INFERRED",
-      "relation": "",
-      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "TeamCardProps",
+      "target": "TeamEntry",
+      "source_files": [
+        "frontend/src/components/TeamCard.tsx",
+        "frontend/src/types/fpl.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "peripheral node `TeamCardProps` unexpectedly reaches hub `TeamEntry`"
     }
   ],
   "tokens": {
