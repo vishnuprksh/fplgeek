@@ -8,4 +8,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <App />
   </StrictMode>,
-)
+);
+
+// Remove the static pre-React splash from index.html once the app takes over
+document.getElementById('pre-splash')?.remove();

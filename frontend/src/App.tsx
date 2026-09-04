@@ -16,6 +16,7 @@ import { LeagueAnalysis } from './components/LeagueAnalysis';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
 import { UpdateButton } from './components/UpdateButton';
+import { SplashScreen } from './components/SplashScreen';
 
 
 import { DndProvider } from 'react-dnd';
@@ -45,6 +46,7 @@ export default function App() {
     picksData,
     transfersHistory,
     loading,
+    booting,
     error,
     loadTeam,
     logout: logoutValues
@@ -114,6 +116,9 @@ export default function App() {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      {/* Global boot splash — shown until bootstrap/fixtures/predictions settle */}
+      {booting && <SplashScreen />}
+      {!booting && (
       <div className="dnd-wrapper">
         <header className="app-header">
           <div className="header-inner">
@@ -373,6 +378,7 @@ export default function App() {
         </div>
         <BottomNav currentView={currentView} onChangeView={setCurrentView} />
       </div>
+      )}
     </DndProvider>
   );
 }
