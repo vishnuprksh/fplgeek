@@ -148,6 +148,7 @@ export default function App() {
                       disabled={loading}
                       className="search-button"
                     >
+                      {loading && <span className="button-spinner" aria-hidden="true" />}
                       {loading ? 'Crunching Numbers...' : 'Analyze My Team'}
                     </button>
                   </div>
@@ -174,6 +175,7 @@ export default function App() {
               <>
                 {loading && (
                   <div className="info-message">
+                    <span className="button-spinner" aria-hidden="true" />
                     Fetching data from FPL API...
                   </div>
                 )}
