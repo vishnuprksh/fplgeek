@@ -76,6 +76,9 @@ export default function App() {
     toggleOptimizationMode,
     runOptimization,
     handleToggleSell,
+    rejectedPairs,
+    handleRejectTransfer,
+    handleResetRejections,
     currentWarnings
   } = useOptimization(activePicks, staticData, bank, t100OwnershipMap, gameweekMetadata, aiPredictionMap, optHaulingWeeks, setOptHaulingWeeks);
 
@@ -202,7 +205,7 @@ export default function App() {
                               ) : (
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                   <button
-                                    onClick={runOptimization}
+                                    onClick={() => runOptimization()}
                                     disabled={isProcessingOpt}
                                     className="optimize-btn active"
                                   >
@@ -269,7 +272,12 @@ export default function App() {
                           </div>
                           <div className="pitch-right-panel">
                             {optimizationResult ? (
-                              <OptimizationReport result={optimizationResult} />
+                              <OptimizationReport
+                                result={optimizationResult}
+                                onRejectTransfer={handleRejectTransfer}
+                                onResetRejections={handleResetRejections}
+                                rejectedCount={rejectedPairs.size}
+                              />
                             ) : isProcessingOpt ? (
                               <div className="opt-report" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '300px', textAlign: 'center' }}>
                                 <h3 style={{ color: '#00d2ff', marginBottom: '16px' }}>🤖 AI is crunching the numbers...</h3>

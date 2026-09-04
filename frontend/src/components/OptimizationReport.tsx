@@ -1,11 +1,14 @@
-import type { OptimizationResult } from '../utils/solver';
+import type { OptimizationResult, TransferDetail } from '../utils/solver';
 import './OptimizationReport.css';
 
 interface OptimizationReportProps {
     result: OptimizationResult;
+    onRejectTransfer?: (t: TransferDetail) => void;
+    onResetRejections?: () => void;
+    rejectedCount?: number;
 }
 
-export function OptimizationReport({ result }: OptimizationReportProps) {
+export function OptimizationReport({ result, onRejectTransfer, onResetRejections, rejectedCount = 0 }: OptimizationReportProps) {
     const { transfers, haulBefore, haulAfter, netGainPercent, formationSelected, logLines: _logLines, warnings } = result;
 
     const gainColor = netGainPercent > 0 ? '#00ff87' : netGainPercent < 0 ? '#ef4444' : '#888';
@@ -14,9 +17,20 @@ export function OptimizationReport({ result }: OptimizationReportProps) {
         <div className="opt-report">
             <div className="opt-report-header">
                 <h3>📊 Optimization Report</h3>
-                <span className="opt-gain" style={{ color: gainColor }}>
-                    {netGainPercent > 0 ? `+${netGainPercent}` : netGainPercent}% Haul Gain
-                </span>
+                <div className="opt-header-actions">
+                    {rejectedCount > 0 && onResetRejections && (
+                        <button
+                            className="opt-reset-rejections"
+                            onClick={onResetRejections}
+                            title="Restore original suggestions"
+                        >
+                            ↺ Reset rejected ({rejectedCount})
+                        </button>
+                    )}
+                    <span className="opt-gain" style={{ color: gainColor }}>
+                        {netGainPercent > 0 ? `+${netGainPercent}` : netGainPercent}% Haul Gain
+                    </span>
+                </div>
             </div>
 
             {/* Summary Bar */}
@@ -72,6 +86,16 @@ export function OptimizationReport({ result }: OptimizationReportProps) {
                                     <div className="opt-transfer-cost" style={{ color: balanceColor }}>
                                         {balanceStr}
                                     </div>
+                                    {onRejectTransfer && (
+                                        <button
+                                            className="opt-transfer-reject"
+                                            onClick={() => onRejectTransfer(t)}
+                                            title={`Reject ${t.out.player.web_name} → ${t.in.player.web_name} and suggest the next best transfer`}
+                                            aria-label={`Reject transfer ${t.out.player.web_name} to ${t.in.player.web_name}`}
+                                        >
+                                            ✕
+                                        </button>
+                                    )}
                                 </div>
                             );
                         })}

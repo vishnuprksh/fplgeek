@@ -290,7 +290,8 @@ export function optimizeTransfers(
     excludedIds: Set<number>,
     bank: number,
     allCandidates: PredictionResult[],
-    extraTransfers: number = 0
+    extraTransfers: number = 0,
+    bannedPairs: Set<string> = new Set()
 ): { lineup: Lineup, transfers: any[] } {
 
     const validSquad = currentSquad.filter(p => !excludedIds.has(p.player.id));
@@ -298,9 +299,10 @@ export function optimizeTransfers(
 
     const pooledBudget = bank + playersToRemove.reduce((sum, p) => sum + p.cost, 0);
 
-    // Use the same simultaneous slot-filling as the main optimizer
-    const slots = playersToRemove.map(p => ({ type: p.player.element_type }));
-    const { filled, success } = fillSlots(validSquad, slots, pooledBudget, allCandidates);
+    // Use the same simultaneous slot-filling as the main optimizer.
+    // Slots carry the outgoing player id so banned (out → in) pairs are respected.
+    const slots = playersToRemove.map(p => ({ type: p.player.element_type, outId: p.player.id }));
+    const { filled, success } = fillSlots(validSquad, slots, pooledBudget, allCandidates, bannedPairs);
 
     const newTransfers: { in: PredictionResult, out: PredictionResult }[] = [];
     let newSquad: PredictionResult[];
@@ -316,7 +318,7 @@ export function optimizeTransfers(
         const extra = Math.min(Math.max(extraTransfers, 0), 15 - newSquad.length);
         if (extra > 0) {
             const bankAfter = pooledBudget - filled.reduce((s, p) => s + p.cost, 0);
-            const upgradeRes = optimizeWithAllowance(newSquad, bankAfter, allCandidates, extra);
+            const upgradeRes = optimizeWithAllowance(newSquad, bankAfter, allCandidates, extra, bannedPairs);
             if (upgradeRes.transfers.length > 0) {
                 newSquad = upgradeRes.squadAfter;
                 newTransfers.push(...upgradeRes.transfers);
@@ -355,9 +357,10 @@ function* combinations(n: number, k: number): Generator<number[]> {
  */
 function fillSlots(
     retained: PredictionResult[],
-    slots: { type: number }[],
+    slots: { type: number; outId?: number }[],
     pooledBudget: number,
-    allCandidates: PredictionResult[]
+    allCandidates: PredictionResult[],
+    bannedPairs: Set<string> = new Set()
 ): { filled: PredictionResult[]; success: boolean } {
     const minCosts: Record<number, number> = { 1: 40, 2: 40, 3: 45, 4: 45 };
 
@@ -386,7 +389,9 @@ function fillSlots(
                 !retainedIds.has(c.player.id) &&
                 !pickedIds.has(c.player.id) &&
                 c.cost <= maxForThisSlot &&
-                ((teamCounts.get(c.player.team) || 0) < MAX_PER_TEAM)
+                ((teamCounts.get(c.player.team) || 0) < MAX_PER_TEAM) &&
+                // Skip candidates rejected by the user for this exact outgoing player
+                !(slot.outId !== undefined && bannedPairs.has(`${slot.outId}-${c.player.id}`))
             )
             .sort((a, b) => b.totalForecast - a.totalForecast);
 
@@ -426,7 +431,8 @@ export function optimizeWithAllowance(
     currentSquad: PredictionResult[],
     bank: number,
     allCandidates: PredictionResult[],
-    allowance: number
+    allowance: number,
+    bannedPairs: Set<string> = new Set()
 ): OptimizationResult {
     const logLines: string[] = [];
     const haulBefore = squadXIHaul(currentSquad);
@@ -455,7 +461,7 @@ export function optimizeWithAllowance(
 
         // Phase 1: Optimize for XI with most of the transfers
         const phase1Allowance = Math.max(11, allowance - 4); // Leave 4+ for bench
-        const phase1Result = optimizeWithAllowance(currentSquad, bank, allCandidates, phase1Allowance);
+        const phase1Result = optimizeWithAllowance(currentSquad, bank, allCandidates, phase1Allowance, bannedPairs);
 
         if (!phase1Result.transfers || phase1Result.transfers.length === 0) {
             // No beneficial transfers found, just optimize formation
@@ -490,12 +496,13 @@ export function optimizeWithAllowance(
                 const benchPlayer = benchPlayers[i];
                 const type = benchPlayer.player.element_type;
                 
-                // Find best available replacement
+                // Find best available replacement (respecting banned pairs)
                 const candidates = allCandidates.filter(c =>
                     c.player.element_type === type &&
                     !xiPlayerIds.has(c.player.id) &&
                     !phase2Squad.some(p => p.player.id === c.player.id) &&
-                    c.totalForecast > benchPlayer.totalForecast
+                    c.totalForecast > benchPlayer.totalForecast &&
+                    !bannedPairs.has(`${benchPlayer.player.id}-${c.player.id}`)
                 );
                 
                 if (candidates.length > 0) {
@@ -566,11 +573,12 @@ export function optimizeWithAllowance(
         const removeSet = new Set(removeIndices);
         const retained = currentSquad.filter((_, i) => !removeSet.has(i));
 
-        // Slots to fill (one per removed player, same position type)
-        const slots = removedPlayers.map(p => ({ type: p.player.element_type }));
+        // Slots to fill (one per removed player, same position type).
+        // outId lets fillSlots skip user-rejected (out → in) pairs.
+        const slots = removedPlayers.map(p => ({ type: p.player.element_type, outId: p.player.id }));
 
         // Fill all slots simultaneously with shared budget
-        const { filled, success } = fillSlots(retained, slots, pooled, allCandidates);
+        const { filled, success } = fillSlots(retained, slots, pooled, allCandidates, bannedPairs);
         if (!success) continue;
 
         // Build trial squad and score it

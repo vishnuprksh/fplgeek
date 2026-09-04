@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { optimizeTransfers, optimizeWithAllowance, pickBestXI } from '../utils/solver';
 import type { UnifiedPlayer, Player } from '../types/fpl';
-import type { OptimizationResult, PredictionResult } from '../utils/solver';
+import type { OptimizationResult, PredictionResult, TransferDetail } from '../utils/solver';
 import type { T100OwnershipMap, AIPredictionMap } from './useFPLData';
 import type { PredictionMetadata } from '../types/gameweek';
 import { getSelectedGameweeks } from '../utils/gameweekValidation';
@@ -66,12 +66,15 @@ export const useOptimization = (
     const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [transferAllowance, setTransferAllowance] = useState(1); // 0–15
+    // User-rejected suggested transfers, keyed as "outPlayerId-inPlayerId"
+    const [rejectedPairs, setRejectedPairs] = useState<Set<string>>(new Set());
 
     const toggleOptimizationMode = () => {
         if (isOptimizing) {
             setIsOptimizing(false);
             setSelectedToSell(new Set());
             setOptimizationResult(null);
+            setRejectedPairs(new Set());
         } else {
             setIsOptimizing(true);
         }
@@ -83,15 +86,17 @@ export const useOptimization = (
         else next.add(id);
         setSelectedToSell(next);
         setOptimizationResult(null);
+        setRejectedPairs(new Set());
     };
 
     // Allowance = extra free transfers on top of any mandatory exclusions
     const handleSetAllowance = (n: number) => {
         setTransferAllowance(n);
         setOptimizationResult(null);
+        setRejectedPairs(new Set());
     };
 
-    const runOptimization = () => {
+    const runOptimization = (bannedPairs: Set<string> = rejectedPairs) => {
         if (!staticData || !activePicks.length) return;
         setIsProcessing(true);
         const warnings: string[] = [];
@@ -134,7 +139,7 @@ export const useOptimization = (
             // If user manually picked players to sell → mandatory replacements
             // plus up to `transferAllowance` optional extra upgrades
             if (selectedToSell.size > 0) {
-                const legacyRes = optimizeTransfers(currentSquad, selectedToSell, bank, allCandidates, transferAllowance);
+                const legacyRes = optimizeTransfers(currentSquad, selectedToSell, bank, allCandidates, transferAllowance, bannedPairs);
 
                 // Compute before/after hauls for a richer report
                 const beforeLineup = pickBestXI(currentSquad, 0);
@@ -182,7 +187,7 @@ export const useOptimization = (
                 setOptimizationResult(manualResult);
             } else {
                 // Smart allowance-based optimization (greedy search)
-                const res = optimizeWithAllowance(currentSquad, bank, allCandidates, transferAllowance);
+                const res = optimizeWithAllowance(currentSquad, bank, allCandidates, transferAllowance, bannedPairs);
                 const allResultPlayers = [...res.lineup.starting11, ...res.lineup.bench].map(p => p.player);
                 res.warnings = computeT100Warnings(allResultPlayers);
                 setOptimizationResult(res);
@@ -196,6 +201,26 @@ export const useOptimization = (
     const handleSetHaulingWeeks = (n: number) => {
         onHaulingWeeksChange?.(n);
         setOptimizationResult(null);
+        setRejectedPairs(new Set());
+    };
+
+    /**
+     * Reject a suggested transfer: ban the exact (out → in) pair and re-run
+     * the optimizer so the next-best suggestion is produced instead.
+     */
+    const handleRejectTransfer = (t: TransferDetail) => {
+        const key = `${t.out.player.id}-${t.in.player.id}`;
+        const next = new Set(rejectedPairs);
+        next.add(key);
+        setRejectedPairs(next);
+        runOptimization(next);
+    };
+
+    /** Clear all rejections and re-run to restore the original suggestion. */
+    const handleResetRejections = () => {
+        const next = new Set<string>();
+        setRejectedPairs(next);
+        runOptimization(next);
     };
 
     // Compute T100 ownership warnings
@@ -236,6 +261,9 @@ export const useOptimization = (
         handleToggleSell,
         runOptimization,
         setOptimizationResult,
+        rejectedPairs,
+        handleRejectTransfer,
+        handleResetRejections,
         currentWarnings
     };
 };
