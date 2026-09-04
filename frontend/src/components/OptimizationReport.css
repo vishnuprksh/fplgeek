@@ -154,6 +154,50 @@
     font-size: 0.9rem;
 }
 
+/* Reject button on each transfer card */
+.opt-transfer-reject {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    line-height: 1;
+    padding: 4px 7px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.opt-transfer-reject:hover {
+    background: rgba(239, 68, 68, 0.15);
+    border-color: rgba(239, 68, 68, 0.5);
+    color: #f87171;
+}
+
+/* Reset rejected link in the report header */
+.opt-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.opt-reset-rejections {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.35);
+    border-radius: var(--radius-sm);
+    color: #fbbf24;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.opt-reset-rejections:hover {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.6);
+}
+
 .opt-no-transfers {
     background: rgba(0, 255, 135, 0.06);
     border: 1px solid rgba(0, 255, 135, 0.15);
