@@ -168,10 +168,10 @@
     "semantic_hash": "af4767578e4b83f2e1de86bc6effd22a"
   },
   "frontend/src/services/sqliteService.ts": {
-    "mtime": 1788475236.135516,
-    "seen": 1788494564.133957,
-    "ast_hash": "e8f3f68db46c4f3598b578fc0ad26608",
-    "semantic_hash": ""
+    "mtime": 1788469359.1252434,
+    "seen": 1788470557.8063662,
+    "ast_hash": "d1f26c0e6c9cafe569fb7941d6e05687",
+    "semantic_hash": "d1f26c0e6c9cafe569fb7941d6e05687"
   },
   "frontend/src/types/fpl.ts": {
     "mtime": 1788469359.1252434,
@@ -252,10 +252,10 @@
     "semantic_hash": "de114fe2ae15ae6166d0de3757768891"
   },
   "README.md": {
-    "mtime": 1788471693.5333517,
-    "seen": 1788494564.1339786,
-    "ast_hash": "8beb9c8462a11d00b023101b57835607",
-    "semantic_hash": ""
+    "mtime": 1788469359.1202433,
+    "seen": 1788470557.8063807,
+    "ast_hash": "2627861aee09dd18665d5a2074e8f1be",
+    "semantic_hash": "2627861aee09dd18665d5a2074e8f1be"
   },
   "backend/requirements.txt": {
     "mtime": 1788469359.1202433,
@@ -268,11 +268,5 @@
     "seen": 1788473586.4972267,
     "ast_hash": "659196b6b9783b335f2130f4bbf9774b",
     "semantic_hash": "659196b6b9783b335f2130f4bbf9774b"
-  },
-  "frontend/index.html": {
-    "mtime": 1787557481.332138,
-    "seen": 1788494564.1339817,
-    "ast_hash": "23296d741aa9fa4c7a3e0ad35a26f307",
-    "semantic_hash": ""
   }
 }
