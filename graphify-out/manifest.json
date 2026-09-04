@@ -36,10 +36,10 @@
     "semantic_hash": "fd5374a75b4f3525ec27ab2f64a908d8"
   },
   "frontend/src/App.tsx": {
-    "mtime": 1788495484.7201676,
-    "seen": 1788495949.995495,
-    "ast_hash": "e8c8867092201cd2160c1b752d2a10f7",
-    "semantic_hash": "e8c8867092201cd2160c1b752d2a10f7"
+    "mtime": 1788497710.6972167,
+    "seen": 1788497863.7985804,
+    "ast_hash": "a8574e081304904ecbc4732ca210a68a",
+    "semantic_hash": "a8574e081304904ecbc4732ca210a68a"
   },
   "frontend/src/components/BottomNav.tsx": {
     "mtime": 1787557481.342138,
@@ -132,10 +132,10 @@
     "semantic_hash": "5b7f51e3e21876658b8bb1a7be884366"
   },
   "frontend/src/hooks/useOptimization.ts": {
-    "mtime": 1788495418.1901662,
-    "seen": 1788495949.9963295,
-    "ast_hash": "8d318bd9e512242d97ae63b1d40820ad",
-    "semantic_hash": "8d318bd9e512242d97ae63b1d40820ad"
+    "mtime": 1788497663.5662158,
+    "seen": 1788497863.8000162,
+    "ast_hash": "9dc252b501eef6fa3f32e36d327c951e",
+    "semantic_hash": "9dc252b501eef6fa3f32e36d327c951e"
   },
   "frontend/src/hooks/useTransfers.ts": {
     "mtime": 1788421390.0617523,
@@ -210,10 +210,10 @@
     "semantic_hash": "46c83e6bb1c224dbdc2d9227824083d4"
   },
   "frontend/src/utils/solver.ts": {
-    "mtime": 1788421390.0627525,
-    "seen": 1788470557.8063736,
-    "ast_hash": "b0aeed2dc6ecfbbc84dcc726a1c947fe",
-    "semantic_hash": "b0aeed2dc6ecfbbc84dcc726a1c947fe"
+    "mtime": 1788497823.8552191,
+    "seen": 1788497863.8013241,
+    "ast_hash": "28a71110f59d4827d0931eb3e8611cfe",
+    "semantic_hash": "28a71110f59d4827d0931eb3e8611cfe"
   },
   "frontend/tsconfig.app.json": {
     "mtime": 1787557481.3441381,
