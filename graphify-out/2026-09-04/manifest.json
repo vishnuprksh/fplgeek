@@ -36,10 +36,10 @@
     "semantic_hash": "fd5374a75b4f3525ec27ab2f64a908d8"
   },
   "frontend/src/App.tsx": {
-    "mtime": 1788503124.7693357,
-    "seen": 1788503581.0745213,
-    "ast_hash": "f8e96d20c3472c1ac46ef3206267e098",
-    "semantic_hash": "f8e96d20c3472c1ac46ef3206267e098"
+    "mtime": 1788506100.5184014,
+    "seen": 1788506145.496399,
+    "ast_hash": "2312fe530c1b997d408c59101158ce6e",
+    "semantic_hash": "2312fe530c1b997d408c59101158ce6e"
   },
   "frontend/src/components/BottomNav.tsx": {
     "mtime": 1787557481.342138,
@@ -120,10 +120,10 @@
     "semantic_hash": "8cb494cee7ec2ee64996b79ac0d64a99"
   },
   "frontend/src/hooks/useFPLData.ts": {
-    "mtime": 1788469359.1242433,
-    "seen": 1788470557.8063576,
-    "ast_hash": "2ea32fd2f763ecdfb1831ffc06cbc05b",
-    "semantic_hash": "2ea32fd2f763ecdfb1831ffc06cbc05b"
+    "mtime": 1788505540.198389,
+    "seen": 1788506145.4994483,
+    "ast_hash": "7f8e552fc0ce23b74f856a957ba6571f",
+    "semantic_hash": "7f8e552fc0ce23b74f856a957ba6571f"
   },
   "frontend/src/hooks/useKeepAlive.ts": {
     "mtime": 1788469359.1242433,
@@ -144,10 +144,10 @@
     "semantic_hash": "ff73338496434dcc81b4f45720714c75"
   },
   "frontend/src/main.tsx": {
-    "mtime": 1787557481.343138,
-    "seen": 1788470557.8063622,
-    "ast_hash": "4a420d7888f11446f5efee245026c0c0",
-    "semantic_hash": "4a420d7888f11446f5efee245026c0c0"
+    "mtime": 1788505540.199389,
+    "seen": 1788506145.4997525,
+    "ast_hash": "adfedcf6bccbe469b88e3406694b683f",
+    "semantic_hash": "adfedcf6bccbe469b88e3406694b683f"
   },
   "frontend/src/services/dataFactory.ts": {
     "mtime": 1788469359.1242433,
@@ -270,9 +270,15 @@
     "semantic_hash": "659196b6b9783b335f2130f4bbf9774b"
   },
   "frontend/index.html": {
-    "mtime": 1787557481.332138,
-    "seen": 1788494564.1339817,
-    "ast_hash": "23296d741aa9fa4c7a3e0ad35a26f307",
+    "mtime": 1788505378.4283855,
+    "seen": 1788505495.87419,
+    "ast_hash": "b05e966a546e317d2f3f89fba939f8cd",
     "semantic_hash": ""
+  },
+  "frontend/src/components/SplashScreen.tsx": {
+    "mtime": 1788505540.198389,
+    "seen": 1788506145.4992251,
+    "ast_hash": "42b2a2dcc144a06d94cca12ba2f1f9ca",
+    "semantic_hash": "42b2a2dcc144a06d94cca12ba2f1f9ca"
   }
 }

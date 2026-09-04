@@ -36,10 +36,10 @@
     "semantic_hash": "fd5374a75b4f3525ec27ab2f64a908d8"
   },
   "frontend/src/App.tsx": {
-    "mtime": 1788505338.2643845,
-    "seen": 1788505495.8740885,
-    "ast_hash": "ed85b153d5e1c27285e48727848a8b20",
-    "semantic_hash": ""
+    "mtime": 1788506100.5184014,
+    "seen": 1788506145.496399,
+    "ast_hash": "2312fe530c1b997d408c59101158ce6e",
+    "semantic_hash": "2312fe530c1b997d408c59101158ce6e"
   },
   "frontend/src/components/BottomNav.tsx": {
     "mtime": 1787557481.342138,
@@ -120,10 +120,10 @@
     "semantic_hash": "8cb494cee7ec2ee64996b79ac0d64a99"
   },
   "frontend/src/hooks/useFPLData.ts": {
-    "mtime": 1788505283.1423833,
-    "seen": 1788505495.8741279,
+    "mtime": 1788505540.198389,
+    "seen": 1788506145.4994483,
     "ast_hash": "7f8e552fc0ce23b74f856a957ba6571f",
-    "semantic_hash": ""
+    "semantic_hash": "7f8e552fc0ce23b74f856a957ba6571f"
   },
   "frontend/src/hooks/useKeepAlive.ts": {
     "mtime": 1788469359.1242433,
@@ -144,10 +144,10 @@
     "semantic_hash": "ff73338496434dcc81b4f45720714c75"
   },
   "frontend/src/main.tsx": {
-    "mtime": 1788505391.2533858,
-    "seen": 1788505495.8741372,
+    "mtime": 1788505540.199389,
+    "seen": 1788506145.4997525,
     "ast_hash": "adfedcf6bccbe469b88e3406694b683f",
-    "semantic_hash": ""
+    "semantic_hash": "adfedcf6bccbe469b88e3406694b683f"
   },
   "frontend/src/services/dataFactory.ts": {
     "mtime": 1788469359.1242433,
@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/SplashScreen.tsx": {
-    "mtime": 1788505308.971384,
-    "seen": 1788505495.8741167,
+    "mtime": 1788505540.198389,
+    "seen": 1788506145.4992251,
     "ast_hash": "42b2a2dcc144a06d94cca12ba2f1f9ca",
-    "semantic_hash": ""
+    "semantic_hash": "42b2a2dcc144a06d94cca12ba2f1f9ca"
   }
 }
