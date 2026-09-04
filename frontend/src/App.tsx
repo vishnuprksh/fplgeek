@@ -87,13 +87,6 @@ export default function App() {
   const predictionsMap = {};
 
 
-  // Team is only loaded when the user submits their Team ID (no auto-login)
-  useEffect(() => {
-    if (teamId > 0 && staticData && !teamData) {
-      loadTeam(teamId);
-    }
-  }, [staticData, teamData, teamId, loadTeam]);
-
   // Bridge Optimization Application to Transfer Logic
   const applyOptimization = () => {
     if (!optimizationResult) return;
