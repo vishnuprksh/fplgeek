@@ -107,19 +107,13 @@ export class SqliteProvider implements IDataProvider {
     async getTeams(): Promise<Team[]> {
         try {
             await this.ensureInitialized();
-            // The table structure stores teams as a single array in 'teams' key if using same structure as firestore?
-            // Wait, SqliteRepository saves 'teams' as ID 'teams' and data JSON string of ARRAY?
-            // Let's check SqliteRepository.saveStaticData
-            // insertTeam.run('teams', JSON.stringify(teams));
-            // So ID='teams', data='[...]'
-
+            // Teams are stored as one row per team (id = team id), not a single
+            // 'teams' key row. Query all rows; throw if empty so the hybrid
+            // provider falls back to the FPL API instead of returning no data.
             if (!this.db) throw new Error("Database not initialized");
-            const stmt = this.db.prepare("SELECT data FROM teams WHERE id = 'teams'");
-            if (stmt.step()) {
-                const row = stmt.getAsObject();
-                return JSON.parse(row.data as string) as Team[];
-            }
-            return [];
+            const teams = this.querySingle<Team>("SELECT data FROM teams");
+            if (teams.length === 0) throw new Error("No teams found in SQLite database");
+            return teams;
         } catch (error) {
             console.warn("SQLite getTeams failed, this will fall back in dataFactory", error);
             throw error;
@@ -129,13 +123,11 @@ export class SqliteProvider implements IDataProvider {
     async getEvents(): Promise<Event[]> {
         try {
             await this.ensureInitialized();
+            // Events are stored as one row per event (id = event id).
             if (!this.db) throw new Error("Database not initialized");
-            const stmt = this.db.prepare("SELECT data FROM events WHERE id = 'events'");
-            if (stmt.step()) {
-                const row = stmt.getAsObject();
-                return JSON.parse(row.data as string) as Event[];
-            }
-            return [];
+            const events = this.querySingle<Event>("SELECT data FROM events");
+            if (events.length === 0) throw new Error("No events found in SQLite database");
+            return events;
         } catch (error) {
             console.warn("SQLite getEvents failed, this will fall back in dataFactory", error);
             throw error;
@@ -145,13 +137,11 @@ export class SqliteProvider implements IDataProvider {
     async getElementTypes(): Promise<ElementType[]> {
         try {
             await this.ensureInitialized();
+            // Element types are stored as one row per type (id = type id).
             if (!this.db) throw new Error("Database not initialized");
-            const stmt = this.db.prepare("SELECT data FROM element_types WHERE id = 'element_types'");
-            if (stmt.step()) {
-                const row = stmt.getAsObject();
-                return JSON.parse(row.data as string) as ElementType[];
-            }
-            return [];
+            const elementTypes = this.querySingle<ElementType>("SELECT data FROM element_types");
+            if (elementTypes.length === 0) throw new Error("No element_types found in SQLite database");
+            return elementTypes;
         } catch (error) {
             console.warn("SQLite getElementTypes failed, this will fall back in dataFactory", error);
             throw error;
