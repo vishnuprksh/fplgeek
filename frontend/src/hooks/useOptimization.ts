@@ -82,16 +82,12 @@ export const useOptimization = (
         if (next.has(id)) next.delete(id);
         else next.add(id);
         setSelectedToSell(next);
-        setTransferAllowance(next.size); // auto-sync pill
         setOptimizationResult(null);
     };
 
-    // When user changes allowance via pills, clear manual selections
+    // Allowance = extra free transfers on top of any mandatory exclusions
     const handleSetAllowance = (n: number) => {
         setTransferAllowance(n);
-        if (n !== selectedToSell.size) {
-            setSelectedToSell(new Set());
-        }
         setOptimizationResult(null);
     };
 
@@ -135,9 +131,10 @@ export const useOptimization = (
                 } as PredictionResult;
             });
 
-            // If user manually picked players to sell → use targeted replacement
+            // If user manually picked players to sell → mandatory replacements
+            // plus up to `transferAllowance` optional extra upgrades
             if (selectedToSell.size > 0) {
-                const legacyRes = optimizeTransfers(currentSquad, selectedToSell, bank, allCandidates);
+                const legacyRes = optimizeTransfers(currentSquad, selectedToSell, bank, allCandidates, transferAllowance);
 
                 // Compute before/after hauls for a richer report
                 const beforeLineup = pickBestXI(currentSquad, 0);

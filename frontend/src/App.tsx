@@ -227,7 +227,11 @@ export default function App() {
 
                           {isOptimizing && (
                             <div className="transfer-allowance-selector">
-                              <span className="allowance-label">Transfers:</span>
+                              <span className="allowance-label">
+                                {selectedToSell.size > 0
+                                  ? `Extra transfers (on top of ${selectedToSell.size} selected):`
+                                  : 'Transfers:'}
+                              </span>
                               <div className="allowance-pills">
                                 {ALLOWANCE_OPTIONS.map(opt => (
                                   <button

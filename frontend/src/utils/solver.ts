@@ -280,12 +280,17 @@ export function pickBestXI(squad: PredictionResult[], totalSquadCost: number = 0
     return bestLineup;
 }
 
-// ─── optimizeTransfers (legacy — for manual sell mode) ──────────────────────
+// ─── optimizeTransfers (targeted sell mode) ─────────────────────────────
+/**
+ * Mandatory replacement of all excluded players, plus up to `extraTransfers`
+ * optional upgrades on top (total transfers = exclusions + extra ≥ 1).
+ */
 export function optimizeTransfers(
     currentSquad: PredictionResult[],
     excludedIds: Set<number>,
     bank: number,
-    allCandidates: PredictionResult[]
+    allCandidates: PredictionResult[],
+    extraTransfers: number = 0
 ): { lineup: Lineup, transfers: any[] } {
 
     const validSquad = currentSquad.filter(p => !excludedIds.has(p.player.id));
@@ -305,6 +310,18 @@ export function optimizeTransfers(
         playersToRemove.forEach((pOut, i) => {
             newTransfers.push({ in: filled[i], out: pOut });
         });
+
+        // Phase 2: spend up to `extraTransfers` additional transfers on
+        // optional upgrades, using leftover bank after the mandatory moves.
+        const extra = Math.min(Math.max(extraTransfers, 0), 15 - newSquad.length);
+        if (extra > 0) {
+            const bankAfter = pooledBudget - filled.reduce((s, p) => s + p.cost, 0);
+            const upgradeRes = optimizeWithAllowance(newSquad, bankAfter, allCandidates, extra);
+            if (upgradeRes.transfers.length > 0) {
+                newSquad = upgradeRes.squadAfter;
+                newTransfers.push(...upgradeRes.transfers);
+            }
+        }
     } else {
         // Fallback: keep original squad
         newSquad = [...currentSquad];
