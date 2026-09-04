@@ -1,16 +1,16 @@
 # Graph Report - fplgeek  (2026-09-04)
 
 ## Corpus Check
-- 47 files · ~23,972 words
+- 47 files · ~24,560 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 448 nodes · 715 edges · 24 communities (20 shown, 4 thin omitted)
+- 452 nodes · 721 edges · 24 communities (20 shown, 4 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 32 edges (avg confidence: 0.83)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a153c20b`
+- Built from commit: `437b27a4`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -107,8 +107,8 @@ Cohesion: 0.05
 Nodes (39): better-sqlite3, csv-parse, dotenv, node-fetch, dependencies, better-sqlite3, csv-parse, dotenv (+31 more)
 
 ### Community 10 - "test_player_aggregates.py"
-Cohesion: 0.23
-Nodes (12): check_player_aggregates(), dedup_current_season_history(), load_history_by_player(), load_season_totals(), main(), print_report(), Test script: verify that each player's aggregated per-gameweek history (stored…, Filter and deduplicate player_history rows to current-season matches.… (+4 more)
+Cohesion: 0.18
+Nodes (16): check_historic_seasons(), check_player_aggregates(), dedup_current_season_history(), fetch_json(), load_history_by_player(), load_season_totals(), main(), print_report() (+8 more)
 
 ### Community 11 - "fetch_data.py"
 Cohesion: 0.40
@@ -145,7 +145,7 @@ _Questions this graph is uniquely positioned to answer:_
 - **Why does `dependencies` connect `dependencies` to `FastAPI Backend`?**
   _High betweenness centrality (0.021) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `dependencies`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
 - **Why does `devDependencies` connect `devDependencies` to `dependencies`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **What connects `name`, `private`, `version` to the rest of the system?**
