@@ -76,57 +76,6 @@
       "frontend_src_utils_price_enrichpickswithprices"
     ],
     "1": [
-      "frontend_src_app",
-      "frontend_src_app_app",
-      "frontend_src_components_dataview",
-      "frontend_src_components_dataview_dataview",
-      "frontend_src_components_dataview_processedsample",
-      "frontend_src_components_dataview_trainingdataresponse",
-      "frontend_src_components_leagueanalysis",
-      "frontend_src_components_leagueanalysis_gwdata",
-      "frontend_src_components_leagueanalysis_leagueanalysis",
-      "frontend_src_components_leagueanalysis_leaguedata",
-      "frontend_src_components_leagueanalysis_ownedplayer",
-      "frontend_src_components_leagueanalysis_sortconfig",
-      "frontend_src_components_leagueanalysis_tablerow",
-      "frontend_src_components_optimizationreport",
-      "frontend_src_components_optimizationreport_optimizationreport",
-      "frontend_src_components_optimizationreport_optimizationreportprops",
-      "frontend_src_components_transfermodal",
-      "frontend_src_components_transfermodal_sortdirection",
-      "frontend_src_components_transfermodal_sortfield",
-      "frontend_src_components_transfermodal_transfermodal",
-      "frontend_src_components_transfermodal_transfermodalprops",
-      "frontend_src_components_updatebutton",
-      "frontend_src_components_updatebutton_updatebutton",
-      "frontend_src_components_updatebutton_updatebuttonprops",
-      "frontend_src_hooks_usefpldata_aipredictionmap",
-      "frontend_src_hooks_usefpldata_usefpldata",
-      "frontend_src_hooks_usekeepalive",
-      "frontend_src_hooks_usekeepalive_usekeepalive",
-      "frontend_src_hooks_useoptimization",
-      "frontend_src_hooks_useoptimization_computetotalforecast",
-      "frontend_src_hooks_useoptimization_useoptimization",
-      "frontend_src_main",
-      "frontend_src_utils_gameweekvalidation_getselectedgameweeks",
-      "frontend_src_utils_solver",
-      "frontend_src_utils_solver_comb",
-      "frontend_src_utils_solver_combinations",
-      "frontend_src_utils_solver_fillslots",
-      "frontend_src_utils_solver_formatformation",
-      "frontend_src_utils_solver_lineup",
-      "frontend_src_utils_solver_optimizationresult",
-      "frontend_src_utils_solver_optimizelineup",
-      "frontend_src_utils_solver_optimizesquad",
-      "frontend_src_utils_solver_optimizetransfers",
-      "frontend_src_utils_solver_optimizewithallowance",
-      "frontend_src_utils_solver_pct",
-      "frontend_src_utils_solver_pickbestxi",
-      "frontend_src_utils_solver_predictionresult",
-      "frontend_src_utils_solver_squadxihaul",
-      "frontend_src_utils_solver_transferdetail"
-    ],
-    "2": [
       "copy_webpack_plugin",
       "frontend_package_devdependencies",
       "frontend_package_devdependencies_eslint",
@@ -174,7 +123,69 @@
       "package_json_vite",
       "package_json_vitejs_plugin_react"
     ],
+    "2": [
+      "frontend_src_app",
+      "frontend_src_app_app",
+      "frontend_src_components_bottomnav",
+      "frontend_src_components_bottomnav_bottomnav",
+      "frontend_src_components_bottomnav_bottomnavprops",
+      "frontend_src_components_bottomnav_dataicon",
+      "frontend_src_components_bottomnav_fixturesicon",
+      "frontend_src_components_bottomnav_iconmap",
+      "frontend_src_components_bottomnav_leagueicon",
+      "frontend_src_components_bottomnav_playersicon",
+      "frontend_src_components_bottomnav_teamicon",
+      "frontend_src_components_dataview",
+      "frontend_src_components_dataview_dataview",
+      "frontend_src_components_dataview_processedsample",
+      "frontend_src_components_dataview_trainingdataresponse",
+      "frontend_src_components_leagueanalysis",
+      "frontend_src_components_leagueanalysis_gwdata",
+      "frontend_src_components_leagueanalysis_leagueanalysis",
+      "frontend_src_components_leagueanalysis_leaguedata",
+      "frontend_src_components_leagueanalysis_ownedplayer",
+      "frontend_src_components_leagueanalysis_sortconfig",
+      "frontend_src_components_leagueanalysis_tablerow",
+      "frontend_src_components_updatebutton",
+      "frontend_src_components_updatebutton_updatebutton",
+      "frontend_src_components_updatebutton_updatebuttonprops",
+      "frontend_src_hooks_usefpldata_usefpldata",
+      "frontend_src_hooks_usekeepalive",
+      "frontend_src_hooks_usekeepalive_usekeepalive",
+      "frontend_src_main"
+    ],
     "3": [
+      "frontend_src_components_optimizationreport",
+      "frontend_src_components_optimizationreport_optimizationreport",
+      "frontend_src_components_optimizationreport_optimizationreportprops",
+      "frontend_src_components_transfermodal",
+      "frontend_src_components_transfermodal_sortdirection",
+      "frontend_src_components_transfermodal_sortfield",
+      "frontend_src_components_transfermodal_transfermodal",
+      "frontend_src_components_transfermodal_transfermodalprops",
+      "frontend_src_hooks_usefpldata_aipredictionmap",
+      "frontend_src_hooks_useoptimization",
+      "frontend_src_hooks_useoptimization_computetotalforecast",
+      "frontend_src_hooks_useoptimization_useoptimization",
+      "frontend_src_utils_gameweekvalidation_getselectedgameweeks",
+      "frontend_src_utils_solver",
+      "frontend_src_utils_solver_comb",
+      "frontend_src_utils_solver_combinations",
+      "frontend_src_utils_solver_fillslots",
+      "frontend_src_utils_solver_formatformation",
+      "frontend_src_utils_solver_lineup",
+      "frontend_src_utils_solver_optimizationresult",
+      "frontend_src_utils_solver_optimizelineup",
+      "frontend_src_utils_solver_optimizesquad",
+      "frontend_src_utils_solver_optimizetransfers",
+      "frontend_src_utils_solver_optimizewithallowance",
+      "frontend_src_utils_solver_pct",
+      "frontend_src_utils_solver_pickbestxi",
+      "frontend_src_utils_solver_predictionresult",
+      "frontend_src_utils_solver_squadxihaul",
+      "frontend_src_utils_solver_transferdetail"
+    ],
+    "4": [
       "frontend_tsconfig_app",
       "frontend_tsconfig_app_compileroptions",
       "frontend_tsconfig_app_compileroptions_allowimportingtsextensions",
@@ -203,7 +214,7 @@
       "ref_src",
       "ref_vite_client"
     ],
-    "4": [
+    "5": [
       "frontend_tsconfig_node",
       "frontend_tsconfig_node_compileroptions",
       "frontend_tsconfig_node_compileroptions_allowimportingtsextensions",
@@ -228,7 +239,7 @@
       "ref_node",
       "ref_vite_config_ts"
     ],
-    "5": [
+    "6": [
       "component:deploy_vps_script",
       "concept:ai_history",
       "concept:fpl_analytics",
@@ -252,7 +263,7 @@
       "tech:scikit_learn",
       "tech:uvicorn"
     ],
-    "6": [
+    "7": [
       "backend_main",
       "backend_main_data_file",
       "backend_main_feature_importance",
@@ -271,7 +282,7 @@
       "get",
       "post"
     ],
-    "7": [
+    "8": [
       "better_sqlite3",
       "csv_parse",
       "dotenv",
@@ -290,7 +301,7 @@
       "types_better_sqlite3",
       "types_node_fetch"
     ],
-    "8": [
+    "9": [
       "frontend_src_components_fixtureanalysis",
       "frontend_src_components_fixtureanalysis_fixtureanalysis",
       "frontend_src_components_fixtureanalysis_fixtureanalysisprops",
@@ -305,7 +316,7 @@
       "frontend_src_utils_fixtures_teamstats",
       "frontend_src_utils_fixtures_tickermatch"
     ],
-    "9": [
+    "10": [
       "frontend_src_types_gameweek",
       "frontend_src_types_gameweek_candidatepoolvalidation",
       "frontend_src_types_gameweek_haulcalculationresult",
@@ -319,7 +330,7 @@
       "frontend_src_utils_gameweekvalidation_validatecandidatepool",
       "frontend_src_utils_gameweekvalidation_validateprojection"
     ],
-    "10": [
+    "11": [
       "backend_scripts_fetch_data",
       "backend_scripts_fetch_data_build_history_row",
       "backend_scripts_fetch_data_fetch",
@@ -332,7 +343,7 @@
       "backend_scripts_fetch_data_main",
       "backend_scripts_fetch_data_seed_bootstrap"
     ],
-    "11": [
+    "12": [
       "backend_scripts_preprocess",
       "backend_scripts_preprocess_build_venue_table",
       "backend_scripts_preprocess_fixture_scores",
@@ -344,7 +355,7 @@
       "backend_scripts_preprocess_safe_float",
       "backend_scripts_preprocess_vectorize"
     ],
-    "12": [
+    "13": [
       "frontend_package",
       "frontend_package_name",
       "frontend_package_private",
@@ -356,7 +367,7 @@
       "frontend_package_type",
       "frontend_package_version"
     ],
-    "13": [
+    "14": [
       "frontend_src_services_sqliteservice_sqliteprovider",
       "frontend_src_services_sqliteservice_sqliteprovider_ensureinitialized",
       "frontend_src_services_sqliteservice_sqliteprovider_getbacktesthistory",
@@ -368,7 +379,7 @@
       "frontend_src_services_sqliteservice_sqliteprovider_initialize",
       "frontend_src_services_sqliteservice_sqliteprovider_querysingle"
     ],
-    "14": [
+    "15": [
       "package",
       "package_name",
       "package_private",
@@ -380,7 +391,7 @@
       "package_type",
       "package_version"
     ],
-    "15": [
+    "16": [
       "backend_scripts_train_predict",
       "backend_scripts_train_predict_analyze_feature_importance",
       "backend_scripts_train_predict_clean",
@@ -391,114 +402,106 @@
       "backend_scripts_train_predict_split_future",
       "backend_scripts_train_predict_train"
     ],
-    "16": [
-      "frontend_package_dependencies",
-      "frontend_package_dependencies_recharts",
-      "frontend_package_dependencies_remark_gfm",
-      "frontend_package_dependencies_sql_js",
-      "frontend_package_json_sql_js",
-      "package_dependencies_recharts",
-      "package_dependencies_remark_gfm",
-      "package_json_recharts",
-      "package_json_remark_gfm"
-    ],
     "17": [
-      "frontend_src_components_bottomnav",
-      "frontend_src_components_bottomnav_bottomnav",
-      "frontend_src_components_bottomnav_bottomnavprops",
-      "frontend_src_components_bottomnav_dataicon",
-      "frontend_src_components_bottomnav_fixturesicon",
-      "frontend_src_components_bottomnav_iconmap",
-      "frontend_src_components_bottomnav_leagueicon",
-      "frontend_src_components_bottomnav_playersicon",
-      "frontend_src_components_bottomnav_teamicon"
-    ],
-    "18": [
       "component:frontend_app",
+      "frontend_package_dependencies",
       "frontend_package_dependencies_react",
+      "frontend_package_dependencies_sql_js",
       "frontend_package_devdependencies_vite",
+      "frontend_package_json_sql_js",
       "tech:nodejs",
       "tech:react",
       "tech:vite"
     ],
-    "19": [
+    "18": [
       "frontend_src_components_skeletonloader",
       "frontend_src_components_skeletonloader_skeleton",
       "frontend_src_components_skeletonloader_skeletonprops",
       "frontend_src_components_skeletonloader_skeletontable"
     ],
-    "20": [
+    "19": [
       "scripts_setup",
       "scripts_setup_fail",
       "scripts_setup_sh__entry",
       "scripts_setup_warn"
     ],
-    "21": [
+    "20": [
       "frontend_package_dependencies_react_dnd",
       "package_dependencies_react_dnd",
       "package_json_react_dnd"
     ],
-    "22": [
+    "21": [
       "frontend_package_dependencies_react_dnd_html5_backend",
       "package_dependencies_react_dnd_html5_backend",
       "package_json_react_dnd_html5_backend"
     ],
-    "23": [
+    "22": [
       "frontend_package_dependencies_react_dom",
       "package_dependencies_react_dom",
       "package_json_react_dom"
     ],
-    "24": [
+    "23": [
       "frontend_package_dependencies_react_markdown",
       "package_dependencies_react_markdown",
       "package_json_react_markdown"
     ],
+    "24": [
+      "frontend_package_dependencies_recharts",
+      "package_dependencies_recharts",
+      "package_json_recharts"
+    ],
     "25": [
+      "frontend_package_dependencies_remark_gfm",
+      "package_dependencies_remark_gfm",
+      "package_json_remark_gfm"
+    ],
+    "26": [
       "frontend_tsconfig",
       "frontend_tsconfig_files",
       "frontend_tsconfig_references"
     ],
-    "26": [
+    "27": [
       "scripts_update_data",
       "scripts_update_data_sh__entry"
     ],
-    "27": [
+    "28": [
       "frontend_eslint_config"
     ],
-    "28": [
+    "29": [
       "frontend_vite_config"
     ]
   },
   "cohesion": {
     "0": 0.0624048706240487,
-    "1": 0.07568027210884354,
-    "2": 0.05410628019323672,
-    "3": 0.07407407407407407,
-    "4": 0.08695652173913043,
-    "5": 0.09090909090909091,
-    "6": 0.22058823529411764,
-    "7": 0.11764705882352941,
-    "8": 0.2564102564102564,
-    "9": 0.30303030303030304,
-    "10": 0.4,
+    "1": 0.05410628019323672,
+    "2": 0.08866995073891626,
+    "3": 0.14532019704433496,
+    "4": 0.07407407407407407,
+    "5": 0.08695652173913043,
+    "6": 0.09090909090909091,
+    "7": 0.22058823529411764,
+    "8": 0.11764705882352941,
+    "9": 0.2564102564102564,
+    "10": 0.30303030303030304,
     "11": 0.4,
-    "12": 0.2,
-    "13": 0.5333333333333333,
-    "14": 0.2,
-    "15": 0.5555555555555556,
-    "16": 0.2222222222222222,
-    "17": 0.2222222222222222,
-    "18": 0.3333333333333333,
-    "19": 0.5,
-    "20": 0.8333333333333334,
+    "12": 0.4,
+    "13": 0.2,
+    "14": 0.5333333333333333,
+    "15": 0.2,
+    "16": 0.5555555555555556,
+    "17": 0.25,
+    "18": 0.5,
+    "19": 0.8333333333333334,
+    "20": 0.6666666666666666,
     "21": 0.6666666666666666,
     "22": 0.6666666666666666,
     "23": 0.6666666666666666,
     "24": 0.6666666666666666,
     "25": 0.6666666666666666,
-    "26": 1.0,
+    "26": 0.6666666666666666,
     "27": 1.0,
-    "28": 1.0
+    "28": 1.0,
+    "29": 1.0
   },
   "gods": [
     {
@@ -587,6 +590,17 @@
       "why": "inferred connection - not explicitly stated in source; connects across different repos/directories"
     },
     {
+      "source": "PlayerHistoryModalProps",
+      "target": "Player",
+      "source_files": [
+        "frontend/src/components/PlayerHistoryModal.tsx",
+        "frontend/src/types/fpl.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "peripheral node `PlayerHistoryModalProps` unexpectedly reaches hub `Player`"
+    },
+    {
       "source": "TeamCardProps",
       "target": "TeamEntry",
       "source_files": [
@@ -596,17 +610,6 @@
       "confidence": "EXTRACTED",
       "relation": "references",
       "why": "peripheral node `TeamCardProps` unexpectedly reaches hub `TeamEntry`"
-    },
-    {
-      "source": "FixtureAnalysisProps",
-      "target": "Team",
-      "source_files": [
-        "frontend/src/components/FixtureAnalysis.tsx",
-        "frontend/src/types/fpl.ts"
-      ],
-      "confidence": "EXTRACTED",
-      "relation": "references",
-      "why": "bridges separate communities"
     }
   ],
   "tokens": {

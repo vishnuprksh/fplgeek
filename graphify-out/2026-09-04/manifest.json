@@ -36,10 +36,10 @@
     "semantic_hash": "fd5374a75b4f3525ec27ab2f64a908d8"
   },
   "frontend/src/App.tsx": {
-    "mtime": 1788501186.0502932,
-    "seen": 1788501371.8663318,
-    "ast_hash": "fda14c7aecd5764d4e1ee5d19cdc3692",
-    "semantic_hash": "fda14c7aecd5764d4e1ee5d19cdc3692"
+    "mtime": 1788503124.7693357,
+    "seen": 1788503581.0745213,
+    "ast_hash": "f8e96d20c3472c1ac46ef3206267e098",
+    "semantic_hash": "f8e96d20c3472c1ac46ef3206267e098"
   },
   "frontend/src/components/BottomNav.tsx": {
     "mtime": 1787557481.342138,
@@ -66,10 +66,10 @@
     "semantic_hash": "74bedb972e64196c138bfabc63a6e122"
   },
   "frontend/src/components/OptimizationReport.tsx": {
-    "mtime": 1787557481.342138,
-    "seen": 1788470557.8063483,
-    "ast_hash": "b67550cf05b46327ed03ab1412305df9",
-    "semantic_hash": "b67550cf05b46327ed03ab1412305df9"
+    "mtime": 1788502849.5743299,
+    "seen": 1788503581.0769842,
+    "ast_hash": "34fafe98aadeda8fef9aa88532aada92",
+    "semantic_hash": "34fafe98aadeda8fef9aa88532aada92"
   },
   "frontend/src/components/PitchView.tsx": {
     "mtime": 1788421390.0607524,
@@ -108,8 +108,8 @@
     "semantic_hash": "721ef0289259653c50f806ef72233bcb"
   },
   "frontend/src/components/TransferModal.tsx": {
-    "mtime": 1788501233.9382942,
-    "seen": 1788501371.8683732,
+    "mtime": 1788501494.1113,
+    "seen": 1788503581.0774786,
     "ast_hash": "ff3d6813ced64cd32f6d3339039d47e5",
     "semantic_hash": "ff3d6813ced64cd32f6d3339039d47e5"
   },
@@ -132,10 +132,10 @@
     "semantic_hash": "5b7f51e3e21876658b8bb1a7be884366"
   },
   "frontend/src/hooks/useOptimization.ts": {
-    "mtime": 1788498057.4782243,
-    "seen": 1788501371.8706918,
-    "ast_hash": "9dc252b501eef6fa3f32e36d327c951e",
-    "semantic_hash": "9dc252b501eef6fa3f32e36d327c951e"
+    "mtime": 1788502800.6863286,
+    "seen": 1788503581.077808,
+    "ast_hash": "3c1e4bfe97c2dc417a5ce8a2b856ca6e",
+    "semantic_hash": "3c1e4bfe97c2dc417a5ce8a2b856ca6e"
   },
   "frontend/src/hooks/useTransfers.ts": {
     "mtime": 1788421390.0617523,
@@ -210,10 +210,10 @@
     "semantic_hash": "46c83e6bb1c224dbdc2d9227824083d4"
   },
   "frontend/src/utils/solver.ts": {
-    "mtime": 1788498057.4772243,
-    "seen": 1788501371.8717692,
-    "ast_hash": "28a71110f59d4827d0931eb3e8611cfe",
-    "semantic_hash": "28a71110f59d4827d0931eb3e8611cfe"
+    "mtime": 1788502625.5753248,
+    "seen": 1788503581.0806293,
+    "ast_hash": "510992143880d4ffb1a50e84d7aa0309",
+    "semantic_hash": "510992143880d4ffb1a50e84d7aa0309"
   },
   "frontend/tsconfig.app.json": {
     "mtime": 1787557481.3441381,
