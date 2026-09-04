@@ -10,10 +10,84 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <title>FPL Geek — AI-Powered FPL Analytics</title>
+  <style>
+    /* Pre-React splash: visible while the JS bundle loads, removed when React mounts */
+    #pre-splash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0f1117;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    #pre-splash .pre-splash-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #pre-splash .pre-splash-logo {
+      width: 72px;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.4rem;
+      border-radius: 16px;
+      background: rgba(0, 255, 135, 0.15);
+      border: 1px solid rgba(0, 255, 135, 0.15);
+      box-shadow: 0 0 20px rgba(0, 255, 135, 0.15);
+    }
+
+    #pre-splash .pre-splash-title {
+      margin: 0;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #00ff87 0%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #pre-splash .pre-splash-spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid rgba(0, 255, 135, 0.15);
+      border-top-color: #00ff87;
+      border-radius: 9999px;
+      animation: pre-splash-spin 0.8s linear infinite;
+    }
+
+    #pre-splash .pre-splash-message {
+      margin: 0;
+      color: #8b92a5;
+      font-size: 0.8rem;
+    }
+
+    @keyframes pre-splash-spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 
 <body>
   <div id="root"></div>
+  <div id="pre-splash">
+    <div class="pre-splash-inner">
+      <div class="pre-splash-logo">⚽</div>
+      <h1 class="pre-splash-title">FPL GEEK</h1>
+      <div class="pre-splash-spinner"></div>
+      <p class="pre-splash-message">Loading…</p>
+    </div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 
