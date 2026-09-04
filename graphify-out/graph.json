@@ -4,19 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "id": "frontend_src_components_pitchview_pitchviewprops",
-      "label": "PitchViewProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchviewprops",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L7"
-    },
-    {
       "id": "frontend_src_components_playeranalysis_playeranalysisprops",
       "label": "PlayerAnalysisProps",
       "_callable": true,
@@ -69,58 +56,6 @@
       "source_location": "L4"
     },
     {
-      "id": "frontend_src_components_playerhistorymodal_backtestresult",
-      "label": "BacktestResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "backtestresult",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L4"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal_playerhistorymodalprops",
-      "label": "PlayerHistoryModalProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistorymodalprops",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L21"
-    },
-    {
-      "id": "frontend_src_components_teamcard_teamcardprops",
-      "label": "TeamCardProps",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teamcardprops",
-      "source_file": "frontend/src/components/TeamCard.tsx",
-      "source_location": "L3"
-    },
-    {
-      "id": "frontend_src_hooks_usefpldata_t100ownershipmap",
-      "label": "T100OwnershipMap",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "t100ownershipmap",
-      "source_file": "frontend/src/hooks/useFPLData.ts",
-      "source_location": "L6"
-    },
-    {
       "id": "frontend_src_services_datafactory_fplapiprovider",
       "label": "FplApiProvider",
       "_callable": true,
@@ -158,6 +93,19 @@
       "norm_label": "idataprovider",
       "source_file": "frontend/src/services/dataProvider.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider",
+      "label": "SqliteProvider",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": "sqliteprovider",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L5"
     },
     {
       "id": "frontend_src_types_fpl_bootstrapstatic",
@@ -199,32 +147,6 @@
       "source_location": "L77"
     },
     {
-      "id": "frontend_src_types_fpl_pick",
-      "label": "Pick",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pick",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L93"
-    },
-    {
-      "id": "frontend_src_types_fpl_player",
-      "label": "Player",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "player",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L26"
-    },
-    {
       "id": "frontend_src_types_fpl_playerhistory",
       "label": "PlayerHistory",
       "_callable": true,
@@ -264,32 +186,6 @@
       "source_location": "L65"
     },
     {
-      "id": "frontend_src_types_fpl_teamentry",
-      "label": "TeamEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teamentry",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_types_fpl_teampicks",
-      "label": "TeamPicks",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teampicks",
-      "source_file": "frontend/src/types/fpl.ts",
-      "source_location": "L114"
-    },
-    {
       "id": "frontend_src_types_fpl_unifiedplayer",
       "label": "UnifiedPlayer",
       "_callable": true,
@@ -303,17 +199,17 @@
       "source_location": "L179"
     },
     {
-      "id": "frontend_src_types_gameweek_predictionmetadata",
-      "label": "PredictionMetadata",
+      "id": "frontend_src_components_pitchview_pitchviewprops",
+      "label": "PitchViewProps",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
+      "community": 10,
+      "community_name": "gameweekValidation.ts",
       "file_type": "code",
-      "norm_label": "predictionmetadata",
-      "source_file": "frontend/src/types/gameweek.ts",
-      "source_location": "L10"
+      "norm_label": "pitchviewprops",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L7"
     },
     {
       "id": "frontend_src_types_gameweek_candidatepoolvalidation",
@@ -355,6 +251,19 @@
       "source_location": "L37"
     },
     {
+      "id": "frontend_src_types_gameweek_predictionmetadata",
+      "label": "PredictionMetadata",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "gameweekValidation.ts",
+      "file_type": "code",
+      "norm_label": "predictionmetadata",
+      "source_file": "frontend/src/types/gameweek.ts",
+      "source_location": "L10"
+    },
+    {
       "id": "frontend_src_types_gameweek_validatedprojection",
       "label": "ValidatedProjection",
       "_callable": true,
@@ -368,17 +277,17 @@
       "source_location": "L21"
     },
     {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider",
-      "label": "SqliteProvider",
+      "id": "frontend_src_types_fpl_pick",
+      "label": "Pick",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "SqliteProvider",
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": "sqliteprovider",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L5"
+      "norm_label": "pick",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L93"
     },
     {
       "id": "frontend_src_components_skeletonloader_skeletonprops",
@@ -498,6 +407,32 @@
       "source_location": "L23"
     },
     {
+      "id": "frontend_src_components_splashscreen_splashscreenprops",
+      "label": "SplashScreenProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "splashscreenprops",
+      "source_file": "frontend/src/components/SplashScreen.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "frontend_src_components_teamcard_teamcardprops",
+      "label": "TeamCardProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "teamcardprops",
+      "source_file": "frontend/src/components/TeamCard.tsx",
+      "source_location": "L3"
+    },
+    {
       "id": "frontend_src_components_updatebutton_updatebuttonprops",
       "label": "UpdateButtonProps",
       "_callable": true,
@@ -511,6 +446,45 @@
       "source_location": "L4"
     },
     {
+      "id": "frontend_src_hooks_usefpldata_t100ownershipmap",
+      "label": "T100OwnershipMap",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "t100ownershipmap",
+      "source_file": "frontend/src/hooks/useFPLData.ts",
+      "source_location": "L6"
+    },
+    {
+      "id": "frontend_src_types_fpl_teamentry",
+      "label": "TeamEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "teamentry",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_types_fpl_teampicks",
+      "label": "TeamPicks",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "teampicks",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L114"
+    },
+    {
       "id": "frontend_src_components_optimizationreport_optimizationreportprops",
       "label": "OptimizationReportProps",
       "_callable": true,
@@ -522,6 +496,32 @@
       "norm_label": "optimizationreportprops",
       "source_file": "frontend/src/components/OptimizationReport.tsx",
       "source_location": "L4"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal_backtestresult",
+      "label": "BacktestResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "backtestresult",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L4"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal_playerhistorymodalprops",
+      "label": "PlayerHistoryModalProps",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playerhistorymodalprops",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L21"
     },
     {
       "id": "frontend_src_components_transfermodal_sortdirection",
@@ -574,6 +574,19 @@
       "norm_label": "aipredictionmap",
       "source_file": "frontend/src/hooks/useFPLData.ts",
       "source_location": "L7"
+    },
+    {
+      "id": "frontend_src_types_fpl_player",
+      "label": "Player",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "player",
+      "source_file": "frontend/src/types/fpl.ts",
+      "source_location": "L26"
     },
     {
       "id": "frontend_src_utils_solver_lineup",
@@ -706,30 +719,6 @@
       "source_location": "L117"
     },
     {
-      "id": "frontend_src_components_pitchview_pitchplayer",
-      "label": "PitchPlayer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchplayer()",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L32"
-    },
-    {
-      "id": "frontend_src_components_pitchview_pitchview",
-      "label": "PitchView()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchview()",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L238"
-    },
-    {
       "id": "frontend_src_components_playeranalysis_playeranalysis",
       "label": "PlayerAnalysis()",
       "_callable": true,
@@ -752,42 +741,6 @@
       "norm_label": "playerdetailmodal()",
       "source_file": "frontend/src/components/PlayerDetailModal.tsx",
       "source_location": "L10"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal_playerhistorymodal",
-      "label": "PlayerHistoryModal()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistorymodal()",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L28"
-    },
-    {
-      "id": "frontend_src_components_teamcard_teamcard",
-      "label": "TeamCard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teamcard()",
-      "source_file": "frontend/src/components/TeamCard.tsx",
-      "source_location": "L9"
-    },
-    {
-      "id": "frontend_src_hooks_usetransfers_usetransfers",
-      "label": "useTransfers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "usetransfers()",
-      "source_file": "frontend/src/hooks/useTransfers.ts",
-      "source_location": "L6"
     },
     {
       "id": "frontend_src_services_datafactory_fplapiprovider_getbacktesthistory",
@@ -872,18 +825,6 @@
       "norm_label": ".getteams()",
       "source_file": "frontend/src/services/dataFactory.ts",
       "source_location": "L18"
-    },
-    {
-      "id": "frontend_src_services_datafactory_getdataprovider",
-      "label": "getDataProvider()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "getdataprovider()",
-      "source_file": "frontend/src/services/dataFactory.ts",
-      "source_location": "L121"
     },
     {
       "id": "frontend_src_services_datafactory_hybriddataprovider_getbacktesthistory",
@@ -1042,40 +983,136 @@
       "source_location": "L5"
     },
     {
-      "id": "frontend_src_utils_fpl_isvalidformation",
-      "label": "isValidFormation()",
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_ensureinitialized",
+      "label": ".ensureInitialized()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "types/fpl.ts",
       "file_type": "code",
-      "norm_label": "isvalidformation()",
-      "source_file": "frontend/src/utils/fpl.ts",
-      "source_location": "L3"
+      "norm_label": ".ensureinitialized()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L10"
     },
     {
-      "id": "frontend_src_utils_price_calculatesellingprice",
-      "label": "calculateSellingPrice()",
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbacktesthistory",
+      "label": ".getBacktestHistory()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "types/fpl.ts",
       "file_type": "code",
-      "norm_label": "calculatesellingprice()",
-      "source_file": "frontend/src/utils/price.ts",
-      "source_location": "L3"
+      "norm_label": ".getbacktesthistory()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L167"
     },
     {
-      "id": "frontend_src_utils_price_enrichpickswithprices",
-      "label": "enrichPicksWithPrices()",
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbootstrapstatic",
+      "label": ".getBootstrapStatic()",
       "_callable": true,
       "_origin": "ast",
       "community": 0,
       "community_name": "types/fpl.ts",
       "file_type": "code",
-      "norm_label": "enrichpickswithprices()",
-      "source_file": "frontend/src/utils/price.ts",
-      "source_location": "L8"
+      "norm_label": ".getbootstrapstatic()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L151"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getelementtypes",
+      "label": ".getElementTypes()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": ".getelementtypes()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L137"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getevents",
+      "label": ".getEvents()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": ".getevents()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L123"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getplayers",
+      "label": ".getPlayers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": ".getplayers()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L58"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_getteams",
+      "label": ".getTeams()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": ".getteams()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L107"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_initialize",
+      "label": ".initialize()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": ".initialize()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L19"
+    },
+    {
+      "id": "frontend_src_services_sqliteservice_sqliteprovider_querysingle",
+      "label": ".querySingle()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 0,
+      "community_name": "types/fpl.ts",
+      "file_type": "code",
+      "norm_label": ".querysingle()",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L44"
+    },
+    {
+      "id": "frontend_src_components_pitchview_pitchplayer",
+      "label": "PitchPlayer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "gameweekValidation.ts",
+      "file_type": "code",
+      "norm_label": "pitchplayer()",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L32"
+    },
+    {
+      "id": "frontend_src_components_pitchview_pitchview",
+      "label": "PitchView()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "gameweekValidation.ts",
+      "file_type": "code",
+      "norm_label": "pitchview()",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L238"
     },
     {
       "id": "frontend_src_utils_gameweekvalidation_calculatevalidatedhaul",
@@ -1378,112 +1415,52 @@
       "source_location": "L82"
     },
     {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_ensureinitialized",
-      "label": ".ensureInitialized()",
+      "id": "frontend_src_hooks_usetransfers_usetransfers",
+      "label": "useTransfers()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "SqliteProvider",
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": ".ensureinitialized()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L10"
+      "norm_label": "usetransfers()",
+      "source_file": "frontend/src/hooks/useTransfers.ts",
+      "source_location": "L6"
     },
     {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbacktesthistory",
-      "label": ".getBacktestHistory()",
+      "id": "frontend_src_utils_fpl_isvalidformation",
+      "label": "isValidFormation()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "SqliteProvider",
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": ".getbacktesthistory()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L167"
+      "norm_label": "isvalidformation()",
+      "source_file": "frontend/src/utils/fpl.ts",
+      "source_location": "L3"
     },
     {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getbootstrapstatic",
-      "label": ".getBootstrapStatic()",
+      "id": "frontend_src_utils_price_calculatesellingprice",
+      "label": "calculateSellingPrice()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "SqliteProvider",
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": ".getbootstrapstatic()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L151"
+      "norm_label": "calculatesellingprice()",
+      "source_file": "frontend/src/utils/price.ts",
+      "source_location": "L3"
     },
     {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getelementtypes",
-      "label": ".getElementTypes()",
+      "id": "frontend_src_utils_price_enrichpickswithprices",
+      "label": "enrichPicksWithPrices()",
       "_callable": true,
       "_origin": "ast",
       "community": 14,
-      "community_name": "SqliteProvider",
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": ".getelementtypes()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L137"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getevents",
-      "label": ".getEvents()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "SqliteProvider",
-      "file_type": "code",
-      "norm_label": ".getevents()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L123"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getplayers",
-      "label": ".getPlayers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "SqliteProvider",
-      "file_type": "code",
-      "norm_label": ".getplayers()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L58"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_getteams",
-      "label": ".getTeams()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "SqliteProvider",
-      "file_type": "code",
-      "norm_label": ".getteams()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L107"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_initialize",
-      "label": ".initialize()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "SqliteProvider",
-      "file_type": "code",
-      "norm_label": ".initialize()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L19"
-    },
-    {
-      "id": "frontend_src_services_sqliteservice_sqliteprovider_querysingle",
-      "label": ".querySingle()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 14,
-      "community_name": "SqliteProvider",
-      "file_type": "code",
-      "norm_label": ".querysingle()",
-      "source_file": "frontend/src/services/sqliteService.ts",
-      "source_location": "L44"
+      "norm_label": "enrichpickswithprices()",
+      "source_file": "frontend/src/utils/price.ts",
+      "source_location": "L8"
     },
     {
       "id": "backend_scripts_train_predict_analyze_feature_importance",
@@ -1615,7 +1592,7 @@
       "file_type": "code",
       "norm_label": "app()",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L25"
+      "source_location": "L26"
     },
     {
       "id": "frontend_src_components_bottomnav_bottomnav",
@@ -1714,6 +1691,30 @@
       "source_location": "L30"
     },
     {
+      "id": "frontend_src_components_splashscreen_splashscreen",
+      "label": "SplashScreen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "splashscreen()",
+      "source_file": "frontend/src/components/SplashScreen.tsx",
+      "source_location": "L12"
+    },
+    {
+      "id": "frontend_src_components_teamcard_teamcard",
+      "label": "TeamCard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "teamcard()",
+      "source_file": "frontend/src/components/TeamCard.tsx",
+      "source_location": "L9"
+    },
+    {
       "id": "frontend_src_components_updatebutton_updatebutton",
       "label": "UpdateButton()",
       "_callable": true,
@@ -1750,6 +1751,18 @@
       "source_location": "L8"
     },
     {
+      "id": "frontend_src_services_datafactory_getdataprovider",
+      "label": "getDataProvider()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "getdataprovider()",
+      "source_file": "frontend/src/services/dataFactory.ts",
+      "source_location": "L121"
+    },
+    {
       "id": "frontend_src_components_optimizationreport_optimizationreport",
       "label": "OptimizationReport()",
       "_callable": true,
@@ -1760,6 +1773,18 @@
       "norm_label": "optimizationreport()",
       "source_file": "frontend/src/components/OptimizationReport.tsx",
       "source_location": "L11"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal_playerhistorymodal",
+      "label": "PlayerHistoryModal()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playerhistorymodal()",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
+      "source_location": "L28"
     },
     {
       "id": "frontend_src_components_transfermodal_transfermodal",
@@ -2158,28 +2183,6 @@
       "source_location": "L76"
     },
     {
-      "id": "frontend_src_components_pitchview",
-      "label": "PitchView.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "pitchview.tsx",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_pitchview_itemtypes",
-      "label": "ItemTypes",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "itemtypes",
-      "source_file": "frontend/src/components/PitchView.tsx",
-      "source_location": "L26"
-    },
-    {
       "id": "frontend_src_components_playeranalysis",
       "label": "PlayerAnalysis.tsx",
       "_origin": "ast",
@@ -2199,50 +2202,6 @@
       "file_type": "code",
       "norm_label": "playerdetailmodal.tsx",
       "source_file": "frontend/src/components/PlayerDetailModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_playerhistorymodal",
-      "label": "PlayerHistoryModal.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "playerhistorymodal.tsx",
-      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_components_teamcard",
-      "label": "TeamCard.tsx",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "teamcard.tsx",
-      "source_file": "frontend/src/components/TeamCard.tsx",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_hooks_usefpldata",
-      "label": "useFPLData.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "usefpldata.ts",
-      "source_file": "frontend/src/hooks/useFPLData.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_hooks_usetransfers",
-      "label": "useTransfers.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "usetransfers.ts",
-      "source_file": "frontend/src/hooks/useTransfers.ts",
       "source_location": "L1"
     },
     {
@@ -2279,28 +2238,6 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_src_services_fpl",
-      "label": "services/fpl.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "services/fpl.ts",
-      "source_file": "frontend/src/services/fpl.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_services_fpl_fplservice",
-      "label": "fplService",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "fplservice",
-      "source_file": "frontend/src/services/fpl.ts",
-      "source_location": "L7"
-    },
-    {
       "id": "frontend_src_services_sqliteservice",
       "label": "sqliteService.ts",
       "_origin": "ast",
@@ -2323,28 +2260,6 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_src_utils_fpl",
-      "label": "utils/fpl.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "utils/fpl.ts",
-      "source_file": "frontend/src/utils/fpl.ts",
-      "source_location": "L1"
-    },
-    {
-      "id": "frontend_src_utils_price",
-      "label": "price.ts",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "types/fpl.ts",
-      "file_type": "code",
-      "norm_label": "price.ts",
-      "source_file": "frontend/src/utils/price.ts",
-      "source_location": "L1"
-    },
-    {
       "id": "frontend_src_components_playeranalysis_rationale_136",
       "label": "TODO: topHaulPlayers could be displayed in UI later",
       "_origin": "ast",
@@ -2354,160 +2269,6 @@
       "norm_label": "todo: tophaulplayers could be displayed in ui later",
       "source_file": "frontend/src/components/PlayerAnalysis.tsx",
       "source_location": "L136"
-    },
-    {
-      "id": "frontend_package_devdependencies",
-      "label": "devDependencies",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "devdependencies",
-      "source_file": "frontend/package.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint",
-      "label": "eslint",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "eslint",
-      "source_file": "frontend/package.json",
-      "source_location": "L29"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint_js",
-      "label": "@eslint/js",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@eslint/js",
-      "source_file": "frontend/package.json",
-      "source_location": "L23"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint_plugin_react_hooks",
-      "label": "eslint-plugin-react-hooks",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "eslint-plugin-react-hooks",
-      "source_file": "frontend/package.json",
-      "source_location": "L30"
-    },
-    {
-      "id": "frontend_package_devdependencies_eslint_plugin_react_refresh",
-      "label": "eslint-plugin-react-refresh",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "eslint-plugin-react-refresh",
-      "source_file": "frontend/package.json",
-      "source_location": "L31"
-    },
-    {
-      "id": "frontend_package_devdependencies_globals",
-      "label": "globals",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "globals",
-      "source_file": "frontend/package.json",
-      "source_location": "L32"
-    },
-    {
-      "id": "frontend_package_devdependencies_tsx",
-      "label": "tsx",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "tsx",
-      "source_file": "frontend/package.json",
-      "source_location": "L33"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_node",
-      "label": "@types/node",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/node",
-      "source_file": "frontend/package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_react",
-      "label": "@types/react",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/react",
-      "source_file": "frontend/package.json",
-      "source_location": "L25"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_react_dom",
-      "label": "@types/react-dom",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/react-dom",
-      "source_file": "frontend/package.json",
-      "source_location": "L26"
-    },
-    {
-      "id": "frontend_package_devdependencies_types_sql_js",
-      "label": "@types/sql.js",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@types/sql.js",
-      "source_file": "frontend/package.json",
-      "source_location": "L27"
-    },
-    {
-      "id": "frontend_package_devdependencies_typescript",
-      "label": "typescript",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typescript",
-      "source_file": "frontend/package.json",
-      "source_location": "L34"
-    },
-    {
-      "id": "frontend_package_devdependencies_typescript_eslint",
-      "label": "typescript-eslint",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "typescript-eslint",
-      "source_file": "frontend/package.json",
-      "source_location": "L35"
-    },
-    {
-      "id": "frontend_package_devdependencies_vitejs_plugin_react",
-      "label": "@vitejs/plugin-react",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "code",
-      "norm_label": "@vitejs/plugin-react",
-      "source_file": "frontend/package.json",
-      "source_location": "L28"
     },
     {
       "id": "package_devdependencies",
@@ -2697,17 +2458,6 @@
       "source_location": "L35"
     },
     {
-      "id": "frontend_package_json_tsx",
-      "label": "tsx",
-      "_origin": "ast",
-      "community": 1,
-      "community_name": "devDependencies",
-      "file_type": "concept",
-      "norm_label": "tsx",
-      "source_file": "frontend/package.json",
-      "source_location": "L33"
-    },
-    {
       "id": "package_json_eslint",
       "label": "eslint",
       "_origin": "ast",
@@ -2862,6 +2612,28 @@
       "source_location": "L34"
     },
     {
+      "id": "frontend_src_components_pitchview",
+      "label": "PitchView.tsx",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "gameweekValidation.ts",
+      "file_type": "code",
+      "norm_label": "pitchview.tsx",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_pitchview_itemtypes",
+      "label": "ItemTypes",
+      "_origin": "ast",
+      "community": 10,
+      "community_name": "gameweekValidation.ts",
+      "file_type": "code",
+      "norm_label": "itemtypes",
+      "source_file": "frontend/src/components/PitchView.tsx",
+      "source_location": "L26"
+    },
+    {
       "id": "frontend_src_types_gameweek",
       "label": "gameweek.ts",
       "_origin": "ast",
@@ -2910,18 +2682,106 @@
       "label": "frontend/package.json",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "frontend/package.json",
       "source_file": "frontend/package.json",
       "source_location": "L1"
     },
     {
+      "id": "frontend_package_dependencies",
+      "label": "dependencies",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "dependencies",
+      "source_file": "frontend/package.json",
+      "source_location": "L12"
+    },
+    {
+      "id": "frontend_package_dependencies_react",
+      "label": "react",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd",
+      "source_file": "frontend/package.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "frontend/package.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "frontend_package_dependencies_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "frontend_package_dependencies_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-markdown",
+      "source_file": "frontend/package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "frontend_package_dependencies_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "recharts",
+      "source_file": "frontend/package.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "frontend_package_dependencies_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "remark-gfm",
+      "source_file": "frontend/package.json",
+      "source_location": "L19"
+    },
+    {
       "id": "frontend_package_name",
       "label": "name",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "name",
       "source_file": "frontend/package.json",
@@ -2932,7 +2792,7 @@
       "label": "private",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "private",
       "source_file": "frontend/package.json",
@@ -2943,7 +2803,7 @@
       "label": "scripts",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "scripts",
       "source_file": "frontend/package.json",
@@ -2954,7 +2814,7 @@
       "label": "build",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "build",
       "source_file": "frontend/package.json",
@@ -2965,7 +2825,7 @@
       "label": "dev",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "dev",
       "source_file": "frontend/package.json",
@@ -2976,7 +2836,7 @@
       "label": "lint",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "lint",
       "source_file": "frontend/package.json",
@@ -2987,7 +2847,7 @@
       "label": "preview",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "preview",
       "source_file": "frontend/package.json",
@@ -2998,7 +2858,7 @@
       "label": "type",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "type",
       "source_file": "frontend/package.json",
@@ -3009,121 +2869,121 @@
       "label": "version",
       "_origin": "ast",
       "community": 13,
-      "community_name": "frontend/package.json",
+      "community_name": "dependencies",
       "file_type": "code",
       "norm_label": "version",
       "source_file": "frontend/package.json",
       "source_location": "L4"
     },
     {
-      "id": "package",
-      "label": "package.json",
+      "id": "frontend_package_json_react",
+      "label": "react",
       "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "source_location": "L13"
+    },
+    {
+      "id": "frontend_package_json_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd",
+      "source_file": "frontend/package.json",
+      "source_location": "L14"
+    },
+    {
+      "id": "frontend_package_json_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "frontend/package.json",
+      "source_location": "L15"
+    },
+    {
+      "id": "frontend_package_json_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L16"
+    },
+    {
+      "id": "frontend_package_json_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-markdown",
+      "source_file": "frontend/package.json",
+      "source_location": "L17"
+    },
+    {
+      "id": "frontend_package_json_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "recharts",
+      "source_file": "frontend/package.json",
+      "source_location": "L18"
+    },
+    {
+      "id": "frontend_package_json_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 13,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "remark-gfm",
+      "source_file": "frontend/package.json",
+      "source_location": "L19"
+    },
+    {
+      "id": "frontend_src_hooks_usetransfers",
+      "label": "useTransfers.ts",
+      "_origin": "ast",
+      "community": 14,
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": "package.json",
-      "source_file": "package.json",
+      "norm_label": "usetransfers.ts",
+      "source_file": "frontend/src/hooks/useTransfers.ts",
       "source_location": "L1"
     },
     {
-      "id": "package_name",
-      "label": "name",
+      "id": "frontend_src_utils_fpl",
+      "label": "utils/fpl.ts",
       "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
+      "community": 14,
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": "name",
-      "source_file": "package.json",
-      "source_location": "L2"
+      "norm_label": "utils/fpl.ts",
+      "source_file": "frontend/src/utils/fpl.ts",
+      "source_location": "L1"
     },
     {
-      "id": "package_private",
-      "label": "private",
+      "id": "frontend_src_utils_price",
+      "label": "price.ts",
       "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
+      "community": 14,
+      "community_name": "useTransfers.ts",
       "file_type": "code",
-      "norm_label": "private",
-      "source_file": "package.json",
-      "source_location": "L3"
-    },
-    {
-      "id": "package_scripts",
-      "label": "scripts",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "scripts",
-      "source_file": "package.json",
-      "source_location": "L6"
-    },
-    {
-      "id": "package_scripts_dev",
-      "label": "dev",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "dev",
-      "source_file": "package.json",
-      "source_location": "L7"
-    },
-    {
-      "id": "package_scripts_dev_backend",
-      "label": "dev:backend",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "dev:backend",
-      "source_file": "package.json",
-      "source_location": "L8"
-    },
-    {
-      "id": "package_scripts_setup",
-      "label": "setup",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "setup",
-      "source_file": "package.json",
-      "source_location": "L10"
-    },
-    {
-      "id": "package_scripts_update_data",
-      "label": "update:data",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "update:data",
-      "source_file": "package.json",
-      "source_location": "L9"
-    },
-    {
-      "id": "package_type",
-      "label": "type",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "type",
-      "source_file": "package.json",
-      "source_location": "L5"
-    },
-    {
-      "id": "package_version",
-      "label": "version",
-      "_origin": "ast",
-      "community": 15,
-      "community_name": "package.json",
-      "file_type": "code",
-      "norm_label": "version",
-      "source_file": "package.json",
-      "source_location": "L4"
+      "norm_label": "price.ts",
+      "source_file": "frontend/src/utils/price.ts",
+      "source_location": "L1"
     },
     {
       "id": "backend_scripts_train_predict",
@@ -3137,59 +2997,323 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies",
-      "label": "dependencies",
+      "id": "frontend_package_devdependencies",
+      "label": "devDependencies",
       "_origin": "ast",
       "community": 17,
-      "community_name": "dependencies",
+      "community_name": "devDependencies",
       "file_type": "code",
-      "norm_label": "dependencies",
+      "norm_label": "devdependencies",
       "source_file": "frontend/package.json",
-      "source_location": "L12"
+      "source_location": "L22"
     },
     {
-      "id": "frontend_package_dependencies_react",
-      "label": "react",
+      "id": "frontend_package_devdependencies_eslint",
+      "label": "eslint",
       "_origin": "ast",
       "community": 17,
-      "community_name": "dependencies",
+      "community_name": "devDependencies",
       "file_type": "code",
-      "norm_label": "react",
+      "norm_label": "eslint",
       "source_file": "frontend/package.json",
-      "source_location": "L13"
+      "source_location": "L29"
     },
     {
-      "id": "frontend_package_dependencies_sql_js",
-      "label": "sql.js",
+      "id": "frontend_package_devdependencies_eslint_js",
+      "label": "@eslint/js",
       "_origin": "ast",
       "community": 17,
-      "community_name": "dependencies",
+      "community_name": "devDependencies",
       "file_type": "code",
-      "norm_label": "sql.js",
+      "norm_label": "@eslint/js",
       "source_file": "frontend/package.json",
-      "source_location": "L20"
+      "source_location": "L23"
+    },
+    {
+      "id": "frontend_package_devdependencies_eslint_plugin_react_hooks",
+      "label": "eslint-plugin-react-hooks",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "eslint-plugin-react-hooks",
+      "source_file": "frontend/package.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "frontend_package_devdependencies_eslint_plugin_react_refresh",
+      "label": "eslint-plugin-react-refresh",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "eslint-plugin-react-refresh",
+      "source_file": "frontend/package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "frontend_package_devdependencies_globals",
+      "label": "globals",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "globals",
+      "source_file": "frontend/package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "frontend_package_devdependencies_tsx",
+      "label": "tsx",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "tsx",
+      "source_file": "frontend/package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/node",
+      "source_file": "frontend/package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_react",
+      "label": "@types/react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/react",
+      "source_file": "frontend/package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_react_dom",
+      "label": "@types/react-dom",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "frontend_package_devdependencies_types_sql_js",
+      "label": "@types/sql.js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@types/sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "frontend_package_devdependencies_typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "typescript",
+      "source_file": "frontend/package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "frontend_package_devdependencies_typescript_eslint",
+      "label": "typescript-eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "typescript-eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L35"
     },
     {
       "id": "frontend_package_devdependencies_vite",
       "label": "vite",
       "_origin": "ast",
       "community": 17,
-      "community_name": "dependencies",
+      "community_name": "devDependencies",
       "file_type": "code",
       "norm_label": "vite",
       "source_file": "frontend/package.json",
       "source_location": "L36"
     },
     {
-      "id": "frontend_package_json_sql_js",
-      "label": "sql.js",
+      "id": "frontend_package_devdependencies_vitejs_plugin_react",
+      "label": "@vitejs/plugin-react",
       "_origin": "ast",
       "community": 17,
-      "community_name": "dependencies",
-      "file_type": "concept",
-      "norm_label": "sql.js",
+      "community_name": "devDependencies",
+      "file_type": "code",
+      "norm_label": "@vitejs/plugin-react",
       "source_file": "frontend/package.json",
-      "source_location": "L20"
+      "source_location": "L28"
+    },
+    {
+      "id": "frontend_package_json_eslint",
+      "label": "eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L29"
+    },
+    {
+      "id": "frontend_package_json_eslint_js",
+      "label": "@eslint/js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@eslint/js",
+      "source_file": "frontend/package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "frontend_package_json_eslint_plugin_react_hooks",
+      "label": "eslint-plugin-react-hooks",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "eslint-plugin-react-hooks",
+      "source_file": "frontend/package.json",
+      "source_location": "L30"
+    },
+    {
+      "id": "frontend_package_json_eslint_plugin_react_refresh",
+      "label": "eslint-plugin-react-refresh",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "eslint-plugin-react-refresh",
+      "source_file": "frontend/package.json",
+      "source_location": "L31"
+    },
+    {
+      "id": "frontend_package_json_globals",
+      "label": "globals",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "globals",
+      "source_file": "frontend/package.json",
+      "source_location": "L32"
+    },
+    {
+      "id": "frontend_package_json_tsx",
+      "label": "tsx",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "tsx",
+      "source_file": "frontend/package.json",
+      "source_location": "L33"
+    },
+    {
+      "id": "frontend_package_json_types_node",
+      "label": "@types/node",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/node",
+      "source_file": "frontend/package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "frontend_package_json_types_react",
+      "label": "@types/react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/react",
+      "source_file": "frontend/package.json",
+      "source_location": "L25"
+    },
+    {
+      "id": "frontend_package_json_types_react_dom",
+      "label": "@types/react-dom",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/react-dom",
+      "source_file": "frontend/package.json",
+      "source_location": "L26"
+    },
+    {
+      "id": "frontend_package_json_types_sql_js",
+      "label": "@types/sql.js",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@types/sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L27"
+    },
+    {
+      "id": "frontend_package_json_typescript",
+      "label": "typescript",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "typescript",
+      "source_file": "frontend/package.json",
+      "source_location": "L34"
+    },
+    {
+      "id": "frontend_package_json_typescript_eslint",
+      "label": "typescript-eslint",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "typescript-eslint",
+      "source_file": "frontend/package.json",
+      "source_location": "L35"
+    },
+    {
+      "id": "frontend_package_json_vite",
+      "label": "vite",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "vite",
+      "source_file": "frontend/package.json",
+      "source_location": "L36"
+    },
+    {
+      "id": "frontend_package_json_vitejs_plugin_react",
+      "label": "@vitejs/plugin-react",
+      "_origin": "ast",
+      "community": 17,
+      "community_name": "devDependencies",
+      "file_type": "concept",
+      "norm_label": "@vitejs/plugin-react",
+      "source_file": "frontend/package.json",
+      "source_location": "L28"
     },
     {
       "id": "frontend_src_components_skeletonloader",
@@ -3318,6 +3442,28 @@
       "source_location": "L1"
     },
     {
+      "id": "frontend_src_components_splashscreen",
+      "label": "SplashScreen.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "splashscreen.tsx",
+      "source_file": "frontend/src/components/SplashScreen.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_teamcard",
+      "label": "TeamCard.tsx",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "teamcard.tsx",
+      "source_file": "frontend/src/components/TeamCard.tsx",
+      "source_location": "L1"
+    },
+    {
       "id": "frontend_src_components_updatebutton",
       "label": "UpdateButton.tsx",
       "_origin": "ast",
@@ -3326,6 +3472,17 @@
       "file_type": "code",
       "norm_label": "updatebutton.tsx",
       "source_file": "frontend/src/components/UpdateButton.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_hooks_usefpldata",
+      "label": "useFPLData.ts",
+      "_origin": "ast",
+      "community": 2,
+      "community_name": "App.tsx",
+      "file_type": "code",
+      "norm_label": "usefpldata.ts",
+      "source_file": "frontend/src/hooks/useFPLData.ts",
       "source_location": "L1"
     },
     {
@@ -3351,202 +3508,26 @@
       "source_location": "L1"
     },
     {
-      "id": "frontend_package_dependencies_react_dnd",
-      "label": "react-dnd",
+      "id": "frontend_src_services_fpl",
+      "label": "services/fpl.ts",
       "_origin": "ast",
-      "community": 20,
-      "community_name": "react-dnd",
+      "community": 2,
+      "community_name": "App.tsx",
       "file_type": "code",
-      "norm_label": "react-dnd",
-      "source_file": "frontend/package.json",
-      "source_location": "L14"
+      "norm_label": "services/fpl.ts",
+      "source_file": "frontend/src/services/fpl.ts",
+      "source_location": "L1"
     },
     {
-      "id": "package_dependencies_react_dnd",
-      "label": "react-dnd",
+      "id": "frontend_src_services_fpl_fplservice",
+      "label": "fplService",
       "_origin": "ast",
-      "community": 20,
-      "community_name": "react-dnd",
+      "community": 2,
+      "community_name": "App.tsx",
       "file_type": "code",
-      "norm_label": "react-dnd",
-      "source_file": "package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "package_json_react_dnd",
-      "label": "react-dnd",
-      "_origin": "ast",
-      "community": 20,
-      "community_name": "react-dnd",
-      "file_type": "concept",
-      "norm_label": "react-dnd",
-      "source_file": "package.json",
-      "source_location": "L20"
-    },
-    {
-      "id": "frontend_package_dependencies_react_dnd_html5_backend",
-      "label": "react-dnd-html5-backend",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "react-dnd-html5-backend",
-      "file_type": "code",
-      "norm_label": "react-dnd-html5-backend",
-      "source_file": "frontend/package.json",
-      "source_location": "L15"
-    },
-    {
-      "id": "package_dependencies_react_dnd_html5_backend",
-      "label": "react-dnd-html5-backend",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "react-dnd-html5-backend",
-      "file_type": "code",
-      "norm_label": "react-dnd-html5-backend",
-      "source_file": "package.json",
-      "source_location": "L21"
-    },
-    {
-      "id": "package_json_react_dnd_html5_backend",
-      "label": "react-dnd-html5-backend",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "react-dnd-html5-backend",
-      "file_type": "concept",
-      "norm_label": "react-dnd-html5-backend",
-      "source_file": "package.json",
-      "source_location": "L21"
-    },
-    {
-      "id": "frontend_package_dependencies_react_dom",
-      "label": "react-dom",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "react-dom",
-      "file_type": "code",
-      "norm_label": "react-dom",
-      "source_file": "frontend/package.json",
-      "source_location": "L16"
-    },
-    {
-      "id": "package_dependencies_react_dom",
-      "label": "react-dom",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "react-dom",
-      "file_type": "code",
-      "norm_label": "react-dom",
-      "source_file": "package.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "package_json_react_dom",
-      "label": "react-dom",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "react-dom",
-      "file_type": "concept",
-      "norm_label": "react-dom",
-      "source_file": "package.json",
-      "source_location": "L22"
-    },
-    {
-      "id": "frontend_package_dependencies_react_markdown",
-      "label": "react-markdown",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "react-markdown",
-      "file_type": "code",
-      "norm_label": "react-markdown",
-      "source_file": "frontend/package.json",
-      "source_location": "L17"
-    },
-    {
-      "id": "package_dependencies_react_markdown",
-      "label": "react-markdown",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "react-markdown",
-      "file_type": "code",
-      "norm_label": "react-markdown",
-      "source_file": "package.json",
-      "source_location": "L23"
-    },
-    {
-      "id": "package_json_react_markdown",
-      "label": "react-markdown",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "react-markdown",
-      "file_type": "concept",
-      "norm_label": "react-markdown",
-      "source_file": "package.json",
-      "source_location": "L23"
-    },
-    {
-      "id": "frontend_package_dependencies_recharts",
-      "label": "recharts",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "recharts",
-      "file_type": "code",
-      "norm_label": "recharts",
-      "source_file": "frontend/package.json",
-      "source_location": "L18"
-    },
-    {
-      "id": "package_dependencies_recharts",
-      "label": "recharts",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "recharts",
-      "file_type": "code",
-      "norm_label": "recharts",
-      "source_file": "package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "package_json_recharts",
-      "label": "recharts",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "recharts",
-      "file_type": "concept",
-      "norm_label": "recharts",
-      "source_file": "package.json",
-      "source_location": "L24"
-    },
-    {
-      "id": "frontend_package_dependencies_remark_gfm",
-      "label": "remark-gfm",
-      "_origin": "ast",
-      "community": 25,
-      "community_name": "remark-gfm",
-      "file_type": "code",
-      "norm_label": "remark-gfm",
-      "source_file": "frontend/package.json",
-      "source_location": "L19"
-    },
-    {
-      "id": "package_dependencies_remark_gfm",
-      "label": "remark-gfm",
-      "_origin": "ast",
-      "community": 25,
-      "community_name": "remark-gfm",
-      "file_type": "code",
-      "norm_label": "remark-gfm",
-      "source_file": "package.json",
-      "source_location": "L25"
-    },
-    {
-      "id": "package_json_remark_gfm",
-      "label": "remark-gfm",
-      "_origin": "ast",
-      "community": 25,
-      "community_name": "remark-gfm",
-      "file_type": "concept",
-      "norm_label": "remark-gfm",
-      "source_file": "package.json",
-      "source_location": "L25"
+      "norm_label": "fplservice",
+      "source_file": "frontend/src/services/fpl.ts",
+      "source_location": "L7"
     },
     {
       "id": "frontend_tsconfig",
@@ -3642,6 +3623,17 @@
       "file_type": "code",
       "norm_label": "optimizationreport.tsx",
       "source_file": "frontend/src/components/OptimizationReport.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "frontend_src_components_playerhistorymodal",
+      "label": "PlayerHistoryModal.tsx",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "useOptimization.ts",
+      "file_type": "code",
+      "norm_label": "playerhistorymodal.tsx",
+      "source_file": "frontend/src/components/PlayerHistoryModal.tsx",
       "source_location": "L1"
     },
     {
@@ -4228,6 +4220,28 @@
       "source_location": "L25"
     },
     {
+      "id": "frontend_package_dependencies_sql_js",
+      "label": "sql.js",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "FastAPI Backend",
+      "file_type": "code",
+      "norm_label": "sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "frontend_package_json_sql_js",
+      "label": "sql.js",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "FastAPI Backend",
+      "file_type": "concept",
+      "norm_label": "sql.js",
+      "source_file": "frontend/package.json",
+      "source_location": "L20"
+    },
+    {
       "id": "backend_main",
       "label": "main.py",
       "_origin": "ast",
@@ -4270,6 +4284,17 @@
       "norm_label": "post",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "package",
+      "label": "package.json",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "package.json",
+      "source_file": "package.json",
+      "source_location": "L1"
     },
     {
       "id": "package_dependencies",
@@ -4338,6 +4363,72 @@
       "source_location": "L19"
     },
     {
+      "id": "package_dependencies_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd",
+      "source_file": "package.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "package_dependencies_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "package.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "package_dependencies_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-dom",
+      "source_file": "package.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "package_dependencies_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "react-markdown",
+      "source_file": "package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "package_dependencies_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "recharts",
+      "source_file": "package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "package_dependencies_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "remark-gfm",
+      "source_file": "package.json",
+      "source_location": "L25"
+    },
+    {
       "id": "package_dependencies_sql_js",
       "label": "sql.js",
       "_origin": "ast",
@@ -4369,6 +4460,105 @@
       "norm_label": "@types/node-fetch",
       "source_file": "package.json",
       "source_location": "L14"
+    },
+    {
+      "id": "package_name",
+      "label": "name",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "name",
+      "source_file": "package.json",
+      "source_location": "L2"
+    },
+    {
+      "id": "package_private",
+      "label": "private",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "private",
+      "source_file": "package.json",
+      "source_location": "L3"
+    },
+    {
+      "id": "package_scripts",
+      "label": "scripts",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "scripts",
+      "source_file": "package.json",
+      "source_location": "L6"
+    },
+    {
+      "id": "package_scripts_dev",
+      "label": "dev",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "dev",
+      "source_file": "package.json",
+      "source_location": "L7"
+    },
+    {
+      "id": "package_scripts_dev_backend",
+      "label": "dev:backend",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "dev:backend",
+      "source_file": "package.json",
+      "source_location": "L8"
+    },
+    {
+      "id": "package_scripts_setup",
+      "label": "setup",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "setup",
+      "source_file": "package.json",
+      "source_location": "L10"
+    },
+    {
+      "id": "package_scripts_update_data",
+      "label": "update:data",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "update:data",
+      "source_file": "package.json",
+      "source_location": "L9"
+    },
+    {
+      "id": "package_type",
+      "label": "type",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "type",
+      "source_file": "package.json",
+      "source_location": "L5"
+    },
+    {
+      "id": "package_version",
+      "label": "version",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "code",
+      "norm_label": "version",
+      "source_file": "package.json",
+      "source_location": "L4"
     },
     {
       "id": "better_sqlite3",
@@ -4426,6 +4616,72 @@
       "source_location": "L19"
     },
     {
+      "id": "package_json_react_dnd",
+      "label": "react-dnd",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd",
+      "source_file": "package.json",
+      "source_location": "L20"
+    },
+    {
+      "id": "package_json_react_dnd_html5_backend",
+      "label": "react-dnd-html5-backend",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dnd-html5-backend",
+      "source_file": "package.json",
+      "source_location": "L21"
+    },
+    {
+      "id": "package_json_react_dom",
+      "label": "react-dom",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-dom",
+      "source_file": "package.json",
+      "source_location": "L22"
+    },
+    {
+      "id": "package_json_react_markdown",
+      "label": "react-markdown",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "react-markdown",
+      "source_file": "package.json",
+      "source_location": "L23"
+    },
+    {
+      "id": "package_json_recharts",
+      "label": "recharts",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "recharts",
+      "source_file": "package.json",
+      "source_location": "L24"
+    },
+    {
+      "id": "package_json_remark_gfm",
+      "label": "remark-gfm",
+      "_origin": "ast",
+      "community": 8,
+      "community_name": "dependencies",
+      "file_type": "concept",
+      "norm_label": "remark-gfm",
+      "source_file": "package.json",
+      "source_location": "L25"
+    },
+    {
       "id": "package_json_sql_js",
       "label": "sql.js",
       "_origin": "ast",
@@ -4479,58 +4735,6 @@
       "norm_label": "fixtures.ts",
       "source_file": "frontend/src/utils/fixtures.ts",
       "source_location": "L1"
-    },
-    {
-      "id": "tech:nodejs",
-      "label": "Node.js",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "dependencies",
-      "confidence": 0.9,
-      "description": "JavaScript runtime (v18+) required for frontend development.",
-      "file_type": "concept",
-      "norm_label": "node.js",
-      "source_file": "README.md",
-      "type": "technology"
-    },
-    {
-      "id": "component:frontend_app",
-      "label": "Frontend App",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "dependencies",
-      "confidence": 0.9,
-      "description": "React + TypeScript SPA (fplgeek-frontend) served via Vite/Nginx.",
-      "file_type": "concept",
-      "norm_label": "frontend app",
-      "source_file": "frontend/package.json",
-      "type": "component"
-    },
-    {
-      "id": "tech:vite",
-      "label": "Vite",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "dependencies",
-      "confidence": 0.95,
-      "description": "Build tool and dev server (7.2.4) for the frontend.",
-      "file_type": "concept",
-      "norm_label": "vite",
-      "source_file": "frontend/package.json",
-      "type": "technology"
-    },
-    {
-      "id": "tech:react",
-      "label": "React",
-      "_origin": "semantic",
-      "community": 17,
-      "community_name": "dependencies",
-      "confidence": 0.95,
-      "description": "Frontend UI framework (v19.2) for the FPL Geek app.",
-      "file_type": "concept",
-      "norm_label": "react",
-      "source_file": "frontend/package.json",
-      "type": "technology"
     },
     {
       "id": "data:ml_models",
@@ -4715,6 +4919,19 @@
       "type": "concept"
     },
     {
+      "id": "tech:nodejs",
+      "label": "Node.js",
+      "_origin": "semantic",
+      "community": 6,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.9,
+      "description": "JavaScript runtime (v18+) required for frontend development.",
+      "file_type": "concept",
+      "norm_label": "node.js",
+      "source_file": "README.md",
+      "type": "technology"
+    },
+    {
       "id": "tech:scikit_learn",
       "label": "scikit-learn",
       "_origin": "semantic",
@@ -4754,6 +4971,19 @@
       "type": "technology"
     },
     {
+      "id": "component:frontend_app",
+      "label": "Frontend App",
+      "_origin": "semantic",
+      "community": 6,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.9,
+      "description": "React + TypeScript SPA (fplgeek-frontend) served via Vite/Nginx.",
+      "file_type": "concept",
+      "norm_label": "frontend app",
+      "source_file": "frontend/package.json",
+      "type": "component"
+    },
+    {
       "id": "concept:transfer_recommendations",
       "label": "Transfer Recommendations",
       "_origin": "semantic",
@@ -4791,6 +5021,32 @@
       "norm_label": "fpl geek",
       "source_file": "README.md",
       "type": "concept"
+    },
+    {
+      "id": "tech:vite",
+      "label": "Vite",
+      "_origin": "semantic",
+      "community": 6,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.95,
+      "description": "Build tool and dev server (7.2.4) for the frontend.",
+      "file_type": "concept",
+      "norm_label": "vite",
+      "source_file": "frontend/package.json",
+      "type": "technology"
+    },
+    {
+      "id": "tech:react",
+      "label": "React",
+      "_origin": "semantic",
+      "community": 6,
+      "community_name": "FastAPI Backend",
+      "confidence": 0.95,
+      "description": "Frontend UI framework (v19.2) for the FPL Geek app.",
+      "file_type": "concept",
+      "norm_label": "react",
+      "source_file": "frontend/package.json",
+      "type": "technology"
     },
     {
       "id": "service:fastapi_backend",
@@ -5285,7 +5541,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L31",
+      "source_location": "L32",
       "weight": 1.0
     },
     {
@@ -5297,7 +5553,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L51",
+      "source_location": "L53",
       "weight": 1.0
     },
     {
@@ -5309,7 +5565,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L65",
+      "source_location": "L67",
       "weight": 1.0
     },
     {
@@ -5321,7 +5577,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L83",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -6225,6 +6481,66 @@
       "weight": 1.0
     },
     {
+      "source": "frontend_src_components_transfermodal_transfermodalprops",
+      "target": "frontend_src_types_fpl_team",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_components_transfermodal_transfermodalprops",
+      "target": "frontend_src_types_fpl_pick",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_components_transfermodal_transfermodalprops",
+      "target": "frontend_src_hooks_usefpldata_aipredictionmap",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L14",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_components_transfermodal_transfermodalprops",
+      "target": "frontend_src_types_gameweek_predictionmetadata",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L15",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_components_transfermodal_transfermodalprops",
+      "target": "frontend_src_types_fpl_player",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/components/TransferModal.tsx",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
       "source": "frontend_src_utils_fixtures_scoredfixture",
       "target": "frontend_src_types_fpl_match",
       "relation": "references",
@@ -6234,6 +6550,30 @@
       "context": "field",
       "source_file": "frontend/src/utils/fixtures.ts",
       "source_location": "L69",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_utils_solver_predictionresult",
+      "target": "frontend_src_types_fpl_player",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/utils/solver.ts",
+      "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_utils_solver_predictionresult",
+      "target": "frontend_src_types_fpl_unifiedplayer",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "frontend/src/utils/solver.ts",
+      "source_location": "L4",
       "weight": 1.0
     },
     {
@@ -6417,6 +6757,66 @@
       "weight": 1.0
     },
     {
+      "source": "frontend_src_services_sqliteservice_sqliteprovider_getbootstrapstatic",
+      "target": "frontend_src_types_fpl_bootstrapstatic",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L151",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_services_sqliteservice_sqliteprovider_getelementtypes",
+      "target": "frontend_src_types_fpl_elementtype",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L137",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_services_sqliteservice_sqliteprovider_getevents",
+      "target": "frontend_src_types_fpl_event",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L123",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_services_sqliteservice_sqliteprovider_getplayers",
+      "target": "frontend_src_types_fpl_unifiedplayer",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_services_sqliteservice_sqliteprovider_getteams",
+      "target": "frontend_src_types_fpl_team",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
       "source": "frontend_tsconfig_app_compileroptions_lib",
       "target": "ref_dom",
       "relation": "extends",
@@ -6514,7 +6914,7 @@
     },
     {
       "source": "frontend_package_dependencies_react",
-      "target": "tech:react",
+      "target": "frontend_package_json_react",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6526,7 +6926,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_dnd",
-      "target": "package_json_react_dnd",
+      "target": "frontend_package_json_react_dnd",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6538,7 +6938,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_dnd_html5_backend",
-      "target": "package_json_react_dnd_html5_backend",
+      "target": "frontend_package_json_react_dnd_html5_backend",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6550,7 +6950,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_dom",
-      "target": "package_json_react_dom",
+      "target": "frontend_package_json_react_dom",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6562,7 +6962,7 @@
     },
     {
       "source": "frontend_package_dependencies_react_markdown",
-      "target": "package_json_react_markdown",
+      "target": "frontend_package_json_react_markdown",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6574,7 +6974,7 @@
     },
     {
       "source": "frontend_package_dependencies_recharts",
-      "target": "package_json_recharts",
+      "target": "frontend_package_json_recharts",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6586,7 +6986,7 @@
     },
     {
       "source": "frontend_package_dependencies_remark_gfm",
-      "target": "package_json_remark_gfm",
+      "target": "frontend_package_json_remark_gfm",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6610,7 +7010,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint",
-      "target": "package_json_eslint",
+      "target": "frontend_package_json_eslint",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6622,7 +7022,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint_js",
-      "target": "package_json_eslint_js",
+      "target": "frontend_package_json_eslint_js",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6634,7 +7034,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint_plugin_react_hooks",
-      "target": "package_json_eslint_plugin_react_hooks",
+      "target": "frontend_package_json_eslint_plugin_react_hooks",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6646,7 +7046,7 @@
     },
     {
       "source": "frontend_package_devdependencies_eslint_plugin_react_refresh",
-      "target": "package_json_eslint_plugin_react_refresh",
+      "target": "frontend_package_json_eslint_plugin_react_refresh",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6658,7 +7058,7 @@
     },
     {
       "source": "frontend_package_devdependencies_globals",
-      "target": "package_json_globals",
+      "target": "frontend_package_json_globals",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6682,7 +7082,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_node",
-      "target": "package_json_types_node",
+      "target": "frontend_package_json_types_node",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6694,7 +7094,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_react",
-      "target": "package_json_types_react",
+      "target": "frontend_package_json_types_react",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6706,7 +7106,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_react_dom",
-      "target": "package_json_types_react_dom",
+      "target": "frontend_package_json_types_react_dom",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6718,7 +7118,7 @@
     },
     {
       "source": "frontend_package_devdependencies_types_sql_js",
-      "target": "package_json_types_sql_js",
+      "target": "frontend_package_json_types_sql_js",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6730,7 +7130,7 @@
     },
     {
       "source": "frontend_package_devdependencies_typescript",
-      "target": "package_json_typescript",
+      "target": "frontend_package_json_typescript",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6742,7 +7142,7 @@
     },
     {
       "source": "frontend_package_devdependencies_typescript_eslint",
-      "target": "package_json_typescript_eslint",
+      "target": "frontend_package_json_typescript_eslint",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6754,7 +7154,7 @@
     },
     {
       "source": "frontend_package_devdependencies_vite",
-      "target": "tech:vite",
+      "target": "frontend_package_json_vite",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6766,7 +7166,7 @@
     },
     {
       "source": "frontend_package_devdependencies_vitejs_plugin_react",
-      "target": "package_json_vitejs_plugin_react",
+      "target": "frontend_package_json_vitejs_plugin_react",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -6886,6 +7286,18 @@
     },
     {
       "source": "frontend_src_app",
+      "target": "frontend_src_components_splashscreen_splashscreen",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "frontend/src/App.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_app",
       "target": "frontend_src_hooks_usefpldata_usefpldata",
       "relation": "imports",
       "_origin": "ast",
@@ -6905,7 +7317,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -8458,6 +8870,18 @@
     },
     {
       "source": "frontend_src_app",
+      "target": "frontend_src_components_splashscreen",
+      "relation": "imports_from",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "import",
+      "source_file": "frontend/src/App.tsx",
+      "source_location": "L19",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_app",
       "target": "frontend_src_hooks_usefpldata",
       "relation": "imports_from",
       "_origin": "ast",
@@ -8477,7 +8901,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -9042,6 +9466,18 @@
       "context": "type",
       "source_file": "frontend/src/services/dataFactory.ts",
       "source_location": "L58",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_services_sqliteservice_sqliteprovider",
+      "target": "frontend_src_services_dataprovider_idataprovider",
+      "relation": "implements",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "type",
+      "source_file": "frontend/src/services/sqliteService.ts",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -9867,7 +10303,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/App.tsx",
-      "source_location": "L25",
+      "source_location": "L26",
       "weight": 1.0
     },
     {
@@ -10231,6 +10667,28 @@
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/SkeletonLoader.tsx",
       "source_location": "L4",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_components_splashscreen",
+      "target": "frontend_src_components_splashscreen_splashscreen",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/components/SplashScreen.tsx",
+      "source_location": "L12",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_components_splashscreen",
+      "target": "frontend_src_components_splashscreen_splashscreenprops",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/components/SplashScreen.tsx",
+      "source_location": "L3",
       "weight": 1.0
     },
     {
@@ -12624,5 +13082,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "62bee6c9a8d083c5dd2b05f75cbf5d9710cf1ff5"
+  "built_at_commit": "e448c81f9264b0dc9b8785e874e5239c92b8fba7"
 }
