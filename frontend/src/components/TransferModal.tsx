@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import type { Player, Team, Pick } from '../types/fpl';
+import type { PredictionMetadata } from '../types/gameweek';
+import type { AIPredictionMap } from '../hooks/useFPLData';
+import { computeTotalForecast } from '../hooks/useOptimization';
 import './TransferModal.css';
 
 interface TransferModalProps {
@@ -8,6 +11,8 @@ interface TransferModalProps {
     teams: Team[];
     currentPicks: Pick[];
     bank: number;
+    aiPredictions?: AIPredictionMap;
+    gameweekMetadata?: PredictionMetadata | null;
     onClose: () => void;
     onTransfer: (playerOut: Player, playerIn: Player) => void;
     t100Ownership?: Record<number, number>;
@@ -16,7 +21,7 @@ interface TransferModalProps {
 type SortField = 'total_points' | 'form' | 'haul_3gw' | 'now_cost' | 'diff' | 't100_ownership';
 type SortDirection = 'asc' | 'desc';
 
-export function TransferModal({ player, elements, teams, currentPicks, bank, onClose, onTransfer, t100Ownership }: TransferModalProps) {
+export function TransferModal({ player, elements, teams, currentPicks, bank, aiPredictions, gameweekMetadata, onClose, onTransfer, t100Ownership }: TransferModalProps) {
     const [searchTerm, setSearchTerm] = useState("");
     const [sortField, setSortField] = useState<SortField>('total_points');
     const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
@@ -72,7 +77,7 @@ export function TransferModal({ player, elements, teams, currentPicks, bank, onC
         .map(e => {
             return {
                 ...e,
-                haul_3gw: 0,
+                haul_3gw: computeTotalForecast(aiPredictions?.[e.id], gameweekMetadata ?? null, 3),
                 t100_ownership: t100Ownership ? (t100Ownership[e.id] || 0) : 0
             };
         })

@@ -355,6 +355,8 @@ export default function App() {
               teams={staticData.teams}
               currentPicks={activePicks}
               bank={bank}
+              aiPredictions={aiPredictionMap}
+              gameweekMetadata={gameweekMetadata}
               onClose={() => setSelectedTransferPlayer(null)}
               onTransfer={onTransferWrapper}
             />
