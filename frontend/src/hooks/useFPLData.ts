@@ -19,21 +19,37 @@ export const useFPLData = () => {
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    // True while the initial global data (bootstrap, fixtures, metadata,
+    // ownership, predictions) is still settling on app load.
+    const [booting, setBooting] = useState(true);
 
     // 1. Load Globals on Mount
     useEffect(() => {
         const loadGlobals = async () => {
             console.log("🔄 loadGlobals starting...");
             try {
-                // Parallel fetch for static data, fixtures, and gameweek metadata
-                const [bootstrap, matches, gwMetadata] = await Promise.all([
+                // Parallel fetch for static data, fixtures, gameweek metadata,
+                // T100 ownership and AI predictions — all independent, so run
+                // them together instead of sequentially to cut boot time.
+                const safeJson = async (url: string) => {
+                    try {
+                        const res = await fetch(url);
+                        if (!res.ok) return null;
+                        const contentType = res.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) return null;
+                        return await res.json();
+                    } catch (e) {
+                        console.warn(`⚠️ Could not fetch ${url}:`, e);
+                        return null;
+                    }
+                };
+
+                const [bootstrap, matches, gwMetadata, leagueData, predData] = await Promise.all([
                     fplService.getBootstrapStatic(),
                     fplService.getFixtures(),
-                    // Fetch gameweek context from backend via /ai-api prefix (proxies to localhost:3000)
-                    fetch('/ai-api/api/gameweek-context').then(r => r.json()).catch(err => {
-                        console.warn('⚠️ Could not fetch gameweek context:', err);
-                        return null;
-                    })
+                    safeJson('/ai-api/api/gameweek-context'),
+                    safeJson('/ai-api/api/data/league-analysis'),
+                    safeJson('/ai-api/api/data/predictions')
                 ]);
 
                 console.log("✅ Bootstrap fetched with", bootstrap?.elements?.length, "elements");
@@ -47,41 +63,28 @@ export const useFPLData = () => {
                 }
 
                 // Load T100 ownership from league analysis
-                try {
-                    const leagueRes = await fetch('/ai-api/api/data/league-analysis');
-                    const contentType = leagueRes.headers.get('content-type');
-                    if (leagueRes.ok && contentType && contentType.includes('application/json')) {
-                        const leagueData = await leagueRes.json();
-                        if (leagueData.history && leagueData.history.length > 0) {
-                            const latestGw = leagueData.history[leagueData.history.length - 1];
-                            const ownershipMap: T100OwnershipMap = {};
-                            latestGw.top_owned.forEach((p: any) => {
-                                ownershipMap[p.id] = p.percent;
-                            });
-                            setT100OwnershipMap(ownershipMap);
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Could not load league analysis for T100 ownership', e);
+                if (leagueData?.history && leagueData.history.length > 0) {
+                    const latestGw = leagueData.history[leagueData.history.length - 1];
+                    const ownershipMap: T100OwnershipMap = {};
+                    latestGw.top_owned.forEach((p: any) => {
+                        ownershipMap[p.id] = p.percent;
+                    });
+                    setT100OwnershipMap(ownershipMap);
                 }
 
                 // Load AI predictions
-                try {
-                    const predRes = await fetch('/ai-api/api/data/predictions');
-                    if (predRes.ok) {
-                        const predData: any[] = await predRes.json();
-                        const predMap: AIPredictionMap = {};
-                        predData.forEach(p => { predMap[p.id] = p; });
-                        setAiPredictionMap(predMap);
-                        console.log('✅ AI predictions loaded:', predData.length, 'players');
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Could not load AI predictions', e);
+                if (Array.isArray(predData)) {
+                    const predMap: AIPredictionMap = {};
+                    predData.forEach(p => { predMap[p.id] = p; });
+                    setAiPredictionMap(predMap);
+                    console.log('✅ AI predictions loaded:', predData.length, 'players');
                 }
-
             } catch (e) {
                 console.error("❌ Failed to load global FPL data", e);
                 setError("Failed to load FPL database or fixtures.");
+            } finally {
+                // Boot phase is over (success or failure) — reveal the app.
+                setBooting(false);
             }
         };
 
@@ -134,6 +137,7 @@ export const useFPLData = () => {
         picksData,
         transfersHistory,
         loading,
+        booting,
         error,
         loadTeam,
         logout

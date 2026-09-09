@@ -61,6 +61,10 @@ def league_analysis():
 def feature_importance():
     return load_app_data('feature_importance')
 
+@app.get("/api/model-report")
+def model_report():
+    return load_app_data('model_report')
+
 @app.get("/api/data/{filename}")
 def data_file(filename: str):
     if filename not in ALLOWED_FILES:

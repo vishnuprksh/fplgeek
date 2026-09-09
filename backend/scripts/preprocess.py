@@ -94,6 +94,7 @@ def get_season(dt):
     if (y == 2023 and m >= 8) or (y == 2024 and m < 8): return "23/24"
     if (y == 2024 and m >= 8) or (y == 2025 and m < 8): return "24/25"
     if (y == 2025 and m >= 8) or (y == 2026 and m < 8): return "25/26"
+    if (y == 2026 and m >= 8) or (y == 2027 and m < 8): return "26/27"
     return "Unknown"
 
 
@@ -232,7 +233,8 @@ def main():
             is_home = f['team_h'] == p_team
             opp_id = f['team_a'] if is_home else f['team_h']
             difficulty = f['team_h_difficulty'] if is_home else f['team_a_difficulty']
-            curr_ts = datetime.fromisoformat(f['kickoff_time'].replace('Z', '+00:00')).timestamp()
+            f_dt = datetime.fromisoformat(f['kickoff_time'].replace('Z', '+00:00'))
+            curr_ts = f_dt.timestamp()
             hours_rest = (curr_ts - last_ts) / 3600.0
             last_ts = curr_ts
             atk, dfn = fixture_scores(p_team, opp_id, venue_table)
@@ -240,7 +242,7 @@ def main():
 
             partials[pos].append({
                 'name': player['web_name'], 'id': p_id, 'team': p_team,
-                'gw': gw, 'season': "25/26", 'is_future': True,
+                'gw': gw, 'season': get_season(f_dt), 'is_future': True,
                 'target': 0, 'target_class': 0,
                 'selected_by_percent': safe_float(player.get('selected_by_percent', 0)),
                 'ctx_was_home': 1.0 if is_home else 0.0,

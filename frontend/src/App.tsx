@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useFPLData } from './hooks/useFPLData';
 import { useTransfers } from './hooks/useTransfers';
 import { useOptimization } from './hooks/useOptimization';
@@ -13,9 +13,11 @@ import { PlayerAnalysis } from './components/PlayerAnalysis';
 import { OptimizationReport } from './components/OptimizationReport';
 import { TransferModal } from './components/TransferModal';
 import { LeagueAnalysis } from './components/LeagueAnalysis';
+import { ModelDetails } from './components/ModelDetails';
 import { BottomNav } from './components/BottomNav';
 import { DataView } from './components/DataView';
 import { UpdateButton } from './components/UpdateButton';
+import { SplashScreen } from './components/SplashScreen';
 
 
 import { DndProvider } from 'react-dnd';
@@ -25,7 +27,7 @@ import type { Player } from './types/fpl';
 export default function App() {
   console.log("🚀 App component rendering");
   const [teamId, setTeamId] = useState(0); // Must be entered by the user — no automatic login to a fixed ID
-  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data'>('dashboard');
+  const [currentView, setCurrentView] = useState<'dashboard' | 'fixtures' | 'players' | 'predictions' | 'league' | 'data' | 'model'>('dashboard');
 
   // Initialize keep-alive for Render free tier (pings backend every 8 minutes)
   useKeepAlive();
@@ -45,6 +47,7 @@ export default function App() {
     picksData,
     transfersHistory,
     loading,
+    booting,
     error,
     loadTeam,
     logout: logoutValues
@@ -85,13 +88,6 @@ export default function App() {
   const predictionsMap = {};
 
 
-  // Team is only loaded when the user submits their Team ID (no auto-login)
-  useEffect(() => {
-    if (teamId > 0 && staticData && !teamData) {
-      loadTeam(teamId);
-    }
-  }, [staticData, teamData, teamId, loadTeam]);
-
   // Bridge Optimization Application to Transfer Logic
   const applyOptimization = () => {
     if (!optimizationResult) return;
@@ -114,6 +110,9 @@ export default function App() {
 
   return (
     <DndProvider backend={HTML5Backend}>
+      {/* Global boot splash — shown until bootstrap/fixtures/predictions settle */}
+      {booting && <SplashScreen />}
+      {!booting && (
       <div className="dnd-wrapper">
         <header className="app-header">
           <div className="header-inner">
@@ -354,6 +353,12 @@ export default function App() {
                 <DataView />
               </div>
             )}
+
+            {currentView === 'model' && (
+              <div className="fade-in">
+                <ModelDetails />
+              </div>
+            )}
           </main>
 
           {selectedTransferPlayer && staticData && (
@@ -373,6 +378,7 @@ export default function App() {
         </div>
         <BottomNav currentView={currentView} onChangeView={setCurrentView} />
       </div>
+      )}
     </DndProvider>
   );
 }

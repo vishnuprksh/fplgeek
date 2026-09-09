@@ -33,6 +33,19 @@ FPL Geek is an advanced Fantasy Premier League analytics tool that helps you opt
 
 ---
 
+## ✅ Tests
+
+Verify that each player's per-gameweek history in the local database sums up to the official FPL season totals:
+
+```bash
+npm run test
+# or with options:
+python3 tests/test_player_aggregates.py --verbose
+python3 tests/test_player_aggregates.py --player 233
+```
+
+---
+
 ## ☁️ Self-Hosting Guide
 
 You can easily host this application on any VPS (Virtual Private Server) like DigitalOcean, Linode, Hetzner, or AWS.

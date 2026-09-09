@@ -7,6 +7,7 @@
     "dev": "vite frontend",
     "dev:backend": "cd backend && ./venv/bin/python -m uvicorn main:app --reload --port 3000",
     "update:data": "bash scripts/update_data.sh",
+    "test": "python3 tests/test_player_aggregates.py",
     "setup": "bash scripts/setup.sh"
   },
   "dependencies": {
